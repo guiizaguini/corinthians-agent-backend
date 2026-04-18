@@ -84,7 +84,7 @@ router.get('/', async (req, res, next) => {
         const params = [];
 
         if (ano)         { params.push(parseInt(ano));     conds.push(`EXTRACT(YEAR FROM data) = $${params.length}`); }
-        if (rival)       { params.push(rival);             conds.push(`(time_visitante ILIKE $${params.length} OR time_casa ILIKE $${params.length})`); }
+        if (rival)       { params.push(`%${rival}%`);      conds.push(`(time_visitante ILIKE $${params.length} OR time_casa ILIKE $${params.length})`); }
         if (campeonato)  { params.push(campeonato);        conds.push(`campeonato = $${params.length}`); }
         if (resultado)   { params.push(resultado);         conds.push(`resultado = $${params.length}`); }
         if (status_presenca) { params.push(status_presenca); conds.push(`status_presenca = $${params.length}`); }

@@ -118,7 +118,7 @@ body::before {
     font-family: 'Anton', sans-serif;
     font-size: clamp(72px, 13vw, 200px);
     line-height: 0.85;
-    letter-spacing: -0.04em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
 }
 .titulo-jornal .traco {
@@ -1122,20 +1122,324 @@ body::before {
     transform: translateY(-3px);
 }
 
-/* Mobile */
+/* =========================================================
+   MOBILE — TABLET (≤ 900px)
+   ========================================================= */
 @media (max-width: 900px) {
-    .cabecalho-principal { grid-template-columns: 1fr; }
-    .subtitulo-jornal { text-align: left; border-left: 2px solid var(--ouro); padding-left: 12px; }
-    .identidade-torcedor { min-width: 0; }
+    /* ===== HEADER ===== */
+    .cabecalho-barra-topo {
+        padding: 8px 16px;
+        font-size: 10px;
+        flex-wrap: wrap;
+        gap: 6px 14px;
+    }
+    .cabecalho-principal {
+        grid-template-columns: 1fr;
+        padding: 18px 16px 32px;
+        gap: 24px;
+    }
+    .titulo-jornal {
+        font-size: clamp(60px, 20vw, 140px);
+    }
+    .titulo-jornal .traco {
+        width: 56px;
+        height: 7px;
+        margin: 0 12px 10px 0;
+    }
+    .cabecalho-bloco-titulo { gap: 14px; }
+    .subtitulo-jornal {
+        text-align: left;
+        border-left: 2px solid var(--ouro);
+        padding-left: 12px;
+        font-size: 14px;
+        max-width: 100%;
+    }
+
+    /* ===== IDENTIDADE DO TORCEDOR ===== */
+    .identidade-torcedor {
+        min-width: 0;
+        padding: 18px 20px;
+    }
+    .id-torcedor-linha { font-size: 11px; }
+    .id-pontos-numero { font-size: 38px; }
+    .id-pontos-label { font-size: 9px; }
+
+    /* ===== HERO NÚMEROS ===== */
+    .hero-numeros { padding: 0 16px 24px; }
     .hero-grid { grid-template-columns: repeat(2, 1fr); }
-    .hero-card { border-right: none; border-bottom: 1px solid var(--cinza-linha); }
-    .grid-2, .grid-3 { grid-template-columns: 1fr; }
-    .secao { padding: 60px 20px; }
-    .cabecalho-principal { padding: 20px; }
-    .hero-numeros { padding: 0 20px 30px; }
-    .nav-secoes { padding: 0 10px; }
-    .rodape-grid { grid-template-columns: 1fr; }
+    .hero-card {
+        border-right: 1px solid var(--cinza-linha);
+        border-bottom: 1px solid var(--cinza-linha);
+        padding: 22px 18px;
+    }
+    .hero-card:nth-child(2n) { border-right: none; }
+    .hero-card:nth-last-child(-n+2) { border-bottom: none; }
+    .hero-numero { font-size: 52px; }
+    .hero-detalhe { font-size: 10px; }
+
+    /* ===== NAV STICKY ===== */
+    .nav-secoes { padding: 0; }
+    .nav-secoes a {
+        padding: 13px 14px;
+        font-size: 11px;
+        letter-spacing: 0.06em;
+    }
+    .nav-secoes a .num { display: none; }
+
+    /* ===== SEÇÕES ===== */
+    .secao { padding: 44px 16px; }
+    .secao-cabecalho {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 26px;
+        padding-bottom: 16px;
+    }
+    .secao-numero { justify-self: start; font-size: 10px; padding: 5px 10px; }
+    .secao-titulo { font-size: clamp(32px, 9vw, 52px); }
+    .secao-descricao { font-size: 14px; margin-bottom: 22px; }
+
+    /* ===== CARDS ===== */
+    .card { padding: 18px 16px; }
+    .card:hover { transform: none; box-shadow: none; }
+    .card::before { width: 32px; }
+    .card:hover::before { width: 100%; }
+    .card-titulo { font-size: 12px; letter-spacing: 0.08em; flex-wrap: wrap; gap: 4px 10px; }
+    .card-titulo .mini { font-size: 9px; }
+    .card-descricao { font-size: 12px; margin-bottom: 18px; }
+
+    /* ===== GRID 2/3 ===== */
+    .grid-2, .grid-3 { grid-template-columns: 1fr; gap: 16px; }
+
+    /* ===== BARRAS: stack label acima da barra, total ao lado ===== */
+    .barra-row {
+        display: grid !important;
+        grid-template-columns: 1fr auto !important;
+        grid-template-rows: auto auto;
+        gap: 4px 10px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--cinza-divisa);
+    }
+    .barra-row:last-child { border-bottom: none; }
+    .barra-row .rotulo {
+        grid-column: 1 / 2;
+        grid-row: 1;
+        font-size: 11px;
+        max-width: 100%;
+    }
+    .barra-row > .barra-bg {
+        grid-column: 1 / -1;
+        grid-row: 2;
+    }
+    .barra-row > span:last-child,
+    .barra-row .total-destaque {
+        grid-column: 2 / 3;
+        grid-row: 1;
+        padding-left: 0;
+        min-width: 0;
+        font-size: 16px;
+        text-align: right;
+    }
+    .barra-row .total-destaque .sufixo { font-size: 9px; }
+    .barra-seg { font-size: 10px; }
+
+    /* ===== EVOLUÇÃO: linha-ano ===== */
+    .linha-ano {
+        grid-template-columns: 54px 1fr 70px;
+        gap: 10px;
+        font-size: 11px;
+    }
+    .linha-ano .ano { font-size: 22px; }
+    .linha-ano .aprov { font-size: 12px; }
+
+    /* ===== CALENDÁRIO ===== */
+    .calendario { min-width: 640px; gap: 2px; }
+    .cal-cab { font-size: 9px; padding: 2px 0; }
+    .cal-ano { font-size: 14px; }
+    .cal-cel { font-size: 10px; }
+    .calendario-legenda { font-size: 9px; flex-wrap: wrap; justify-content: flex-start; }
+    .calendario-legenda .box { width: 12px; height: 12px; }
+
+    /* ===== TOP ITEMS (goleadas / clássicos) ===== */
+    .top-item {
+        grid-template-columns: 30px 1fr auto;
+        gap: 10px;
+        padding: 11px 8px;
+    }
+    .top-item .top-data {
+        grid-column: 2 / 3;
+        grid-row: 2;
+        font-size: 10px;
+        margin-top: 2px;
+    }
+    .top-pos { font-size: 22px; }
+    .top-confronto { font-size: 12px; grid-column: 2 / 3; grid-row: 1; }
+    .top-confronto .sub { font-size: 10px; display: none; }
+    .top-placar { font-size: 15px; padding: 3px 8px; }
+
+    /* ===== RETROSPECTO ===== */
+    .retrospecto {
+        grid-template-columns: 1fr;
+        gap: 14px;
+        margin-top: 18px;
+        padding-top: 16px;
+    }
+    .retrospecto-titulo { font-size: 9px; }
+    .retrospecto-titulo strong { font-size: 18px; }
+    .retrospecto-grid { gap: 8px; }
+    .retro-box { padding: 10px 10px 8px; }
+    .retro-num { font-size: 26px; }
+    .retro-rotulo { font-size: 9px; gap: 4px; }
+    .retro-rotulo .pct { font-size: 8px; }
+
+    /* ===== FINANCEIRO (números gigantes) ===== */
+    #cards-fin .card > div[style*="font-size:56px"] {
+        font-size: 34px !important;
+        margin: 6px 0 !important;
+    }
+
+    /* ===== FILTROS ===== */
+    .filtros { padding: 14px; gap: 12px; }
+    .filtro-grupo { flex: 1 1 100%; }
+    .filtros select, .filtros input { width: 100%; min-width: 0; font-size: 13px; }
+    .btn-limpar { width: 100%; margin-top: 4px; }
+    .filtro-estadio { max-width: 100%; }
+
+    /* ===== PAGINAÇÃO ===== */
+    .paginacao { flex-direction: column; gap: 10px; padding-top: 14px; }
+    .pag-btn { width: 100%; }
+    .pag-info { font-size: 10px; }
+
+    /* ===== TABELA: vira cards empilhados ===== */
+    .tabela-wrap {
+        border: none;
+        background: transparent;
+        overflow-x: visible;
+    }
+    .tabela-jogos { display: block; font-size: 12px; }
+    .tabela-jogos thead { display: none; }
+    .tabela-jogos tbody { display: block; }
+    .tabela-jogos tr {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px 14px;
+        background: var(--preto-card);
+        border: 1px solid var(--cinza-linha);
+        border-left: 2px solid var(--ouro-escuro);
+        padding: 14px;
+        margin-bottom: 10px;
+        transition: border-left-color 0.2s;
+    }
+    .tabela-jogos tbody tr:nth-child(even) td,
+    .tabela-jogos tbody tr:nth-child(odd) td {
+        background: transparent !important;
+    }
+    .tabela-jogos tbody tr:hover {
+        border-left-color: var(--ouro);
+    }
+    .tabela-jogos tbody tr:hover td {
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+    .tabela-jogos td {
+        display: block;
+        padding: 0;
+        border: none;
+        white-space: normal;
+        color: var(--branco-suave);
+        background: transparent !important;
+        font-size: 12px;
+    }
+    .tabela-jogos td::before {
+        content: attr(data-label);
+        display: block;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 8px;
+        color: var(--ouro);
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        margin-bottom: 3px;
+        font-weight: 700;
+    }
+    /* Layout explícito por linha */
+    .tabela-jogos td[data-label="Confronto"] {
+        grid-column: 1 / -1; grid-row: 1;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--branco);
+        padding-right: 48px;
+    }
+    .tabela-jogos td[data-label="Data"]       { grid-column: 1; grid-row: 2; }
+    .tabela-jogos td[data-label="Res"]        { grid-column: 2; grid-row: 2; justify-self: end; }
+    .tabela-jogos td[data-label="Campeonato"] { grid-column: 1; grid-row: 3; }
+    .tabela-jogos td[data-label="Placar"]     { grid-column: 2; grid-row: 3; justify-self: end; }
+    .tabela-jogos td[data-label="Estádio"]    { grid-column: 1; grid-row: 4; }
+    .tabela-jogos td[data-label="Setor"]      { grid-column: 2; grid-row: 4; justify-self: end; text-align: right; }
+    .tabela-jogos td[data-label="R$"]         { grid-column: 1; grid-row: 5; }
+    .tabela-jogos td[data-label="Status"]     { grid-column: 2; grid-row: 5; justify-self: end; }
+    /* Res badge flutua no canto do card */
+    .tabela-jogos td[data-label="Res"]::before,
+    .tabela-jogos td[data-label="Status"]::before { display: none; }
+
+    /* ===== BOTÃO TOPO ===== */
+    .btn-topo {
+        width: 42px;
+        height: 42px;
+        bottom: 16px;
+        right: 16px;
+        font-size: 16px;
+    }
+
+    /* ===== RODAPÉ ===== */
+    .rodape { padding: 40px 16px; margin-top: 48px; }
+    .rodape-grid { grid-template-columns: 1fr; gap: 20px; }
     .rodape-info { text-align: left; }
+    .rodape-titulo { font-size: clamp(32px, 9vw, 56px); }
+}
+
+/* =========================================================
+   MOBILE — CELULAR (≤ 560px)
+   ========================================================= */
+@media (max-width: 560px) {
+    .titulo-jornal { font-size: clamp(56px, 22vw, 88px); }
+    .hero-numero { font-size: 44px; }
+    .hero-rotulo { font-size: 9px; }
+    .hero-detalhe { font-size: 9px; margin-top: 6px; }
+
+    .id-pontos-numero { font-size: 32px; }
+
+    .secao-titulo { font-size: clamp(28px, 10vw, 44px); }
+
+    .linha-ano { grid-template-columns: 46px 1fr 56px; }
+    .linha-ano .ano { font-size: 18px; }
+
+    .calendario { min-width: 520px; }
+    .cal-cel { font-size: 9px; }
+
+    .retrospecto-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .retro-box { padding: 8px 6px 6px; }
+    .retro-num { font-size: 22px; }
+    .retro-rotulo { font-size: 8px; letter-spacing: 0.08em; }
+    .retro-rotulo .pct { display: none; }
+
+    .top-item { grid-template-columns: 26px 1fr auto; gap: 8px; }
+    .top-pos { font-size: 18px; }
+    .top-placar { font-size: 13px; padding: 2px 6px; }
+
+    #cards-fin .card > div[style*="font-size:56px"] {
+        font-size: 28px !important;
+    }
+}
+
+/* =========================================================
+   MOBILE — TOQUE: remove efeitos de hover pesados
+   ========================================================= */
+@media (hover: none) {
+    .card:hover { transform: none; box-shadow: none; border-color: var(--cinza-linha); }
+    .hero-card:hover { background: transparent; }
+    .hero-card:hover .hero-numero { color: var(--branco); }
+    .top-item:hover { background: transparent; }
+    .barra-seg:hover { filter: none; }
+    .cal-cel:hover { transform: none; box-shadow: none; }
 }
 </style>
 </head>
@@ -1842,15 +2146,15 @@ function renderTabela() {
             const placar = (j.gols_casa != null) ? `${j.gols_casa}–${j.gols_visitante}` : '—';
             return `
                 <tr>
-                    <td>${fmtData(j.data)}</td>
-                    <td>${j.campeonato || '—'}</td>
-                    <td><strong>${j.time_casa}</strong> × ${j.time_visitante}${j.foi_classico ? ' ⚔' : ''}</td>
-                    <td>${placar}</td>
-                    <td>${resBadge}</td>
-                    <td>${j.estadio || '—'}</td>
-                    <td>${j.setor || '—'}</td>
-                    <td>${j.valor_pago != null ? fmtMoeda(j.valor_pago) : '—'}</td>
-                    <td><span class="badge ${statusCls}">${j.status_presenca}</span></td>
+                    <td data-label="Data">${fmtData(j.data)}</td>
+                    <td data-label="Campeonato">${j.campeonato || '—'}</td>
+                    <td data-label="Confronto"><strong>${j.time_casa}</strong> × ${j.time_visitante}${j.foi_classico ? ' ⚔' : ''}</td>
+                    <td data-label="Placar">${placar}</td>
+                    <td data-label="Res">${resBadge}</td>
+                    <td data-label="Estádio">${j.estadio || '—'}</td>
+                    <td data-label="Setor">${j.setor || '—'}</td>
+                    <td data-label="R$">${j.valor_pago != null ? fmtMoeda(j.valor_pago) : '—'}</td>
+                    <td data-label="Status"><span class="badge ${statusCls}">${j.status_presenca}</span></td>
                 </tr>
             `;
         }).join('');
@@ -1894,6 +2198,18 @@ function setupInteracoes() {
 setupInteracoes();
 carregar();
 </script>
+
+<!-- START Botmaker Webchat-->
+<script>
+    (function () {
+        let js = document.createElement('script');
+        js.type = 'text/javascript';
+        js.async = 1;
+        js.src = 'https://go.botmaker.com/rest/webchat/p/5XWIME4RRJ/init.js';
+        document.body.appendChild(js);
+    })();
+</script>
+<!-- END Botmaker Webchat-->
 
 </body>
 </html>
