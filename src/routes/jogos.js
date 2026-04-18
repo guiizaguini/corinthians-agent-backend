@@ -83,16 +83,16 @@ router.get('/', async (req, res, next) => {
         const conds = [];
         const params = [];
 
-        if (ano)         { params.push(parseInt(ano));     conds.push(`EXTRACT(YEAR FROM data) = $${params.length}`); }
-        if (rival)       { params.push(`%${rival}%`);      conds.push(`(time_visitante ILIKE $${params.length} OR time_casa ILIKE $${params.length})`); }
-        if (campeonato)  { params.push(campeonato);        conds.push(`campeonato = $${params.length}`); }
-        if (resultado)   { params.push(resultado);         conds.push(`resultado = $${params.length}`); }
-        if (status_presenca) { params.push(status_presenca); conds.push(`status_presenca = $${params.length}`); }
+        if (ano)         { params.push(parseInt(ano));        conds.push(`EXTRACT(YEAR FROM data) = $${params.length}`); }
+        if (rival)       { params.push(`%${rival}%`);         conds.push(`(time_visitante ILIKE $${params.length} OR time_casa ILIKE $${params.length})`); }
+        if (campeonato)  { params.push(`%${campeonato}%`);    conds.push(`campeonato ILIKE $${params.length}`); }
+        if (resultado)   { params.push(resultado);            conds.push(`resultado = $${params.length}`); }
+        if (status_presenca) { params.push(status_presenca);  conds.push(`status_presenca = $${params.length}`); }
         if (is_corinthians !== undefined) {
             params.push(is_corinthians === 'true' || is_corinthians === '1');
             conds.push(`is_corinthians = $${params.length}`);
         }
-        if (estadio)     { params.push(estadio);           conds.push(`estadio = $${params.length}`); }
+        if (estadio)     { params.push(`%${estadio}%`);       conds.push(`estadio ILIKE $${params.length}`); }
         if (foi_classico !== undefined) {
             params.push(foi_classico === 'true' || foi_classico === '1');
             conds.push(`foi_classico = $${params.length}`);
@@ -110,6 +110,9 @@ router.get('/', async (req, res, next) => {
             ORDER BY data ${ord}, id ${ord}
             LIMIT $${params.length - 1} OFFSET $${params.length}
         `;
+
+        console.log('[jogos] filtros:', req.query, 'conds:', conds, 'params:', params);
+
         const { rows } = await query(sql, params);
 
         // Total para paginação
@@ -117,12 +120,17 @@ router.get('/', async (req, res, next) => {
         const countParams = params.slice(0, params.length - 2);
         const { rows: countRows } = await query(countSql, countParams);
 
+        console.log(`[jogos] retornou ${rows.length} de ${countRows[0].total} total`);
+
         res.json({
             total: countRows[0].total,
             count: rows.length,
             jogos: rows,
         });
-    } catch (err) { next(err); }
+    } catch (err) {
+        console.error('[jogos] ERRO:', err);
+        next(err);
+    }
 });
 
 // =============================================================

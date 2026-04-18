@@ -13,9 +13,11 @@ router.get('/retrospecto', async (req, res, next) => {
         const conds = ['is_corinthians = TRUE', "status_presenca = 'PRESENTE'", 'resultado IS NOT NULL'];
         const params = [];
 
-        if (ano)         { params.push(parseInt(ano));  conds.push(`EXTRACT(YEAR FROM data) = $${params.length}`); }
-        if (campeonato)  { params.push(campeonato);     conds.push(`campeonato = $${params.length}`); }
-        if (rival)       { params.push(`%${rival}%`);   conds.push(`(time_visitante ILIKE $${params.length} OR time_casa ILIKE $${params.length})`); }
+        if (ano)         { params.push(parseInt(ano));      conds.push(`EXTRACT(YEAR FROM data) = $${params.length}`); }
+        if (campeonato)  { params.push(`%${campeonato}%`);  conds.push(`campeonato ILIKE $${params.length}`); }
+        if (rival)       { params.push(`%${rival}%`);       conds.push(`(time_visitante ILIKE $${params.length} OR time_casa ILIKE $${params.length})`); }
+
+        console.log('[retrospecto] filtros:', { ano, campeonato, rival }, 'SQL conds:', conds, 'params:', params);
 
         const { rows } = await query(`
             SELECT
@@ -37,8 +39,12 @@ router.get('/retrospecto', async (req, res, next) => {
 
         const r = rows[0] ?? {};
         r.saldo_gols = (r.gols_pro ?? 0) - (r.gols_contra ?? 0);
+        console.log('[retrospecto] resultado:', r);
         res.json({ filtros: { ano, campeonato, rival }, retrospecto: r });
-    } catch (err) { next(err); }
+    } catch (err) {
+        console.error('[retrospecto] ERRO:', err);
+        next(err);
+    }
 });
 
 // =============================================================
