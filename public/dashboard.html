@@ -17,9 +17,17 @@
     --cinza-claro: #d4d0c8;
     --cinza-divisa: #e8e4dc;
     --destaque: #000000;
-    --vitoria: #1a5f3f;
-    --empate: #6b6b6b;
-    --derrota: #8b1a1a;
+    /* CORES DE RESULTADO — TIMÃO */
+    --vitoria: #d4a017;           /* dourado */
+    --vitoria-escuro: #a87d0a;
+    --vitoria-claro: #f0c850;
+    --empate: #7a7a7a;            /* cinza */
+    --empate-escuro: #555555;
+    --derrota: #6b1f2e;           /* vinho */
+    --derrota-escuro: #4a0f1c;
+    --derrota-claro: #8b3547;
+    /* sombra Corinthians */
+    --sombra-ouro: 0 0 0 2px rgba(212,160,23,0.15);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -35,17 +43,28 @@ body {
     position: relative;
 }
 
-/* Textura de papel sutil */
+/* Textura de papel + traço dourado sutil */
 body::before {
     content: '';
     position: fixed;
     inset: 0;
     background-image:
         repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(0,0,0,0.015) 2px, rgba(0,0,0,0.015) 3px),
-        radial-gradient(circle at 20% 30%, rgba(0,0,0,0.03) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(0,0,0,0.02) 0%, transparent 50%);
+        radial-gradient(circle at 20% 30%, rgba(212,160,23,0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(107,31,46,0.04) 0%, transparent 50%);
     pointer-events: none;
     z-index: 1;
+}
+
+/* Fita dourada no topo: identidade Timão */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--vitoria-escuro), var(--vitoria), var(--vitoria-claro), var(--vitoria), var(--vitoria-escuro));
+    z-index: 100;
+    pointer-events: none;
 }
 
 .mono { font-family: 'JetBrains Mono', monospace; }
@@ -74,8 +93,9 @@ body::before {
 
 .cabecalho-barra-topo .atualizado { display: flex; gap: 8px; align-items: center; }
 .cabecalho-barra-topo .bolinha {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: #2eb85c;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--vitoria);
+    box-shadow: 0 0 8px var(--vitoria), 0 0 14px var(--vitoria-claro);
     animation: pulso 2s infinite;
 }
 @keyframes pulso {
@@ -103,9 +123,10 @@ body::before {
     display: inline-block;
     width: 90px;
     height: 12px;
-    background: var(--branco);
+    background: linear-gradient(90deg, var(--vitoria-escuro), var(--vitoria), var(--vitoria-claro));
     margin: 0 20px 18px 0;
     vertical-align: middle;
+    box-shadow: 0 0 20px rgba(212,160,23,0.4);
 }
 
 .subtitulo-jornal {
@@ -140,8 +161,28 @@ body::before {
     padding: 30px 24px;
     border-right: 1px solid rgba(255,255,255,0.15);
     position: relative;
+    transition: background 0.25s, transform 0.25s;
+    cursor: pointer;
+    overflow: hidden;
 }
 .hero-card:last-child { border-right: none; }
+.hero-card::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 0;
+    background: linear-gradient(0deg, rgba(212,160,23,0.18), transparent);
+    transition: height 0.3s ease;
+    pointer-events: none;
+}
+.hero-card:hover { background: rgba(212,160,23,0.08); }
+.hero-card:hover::after { height: 100%; }
+.hero-card:hover .hero-numero {
+    color: var(--vitoria-claro);
+    text-shadow: 0 0 20px rgba(212,160,23,0.5);
+}
+.hero-card.v:hover .hero-numero { color: var(--vitoria-claro); }
+.hero-card .hero-numero { transition: color 0.25s, text-shadow 0.25s; }
 
 .hero-rotulo {
     font-family: 'JetBrains Mono', monospace;
@@ -203,12 +244,28 @@ body::before {
     white-space: nowrap;
     position: relative;
 }
+.nav-secoes a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--vitoria);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.2s ease;
+}
 .nav-secoes a:hover { color: var(--preto); background: var(--cinza-papel); }
+.nav-secoes a:hover::after { transform: scaleX(1); }
+.nav-secoes a.ativo { color: var(--preto); background: var(--cinza-papel); }
+.nav-secoes a.ativo::after { transform: scaleX(1); }
 .nav-secoes a .num {
     font-family: 'JetBrains Mono', monospace;
     font-size: 9px;
-    color: var(--cinza-claro);
+    color: var(--vitoria-escuro);
     margin-right: 6px;
+    font-weight: 700;
 }
 
 /* =========== SEÇÕES =========== */
@@ -235,9 +292,17 @@ body::before {
     font-size: 12px;
     letter-spacing: 0.2em;
     background: var(--preto);
-    color: var(--branco);
+    color: var(--vitoria-claro);
     padding: 6px 12px;
     align-self: center;
+    border-left: 3px solid var(--vitoria);
+    transition: transform 0.25s;
+}
+.secao-cabecalho:hover .secao-numero {
+    transform: translateX(4px);
+    background: var(--vitoria);
+    color: var(--preto);
+    border-color: var(--preto);
 }
 
 .secao-titulo {
@@ -306,11 +371,22 @@ body::before {
     padding: 10px 18px;
     background: var(--preto);
     color: var(--branco);
-    border: none;
+    border: 2px solid var(--preto);
     cursor: pointer;
-    transition: all 0.15s;
+    transition: all 0.2s;
+    position: relative;
 }
-.btn-limpar:hover { transform: translate(-1px, -1px); box-shadow: 2px 2px 0 var(--preto); }
+.btn-limpar:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 var(--vitoria);
+    background: var(--vitoria);
+    color: var(--preto);
+    border-color: var(--vitoria);
+}
+.btn-limpar:active { transform: translate(0,0); box-shadow: 0 0 0 var(--vitoria); }
+
+.filtros select:hover, .filtros input:hover { border-color: var(--vitoria); }
+.filtros select:focus, .filtros input:focus { outline-color: var(--vitoria); }
 
 /* =========== GRÁFICOS E CARDS =========== */
 .grid-dash {
@@ -325,7 +401,23 @@ body::before {
     border: 1px solid var(--preto);
     padding: 24px;
     position: relative;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--preto) 0%, var(--preto) 50%, var(--vitoria) 50%, var(--vitoria) 100%);
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 0.35s ease;
+}
+.card:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 6px 6px 0 var(--preto), 6px 6px 0 2px var(--vitoria);
+}
+.card:hover::before { transform: scaleX(1); }
 
 .card-titulo {
     font-family: 'Archivo', sans-serif;
@@ -386,9 +478,24 @@ body::before {
     font-weight: 700;
     transition: all 0.3s;
 }
-.barra-seg.v { background: var(--preto); }
-.barra-seg.e { background: var(--cinza-medio); }
-.barra-seg.d { background: var(--branco); color: var(--preto); border-left: 1px solid var(--preto); border-right: 1px solid var(--preto); }
+.barra-seg.v {
+    background: linear-gradient(180deg, var(--vitoria-claro) 0%, var(--vitoria) 55%, var(--vitoria-escuro) 100%);
+    color: #1a1000;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.25);
+}
+.barra-seg.e {
+    background: linear-gradient(180deg, #9a9a9a 0%, var(--empate) 55%, var(--empate-escuro) 100%);
+    color: var(--branco);
+}
+.barra-seg.d {
+    background: linear-gradient(180deg, var(--derrota-claro) 0%, var(--derrota) 55%, var(--derrota-escuro) 100%);
+    color: var(--branco);
+}
+.barra-seg:hover {
+    filter: brightness(1.12) saturate(1.1);
+    transform: scaleY(1.08);
+    cursor: help;
+}
 
 /* =========== EVOLUÇÃO ANO A ANO =========== */
 .linha-ano {
@@ -456,12 +563,20 @@ body::before {
     cursor: pointer;
     transition: transform 0.1s;
 }
-.cal-cel:hover { transform: scale(1.15); z-index: 2; box-shadow: 0 0 0 2px var(--preto); }
+.cal-cel:hover {
+    transform: scale(1.25) rotate(-2deg);
+    z-index: 2;
+    box-shadow: 0 4px 14px rgba(212,160,23,0.5), 0 0 0 2px var(--vitoria);
+}
 .cal-cel[data-count="0"] { background: var(--cinza-papel); }
-.cal-cel[data-count="1"] { background: #c9c6be; }
-.cal-cel[data-count="2"] { background: #8a8680; color: var(--branco); }
-.cal-cel[data-count="3"] { background: #454340; color: var(--branco); }
-.cal-cel[data-count="4"], .cal-cel[data-count="5"], .cal-cel[data-count="6"], .cal-cel[data-count="7"], .cal-cel[data-count="8"], .cal-cel[data-count="9"], .cal-cel[data-count="10"] { background: var(--preto); color: var(--branco); }
+.cal-cel[data-count="1"] { background: #f2e3a8; color: #5a3d00; }
+.cal-cel[data-count="2"] { background: #e8c968; color: #3d2800; }
+.cal-cel[data-count="3"] { background: var(--vitoria); color: #1a1000; }
+.cal-cel[data-count="4"], .cal-cel[data-count="5"], .cal-cel[data-count="6"], .cal-cel[data-count="7"], .cal-cel[data-count="8"], .cal-cel[data-count="9"], .cal-cel[data-count="10"] {
+    background: linear-gradient(135deg, var(--vitoria-escuro), var(--preto));
+    color: var(--vitoria-claro);
+    text-shadow: 0 0 4px rgba(212,160,23,0.6);
+}
 
 .cal-cel .tooltip {
     position: absolute;
@@ -494,7 +609,9 @@ body::before {
 }
 .calendario-legenda .box {
     width: 14px; height: 14px; border: 1px solid var(--cinza-divisa);
+    transition: transform 0.15s;
 }
+.calendario-legenda .box:hover { transform: scale(1.4); }
 
 /* =========== TOPS (JOGOS) =========== */
 .lista-top {
@@ -540,9 +657,27 @@ body::before {
     font-size: 22px;
     padding: 4px 10px;
     background: var(--preto);
-    color: var(--branco);
+    color: var(--vitoria-claro);
     letter-spacing: 0.05em;
+    border-left: 3px solid var(--vitoria);
+    transition: transform 0.2s;
 }
+.top-item {
+    transition: background 0.15s, padding 0.2s;
+    padding-left: 8px;
+    margin-left: -8px;
+    cursor: default;
+}
+.top-item:hover {
+    background: linear-gradient(90deg, rgba(212,160,23,0.12), transparent);
+    padding-left: 14px;
+}
+.top-item:hover .top-pos {
+    color: var(--vitoria-escuro);
+    transform: scale(1.1);
+}
+.top-item:hover .top-placar { transform: scale(1.05); }
+.top-pos { transition: all 0.2s; transform-origin: left; }
 
 /* =========== TABELA =========== */
 .tabela-wrap {
@@ -558,7 +693,7 @@ body::before {
 }
 .tabela-jogos thead {
     background: var(--preto);
-    color: var(--branco);
+    color: var(--vitoria-claro);
 }
 .tabela-jogos th {
     text-align: left;
@@ -570,6 +705,8 @@ body::before {
     position: sticky;
     top: 0;
     background: var(--preto);
+    color: var(--vitoria-claro);
+    border-bottom: 2px solid var(--vitoria);
 }
 .tabela-jogos td {
     padding: 10px 14px;
@@ -584,17 +721,38 @@ body::before {
     font-weight: 700;
     letter-spacing: 0.1em;
 }
-.tabela-jogos .badge.v { background: var(--preto); color: var(--branco); }
-.tabela-jogos .badge.e { background: var(--cinza-medio); color: var(--branco); }
+.tabela-jogos .badge.v {
+    background: linear-gradient(180deg, var(--vitoria-claro), var(--vitoria) 60%, var(--vitoria-escuro));
+    color: #1a1000;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 1px 3px rgba(168,125,10,0.25);
+}
+.tabela-jogos .badge.e {
+    background: var(--empate);
+    color: var(--branco);
+}
 .tabela-jogos .badge.d {
-    background: var(--branco);
-    color: var(--preto);
-    border: 1px solid var(--preto);
+    background: linear-gradient(180deg, var(--derrota-claro), var(--derrota) 60%, var(--derrota-escuro));
+    color: var(--branco);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
 }
 .tabela-jogos .badge.faltei, .tabela-jogos .badge.revenda, .tabela-jogos .badge.cashback, .tabela-jogos .badge.ausente {
     background: #ffe0b2;
     color: #663300;
     border: 1px solid #663300;
+}
+.tabela-jogos .badge.presente {
+    background: var(--preto);
+    color: var(--vitoria-claro);
+}
+.tabela-jogos .badge.agendado {
+    background: var(--branco);
+    color: var(--preto);
+    border: 1px solid var(--preto);
+}
+.tabela-jogos tr { transition: background 0.15s; }
+.tabela-jogos tbody tr:hover td {
+    background: rgba(212,160,23,0.08);
+    box-shadow: inset 3px 0 0 var(--vitoria);
 }
 
 .tabela-info {
@@ -665,6 +823,77 @@ body::before {
     to { opacity: 1; transform: translateY(0); }
 }
 .anima { animation: sobe 0.7s ease-out both; }
+
+@keyframes brilho-ouro {
+    0%, 100% { text-shadow: 0 0 10px rgba(212,160,23,0.3); }
+    50% { text-shadow: 0 0 20px rgba(212,160,23,0.8), 0 0 30px rgba(212,160,23,0.4); }
+}
+
+@keyframes contador-pop {
+    0% { transform: scale(0.6); opacity: 0; }
+    60% { transform: scale(1.08); }
+    100% { transform: scale(1); opacity: 1; }
+}
+.hero-numero { animation: contador-pop 0.6s ease-out both; }
+
+/* Barra pintada com vidro */
+.barra-bg {
+    position: relative;
+}
+.barra-seg {
+    position: relative;
+    overflow: hidden;
+}
+.barra-seg::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 45%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.25), transparent);
+    pointer-events: none;
+}
+
+/* Scrollbar customizada */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--cinza-papel); }
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--preto), var(--cinza-medio));
+    border: 2px solid var(--cinza-papel);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--vitoria-escuro), var(--vitoria));
+}
+
+/* Mini botão flutuante pro topo */
+.btn-topo {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 48px;
+    height: 48px;
+    background: var(--preto);
+    color: var(--vitoria-claro);
+    border: 2px solid var(--vitoria);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 99;
+    font-family: 'Anton', sans-serif;
+    font-size: 20px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+}
+.btn-topo.visivel { opacity: 1; transform: translateY(0); }
+.btn-topo:hover {
+    background: var(--vitoria);
+    color: var(--preto);
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(212,160,23,0.6);
+}
 
 /* Mobile */
 @media (max-width: 900px) {
@@ -792,10 +1021,10 @@ body::before {
         <div class="calendario-legenda">
             <span>MENOS</span>
             <div class="box" style="background:var(--cinza-papel);"></div>
-            <div class="box" style="background:#c9c6be;"></div>
-            <div class="box" style="background:#8a8680;"></div>
-            <div class="box" style="background:#454340;"></div>
-            <div class="box" style="background:var(--preto);"></div>
+            <div class="box" style="background:#f2e3a8;"></div>
+            <div class="box" style="background:#e8c968;"></div>
+            <div class="box" style="background:var(--vitoria);"></div>
+            <div class="box" style="background:linear-gradient(135deg,var(--vitoria-escuro),var(--preto));"></div>
             <span>MAIS</span>
         </div>
     </div>
@@ -911,6 +1140,9 @@ body::before {
     <div class="tabela-info" id="tabela-info"></div>
 </section>
 
+<!-- Botão voltar ao topo -->
+<button class="btn-topo" id="btn-topo" title="Voltar ao topo" aria-label="Voltar ao topo">▲</button>
+
 <!-- ============= RODAPÉ ============= -->
 <footer class="rodape">
     <div class="rodape-grid">
@@ -972,18 +1204,29 @@ function renderizarTudo() {
 function renderHero() {
     const g = DADOS.geral;
     const cards = [
-        { rotulo: 'Jogos', num: g.jogos, det: `${g.gols_pro}–${g.gols_contra} gols`, indice: '001' },
-        { rotulo: 'Vitórias', num: g.vitorias, det: `${g.aproveitamento_pct}% aproveit.`, indice: '002' },
-        { rotulo: 'Empates', num: g.empates, det: `${g.derrotas} derrotas`, indice: '003' },
-        { rotulo: 'Saldo', num: (g.saldo_gols > 0 ? '+' : '') + g.saldo_gols, det: `${g.classicos} clássicos`, indice: '004' },
+        { rotulo: 'Jogos', num: g.jogos, det: `${g.gols_pro}–${g.gols_contra} gols`, indice: '001', filtro: '' },
+        { rotulo: 'Vitórias', num: g.vitorias, det: `${g.aproveitamento_pct}% aproveit.`, indice: '002', filtro: 'V' },
+        { rotulo: 'Empates', num: g.empates, det: `${g.derrotas} derrotas`, indice: '003', filtro: 'E' },
+        { rotulo: 'Saldo', num: (g.saldo_gols > 0 ? '+' : '') + g.saldo_gols, det: `${g.classicos} clássicos`, indice: '004', filtro: '' },
     ];
     document.getElementById('hero-grid').innerHTML = cards.map((c, i) => `
-        <div class="hero-card anima" style="animation-delay:${0.1 + i*0.1}s">
+        <div class="hero-card anima" data-filtro="${c.filtro || ''}" title="${c.filtro ? 'Clique para filtrar a tabela' : ''}" style="animation-delay:${0.1 + i*0.1}s">
             <div class="hero-rotulo"><span>${c.rotulo}</span><span class="indice">${c.indice}</span></div>
             <div class="hero-numero">${c.num}</div>
             <div class="hero-detalhe">${c.det}</div>
         </div>
     `).join('');
+
+    // Hero cards clicáveis filtram a tabela
+    document.querySelectorAll('.hero-card[data-filtro]').forEach(el => {
+        el.addEventListener('click', () => {
+            const f = el.dataset.filtro;
+            if (!f) return;
+            document.getElementById('f-res').value = f;
+            renderTabela();
+            document.getElementById('lista').scrollIntoView({ behavior: 'smooth' });
+        });
+    });
 }
 
 // ============= EVOLUÇÃO =============
@@ -1244,7 +1487,39 @@ function renderTabela() {
     document.getElementById('tabela-info').textContent = `${filtrados.length} DE ${DADOS.jogos.length} JOGOS`;
 }
 
+// ============= BOTÃO TOPO + NAV ATIVO =============
+function setupInteracoes() {
+    const btn = document.getElementById('btn-topo');
+    btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    window.addEventListener('scroll', () => {
+        btn.classList.toggle('visivel', window.scrollY > 400);
+
+        // Destaque da seção ativa no nav
+        const secoes = document.querySelectorAll('.secao');
+        const links = document.querySelectorAll('.nav-secoes a');
+        let ativo = '';
+        secoes.forEach(s => {
+            const topo = s.getBoundingClientRect().top;
+            if (topo < 180) ativo = s.id;
+        });
+        links.forEach(l => {
+            l.classList.toggle('ativo', l.getAttribute('href') === '#' + ativo);
+        });
+    });
+
+    // Scroll suave nos links do nav
+    document.querySelectorAll('.nav-secoes a').forEach(a => {
+        a.addEventListener('click', e => {
+            e.preventDefault();
+            const alvo = document.querySelector(a.getAttribute('href'));
+            if (alvo) alvo.scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+}
+
 // ============= INIT =============
+setupInteracoes();
 carregar();
 </script>
 
