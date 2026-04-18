@@ -1,0 +1,23 @@
+{
+  "name": "corinthians-agent-backend",
+  "version": "1.0.0",
+  "description": "Backend API para o agente pessoal dos jogos do Corinthians",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "migrate": "node scripts/migrate.js",
+    "migrate:seed": "node scripts/migrate.js seed"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "pg": "^8.13.1",
+    "zod": "^3.23.8"
+  }
+}
