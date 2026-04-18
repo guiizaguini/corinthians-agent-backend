@@ -167,17 +167,6 @@ body::before {
     gap: 8px;
     position: relative;
 }
-.identidade-torcedor::before {
-    content: 'SCCP';
-    position: absolute;
-    top: 10px;
-    right: 14px;
-    font-family: 'Anton', sans-serif;
-    font-size: 14px;
-    color: var(--ouro);
-    letter-spacing: 0.2em;
-    opacity: 0.6;
-}
 .id-torcedor-linha {
     display: flex;
     justify-content: space-between;
@@ -560,6 +549,8 @@ body::before {
     font-size: 11px;
     font-weight: 700;
     transition: filter 0.25s;
+    white-space: nowrap;
+    overflow: hidden;
 }
 .barra-seg.v {
     background: var(--vitoria);
@@ -575,7 +566,69 @@ body::before {
 }
 .barra-seg:hover {
     filter: brightness(1.15);
-    cursor: help;
+}
+
+/* =========== DESTAQUE TOTAL DE JOGOS/INGRESSOS =========== */
+.barra-row .total-destaque {
+    font-family: 'Anton', sans-serif;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--ouro-claro);
+    letter-spacing: 0.02em;
+    padding-left: 12px;
+    min-width: 70px;
+    text-align: right;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    white-space: nowrap;
+}
+.barra-row .total-destaque .sufixo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ouro);
+    letter-spacing: 0.15em;
+    font-weight: 700;
+}
+
+/* =========== PAGINAÇÃO =========== */
+.paginacao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--cinza-linha);
+}
+.pag-btn {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 9px 16px;
+    background: transparent;
+    color: var(--ouro);
+    border: 1px solid var(--ouro-escuro);
+    cursor: pointer;
+    transition: all 0.18s;
+}
+.pag-btn:hover:not(:disabled) {
+    background: var(--ouro);
+    color: var(--preto);
+    border-color: var(--ouro);
+}
+.pag-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+.pag-info {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--cinza-claro);
+    letter-spacing: 0.12em;
+    text-align: center;
 }
 
 /* =========== EVOLUÇÃO ANO A ANO =========== */
@@ -709,10 +762,16 @@ body::before {
     grid-template-columns: 40px 80px 1fr auto;
     gap: 16px;
     align-items: center;
-    padding: 14px 0;
+    padding: 14px 12px;
     border-bottom: 1px solid var(--cinza-divisa);
 }
 .top-item:last-child { border-bottom: none; }
+.lista-top .top-item:nth-child(even) {
+    background: rgba(156,138,82,0.04);
+}
+.lista-top .top-item:nth-child(odd) {
+    background: transparent;
+}
 .top-pos {
     font-family: 'Anton', sans-serif;
     font-size: 32px;
@@ -749,14 +808,11 @@ body::before {
     border: 1px solid var(--ouro-escuro);
 }
 .top-item {
-    transition: background 0.15s, padding 0.2s;
-    padding-left: 8px;
-    margin-left: -8px;
+    transition: background 0.15s;
     cursor: default;
 }
-.top-item:hover {
-    background: rgba(156,138,82,0.05);
-    padding-left: 14px;
+.lista-top .top-item:hover {
+    background: rgba(156,138,82,0.12) !important;
 }
 .top-item:hover .top-pos { color: var(--ouro-claro); }
 .top-pos { transition: color 0.2s; }
@@ -796,7 +852,15 @@ body::before {
     border-bottom: 1px solid var(--cinza-divisa);
     white-space: nowrap;
 }
-.tabela-jogos tr:hover td { background: rgba(156,138,82,0.05); }
+.tabela-jogos tbody tr:nth-child(even) td {
+    background: rgba(156,138,82,0.04);
+}
+.tabela-jogos tbody tr:nth-child(odd) td {
+    background: transparent;
+}
+.tabela-jogos tbody tr:hover td {
+    background: rgba(156,138,82,0.12) !important;
+}
 .tabela-jogos .badge {
     display: inline-block;
     padding: 2px 8px;
@@ -1323,14 +1387,22 @@ function renderEvolucao() {
         const pctE = (a.empates / a.jogos) * 100;
         const pctD = (a.derrotas / a.jogos) * 100;
         const larguraTotal = (a.jogos / maxJogos) * 100;
+        // efetivo = fração da barra total (em %) ocupada pelo segmento
+        const effV = (larguraTotal * pctV) / 100;
+        const effE = (larguraTotal * pctE) / 100;
+        const effD = (larguraTotal * pctD) / 100;
+        const MIN = 4; // % mínima da barra pra caber o número
+        const lblV = effV >= MIN ? a.vitorias : '';
+        const lblE = effE >= MIN ? a.empates : '';
+        const lblD = effD >= MIN ? a.derrotas : '';
         return `
             <div class="barra-row">
                 <span class="rotulo">${a.ano}</span>
                 <div class="barra-bg">
-                    <div class="barra-bg" style="width:${larguraTotal}%; display:flex; background:transparent;">
-                        <div class="barra-seg v" style="width:${pctV}%" title="${a.vitorias} V">${a.vitorias || ''}</div>
-                        <div class="barra-seg e" style="width:${pctE}%" title="${a.empates} E">${a.empates || ''}</div>
-                        <div class="barra-seg d" style="width:${pctD}%" title="${a.derrotas} D">${a.derrotas || ''}</div>
+                    <div class="barra-bg" style="width:${larguraTotal}%; display:flex; background:transparent; border:none;">
+                        <div class="barra-seg v" style="width:${pctV}%" title="${a.vitorias} vitórias">${lblV}</div>
+                        <div class="barra-seg e" style="width:${pctE}%" title="${a.empates} empates">${lblE}</div>
+                        <div class="barra-seg d" style="width:${pctD}%" title="${a.derrotas} derrotas">${lblD}</div>
                     </div>
                 </div>
                 <span>${a.jogos}J</span>
@@ -1353,30 +1425,67 @@ function renderEvolucao() {
 }
 
 // ============= RIVAIS =============
+let PAG_RIVAL = 1;
+const POR_PAG_RIVAL = 5;
+
 function renderRivais() {
     const rivais = DADOS.por_rival.filter(r => r.jogos >= 1);
     document.getElementById('rival-total').textContent = `${rivais.length} TIMES`;
 
+    const totalPags = Math.max(1, Math.ceil(rivais.length / POR_PAG_RIVAL));
+    if (PAG_RIVAL > totalPags) PAG_RIVAL = totalPags;
+
+    const ini = (PAG_RIVAL - 1) * POR_PAG_RIVAL;
+    const fim = ini + POR_PAG_RIVAL;
+    const pag = rivais.slice(ini, fim);
+
+    // maxJogos considera o conjunto todo pra escala ficar consistente entre páginas
     const maxJogos = Math.max(...rivais.map(r => r.jogos));
-    document.getElementById('barras-rival').innerHTML = rivais.slice(0, 25).map(r => {
+
+    const barras = pag.map(r => {
         const pctV = (r.vitorias / r.jogos) * 100;
         const pctE = (r.empates / r.jogos) * 100;
         const pctD = (r.derrotas / r.jogos) * 100;
         const largura = (r.jogos / maxJogos) * 100;
+        const effV = (largura * pctV) / 100;
+        const effE = (largura * pctE) / 100;
+        const effD = (largura * pctD) / 100;
+        const MIN = 4;
+        const lblV = effV >= MIN ? r.vitorias : '';
+        const lblE = effE >= MIN ? r.empates : '';
+        const lblD = effD >= MIN ? r.derrotas : '';
         return `
             <div class="barra-row" style="grid-template-columns: 150px 1fr auto;">
                 <span class="rotulo" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${r.adversario}</span>
                 <div class="barra-bg">
-                    <div class="barra-bg" style="width:${largura}%; display:flex; background:transparent;">
-                        <div class="barra-seg v" style="width:${pctV}%">${r.vitorias || ''}</div>
-                        <div class="barra-seg e" style="width:${pctE}%">${r.empates || ''}</div>
-                        <div class="barra-seg d" style="width:${pctD}%">${r.derrotas || ''}</div>
+                    <div class="barra-bg" style="width:${largura}%; display:flex; background:transparent; border:none;">
+                        <div class="barra-seg v" style="width:${pctV}%" title="${r.vitorias} vitórias">${lblV}</div>
+                        <div class="barra-seg e" style="width:${pctE}%" title="${r.empates} empates">${lblE}</div>
+                        <div class="barra-seg d" style="width:${pctD}%" title="${r.derrotas} derrotas">${lblD}</div>
                     </div>
                 </div>
-                <span>${r.jogos}J</span>
+                <span class="total-destaque">${r.jogos}<span class="sufixo">JOGOS</span></span>
             </div>
         `;
     }).join('');
+
+    const paginacao = `
+        <div class="paginacao">
+            <button class="pag-btn" data-acao="prev" ${PAG_RIVAL === 1 ? 'disabled' : ''}>◀ ANTERIOR</button>
+            <span class="pag-info">PÁGINA ${PAG_RIVAL} DE ${totalPags} · ${ini + 1}–${Math.min(fim, rivais.length)} DE ${rivais.length}</span>
+            <button class="pag-btn" data-acao="next" ${PAG_RIVAL >= totalPags ? 'disabled' : ''}>PRÓXIMA ▶</button>
+        </div>
+    `;
+
+    document.getElementById('barras-rival').innerHTML = barras + paginacao;
+
+    document.querySelectorAll('#barras-rival .pag-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (btn.dataset.acao === 'prev' && PAG_RIVAL > 1) PAG_RIVAL--;
+            if (btn.dataset.acao === 'next' && PAG_RIVAL < totalPags) PAG_RIVAL++;
+            renderRivais();
+        });
+    });
 }
 
 // ============= FINANCEIRO =============
@@ -1406,7 +1515,7 @@ function renderFinanceiro() {
                 <div class="barra-bg">
                     <div class="barra-seg v" style="width:${larg}%">${fmtMoeda(a.gasto_total)}</div>
                 </div>
-                <span>${a.ingressos_pagos}ing</span>
+                <span class="total-destaque">${a.ingressos_pagos}<span class="sufixo">INGRESSOS</span></span>
             </div>
         `;
     }).join('');
@@ -1485,11 +1594,15 @@ function renderSetores() {
         const aprov = j > 0 ? (((v * 3 + e) / (j * 3)) * 100).toFixed(1) : 0;
         const larg = (j / maxJ) * 100;
         const ticket = x.ticket_medio ? fmtMoeda(x.ticket_medio) : '—';
+        // só mostra texto dentro da barra se ela tiver espaço
+        const labelInterno = larg >= 18 ? `${x.jogos}J · ${aprov}%` : '';
+        const labelFora = larg < 18 ? `<span style="position:absolute; left:calc(${larg}% + 8px); top:50%; transform:translateY(-50%); font-size:11px; color:var(--cinza-claro); white-space:nowrap; font-family:'JetBrains Mono',monospace;">${x.jogos}J · ${aprov}%</span>` : '';
         return `
             <div class="barra-row" style="grid-template-columns: 200px 1fr 150px;">
                 <span class="rotulo" style="font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${x.setor}</span>
-                <div class="barra-bg">
-                    <div class="barra-seg v" style="width:${larg}%">${x.jogos}J · ${aprov}%</div>
+                <div class="barra-bg" style="position:relative;">
+                    <div class="barra-seg v" style="width:${larg}%" title="${x.jogos} jogos · ${aprov}% aproveitamento">${labelInterno}</div>
+                    ${labelFora}
                 </div>
                 <span style="text-align:right;">${ticket}</span>
             </div>
