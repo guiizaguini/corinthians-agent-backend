@@ -1,11 +1,16 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import 'dotenv/config';
 
 import { requireApiKey } from './middleware/auth.js';
 import jogosRouter from './routes/jogos.js';
 import estatisticasRouter from './routes/estatisticas.js';
+import publicRouter from './routes/public.js';
 import { pool } from './db/pool.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,7 +19,7 @@ app.use(cors());
 app.use(express.json({ limit: '1mb' }));
 
 // =============================================================
-// Health check (sem auth) - Railway usa para verificar se subiu
+// Health check (sem auth)
 // =============================================================
 app.get('/health', async (req, res) => {
     try {
@@ -25,30 +30,52 @@ app.get('/health', async (req, res) => {
     }
 });
 
+// =============================================================
+// Rota pública READ-ONLY para dashboards (sem API key)
+// =============================================================
+app.use('/public', publicRouter);
+
+// =============================================================
+// Dashboard estático — qualquer um com o link acessa
+// =============================================================
+app.get('/dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'dashboard.html'));
+});
+
 app.get('/', (req, res) => {
+    // Raiz redireciona pro dashboard
+    res.redirect('/dashboard');
+});
+
+app.get('/api', (req, res) => {
     res.json({
         name: 'corinthians-agent-backend',
-        version: '1.0.0',
-        endpoints: [
-            'GET  /health',
-            'GET  /jogos           (filtros: ano, rival, campeonato, resultado, status_presenca, is_corinthians, estadio, foi_classico, limit, offset, order)',
+        version: '1.1.0',
+        dashboard: '/dashboard',
+        endpoints_publicos: [
+            'GET /health',
+            'GET /public/snapshot',
+            'GET /dashboard',
+        ],
+        endpoints_protegidos: [
+            'GET  /jogos',
             'GET  /jogos/:id',
             'POST /jogos',
             'PATCH /jogos/:id',
             'DELETE /jogos/:id',
-            'GET  /estatisticas/retrospecto (filtros: ano, campeonato, rival)',
+            'GET  /estatisticas/retrospecto',
             'GET  /estatisticas/por-ano',
             'GET  /estatisticas/por-campeonato',
             'GET  /estatisticas/por-rival?top=10',
             'GET  /estatisticas/por-estadio',
             'GET  /estatisticas/gastos',
-            'GET  /estatisticas/resumo (tudo em uma chamada)',
+            'GET  /estatisticas/resumo',
         ],
     });
 });
 
 // =============================================================
-// Rotas protegidas por API key
+// Rotas protegidas por API key (pro MCP Agent)
 // =============================================================
 app.use('/jogos', requireApiKey, jogosRouter);
 app.use('/estatisticas', requireApiKey, estatisticasRouter);
