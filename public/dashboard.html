@@ -591,6 +591,109 @@ body::before {
     font-weight: 700;
 }
 
+/* =========== FILTRO DE ESTÁDIO (setores) =========== */
+.filtro-estadio {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 22px;
+    max-width: 320px;
+}
+.filtro-estadio select {
+    font-family: 'Archivo', sans-serif;
+    font-size: 13px;
+    padding: 9px 12px;
+    border: 1px solid var(--cinza-linha);
+    background: var(--preto-profundo);
+    color: var(--branco);
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+.filtro-estadio select:hover { border-color: var(--ouro-escuro); }
+.filtro-estadio select:focus { outline: none; border-color: var(--ouro); }
+.filtro-estadio select option { background: var(--preto-card); color: var(--branco); }
+
+/* =========== RETROSPECTO (V / E / D) =========== */
+.retrospecto {
+    margin-top: 22px;
+    padding-top: 20px;
+    border-top: 1px solid var(--ouro-escuro);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 18px;
+    align-items: center;
+}
+.retrospecto-titulo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ouro);
+    line-height: 1.4;
+    border-left: 2px solid var(--ouro);
+    padding-left: 10px;
+}
+.retrospecto-titulo strong {
+    display: block;
+    font-family: 'Anton', sans-serif;
+    font-size: 22px;
+    color: var(--branco);
+    letter-spacing: 0.02em;
+    font-weight: 400;
+}
+.retrospecto-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+.retro-box {
+    position: relative;
+    padding: 14px 16px 12px;
+    border: 1px solid var(--cinza-linha);
+    background: var(--preto-profundo);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+}
+.retro-box::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+}
+.retro-box.v::before { background: var(--vitoria); }
+.retro-box.e::before { background: var(--empate-claro); }
+.retro-box.d::before { background: var(--derrota); }
+.retro-box:hover { transform: translateY(-2px); }
+.retro-box.v:hover { border-color: var(--vitoria); }
+.retro-box.e:hover { border-color: var(--empate-claro); }
+.retro-box.d:hover { border-color: var(--derrota); }
+.retro-num {
+    font-family: 'Anton', sans-serif;
+    font-size: 38px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+}
+.retro-box.v .retro-num { color: var(--vitoria); }
+.retro-box.e .retro-num { color: var(--empate-claro); }
+.retro-box.d .retro-num { color: var(--derrota-claro); }
+.retro-rotulo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--cinza-claro);
+}
+.retro-rotulo .pct {
+    color: var(--cinza-medio);
+    font-size: 9px;
+}
+
 /* =========== PAGINAÇÃO =========== */
 .paginacao {
     display: flex;
@@ -1194,6 +1297,7 @@ body::before {
             <div class="card-titulo">Todos os clássicos <span class="mini" id="total-classicos"></span></div>
             <div class="card-descricao">Ordenados do mais recente pro mais antigo.</div>
             <div class="lista-top" id="lista-classicos" style="max-height: 600px; overflow-y: auto;"></div>
+            <div class="retrospecto" id="retrospecto-classicos"></div>
         </div>
     </div>
 </section>
@@ -1209,6 +1313,10 @@ body::before {
     <div class="card">
         <div class="card-titulo">Setores por presença <span class="mini">QTD · APROV % · TICKET</span></div>
         <div class="card-descricao">Quanto mais jogos num setor, mais alta a barra.</div>
+        <div class="filtro-estadio">
+            <label class="filtro-label">Filtrar por estádio</label>
+            <select id="f-estadio"><option value="">TODOS</option></select>
+        </div>
         <div class="barras" id="barras-setor"></div>
     </div>
 </section>
@@ -1564,6 +1672,37 @@ function renderTops() {
     `).join('');
 
     document.getElementById('total-classicos').textContent = `${DADOS.classicos.length} TOTAL`;
+
+    // Retrospecto em clássicos
+    const cls = DADOS.classicos;
+    const rV = cls.filter(j => j.resultado === 'V').length;
+    const rE = cls.filter(j => j.resultado === 'E').length;
+    const rD = cls.filter(j => j.resultado === 'D').length;
+    const rTot = rV + rE + rD;
+    const pct = n => rTot ? ((n / rTot) * 100).toFixed(0) : 0;
+    const aprov = rTot ? (((rV * 3 + rE) / (rTot * 3)) * 100).toFixed(1) : '0.0';
+    document.getElementById('retrospecto-classicos').innerHTML = `
+        <div class="retrospecto-titulo">
+            Retrospecto
+            <strong>${aprov}%</strong>
+            aproveit.
+        </div>
+        <div class="retrospecto-grid">
+            <div class="retro-box v">
+                <span class="retro-num">${rV}</span>
+                <span class="retro-rotulo">Vitórias <span class="pct">${pct(rV)}%</span></span>
+            </div>
+            <div class="retro-box e">
+                <span class="retro-num">${rE}</span>
+                <span class="retro-rotulo">Empates <span class="pct">${pct(rE)}%</span></span>
+            </div>
+            <div class="retro-box d">
+                <span class="retro-num">${rD}</span>
+                <span class="retro-rotulo">Derrotas <span class="pct">${pct(rD)}%</span></span>
+            </div>
+        </div>
+    `;
+
     document.getElementById('lista-classicos').innerHTML = DADOS.classicos.map((j, i) => {
         const badge = j.resultado === 'V' ? 'v' : (j.resultado === 'E' ? 'e' : 'd');
         const placar = (j.gols_casa != null) ? `${j.gols_casa}–${j.gols_visitante}` : '—';
@@ -1583,8 +1722,42 @@ function renderTops() {
 
 // ============= SETORES =============
 function renderSetores() {
-    const s = DADOS.por_setor;
-    if (!s.length) return;
+    // Popula o select de estádios (uma vez só)
+    const selEst = document.getElementById('f-estadio');
+    if (selEst && selEst.options.length <= 1) {
+        const estadios = [...new Set(DADOS.jogos.map(j => j.estadio).filter(Boolean))].sort();
+        estadios.forEach(e => selEst.insertAdjacentHTML('beforeend', `<option value="${e}">${e}</option>`));
+        selEst.addEventListener('change', renderSetores);
+    }
+
+    // Se tem filtro de estádio, reagrega a partir de DADOS.jogos; senão usa o agregado pronto
+    const filtroEst = selEst ? selEst.value : '';
+    let s;
+    if (filtroEst) {
+        const jogosFiltrados = DADOS.jogos.filter(j => j.estadio === filtroEst && j.setor);
+        const mapa = {};
+        jogosFiltrados.forEach(j => {
+            const k = j.setor;
+            if (!mapa[k]) mapa[k] = { setor: k, jogos: 0, vitorias: 0, empates: 0, derrotas: 0, soma_ticket: 0, cont_ticket: 0 };
+            mapa[k].jogos++;
+            if (j.resultado === 'V') mapa[k].vitorias++;
+            else if (j.resultado === 'E') mapa[k].empates++;
+            else if (j.resultado === 'D') mapa[k].derrotas++;
+            if (j.valor_pago != null) {
+                mapa[k].soma_ticket += Number(j.valor_pago) || 0;
+                mapa[k].cont_ticket++;
+            }
+        });
+        s = Object.values(mapa).map(x => ({
+            ...x,
+            ticket_medio: x.cont_ticket ? (x.soma_ticket / x.cont_ticket) : null
+        })).sort((a, b) => b.jogos - a.jogos);
+    } else {
+        s = DADOS.por_setor;
+    }
+
+    const alvo = document.getElementById('barras-setor');
+    if (!s.length) { alvo.innerHTML = '<div class="vazio">NENHUM SETOR PRA ESSE ESTÁDIO</div>'; return; }
     const maxJ = Math.max(...s.map(x => x.jogos));
 
     document.getElementById('barras-setor').innerHTML = s.map(x => {

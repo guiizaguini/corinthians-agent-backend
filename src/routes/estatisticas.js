@@ -15,7 +15,7 @@ router.get('/retrospecto', async (req, res, next) => {
 
         if (ano)         { params.push(parseInt(ano));  conds.push(`EXTRACT(YEAR FROM data) = $${params.length}`); }
         if (campeonato)  { params.push(campeonato);     conds.push(`campeonato = $${params.length}`); }
-        if (rival)       { params.push(rival);          conds.push(`(time_visitante ILIKE $${params.length} OR time_casa ILIKE $${params.length})`); }
+        if (rival)       { params.push(`%${rival}%`);   conds.push(`(time_visitante ILIKE $${params.length} OR time_casa ILIKE $${params.length})`); }
 
         const { rows } = await query(`
             SELECT
