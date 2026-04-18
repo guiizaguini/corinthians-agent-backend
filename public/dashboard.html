@@ -1730,11 +1730,15 @@ function renderSetores() {
         selEst.addEventListener('change', renderSetores);
     }
 
-    // Se tem filtro de estádio, reagrega a partir de DADOS.jogos; senão usa o agregado pronto
+    // Se tem filtro de estádio, reagrega a partir de DADOS.jogos (só PRESENTE); senão usa o agregado pronto
     const filtroEst = selEst ? selEst.value : '';
     let s;
     if (filtroEst) {
-        const jogosFiltrados = DADOS.jogos.filter(j => j.estadio === filtroEst && j.setor);
+        const jogosFiltrados = DADOS.jogos.filter(j =>
+            j.estadio === filtroEst &&
+            j.setor &&
+            j.status_presenca === 'PRESENTE'
+        );
         const mapa = {};
         jogosFiltrados.forEach(j => {
             const k = j.setor;

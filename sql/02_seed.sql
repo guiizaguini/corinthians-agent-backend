@@ -128,7 +128,7 @@ INSERT INTO jogos (
     ('2025-12-21', 'Domingo', 'Vasco', 'Corinthians', TRUE, 'VISITANTE', 'Copa do Brasil', 'M', 'Maracanã', 'PRESENTE', 'Visitante', 'Gaviões', 300.0, 2, 1, 'V', FALSE, FALSE),
     ('2026-01-11', 'Domingo', 'Corinthians', 'Ponte Preta', TRUE, 'MANDANTE', 'Paulista', 'M', 'Neo Química Arena', 'PRESENTE', 'Sul', '[412] C-13 [E]', 35.0, 3, 0, 'V', FALSE, FALSE),
     ('2026-01-18', 'Domingo', 'Corinthians', 'São Paulo', TRUE, 'MANDANTE', 'Paulista', 'M', 'Neo Química Arena', 'PRESENTE', 'Sul', '[412] R-11 [E]', 35.0, 1, 1, 'E', TRUE, FALSE),
-    ('2026-01-28', 'Quarta', 'Corinthians', 'Bahia', TRUE, 'MANDANTE', 'Brasileiro', 'M', 'Neo Química Arena', 'REVENDA', 'Cadeira Lateral Térrea', '[15] G-153 [26]', 0.0, NULL, NULL, NULL, FALSE, FALSE),
+    ('2026-01-28', 'Quarta', 'Corinthians', 'Bahia', TRUE, 'MANDANTE', 'Brasileiro', 'M', 'Vila Belmiro', 'REVENDA', 'Cadeira Lateral Térrea', '[15] G-153 [26]', 0.0, NULL, NULL, NULL, FALSE, FALSE),
     ('2026-02-05', 'Quinta', 'Corinthians', 'Capivariano', TRUE, 'MANDANTE', 'Paulista', 'M', 'Neo Química Arena', 'PRESENTE', 'Leste Inf Lateral', '[425] T-10 [N]', 79.0, 3, 0, 'V', FALSE, FALSE),
     ('2026-02-08', 'Domingo', 'Corinthians', 'Palmeiras', TRUE, 'MANDANTE', 'Paulista', 'M', 'Neo Química Arena', 'PRESENTE', 'Leste Inf Lateral', '[425] T-10 [N]', 105.0, 0, 1, 'D', TRUE, FALSE),
     ('2026-02-12', 'Quinta', 'Corinthians', 'Bragantino', TRUE, 'MANDANTE', 'Brasileiro', 'M', 'Neo Química Arena', 'CASHBACK', 'Sul', '[] - []', 36.0, NULL, NULL, NULL, FALSE, FALSE),
