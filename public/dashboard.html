@@ -1013,15 +1013,18 @@ function renderEvolucao() {
         `;
     }).join('');
 
-    document.getElementById('linha-ano').innerHTML = anos.map(a => `
+    document.getElementById('linha-ano').innerHTML = anos.map(a => {
+        const aprov = Number(a.aproveitamento_pct) || 0;
+        return `
         <div class="linha-ano">
             <span class="ano">${a.ano}</span>
             <div class="barra-bg" style="height:8px;">
-                <div class="barra-seg v" style="width:${a.aproveitamento_pct || 0}%"></div>
+                <div class="barra-seg v" style="width:${aprov}%"></div>
             </div>
-            <span class="aprov">${(a.aproveitamento_pct || 0).toFixed(1)}%</span>
+            <span class="aprov">${aprov.toFixed(1)}%</span>
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
 
 // ============= RIVAIS =============
@@ -1151,8 +1154,11 @@ function renderSetores() {
     const maxJ = Math.max(...s.map(x => x.jogos));
 
     document.getElementById('barras-setor').innerHTML = s.map(x => {
-        const aprov = x.jogos > 0 ? (((x.vitorias * 3 + x.empates) / (x.jogos * 3)) * 100).toFixed(1) : 0;
-        const larg = (x.jogos / maxJ) * 100;
+        const v = Number(x.vitorias) || 0;
+        const e = Number(x.empates) || 0;
+        const j = Number(x.jogos) || 0;
+        const aprov = j > 0 ? (((v * 3 + e) / (j * 3)) * 100).toFixed(1) : 0;
+        const larg = (j / maxJ) * 100;
         const ticket = x.ticket_medio ? fmtMoeda(x.ticket_medio) : '—';
         return `
             <div class="barra-row" style="grid-template-columns: 200px 1fr 150px;">
