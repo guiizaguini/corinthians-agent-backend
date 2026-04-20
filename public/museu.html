@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MUSEU DE INGRESSOS — FIEL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Archivo:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+    --preto: #000000;
+    --preto-profundo: #050505;
+    --preto-card: #0d0d0d;
+    --branco: #f5f5f5;
+    --branco-suave: #e6e4de;
+    --cinza-claro: #a8a49a;
+    --cinza-medio: #6c6a62;
+    --cinza-linha: #2a2824;
+    --cinza-divisa: #1e1c18;
+    --ouro: #9c8a52;
+    --ouro-claro: #b8a66a;
+    --ouro-escuro: #6e6038;
+    --vitoria: #a89050;
+    --vitoria-claro: #c4ac6c;
+    --empate: #5c5a54;
+    --empate-claro: #7e7c76;
+    --derrota: #5c1f2a;
+    --derrota-claro: #7a3744;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+    background: var(--preto);
+    color: var(--branco);
+    font-family: 'Archivo', sans-serif;
+    line-height: 1.4;
+    min-height: 100vh;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at 1px 1px, rgba(255,255,255,0.025) 1px, transparent 1.5px),
+        radial-gradient(ellipse at 50% 0%, rgba(156,138,82,0.06) 0%, transparent 55%),
+        radial-gradient(ellipse at 50% 100%, rgba(0,0,0,0.8) 0%, transparent 60%);
+    background-size: 3px 3px, 100% 100%, 100% 100%;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.9;
+}
+
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+/* =========== CABEÇALHO =========== */
+.cabecalho {
+    background:
+        linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.95) 100%),
+        repeating-linear-gradient(45deg, rgba(156,138,82,0.04) 0 2px, transparent 2px 10px);
+    padding: 20px 0 0;
+    position: relative;
+    z-index: 2;
+    border-bottom: 1px solid var(--ouro-escuro);
+}
+
+.cabecalho-topo {
+    padding: 8px 40px;
+    border-bottom: 1px solid var(--cinza-linha);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cinza-claro);
+}
+
+.cabecalho-topo a {
+    color: var(--ouro);
+    text-decoration: none;
+    transition: color 0.15s;
+}
+.cabecalho-topo a:hover { color: var(--ouro-claro); }
+
+.cabecalho-main {
+    padding: 40px 40px 50px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 40px;
+    align-items: end;
+}
+
+.titulo {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(52px, 9vw, 130px);
+    line-height: 0.9;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+.titulo .traco {
+    display: inline-block;
+    width: 70px;
+    height: 8px;
+    background: var(--ouro);
+    margin: 0 18px 14px 0;
+    vertical-align: middle;
+}
+.subtitulo {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 17px;
+    max-width: 460px;
+    color: var(--cinza-claro);
+    line-height: 1.45;
+    border-left: 2px solid var(--ouro);
+    padding-left: 16px;
+    margin-top: 16px;
+}
+
+.stats-topo {
+    display: flex;
+    gap: 24px;
+    padding: 18px 22px;
+    background: linear-gradient(180deg, rgba(20,20,20,0.6), rgba(5,5,5,0.85));
+    border: 1px solid var(--ouro-escuro);
+}
+.stat-bloco {
+    text-align: center;
+}
+.stat-num {
+    font-family: 'Anton', sans-serif;
+    font-size: 36px;
+    line-height: 1;
+    color: var(--ouro-claro);
+    letter-spacing: -0.01em;
+}
+.stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--cinza-claro);
+    margin-top: 4px;
+}
+
+/* =========== FILTROS =========== */
+.filtros {
+    background: var(--preto-profundo);
+    border-bottom: 1px solid var(--cinza-linha);
+    padding: 18px 40px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: end;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(8px);
+}
+.filtro-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.filtro-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ouro);
+}
+.filtros select, .filtros input {
+    font-family: 'Archivo', sans-serif;
+    font-size: 13px;
+    padding: 8px 12px;
+    border: 1px solid var(--cinza-linha);
+    background: var(--preto-card);
+    color: var(--branco);
+    min-width: 140px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+.filtros select:hover, .filtros input:hover { border-color: var(--ouro-escuro); }
+.filtros select:focus, .filtros input:focus { outline: none; border-color: var(--ouro); }
+.filtros select option { background: var(--preto-card); color: var(--branco); }
+.btn-limpar {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 9px 18px;
+    background: var(--ouro);
+    color: var(--preto);
+    border: 1px solid var(--ouro);
+    cursor: pointer;
+    transition: all 0.18s;
+}
+.btn-limpar:hover { background: var(--ouro-claro); border-color: var(--ouro-claro); }
+.filtro-info {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ouro);
+    letter-spacing: 0.1em;
+    margin-left: auto;
+}
+
+/* =========== GRID DE INGRESSOS =========== */
+.galeria {
+    padding: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+    gap: 26px;
+    position: relative;
+    z-index: 2;
+    max-width: 1800px;
+    margin: 0 auto;
+}
+
+/* =========== INGRESSO (CARD) =========== */
+.ingresso {
+    --cor-acento: var(--ouro);
+    --cor-acento-clara: var(--ouro-claro);
+    --cor-acento-escura: var(--ouro-escuro);
+    position: relative;
+    background: #f0ead6;
+    color: #1a1a1a;
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    min-height: 220px;
+    box-shadow:
+        0 2px 0 rgba(0,0,0,0.1),
+        0 12px 28px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(156,138,82,0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    overflow: hidden;
+    font-family: 'Archivo', sans-serif;
+}
+.ingresso::before {
+    /* textura de papel antigo */
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        repeating-linear-gradient(0deg, transparent 0 2px, rgba(139,107,40,0.02) 2px 3px),
+        radial-gradient(ellipse at 20% 20%, rgba(139,107,40,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 90%, rgba(92,31,42,0.05) 0%, transparent 50%);
+    pointer-events: none;
+    mix-blend-mode: multiply;
+}
+.ingresso:hover {
+    transform: translate(-3px, -4px) rotate(-0.5deg);
+    box-shadow:
+        0 4px 0 rgba(0,0,0,0.1),
+        0 20px 42px rgba(0,0,0,0.7),
+        0 0 0 1px var(--cor-acento);
+}
+
+/* CANHOTO ESQUERDO */
+.canhoto {
+    background: var(--cor-acento);
+    color: #1a1000;
+    padding: 18px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+.canhoto-dia {
+    font-family: 'Anton', sans-serif;
+    font-size: 56px;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+}
+.canhoto-mes {
+    font-family: 'Anton', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.15em;
+    margin-top: -4px;
+}
+.canhoto-ano {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    opacity: 0.85;
+    margin-top: 2px;
+}
+.canhoto-selo {
+    font-family: 'Anton', sans-serif;
+    font-size: 28px;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    padding: 6px 12px;
+    border: 2px solid currentColor;
+    margin: 10px 0 4px;
+    transform: rotate(-3deg);
+}
+.canhoto-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    opacity: 0.7;
+    text-transform: uppercase;
+}
+
+/* PICOTADO VERTICAL */
+.picotado {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 120px;
+    width: 2px;
+    background-image: radial-gradient(circle, var(--preto) 1.2px, transparent 1.3px);
+    background-size: 2px 8px;
+    background-repeat: repeat-y;
+    z-index: 2;
+}
+/* bolinhas nas pontas do picotado */
+.picotado::before, .picotado::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 18px;
+    height: 18px;
+    background: var(--preto);
+    border-radius: 50%;
+}
+.picotado::before { top: -9px; }
+.picotado::after { bottom: -9px; }
+
+/* CORPO DO INGRESSO */
+.corpo {
+    padding: 16px 22px 18px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.corpo-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed rgba(0,0,0,0.25);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #5a4a20;
+}
+.corpo-topo .id-ingresso { font-weight: 700; }
+.corpo-topo .classico-tag {
+    padding: 2px 7px;
+    background: var(--derrota);
+    color: #f5f5f5;
+    border-radius: 2px;
+    letter-spacing: 0.15em;
+    font-size: 8px;
+}
+
+.confronto {
+    font-family: 'Anton', sans-serif;
+    font-size: 26px;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    color: #0a0a0a;
+    text-transform: uppercase;
+    margin: 6px 0 2px;
+}
+.confronto .vs {
+    color: var(--cor-acento-escura);
+    font-size: 18px;
+    margin: 0 6px;
+    vertical-align: middle;
+}
+
+.placar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 6px 0 4px;
+}
+.placar {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 22px;
+    color: #0a0a0a;
+    padding: 2px 10px;
+    background: rgba(255,255,255,0.5);
+    border: 1px solid rgba(0,0,0,0.25);
+}
+.resultado-badge {
+    font-family: 'Anton', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    padding: 4px 10px;
+    color: var(--branco);
+    background: var(--cor-acento-escura);
+}
+
+.detalhes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 14px;
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(0,0,0,0.25);
+}
+.det-linha {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+.det-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #8a7530;
+}
+.det-valor {
+    font-family: 'Archivo', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #0a0a0a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* CORES POR RESULTADO */
+.ingresso.v { --cor-acento: var(--vitoria); --cor-acento-clara: var(--vitoria-claro); --cor-acento-escura: var(--ouro-escuro); }
+.ingresso.e { --cor-acento: var(--empate-claro); --cor-acento-clara: #949188; --cor-acento-escura: var(--empate); }
+.ingresso.d { --cor-acento: var(--derrota-claro); --cor-acento-clara: #a85060; --cor-acento-escura: var(--derrota); }
+.ingresso.e .canhoto { color: var(--branco); }
+.ingresso.d .canhoto { color: var(--branco); }
+
+/* =========== DESTAQUE: FINAL =========== */
+.ingresso.fase-final {
+    box-shadow:
+        0 2px 0 rgba(0,0,0,0.1),
+        0 12px 32px rgba(156,138,82,0.4),
+        0 0 0 3px var(--ouro),
+        0 0 40px rgba(184,166,106,0.25);
+    grid-column: span 2;
+    min-height: 260px;
+}
+.ingresso.fase-final::after {
+    content: '🏆 FINAL';
+    position: absolute;
+    top: 10px;
+    right: -38px;
+    background: linear-gradient(135deg, var(--vitoria-claro), var(--ouro));
+    color: #1a1000;
+    font-family: 'Anton', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    padding: 6px 44px;
+    transform: rotate(35deg);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    z-index: 3;
+    border: 1px solid rgba(0,0,0,0.25);
+}
+.ingresso.fase-final:hover {
+    transform: translate(-4px, -6px) rotate(-0.3deg);
+    box-shadow:
+        0 4px 0 rgba(0,0,0,0.1),
+        0 18px 44px rgba(156,138,82,0.55),
+        0 0 0 3px var(--ouro-claro),
+        0 0 60px rgba(184,166,106,0.4);
+}
+.ingresso.fase-final .confronto { font-size: 32px; }
+.ingresso.fase-final .canhoto-selo { font-size: 32px; }
+
+/* Tag de fase pros demais (semi, quartas, etc) */
+.fase-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    background: var(--cor-acento-escura);
+    color: var(--branco);
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+/* AUSENTE / NÃO FOI */
+.ingresso.ausente {
+    filter: grayscale(0.85) contrast(0.9);
+    opacity: 0.72;
+}
+.ingresso.ausente .corpo::after {
+    content: 'NÃO COMPARECEU';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-12deg);
+    font-family: 'Anton', sans-serif;
+    font-size: 36px;
+    letter-spacing: 0.15em;
+    color: var(--derrota);
+    border: 4px solid var(--derrota);
+    padding: 8px 16px;
+    opacity: 0.55;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+/* =========== MODAL DE DETALHES =========== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+    overflow-y: auto;
+}
+.modal-overlay.ativo { display: flex; }
+.modal-conteudo {
+    background: var(--preto-card);
+    border: 1px solid var(--ouro-escuro);
+    padding: 30px;
+    max-width: 640px;
+    width: 100%;
+    position: relative;
+    animation: modalEntra 0.35s ease-out;
+}
+@keyframes modalEntra {
+    from { opacity: 0; transform: translateY(30px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.modal-fechar {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: transparent;
+    border: none;
+    color: var(--ouro);
+    font-size: 24px;
+    cursor: pointer;
+    font-family: inherit;
+}
+.modal-fechar:hover { color: var(--ouro-claro); }
+
+/* =========== VAZIO / LOADING =========== */
+.loading, .vazio {
+    text-align: center;
+    padding: 80px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ouro);
+    grid-column: 1 / -1;
+}
+.loading::after { content: '...'; animation: dots 1.5s infinite; }
+@keyframes dots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60%, 100% { content: '...'; }
+}
+
+/* =========== RODAPÉ =========== */
+.rodape {
+    background: var(--preto-profundo);
+    border-top: 1px solid var(--ouro-escuro);
+    padding: 40px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ouro);
+    position: relative;
+    z-index: 2;
+}
+.rodape a { color: var(--ouro-claro); text-decoration: none; }
+.rodape a:hover { color: var(--branco); }
+
+/* =========== SCROLLBAR =========== */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--preto-profundo); }
+::-webkit-scrollbar-thumb { background: var(--cinza-linha); border: 2px solid var(--preto-profundo); }
+::-webkit-scrollbar-thumb:hover { background: var(--ouro-escuro); }
+
+/* =========== MOBILE =========== */
+@media (max-width: 900px) {
+    .cabecalho-topo { padding: 8px 16px; flex-wrap: wrap; gap: 6px 14px; font-size: 10px; }
+    .cabecalho-main { grid-template-columns: 1fr; padding: 24px 16px 28px; gap: 20px; }
+    .titulo { font-size: clamp(52px, 18vw, 100px); }
+    .titulo .traco { width: 44px; height: 6px; margin: 0 10px 10px 0; }
+    .subtitulo { font-size: 14px; max-width: 100%; }
+    .stats-topo { padding: 14px 18px; gap: 16px; }
+    .stat-num { font-size: 28px; }
+    .filtros { padding: 14px 16px; }
+    .filtro-grupo { flex: 1 1 calc(50% - 7px); }
+    .filtros select, .filtros input { width: 100%; min-width: 0; }
+    .btn-limpar { width: 100%; margin-top: 4px; }
+    .filtro-info { width: 100%; text-align: center; margin-left: 0; }
+    .galeria { padding: 24px 16px; gap: 20px; grid-template-columns: 1fr; }
+    .confronto { font-size: 22px; }
+    .canhoto { padding: 14px 8px; }
+    .canhoto-dia { font-size: 44px; }
+    .canhoto-mes { font-size: 16px; }
+    .canhoto-selo { font-size: 22px; }
+    .ingresso:hover { transform: none; }
+    .modal-conteudo { padding: 22px 18px; }
+}
+
+@media (hover: none) {
+    .ingresso:hover { transform: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- CABEÇALHO -->
+<header class="cabecalho">
+    <div class="cabecalho-topo">
+        <div>MUSEU DE INGRESSOS · <a href="/dashboard">← VOLTAR PRO PAINEL</a></div>
+        <div>COLEÇÃO DO GUILHERME Z.</div>
+    </div>
+    <div class="cabecalho-main">
+        <div>
+            <h1 class="titulo"><span class="traco"></span>MUSEU</h1>
+            <p class="subtitulo">
+                Cada ingresso, um dia vivido no Timão. Uma coleção pessoal das idas ao
+                estádio, preservadas em papel digital pra nunca esquecer.
+            </p>
+        </div>
+        <div class="stats-topo" id="stats-topo">
+            <div class="stat-bloco">
+                <div class="stat-num" id="stat-total">—</div>
+                <div class="stat-label">INGRESSOS</div>
+            </div>
+            <div class="stat-bloco">
+                <div class="stat-num" id="stat-gasto">—</div>
+                <div class="stat-label">INVESTIDO</div>
+            </div>
+            <div class="stat-bloco">
+                <div class="stat-num" id="stat-anos">—</div>
+                <div class="stat-label">TEMPORADAS</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- FILTROS -->
+<div class="filtros">
+    <div class="filtro-grupo">
+        <label class="filtro-label">Ano</label>
+        <select id="f-ano"><option value="">TODOS</option></select>
+    </div>
+    <div class="filtro-grupo">
+        <label class="filtro-label">Campeonato</label>
+        <select id="f-camp"><option value="">TODOS</option></select>
+    </div>
+    <div class="filtro-grupo">
+        <label class="filtro-label">Estádio</label>
+        <select id="f-est"><option value="">TODOS</option></select>
+    </div>
+    <div class="filtro-grupo">
+        <label class="filtro-label">Rival</label>
+        <input type="text" id="f-rival" placeholder="ex: palmeiras">
+    </div>
+    <div class="filtro-grupo">
+        <label class="filtro-label">Resultado</label>
+        <select id="f-res">
+            <option value="">TODOS</option>
+            <option value="V">VITÓRIA</option>
+            <option value="E">EMPATE</option>
+            <option value="D">DERROTA</option>
+        </select>
+    </div>
+    <div class="filtro-grupo">
+        <label class="filtro-label">Só clássicos</label>
+        <select id="f-classico">
+            <option value="">NÃO</option>
+            <option value="1">SIM</option>
+        </select>
+    </div>
+    <button class="btn-limpar" id="btn-limpar">LIMPAR</button>
+    <div class="filtro-info" id="filtro-info">—</div>
+</div>
+
+<!-- GALERIA -->
+<main class="galeria" id="galeria">
+    <div class="loading">CARREGANDO ACERVO</div>
+</main>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+    <div class="modal-conteudo" id="modal-conteudo">
+        <button class="modal-fechar" id="modal-fechar">✕</button>
+        <!-- preenchido via JS -->
+    </div>
+</div>
+
+<!-- RODAPÉ -->
+<footer class="rodape">
+    BANDO DE LOUCOS · GUILHERME Z. · CORINTHIANO DESDE 2002 · <a href="/dashboard">VER PAINEL COMPLETO</a>
+</footer>
+
+<script>
+const MESES_ABREV = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
+const MESES_NOME = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const DIAS_NOME = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+
+let DADOS = null;
+
+const fmtMoeda = v => 'R$ ' + (Number(v) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const fmtMoedaCompact = v => {
+    const n = Number(v) || 0;
+    if (n >= 10000) return 'R$ ' + (n/1000).toFixed(1) + 'k';
+    return 'R$ ' + n.toLocaleString('pt-BR', {maximumFractionDigits: 0});
+};
+const fmtDataExt = d => {
+    if (!d) return '—';
+    const dt = new Date(d + 'T12:00:00Z');
+    return `${DIAS_NOME[dt.getUTCDay()]}, ${dt.getUTCDate()} de ${MESES_NOME[dt.getUTCMonth()]} de ${dt.getUTCFullYear()}`;
+};
+
+async function carregar() {
+    try {
+        const res = await fetch('/public/snapshot');
+        DADOS = await res.json();
+        renderTudo();
+    } catch (err) {
+        console.error(err);
+        document.getElementById('galeria').innerHTML =
+            '<div class="vazio">ERRO AO CARREGAR ACERVO</div>';
+    }
+}
+
+function renderTudo() {
+    renderStats();
+    renderFiltros();
+    renderGaleria();
+}
+
+function renderStats() {
+    // Só conta jogos PRESENTE como "ingressos usados"
+    const presentes = DADOS.jogos.filter(j => j.status_presenca === 'PRESENTE');
+    const total = presentes.length;
+    const gasto = DADOS.gastos?.total?.gasto_total || 0;
+    const anos = new Set(presentes.map(j => new Date(j.data).getUTCFullYear())).size;
+
+    document.getElementById('stat-total').textContent = total;
+    document.getElementById('stat-gasto').textContent = fmtMoedaCompact(gasto);
+    document.getElementById('stat-anos').textContent = anos;
+}
+
+function renderFiltros() {
+    const jogos = DADOS.jogos;
+    const anos = [...new Set(jogos.map(j => new Date(j.data).getUTCFullYear()))].sort((a,b) => b-a);
+    const camps = [...new Set(jogos.map(j => j.campeonato).filter(Boolean))].sort();
+    const estadios = [...new Set(jogos.map(j => j.estadio).filter(Boolean))].sort();
+
+    const selAno = document.getElementById('f-ano');
+    anos.forEach(a => selAno.insertAdjacentHTML('beforeend', `<option value="${a}">${a}</option>`));
+    const selCamp = document.getElementById('f-camp');
+    camps.forEach(c => selCamp.insertAdjacentHTML('beforeend', `<option value="${c}">${c}</option>`));
+    const selEst = document.getElementById('f-est');
+    estadios.forEach(e => selEst.insertAdjacentHTML('beforeend', `<option value="${e}">${e}</option>`));
+
+    ['f-ano','f-camp','f-est','f-rival','f-res','f-classico'].forEach(id => {
+        document.getElementById(id).addEventListener('input', renderGaleria);
+        document.getElementById(id).addEventListener('change', renderGaleria);
+    });
+
+    document.getElementById('btn-limpar').addEventListener('click', () => {
+        ['f-ano','f-camp','f-est','f-rival','f-res','f-classico'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
+        renderGaleria();
+    });
+}
+
+function filtrar() {
+    const f = {
+        ano: document.getElementById('f-ano').value,
+        camp: document.getElementById('f-camp').value,
+        est: document.getElementById('f-est').value,
+        rival: document.getElementById('f-rival').value.trim().toLowerCase(),
+        res: document.getElementById('f-res').value,
+        classico: document.getElementById('f-classico').value,
+    };
+
+    return DADOS.jogos.filter(j => {
+        if (f.ano && new Date(j.data).getUTCFullYear() != f.ano) return false;
+        if (f.camp && j.campeonato !== f.camp) return false;
+        if (f.est && j.estadio !== f.est) return false;
+        if (f.rival) {
+            const tudo = ((j.time_casa || '') + ' ' + (j.time_visitante || '')).toLowerCase();
+            if (!tudo.includes(f.rival)) return false;
+        }
+        if (f.res && j.resultado !== f.res) return false;
+        if (f.classico === '1' && !j.foi_classico) return false;
+        return true;
+    });
+}
+
+function renderGaleria() {
+    const jogos = filtrar().sort((a, b) => new Date(b.data) - new Date(a.data));
+    const alvo = document.getElementById('galeria');
+
+    document.getElementById('filtro-info').textContent =
+        `${jogos.length} DE ${DADOS.jogos.length} INGRESSOS`;
+
+    if (!jogos.length) {
+        alvo.innerHTML = '<div class="vazio">NENHUM INGRESSO PARA ESSES FILTROS</div>';
+        return;
+    }
+
+    alvo.innerHTML = jogos.map((j, idx) => renderIngresso(j, idx)).join('');
+
+    // Anexa listeners de clique
+    alvo.querySelectorAll('.ingresso').forEach(el => {
+        el.addEventListener('click', () => abrirModal(parseInt(el.dataset.idx)));
+    });
+
+    // Guarda os jogos atuais pra o modal acessar
+    window.__JOGOS_ATUAL = jogos;
+}
+
+function renderIngresso(j, idx) {
+    const dt = new Date(j.data + 'T12:00:00Z');
+    const dia = String(dt.getUTCDate()).padStart(2, '0');
+    const mes = MESES_ABREV[dt.getUTCMonth()];
+    const ano = dt.getUTCFullYear();
+
+    const isPres = j.status_presenca === 'PRESENTE';
+    const resClass = isPres && j.resultado ? j.resultado.toLowerCase() : '';
+    const selo = isPres && j.resultado ? resClassToPt(j.resultado) : (j.status_presenca || '—');
+    const resultadoPt = j.resultado === 'V' ? 'VITÓRIA' : j.resultado === 'E' ? 'EMPATE' : j.resultado === 'D' ? 'DERROTA' : '—';
+
+    const adversario = j.time_casa === 'Corinthians' ? j.time_visitante : (j.time_visitante === 'Corinthians' ? j.time_casa : `${j.time_casa} × ${j.time_visitante}`);
+    const mando = j.mando === 'MANDANTE' ? 'CASA' : j.mando === 'VISITANTE' ? 'FORA' : 'NEUTRO';
+
+    const placarStr = (j.gols_casa != null && j.gols_visitante != null)
+        ? `${j.gols_casa}–${j.gols_visitante}` : '—';
+
+    const fase = (j.fase || '').trim();
+    const ehFinal = /^final$/i.test(fase);
+    const faseTag = fase && !ehFinal ? `<span class="fase-tag">${fase}</span>` : '';
+
+    const classes = ['ingresso', resClass, isPres ? '' : 'ausente', ehFinal ? 'fase-final' : ''].filter(Boolean).join(' ');
+
+    return `
+        <article class="${classes}" data-idx="${idx}" title="Clique pra ver detalhes">
+            <div class="canhoto">
+                <div>
+                    <div class="canhoto-dia">${dia}</div>
+                    <div class="canhoto-mes">${mes}</div>
+                    <div class="canhoto-ano">${ano}</div>
+                </div>
+                <div class="canhoto-selo">${selo}</div>
+                <div class="canhoto-num">Nº ${String(j.id).padStart(4, '0')}</div>
+            </div>
+            <div class="picotado"></div>
+            <div class="corpo">
+                <div class="corpo-topo">
+                    <span class="id-ingresso">INGRESSO · ${j.campeonato || 'AMISTOSO'}${faseTag}</span>
+                    ${j.foi_classico ? '<span class="classico-tag">CLÁSSICO</span>' : ''}
+                </div>
+                <div class="confronto">
+                    Corinthians <span class="vs">×</span> ${adversario}
+                </div>
+                <div class="placar-row">
+                    <span class="placar">${placarStr}</span>
+                    ${isPres && j.resultado ? `<span class="resultado-badge">${resultadoPt}</span>` : ''}
+                </div>
+                <div class="detalhes">
+                    <div class="det-linha">
+                        <span class="det-label">Estádio</span>
+                        <span class="det-valor">${j.estadio || '—'}</span>
+                    </div>
+                    <div class="det-linha">
+                        <span class="det-label">Setor</span>
+                        <span class="det-valor">${j.setor || '—'}</span>
+                    </div>
+                    <div class="det-linha">
+                        <span class="det-label">Mando</span>
+                        <span class="det-valor">${mando}</span>
+                    </div>
+                    <div class="det-linha">
+                        <span class="det-label">Valor</span>
+                        <span class="det-valor">${j.valor_pago != null ? fmtMoeda(j.valor_pago) : 'CORTESIA'}</span>
+                    </div>
+                </div>
+            </div>
+        </article>
+    `;
+}
+
+function resClassToPt(r) {
+    if (r === 'V') return 'VITÓRIA';
+    if (r === 'E') return 'EMPATE';
+    if (r === 'D') return 'DERROTA';
+    return '—';
+}
+
+// =========== MODAL ===========
+function abrirModal(idx) {
+    const j = window.__JOGOS_ATUAL[idx];
+    if (!j) return;
+
+    const adversario = j.time_casa === 'Corinthians' ? j.time_visitante : (j.time_visitante === 'Corinthians' ? j.time_casa : `${j.time_casa} × ${j.time_visitante}`);
+    const placar = (j.gols_casa != null && j.gols_visitante != null)
+        ? `${j.gols_casa}–${j.gols_visitante}` : '—';
+
+    const conteudo = `
+        <h2 style="font-family:'Anton',sans-serif; font-size:38px; line-height:0.9; letter-spacing:0.02em; color:var(--ouro-claro); margin-bottom:6px;">
+            Corinthians × ${adversario}
+        </h2>
+        <div style="font-family:'Playfair Display',serif; font-style:italic; color:var(--cinza-claro); margin-bottom:22px; font-size:14px;">
+            ${fmtDataExt(j.data)}
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:14px; padding:16px; background:var(--preto-profundo); border:1px solid var(--cinza-linha);">
+            ${linhaModal('Campeonato', j.campeonato || 'Amistoso')}
+            ${linhaModal('Gênero', j.genero === 'M' ? 'Masculino' : j.genero === 'F' ? 'Feminino' : j.genero || '—')}
+            ${linhaModal('Estádio', j.estadio || '—')}
+            ${linhaModal('Setor', j.setor || '—')}
+            ${linhaModal('Assento', j.assento || '—')}
+            ${linhaModal('Mando', j.mando === 'MANDANTE' ? 'Casa' : j.mando === 'VISITANTE' ? 'Fora' : j.mando || '—')}
+            ${linhaModal('Placar', placar)}
+            ${linhaModal('Resultado', j.resultado === 'V' ? 'Vitória' : j.resultado === 'E' ? 'Empate' : j.resultado === 'D' ? 'Derrota' : '—')}
+            ${linhaModal('Valor pago', j.valor_pago != null ? fmtMoeda(j.valor_pago) : 'Cortesia')}
+            ${linhaModal('Status', j.status_presenca || '—')}
+            ${linhaModal('Clássico', j.foi_classico ? 'Sim ⚔' : 'Não')}
+            ${linhaModal('Teve pênalti', j.teve_penal ? 'Sim' : 'Não')}
+            ${linhaModal('Fase/Rodada', j.fase || '—')}
+        </div>
+        ${j.observacoes ? `
+        <div style="margin-top:18px; padding:14px 16px; border-left:3px solid var(--ouro); background:rgba(156,138,82,0.06);">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.18em; color:var(--ouro); margin-bottom:6px;">OBSERVAÇÕES</div>
+            <div style="font-family:'Playfair Display',serif; font-style:italic; color:var(--branco-suave); font-size:14px;">${j.observacoes}</div>
+        </div>` : ''}
+    `;
+
+    const modal = document.getElementById('modal-conteudo');
+    modal.innerHTML = `<button class="modal-fechar" id="modal-fechar">✕</button>` + conteudo;
+    document.getElementById('modal').classList.add('ativo');
+
+    document.getElementById('modal-fechar').addEventListener('click', fecharModal);
+}
+
+function linhaModal(label, valor) {
+    return `
+        <div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.2em; color:var(--ouro); text-transform:uppercase;">${label}</div>
+            <div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:14px; color:var(--branco); margin-top:2px;">${valor}</div>
+        </div>
+    `;
+}
+
+function fecharModal() {
+    document.getElementById('modal').classList.remove('ativo');
+}
+
+// Fecha modal ao clicar fora
+document.getElementById('modal').addEventListener('click', (e) => {
+    if (e.target.id === 'modal') fecharModal();
+});
+
+// ESC fecha
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') fecharModal();
+});
+
+carregar();
+</script>
+
+<!-- START Botmaker Webchat-->
+<script>
+    (function () {
+        let js = document.createElement('script');
+        js.type = 'text/javascript';
+        js.async = 1;
+        js.src = 'https://go.botmaker.com/rest/webchat/p/5XWIME4RRJ/init.js';
+        document.body.appendChild(js);
+    })();
+</script>
+<!-- END Botmaker Webchat-->
+
+</body>
+</html>
