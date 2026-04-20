@@ -188,6 +188,15 @@ body::before {
     font-size: 48px;
     color: var(--vitoria);
     text-shadow: 0 0 16px rgba(196,172,108,0.6);
+    /* Precisa ser minúsculo pro ligature do Material Icons funcionar */
+    text-transform: none;
+    font-weight: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    font-feature-settings: 'liga';
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    line-height: 1;
 }
 .historicos-cabecalho .sub {
     font-family: 'Playfair Display', serif;
@@ -209,11 +218,20 @@ body::before {
 
 .historicos-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(540px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+    gap: 26px;
     max-width: 1800px;
     margin: 0 auto;
 }
+/* Dentro da seção histórica, anula o span 2 que vem da classe .fase-final */
+.historicos-grid .ingresso.fase-final,
+.historicos-grid .ingresso.titulo {
+    grid-column: auto;
+    min-height: 240px;
+}
+.historicos-grid .ingresso.fase-final .confronto,
+.historicos-grid .ingresso.titulo .confronto { font-size: 26px; }
+.historicos-grid .ingresso.titulo { min-height: 280px; }
 
 .historicos-vazio {
     font-family: 'JetBrains Mono', monospace;
@@ -434,6 +452,59 @@ body::before {
     display: flex;
     flex-direction: column;
     gap: 8px;
+}
+
+/* =========== ESCUDOS / LOGOS =========== */
+.confronto-logos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin: 6px 0 2px;
+}
+.escudo {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.escudo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: grayscale(1) contrast(1.2) brightness(0.9);
+    opacity: 0.85;
+}
+.escudo.corinthians img {
+    filter: none;
+    opacity: 1;
+}
+.escudo-fallback {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #0a0a0a;
+    color: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Anton', sans-serif;
+    font-size: 16px;
+    letter-spacing: 0.05em;
+    border: 2px solid currentColor;
+}
+.escudo.corinthians .escudo-fallback {
+    background: #000;
+    color: #f5f5f5;
+    border-color: #f5f5f5;
+}
+.confronto-x {
+    font-family: 'Anton', sans-serif;
+    font-size: 24px;
+    color: var(--cor-acento-escura);
+    letter-spacing: 0.1em;
 }
 .corpo-topo {
     display: flex;
@@ -1014,6 +1085,81 @@ const DIAS_NOME = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sába
 
 let DADOS = null;
 
+// Mapa de escudos — SVGs públicos. Se o clube não estiver aqui, cai no fallback de iniciais.
+const LOGOS = {
+    'Corinthians':        'https://upload.wikimedia.org/wikipedia/commons/b/b3/Sport_Club_Corinthians_Paulista_%28oficial%29.svg',
+    'Palmeiras':          'https://upload.wikimedia.org/wikipedia/commons/1/10/Palmeiras_logo.svg',
+    'São Paulo':          'https://upload.wikimedia.org/wikipedia/commons/6/6f/Brasao_do_Sao_Paulo_Futebol_Clube.svg',
+    'Santos':             'https://upload.wikimedia.org/wikipedia/commons/1/10/Santos_logo.svg',
+    'Flamengo':           'https://upload.wikimedia.org/wikipedia/commons/2/2e/Flamengo_braz_logo.svg',
+    'Vasco':              'https://upload.wikimedia.org/wikipedia/commons/a/ae/CR_Vasco_da_Gama_logo.svg',
+    'Fluminense':         'https://upload.wikimedia.org/wikipedia/commons/a/ad/Fluminense_FC_escudo.svg',
+    'Botafogo':           'https://upload.wikimedia.org/wikipedia/commons/5/52/Botafogo_de_Futebol_e_Regatas_logo.svg',
+    'Cruzeiro':           'https://upload.wikimedia.org/wikipedia/commons/9/90/Cruzeiro_Esporte_Clube_%28logo%29.svg',
+    'Atlético-MG':        'https://upload.wikimedia.org/wikipedia/commons/5/50/Clube_Atl%C3%A9tico_Mineiro_crest.svg',
+    'Grêmio':             'https://upload.wikimedia.org/wikipedia/commons/0/0e/Gremio.svg',
+    'Internacional':      'https://upload.wikimedia.org/wikipedia/commons/f/f1/Escudo_do_Sport_Club_Internacional.svg',
+    'Bahia':              'https://upload.wikimedia.org/wikipedia/commons/4/42/Esporte_Clube_Bahia_logo.svg',
+    'Fortaleza':          'https://upload.wikimedia.org/wikipedia/commons/4/4c/Fortaleza_EC_2018.svg',
+    'Sport':              'https://upload.wikimedia.org/wikipedia/commons/2/25/Sport_Club_do_Recife_%28logo%29.svg',
+    'Vitória':            'https://upload.wikimedia.org/wikipedia/commons/b/bc/Esporte_Clube_Vit%C3%B3ria_logo_3.svg',
+    'Bragantino':         'https://upload.wikimedia.org/wikipedia/commons/a/a1/Red_Bull_Bragantino_logo_%282020%29.svg',
+    'RB Brasil':          'https://upload.wikimedia.org/wikipedia/commons/a/a1/Red_Bull_Bragantino_logo_%282020%29.svg',
+    'Atlético-PR':        'https://upload.wikimedia.org/wikipedia/commons/f/f0/Club_Athletico_Paranaense_%282018%29.svg',
+    'Atlético-GO':        'https://upload.wikimedia.org/wikipedia/commons/9/97/AtleticoGoianiense.svg',
+    'Coritiba':           'https://upload.wikimedia.org/wikipedia/commons/3/3c/Coritiba_Foot_Ball_Club_%282011%29.svg',
+    'Cuiabá':             'https://upload.wikimedia.org/wikipedia/commons/0/0b/Cuiab%C3%A1_Esporte_Clube_logo.svg',
+    'Ceará':              'https://upload.wikimedia.org/wikipedia/commons/a/ac/Cear%C3%A1_Sporting_Club_logo.svg',
+    'Juventude':          'https://upload.wikimedia.org/wikipedia/commons/3/3f/Esporte_Clube_Juventude_logo.svg',
+    'Chapecoense':        'https://upload.wikimedia.org/wikipedia/commons/a/a0/Associa%C3%A7%C3%A3o_Chapecoense_de_Futebol_logo.svg',
+    'América-MG':         'https://upload.wikimedia.org/wikipedia/commons/5/5e/Am%C3%A9rica_Futebol_Clube_%28MG%29_-_logo_until_2019.svg',
+    'Avaí':               'https://upload.wikimedia.org/wikipedia/commons/6/6d/Avai_FC.svg',
+    'Criciúma':           'https://upload.wikimedia.org/wikipedia/commons/9/96/Criciúma_Esporte_Clube_logo.svg',
+    'Ponte Preta':        'https://upload.wikimedia.org/wikipedia/commons/6/63/Ponte_Preta_logo.svg',
+    'Ferroviária':        'https://upload.wikimedia.org/wikipedia/commons/0/0b/Associa%C3%A7%C3%A3o_Ferrovi%C3%A1ria_de_Esportes_logo.svg',
+    'Guarani':            'https://upload.wikimedia.org/wikipedia/commons/b/bf/Guarani_FC.svg',
+    'Mirassol':           'https://upload.wikimedia.org/wikipedia/commons/a/a2/Mirassol_FC.svg',
+    'Novorizontino':      'https://upload.wikimedia.org/wikipedia/commons/3/34/Gr%C3%AAmio_Novorizontino_logo.svg',
+    'Ituano':             'https://upload.wikimedia.org/wikipedia/commons/0/06/Ituano_FC_-_logo.svg',
+    'Oeste':              'https://upload.wikimedia.org/wikipedia/commons/9/90/Oeste_FC.svg',
+    'Botafogo-SP':        'https://upload.wikimedia.org/wikipedia/commons/3/3e/Botafogo_Futebol_Clube_%28SP%29_logo.svg',
+    'Capivariano':        'https://upload.wikimedia.org/wikipedia/commons/c/c1/Capivariano_FC_logo.svg',
+    'Água Santa':         'https://upload.wikimedia.org/wikipedia/commons/0/0c/Esporte_Clube_%C3%81gua_Santa_logo.svg',
+    'Velo Clube':         'https://upload.wikimedia.org/wikipedia/commons/f/f6/Rio_Claro_Velo_Clube_logo.svg',
+    'São Bernardo':       'https://upload.wikimedia.org/wikipedia/commons/5/51/S%C3%A3o_Bernardo_Futebol_Clube_logo.svg',
+    'Santo André':        'https://upload.wikimedia.org/wikipedia/commons/c/c6/Esporte_Clube_Santo_Andr%C3%A9.svg',
+    'Boca Juniors':       'https://upload.wikimedia.org/wikipedia/commons/c/cb/Boca_Juniors_logo18.svg',
+    'Racing':             'https://upload.wikimedia.org/wikipedia/commons/8/82/Escudo_del_Racing_Club_de_Avellaneda.svg',
+    'Nacional URU':       'https://upload.wikimedia.org/wikipedia/commons/2/25/Club_Nacional_de_Football_escudo.svg',
+    'Liverpool URU':      'https://upload.wikimedia.org/wikipedia/commons/3/3b/Liverpool_F%C3%BAtbol_Club.svg',
+    'Ind. Del Valle':     'https://upload.wikimedia.org/wikipedia/commons/6/66/Independiente_del_Valle_logo.svg',
+    'Universitário':      'https://upload.wikimedia.org/wikipedia/commons/f/f6/Universitario_de_Deportes_logo.svg',
+    'Deportivo Cali':     'https://upload.wikimedia.org/wikipedia/commons/8/8b/Deportivo_Cali_logo.svg',
+    'Barcelona SC':       'https://upload.wikimedia.org/wikipedia/commons/2/24/Escudo_del_Barcelona_SC.svg',
+    'U. Central [VEN]':   'https://upload.wikimedia.org/wikipedia/commons/8/8c/Caracas_FC.svg',
+    'Guarani (PAR)':      'https://upload.wikimedia.org/wikipedia/commons/6/6a/Club_Guarani_logo.svg',
+    'PSG':                'https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg',
+    'Nice':               'https://upload.wikimedia.org/wikipedia/commons/d/dd/Logo_OGC_Nice_2013.svg',
+};
+
+function iniciaisClube(nome) {
+    if (!nome) return '?';
+    const limpo = nome.replace(/\[.*?\]|\(.*?\)/g, '').trim();
+    const partes = limpo.split(/\s+/).filter(Boolean);
+    if (partes.length === 1) return partes[0].slice(0, 2).toUpperCase();
+    return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
+}
+
+function renderEscudo(nome) {
+    const url = LOGOS[nome];
+    const ehCor = nome === 'Corinthians';
+    const classe = `escudo${ehCor ? ' corinthians' : ''}`;
+    if (url) {
+        return `<span class="${classe}" title="${nome}"><img src="${url}" alt="${nome}" onerror="this.parentElement.innerHTML='<span class=\\'escudo-fallback\\'>${iniciaisClube(nome)}</span>'"></span>`;
+    }
+    return `<span class="${classe}" title="${nome}"><span class="escudo-fallback">${iniciaisClube(nome)}</span></span>`;
+}
+
 const fmtMoeda = v => 'R$ ' + (Number(v) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 const fmtMoedaCompact = v => {
     const n = Number(v) || 0;
@@ -1236,6 +1382,11 @@ function renderIngresso(j, idx) {
                     ${j.foi_classico ? '<span class="classico-tag">CLÁSSICO</span>' : ''}
                 </div>
                 ${subFinal}
+                <div class="confronto-logos">
+                    ${renderEscudo('Corinthians')}
+                    <span class="confronto-x">×</span>
+                    ${renderEscudo(adversario)}
+                </div>
                 <div class="confronto">
                     Corinthians <span class="vs">×</span> ${adversario}
                 </div>
