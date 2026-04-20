@@ -69,14 +69,24 @@ router.get('/por-campeonato', async (req, res, next) => {
 
 // =============================================================
 // GET /estatisticas/por-rival
+// Query params:
+//   top        — limita quantos retornar
+//   order_by   — jogos | vitorias | empates | derrotas | gols_pro | gols_contra
+//   order_dir  — asc | desc (default desc)
 // =============================================================
 router.get('/por-rival', async (req, res, next) => {
     try {
-        const { top } = req.query;
-        const { rows } = await query(
-            `SELECT * FROM v_retrospecto_por_rival ${top ? 'LIMIT $1' : ''}`,
-            top ? [parseInt(top)] : []
-        );
+        const { top, order_by, order_dir } = req.query;
+
+        const ORDER_WHITELIST = ['jogos','vitorias','empates','derrotas','gols_pro','gols_contra','adversario'];
+        const col = ORDER_WHITELIST.includes(order_by) ? order_by : 'jogos';
+        const dir = order_dir === 'asc' ? 'ASC' : 'DESC';
+
+        const params = [];
+        let sql = `SELECT * FROM v_retrospecto_por_rival ORDER BY ${col} ${dir}, adversario ASC`;
+        if (top) { params.push(parseInt(top)); sql += ` LIMIT $${params.length}`; }
+
+        const { rows } = await query(sql, params);
         res.json(rows);
     } catch (err) { next(err); }
 });
