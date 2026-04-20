@@ -14,8 +14,8 @@ router.get('/retrospecto', async (req, res, next) => {
         const params = [];
 
         if (ano)         { params.push(parseInt(ano));      conds.push(`EXTRACT(YEAR FROM data) = $${params.length}`); }
-        if (campeonato)  { params.push(`%${campeonato}%`);  conds.push(`campeonato ILIKE $${params.length}`); }
-        if (rival)       { params.push(`%${rival}%`);       conds.push(`(time_visitante ILIKE $${params.length} OR time_casa ILIKE $${params.length})`); }
+        if (campeonato)  { params.push(`%${campeonato}%`);  conds.push(`unaccent(campeonato) ILIKE unaccent($${params.length})`); }
+        if (rival)       { params.push(`%${rival}%`);       conds.push(`(unaccent(time_visitante) ILIKE unaccent($${params.length}) OR unaccent(time_casa) ILIKE unaccent($${params.length}))`); }
 
         console.log('[retrospecto] filtros:', { ano, campeonato, rival }, 'SQL conds:', conds, 'params:', params);
 

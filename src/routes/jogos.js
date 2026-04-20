@@ -84,15 +84,15 @@ router.get('/', async (req, res, next) => {
         const params = [];
 
         if (ano)         { params.push(parseInt(ano));        conds.push(`EXTRACT(YEAR FROM data) = $${params.length}`); }
-        if (rival)       { params.push(`%${rival}%`);         conds.push(`(time_visitante ILIKE $${params.length} OR time_casa ILIKE $${params.length})`); }
-        if (campeonato)  { params.push(`%${campeonato}%`);    conds.push(`campeonato ILIKE $${params.length}`); }
+        if (rival)       { params.push(`%${rival}%`);         conds.push(`(unaccent(time_visitante) ILIKE unaccent($${params.length}) OR unaccent(time_casa) ILIKE unaccent($${params.length}))`); }
+        if (campeonato)  { params.push(`%${campeonato}%`);    conds.push(`unaccent(campeonato) ILIKE unaccent($${params.length})`); }
         if (resultado)   { params.push(resultado);            conds.push(`resultado = $${params.length}`); }
         if (status_presenca) { params.push(status_presenca);  conds.push(`status_presenca = $${params.length}`); }
         if (is_corinthians !== undefined) {
             params.push(is_corinthians === 'true' || is_corinthians === '1');
             conds.push(`is_corinthians = $${params.length}`);
         }
-        if (estadio)     { params.push(`%${estadio}%`);       conds.push(`estadio ILIKE $${params.length}`); }
+        if (estadio)     { params.push(`%${estadio}%`);       conds.push(`unaccent(estadio) ILIKE unaccent($${params.length})`); }
         if (foi_classico !== undefined) {
             params.push(foi_classico === 'true' || foi_classico === '1');
             conds.push(`foi_classico = $${params.length}`);

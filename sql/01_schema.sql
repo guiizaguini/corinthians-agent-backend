@@ -3,6 +3,10 @@
 -- Banco: PostgreSQL (Railway)
 -- =============================================================
 
+-- Extensões: unaccent permite buscas sem depender de acentuação
+-- ("sao paulo" bate com "São Paulo")
+CREATE EXTENSION IF NOT EXISTS unaccent;
+
 -- Drop em ordem reversa de dependência (idempotente para reruns)
 DROP VIEW IF EXISTS v_retrospecto_geral;
 DROP VIEW IF EXISTS v_retrospecto_por_ano;
