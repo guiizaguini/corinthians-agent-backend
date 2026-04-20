@@ -13,6 +13,7 @@ DROP VIEW IF EXISTS v_retrospecto_por_ano;
 DROP VIEW IF EXISTS v_retrospecto_por_campeonato;
 DROP VIEW IF EXISTS v_retrospecto_por_rival;
 DROP VIEW IF EXISTS v_retrospecto_por_estadio;
+DROP VIEW IF EXISTS v_retrospecto_por_setor;
 DROP VIEW IF EXISTS v_gastos_por_ano;
 DROP TABLE IF EXISTS jogos;
 
@@ -172,6 +173,20 @@ SELECT
     SUM(CASE WHEN resultado='D' THEN 1 ELSE 0 END) AS derrotas
 FROM v_jogos_validos
 GROUP BY estadio
+ORDER BY jogos DESC;
+
+-- Retrospecto por setor (arquibancada/cadeira onde assistiu)
+CREATE VIEW v_retrospecto_por_setor AS
+SELECT
+    setor,
+    COUNT(*) AS jogos,
+    SUM(CASE WHEN resultado='V' THEN 1 ELSE 0 END) AS vitorias,
+    SUM(CASE WHEN resultado='E' THEN 1 ELSE 0 END) AS empates,
+    SUM(CASE WHEN resultado='D' THEN 1 ELSE 0 END) AS derrotas,
+    ROUND(AVG(valor_pago) FILTER (WHERE valor_pago > 0), 2) AS ticket_medio
+FROM v_jogos_validos
+WHERE setor IS NOT NULL AND setor <> ''
+GROUP BY setor
 ORDER BY jogos DESC;
 
 -- Gastos por ano

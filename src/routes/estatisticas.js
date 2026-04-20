@@ -102,6 +102,30 @@ router.get('/por-estadio', async (req, res, next) => {
 });
 
 // =============================================================
+// GET /estatisticas/por-setor
+// Query params:
+//   top        — limita quantos retornar
+//   order_by   — jogos | vitorias | empates | derrotas | ticket_medio
+//   order_dir  — asc | desc (default desc)
+// =============================================================
+router.get('/por-setor', async (req, res, next) => {
+    try {
+        const { top, order_by, order_dir } = req.query;
+
+        const ORDER_WHITELIST = ['jogos','vitorias','empates','derrotas','ticket_medio','setor'];
+        const col = ORDER_WHITELIST.includes(order_by) ? order_by : 'jogos';
+        const dir = order_dir === 'asc' ? 'ASC' : 'DESC';
+
+        const params = [];
+        let sql = `SELECT * FROM v_retrospecto_por_setor ORDER BY ${col} ${dir} NULLS LAST, setor ASC`;
+        if (top) { params.push(parseInt(top)); sql += ` LIMIT $${params.length}`; }
+
+        const { rows } = await query(sql, params);
+        res.json(rows);
+    } catch (err) { next(err); }
+});
+
+// =============================================================
 // GET /estatisticas/gastos
 // =============================================================
 router.get('/gastos', async (req, res, next) => {
