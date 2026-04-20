@@ -58,7 +58,7 @@ app.get('/', (req, res) => {
 app.get('/api', (req, res) => {
     res.json({
         name: 'corinthians-agent-backend',
-        version: '1.4.1',
+        version: '1.5.0',
         dashboard: '/dashboard',
         endpoints_publicos: [
             'GET /health',

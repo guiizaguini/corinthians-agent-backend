@@ -131,10 +131,7 @@ INSERT INTO jogos (
     ('2026-01-28', 'Quarta', 'Corinthians', 'Bahia', TRUE, 'MANDANTE', 'Brasileiro', 'M', 'Vila Belmiro', 'AUSENTE', 'Cadeira Lateral Térrea', '[15] G-153 [26]', 0.0, NULL, NULL, NULL, FALSE, FALSE),
     ('2026-02-05', 'Quinta', 'Corinthians', 'Capivariano', TRUE, 'MANDANTE', 'Paulista', 'M', 'Neo Química Arena', 'PRESENTE', 'Leste Inferior', '[425] T-10 [N]', 79.0, 3, 0, 'V', FALSE, FALSE),
     ('2026-02-08', 'Domingo', 'Corinthians', 'Palmeiras', TRUE, 'MANDANTE', 'Paulista', 'M', 'Neo Química Arena', 'PRESENTE', 'Leste Inferior', '[425] T-10 [N]', 105.0, 0, 1, 'D', TRUE, FALSE),
-    ('2026-02-12', 'Quinta', 'Corinthians', 'Bragantino', TRUE, 'MANDANTE', 'Brasileiro', 'M', 'Neo Química Arena', 'AUSENTE', 'Sul', '[] - []', 36.0, NULL, NULL, NULL, FALSE, FALSE),
-    ('2026-03-22', 'Domingo', 'Corinthians', 'Flamengo', TRUE, 'MANDANTE', 'Brasileiro', 'M', NULL, 'AUSENTE', NULL, NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
-    ('2026-04-05', 'Domingo', 'Corinthians', 'Internacional', TRUE, 'MANDANTE', 'Brasileiro', 'M', NULL, 'AUSENTE', NULL, NULL, NULL, NULL, NULL, NULL, FALSE, FALSE),
-    ('2026-04-12', 'Domingo', 'Corinthians', 'Palmeiras', TRUE, 'MANDANTE', 'Brasileiro', 'M', NULL, 'AUSENTE', NULL, NULL, NULL, NULL, NULL, NULL, FALSE, FALSE);
+    ('2026-02-12', 'Quinta', 'Corinthians', 'Bragantino', TRUE, 'MANDANTE', 'Brasileiro', 'M', 'Neo Química Arena', 'AUSENTE', 'Sul', '[] - []', 36.0, NULL, NULL, NULL, FALSE, FALSE);
 
 -- Verificação
 SELECT COUNT(*) AS total_jogos FROM jogos;

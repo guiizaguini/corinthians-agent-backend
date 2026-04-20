@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Archivo:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
 :root {
     --preto: #000000;
@@ -147,6 +148,91 @@ body::before {
     text-transform: uppercase;
     color: var(--cinza-claro);
     margin-top: 4px;
+}
+
+/* =========== HISTÓRICOS (TÍTULOS) =========== */
+.historicos {
+    padding: 50px 40px 20px;
+    background:
+        radial-gradient(ellipse at 50% 0%, rgba(184,166,106,0.1) 0%, transparent 65%),
+        linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.95));
+    border-bottom: 1px solid var(--ouro-escuro);
+    position: relative;
+    z-index: 2;
+}
+.historicos-cabecalho {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 30px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--ouro-escuro);
+    max-width: 1800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.historicos-cabecalho h2 {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(32px, 5vw, 58px);
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--vitoria-claro);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.historicos-cabecalho h2 .trofeu-header {
+    font-family: 'Material Icons';
+    font-size: 48px;
+    color: var(--vitoria);
+    text-shadow: 0 0 16px rgba(196,172,108,0.6);
+}
+.historicos-cabecalho .sub {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--cinza-claro);
+    max-width: 420px;
+    text-align: right;
+    line-height: 1.4;
+}
+.historicos-cabecalho .contagem {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--vitoria);
+    margin-top: 4px;
+    display: block;
+}
+
+.historicos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(540px, 1fr));
+    gap: 30px;
+    max-width: 1800px;
+    margin: 0 auto;
+}
+
+.historicos-vazio {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cinza-medio);
+    text-align: center;
+    padding: 40px 20px;
+    border: 1px dashed var(--cinza-linha);
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 900px) {
+    .historicos { padding: 36px 16px 12px; }
+    .historicos-cabecalho { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .historicos-cabecalho .sub { text-align: left; }
+    .historicos-cabecalho h2 .trofeu-header { font-size: 36px; }
+    .historicos-grid { grid-template-columns: 1fr; gap: 22px; }
 }
 
 /* =========== FILTROS =========== */
@@ -629,20 +715,39 @@ body::before {
 .ingresso.titulo .banner-titulo::before { content: '★  '; color: var(--vitoria-claro); }
 .ingresso.titulo .banner-titulo::after  { content: '  ★'; color: var(--vitoria-claro); }
 
-/* No título substitui o selo ::after "FINAL" por algo mais rico */
+/* Troféu Material Icons — substitui o emoji */
 .ingresso.titulo::after {
-    content: '🏆';
+    content: 'emoji_events';
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
     position: absolute;
-    top: 14px;
-    right: 14px;
-    font-size: 40px;
-    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+    top: 12px;
+    right: 12px;
+    font-size: 48px;
+    line-height: 1;
+    color: var(--vitoria);
+    text-shadow:
+        0 0 2px rgba(0,0,0,0.9),
+        0 0 12px rgba(196,172,108,0.7),
+        0 2px 4px rgba(0,0,0,0.6);
     z-index: 4;
     animation: trofeuGlow 3s ease-in-out infinite;
+    transform-origin: center;
 }
 @keyframes trofeuGlow {
-    0%, 100% { transform: scale(1) rotate(-4deg); filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5)); }
-    50% { transform: scale(1.1) rotate(4deg); filter: drop-shadow(0 4px 12px rgba(196,172,108,0.8)); }
+    0%, 100% {
+        transform: scale(1) rotate(-4deg);
+        color: var(--vitoria);
+        text-shadow: 0 0 2px rgba(0,0,0,0.9), 0 0 12px rgba(196,172,108,0.7), 0 2px 4px rgba(0,0,0,0.6);
+    }
+    50% {
+        transform: scale(1.12) rotate(4deg);
+        color: var(--vitoria-claro);
+        text-shadow: 0 0 2px rgba(0,0,0,0.9), 0 0 22px rgba(196,172,108,1), 0 4px 10px rgba(0,0,0,0.7);
+    }
 }
 
 /* Corpo do título: adiciona mais respiração */
@@ -829,6 +934,23 @@ body::before {
     </div>
 </header>
 
+<!-- SEÇÃO: JOGOS HISTÓRICOS (SÓ TÍTULOS) -->
+<section class="historicos" id="historicos">
+    <div class="historicos-cabecalho">
+        <h2>
+            <span class="trofeu-header material-icons">emoji_events</span>
+            Jogos Históricos
+        </h2>
+        <div>
+            <div class="sub">As taças que você viu erguer ao vivo — o papel aqui pesa mais.</div>
+            <span class="contagem" id="historicos-contagem">—</span>
+        </div>
+    </div>
+    <div class="historicos-grid" id="historicos-grid">
+        <div class="historicos-vazio">NENHUM TÍTULO REGISTRADO AINDA</div>
+    </div>
+</section>
+
 <!-- FILTROS -->
 <div class="filtros">
     <div class="filtro-grupo">
@@ -927,8 +1049,46 @@ async function carregar() {
 
 function renderTudo() {
     renderStats();
+    renderHistoricos();
     renderFiltros();
     renderGaleria();
+}
+
+function renderHistoricos() {
+    const titulos = DADOS.jogos
+        .filter(j => j.titulo_conquistado && j.titulo_conquistado.trim())
+        .sort((a, b) => new Date(a.data) - new Date(b.data)); // cronológico: o mais antigo primeiro
+
+    const grid = document.getElementById('historicos-grid');
+    const contagem = document.getElementById('historicos-contagem');
+
+    if (!titulos.length) {
+        grid.innerHTML = '<div class="historicos-vazio">NENHUM TÍTULO REGISTRADO AINDA</div>';
+        contagem.textContent = '0 TAÇAS';
+        return;
+    }
+
+    contagem.textContent = `${titulos.length} ${titulos.length === 1 ? 'TAÇA' : 'TAÇAS'}`;
+
+    // Guarda referência pro modal conseguir abrir a partir desses cards também
+    grid.innerHTML = titulos.map((j, idx) => renderIngresso(j, idx, 'h')).join('');
+    grid.querySelectorAll('.ingresso').forEach(el => {
+        el.addEventListener('click', () => {
+            const k = parseInt(el.dataset.idx);
+            abrirModalHist(k);
+        });
+    });
+    window.__JOGOS_HIST = titulos;
+}
+
+function abrirModalHist(idx) {
+    const j = window.__JOGOS_HIST[idx];
+    if (!j) return;
+    // Reusa o mesmo fluxo do modal normal
+    window.__JOGOS_ATUAL_TMP = window.__JOGOS_ATUAL;
+    window.__JOGOS_ATUAL = window.__JOGOS_HIST;
+    abrirModal(idx);
+    window.__JOGOS_ATUAL = window.__JOGOS_ATUAL_TMP;
 }
 
 function renderStats() {
