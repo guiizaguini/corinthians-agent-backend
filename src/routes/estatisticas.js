@@ -49,10 +49,23 @@ router.get('/retrospecto', async (req, res, next) => {
 
 // =============================================================
 // GET /estatisticas/por-ano
+// Query params:
+//   order_by   — ano | jogos | vitorias | empates | derrotas | aproveitamento_pct
+//   order_dir  — asc | desc (default asc pra ano, desc pra outros)
 // =============================================================
 router.get('/por-ano', async (req, res, next) => {
     try {
-        const { rows } = await query('SELECT * FROM v_retrospecto_por_ano');
+        const { order_by, order_dir } = req.query;
+
+        const ORDER_WHITELIST = ['ano','jogos','vitorias','empates','derrotas','aproveitamento_pct','gols_pro','gols_contra'];
+        const col = ORDER_WHITELIST.includes(order_by) ? order_by : 'ano';
+        // Se for "ano", padrão é asc (cronológico); se for outra métrica, padrão é desc (maior primeiro)
+        const defaultDir = col === 'ano' ? 'ASC' : 'DESC';
+        const dir = order_dir === 'asc' ? 'ASC' : order_dir === 'desc' ? 'DESC' : defaultDir;
+
+        const { rows } = await query(
+            `SELECT * FROM v_retrospecto_por_ano ORDER BY ${col} ${dir}, ano ASC`
+        );
         res.json(rows);
     } catch (err) { next(err); }
 });
