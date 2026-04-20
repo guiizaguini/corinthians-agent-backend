@@ -126,6 +126,34 @@ router.get('/por-setor', async (req, res, next) => {
 });
 
 // =============================================================
+// GET /estatisticas/top-derrotas
+// Maiores derrotas que o usuário presenciou (maior saldo negativo)
+// =============================================================
+router.get('/top-derrotas', async (req, res, next) => {
+    try {
+        const limit = Math.min(parseInt(req.query.limit) || 10, 50);
+        const { rows } = await query(`
+            SELECT
+                id, data, time_casa, time_visitante, gols_casa, gols_visitante,
+                campeonato, estadio, resultado, foi_classico,
+                CASE WHEN time_casa='Corinthians' THEN time_visitante ELSE time_casa END AS adversario,
+                ABS(gols_casa - gols_visitante) AS saldo_abs
+            FROM jogos
+            WHERE is_corinthians = TRUE
+              AND status_presenca = 'PRESENTE'
+              AND resultado = 'D'
+              AND gols_casa IS NOT NULL
+            ORDER BY ABS(gols_casa - gols_visitante) DESC, data DESC
+            LIMIT $1
+        `, [limit]);
+        res.json({ total: rows.length, derrotas: rows });
+    } catch (err) {
+        console.error('[top-derrotas] ERRO:', err);
+        next(err);
+    }
+});
+
+// =============================================================
 // GET /estatisticas/gastos
 // =============================================================
 router.get('/gastos', async (req, res, next) => {

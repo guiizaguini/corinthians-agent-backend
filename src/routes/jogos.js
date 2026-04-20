@@ -15,7 +15,7 @@ const JogoSchema = z.object({
     campeonato: z.string().max(40).optional().nullable(),
     genero: z.enum(['M', 'F', 'S-20']).optional().default('M'),
     estadio: z.string().max(60).optional().nullable(),
-    status_presenca: z.enum(['PRESENTE','FALTEI','REVENDA','CASHBACK','AGENDADO','AUSENTE'])
+    status_presenca: z.enum(['PRESENTE','AUSENTE'])
         .optional().default('PRESENTE'),
     setor: z.string().max(60).optional().nullable(),
     assento: z.string().max(40).optional().nullable(),
@@ -75,6 +75,7 @@ router.get('/', async (req, res, next) => {
             is_corinthians,
             estadio,
             foi_classico,
+            mando,
             limit = 50,
             offset = 0,
             order = 'desc',
@@ -93,6 +94,7 @@ router.get('/', async (req, res, next) => {
             conds.push(`is_corinthians = $${params.length}`);
         }
         if (estadio)     { params.push(`%${estadio}%`);       conds.push(`unaccent(estadio) ILIKE unaccent($${params.length})`); }
+        if (mando)       { params.push(mando.toUpperCase());  conds.push(`mando = $${params.length}`); }
         if (foi_classico !== undefined) {
             params.push(foi_classico === 'true' || foi_classico === '1');
             conds.push(`foi_classico = $${params.length}`);

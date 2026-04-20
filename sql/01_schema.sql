@@ -32,7 +32,7 @@ CREATE TABLE jogos (
     genero            VARCHAR(10),            -- M, F, S-20
     estadio           VARCHAR(60),
     status_presenca   VARCHAR(15) NOT NULL DEFAULT 'PRESENTE'
-                      CHECK (status_presenca IN ('PRESENTE','FALTEI','REVENDA','CASHBACK','AGENDADO','AUSENTE')),
+                      CHECK (status_presenca IN ('PRESENTE','AUSENTE')),
     setor             VARCHAR(60),
     assento           VARCHAR(40),
     valor_pago        NUMERIC(10,2),

@@ -1660,10 +1660,6 @@ body::before {
             <select id="f-status">
                 <option value="">TODOS</option>
                 <option value="PRESENTE">PRESENTE</option>
-                <option value="FALTEI">FALTEI</option>
-                <option value="REVENDA">REVENDA</option>
-                <option value="CASHBACK">CASHBACK</option>
-                <option value="AGENDADO">AGENDADO</option>
                 <option value="AUSENTE">AUSENTE</option>
             </select>
         </div>
@@ -1762,14 +1758,14 @@ function renderizarTudo() {
 function renderHero() {
     const g = DADOS.geral;
     const cards = [
-        { rotulo: 'Jogos', num: g.jogos, det: `${g.gols_pro}–${g.gols_contra} gols`, indice: '001', filtro: '' },
-        { rotulo: 'Vitórias', num: g.vitorias, det: `${g.aproveitamento_pct}% aproveit.`, indice: '002', filtro: 'V' },
-        { rotulo: 'Empates', num: g.empates, det: `${g.derrotas} derrotas`, indice: '003', filtro: 'E' },
-        { rotulo: 'Saldo', num: (g.saldo_gols > 0 ? '+' : '') + g.saldo_gols, det: `${g.classicos} clássicos`, indice: '004', filtro: '' },
+        { rotulo: 'Jogos', num: g.jogos, det: `${g.gols_pro}–${g.gols_contra} gols`, filtro: '' },
+        { rotulo: 'Vitórias', num: g.vitorias, det: `${g.aproveitamento_pct}% aproveit.`, filtro: 'V' },
+        { rotulo: 'Empates', num: g.empates, det: `${g.derrotas} derrotas`, filtro: 'E' },
+        { rotulo: 'Saldo', num: (g.saldo_gols > 0 ? '+' : '') + g.saldo_gols, det: `${g.classicos} clássicos`, filtro: '' },
     ];
     document.getElementById('hero-grid').innerHTML = cards.map((c, i) => `
         <div class="hero-card anima" data-filtro="${c.filtro || ''}" title="${c.filtro ? 'Clique para filtrar a tabela' : ''}" style="animation-delay:${0.1 + i*0.1}s">
-            <div class="hero-rotulo"><span>${c.rotulo}</span><span class="indice">${c.indice}</span></div>
+            <div class="hero-rotulo"><span>${c.rotulo}</span></div>
             <div class="hero-numero">${c.num}</div>
             <div class="hero-detalhe">${c.det}</div>
         </div>
