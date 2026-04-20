@@ -41,6 +41,7 @@ CREATE TABLE jogos (
     resultado         CHAR(1) CHECK (resultado IN ('V','E','D') OR resultado IS NULL),
     foi_classico      BOOLEAN NOT NULL DEFAULT FALSE,
     teve_penal        BOOLEAN NOT NULL DEFAULT FALSE,
+    fase              VARCHAR(40),   -- "Final","Semifinal","Quartas","Oitavas","Grupos","Rodada 12",...
     observacoes       TEXT,
     created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()

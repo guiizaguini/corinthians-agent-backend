@@ -36,11 +36,19 @@ app.get('/health', async (req, res) => {
 app.use('/public', publicRouter);
 
 // =============================================================
-// Dashboard estático — qualquer um com o link acessa
+// Páginas estáticas — qualquer um com o link acessa
 // =============================================================
 app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public', 'dashboard.html'));
 });
+
+app.get('/museu', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'museu.html'));
+});
+
+// Serve outros arquivos da pasta public (imagens, etc).
+// Não sobrepõe rotas acima porque elas vêm primeiro.
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.get('/', (req, res) => {
     // Raiz redireciona pro dashboard
@@ -50,7 +58,7 @@ app.get('/', (req, res) => {
 app.get('/api', (req, res) => {
     res.json({
         name: 'corinthians-agent-backend',
-        version: '1.2.0',
+        version: '1.3.0',
         dashboard: '/dashboard',
         endpoints_publicos: [
             'GET /health',

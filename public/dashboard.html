@@ -94,6 +94,20 @@ body::before {
 }
 
 .cabecalho-barra-topo .atualizado { display: flex; gap: 8px; align-items: center; }
+.cabecalho-barra-topo .link-museu {
+    color: var(--ouro-claro);
+    text-decoration: none;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    transition: color 0.15s;
+    padding: 2px 6px;
+    border: 1px solid var(--ouro-escuro);
+}
+.cabecalho-barra-topo .link-museu:hover {
+    color: var(--preto);
+    background: var(--ouro);
+    border-color: var(--ouro);
+}
 .cabecalho-barra-topo .bolinha {
     width: 8px; height: 8px; border-radius: 50%;
     background: var(--ouro);
@@ -1448,7 +1462,7 @@ body::before {
 <!-- ============= CABEÇALHO ============= -->
 <header class="cabecalho">
     <div class="cabecalho-barra-topo">
-        <div>DIÁRIO DO TORCEDOR · GUILHERME Z. · <span id="ano-atual"></span></div>
+        <div>DIÁRIO DO TORCEDOR · GUILHERME Z. · <span id="ano-atual"></span> · <a href="/museu" class="link-museu">MUSEU DE INGRESSOS →</a></div>
         <div class="atualizado">
             <span class="bolinha"></span>
             <span id="ts-atualizacao">CARREGANDO</span>
