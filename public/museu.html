@@ -218,20 +218,75 @@ body::before {
 
 .historicos-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
-    gap: 26px;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 22px;
     max-width: 1800px;
     margin: 0 auto;
 }
-/* Dentro da seção histórica, anula o span 2 que vem da classe .fase-final */
+/* ===== COMPACTAÇÃO DOS INGRESSOS HISTÓRICOS =====
+   Anula span 2, reduz min-height, padding, banners e fontes */
 .historicos-grid .ingresso.fase-final,
 .historicos-grid .ingresso.titulo {
-    grid-column: auto;
-    min-height: 240px;
+    grid-column: auto !important;
+    min-height: 220px !important;
 }
 .historicos-grid .ingresso.fase-final .confronto,
-.historicos-grid .ingresso.titulo .confronto { font-size: 26px; }
-.historicos-grid .ingresso.titulo { min-height: 280px; }
+.historicos-grid .ingresso.titulo .confronto {
+    font-size: clamp(18px, 4.5cqw, 24px) !important;
+}
+
+/* Corpo com menos padding interno */
+.historicos-grid .ingresso.titulo .corpo {
+    padding-top: 22px !important;
+    padding-bottom: 30px !important;
+}
+.historicos-grid .ingresso.titulo .detalhes { margin-bottom: 0 !important; }
+
+/* Canhoto mais compacto */
+.historicos-grid .ingresso .canhoto { padding: 14px 8px; }
+.historicos-grid .ingresso .canhoto-dia { font-size: 42px; }
+.historicos-grid .ingresso .canhoto-mes { font-size: 16px; }
+.historicos-grid .ingresso.fase-final .canhoto-selo,
+.historicos-grid .ingresso.titulo .canhoto-selo {
+    font-size: 20px;
+    padding: 4px 10px;
+}
+
+/* Fita CAMPEÃO menor */
+.historicos-grid .ingresso.titulo .fita-campeao {
+    font-size: 11px;
+    padding: 5px 22px;
+    letter-spacing: 0.3em;
+    top: -8px;
+}
+.historicos-grid .ingresso.titulo .fita-campeao::before,
+.historicos-grid .ingresso.titulo .fita-campeao::after {
+    border-width: 6px;
+    bottom: -6px;
+}
+
+/* Banner do título embaixo menor */
+.historicos-grid .ingresso.titulo .banner-titulo {
+    font-size: 10px;
+    padding: 4px 20px;
+    letter-spacing: 0.22em;
+    bottom: 8px;
+}
+
+/* Troféu menor */
+.historicos-grid .ingresso.titulo::after {
+    font-size: 30px !important;
+    top: 10px !important;
+    right: 10px !important;
+}
+
+/* Selo diagonal FINAL menor */
+.historicos-grid .ingresso.fase-final:not(.titulo)::after {
+    font-size: 11px;
+    padding: 5px 40px 4px;
+    top: 10px;
+    right: -36px;
+}
 
 .historicos-vazio {
     font-family: 'JetBrains Mono', monospace;
@@ -470,14 +525,18 @@ body::before {
     justify-content: center;
     flex-shrink: 0;
 }
-.escudo img {
+.escudo img,
+.escudo svg {
     width: 100%;
     height: 100%;
     object-fit: contain;
+}
+.escudo img {
     filter: grayscale(1) contrast(1.2) brightness(0.9);
     opacity: 0.85;
 }
-.escudo.corinthians img {
+.escudo.corinthians img,
+.escudo.corinthians svg {
     filter: none;
     opacity: 1;
 }
@@ -530,19 +589,27 @@ body::before {
 
 .confronto {
     font-family: 'Anton', sans-serif;
-    font-size: 26px;
+    /* Tamanho responsivo ao container: se o card for estreito, a fonte diminui automaticamente */
+    font-size: clamp(16px, 4.5cqw, 26px);
     line-height: 1;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
     color: #0a0a0a;
     text-transform: uppercase;
     margin: 6px 0 2px;
+    /* Nunca quebra */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    container-type: inline-size;
 }
 .confronto .vs {
     color: var(--cor-acento-escura);
-    font-size: 18px;
+    font-size: 0.7em;
     margin: 0 6px;
     vertical-align: middle;
 }
+/* Container queries no corpo pro confronto escalar com a largura do card */
+.corpo { container-type: inline-size; }
 
 .placar-row {
     display: flex;
@@ -630,7 +697,7 @@ body::before {
         0 0 70px rgba(184,166,106,0.5),
         inset 0 0 40px rgba(156,138,82,0.15);
 }
-.ingresso.fase-final .confronto { font-size: 34px; }
+.ingresso.fase-final .confronto { font-size: clamp(18px, 5.5cqw, 34px); }
 .ingresso.fase-final .canhoto-selo { font-size: 30px; }
 .ingresso.fase-final .canhoto { background: linear-gradient(180deg, var(--vitoria), var(--ouro-escuro)); }
 
@@ -733,7 +800,7 @@ body::before {
     text-shadow: 0 0 12px rgba(196,172,108,0.8);
 }
 .ingresso.titulo .confronto {
-    font-size: 36px;
+    font-size: clamp(20px, 6cqw, 36px);
     color: #0a0a0a;
     text-shadow: 0 2px 4px rgba(196,172,108,0.3);
 }
@@ -786,27 +853,35 @@ body::before {
 .ingresso.titulo .banner-titulo::before { content: '★  '; color: var(--vitoria-claro); }
 .ingresso.titulo .banner-titulo::after  { content: '  ★'; color: var(--vitoria-claro); }
 
-/* Troféu Material Icons — substitui o emoji */
+/* Troféu Material Icons — substitui o emoji
+   IMPORTANTE: resetar TODAS as props herdadas do .fase-final::after
+   (background, transform, letter-spacing, padding, etc) */
 .ingresso.titulo::after {
     content: 'emoji_events';
-    font-family: 'Material Icons';
-    font-weight: normal;
-    font-style: normal;
+    font-family: 'Material Icons', sans-serif !important;
+    font-weight: normal !important;
+    font-style: normal !important;
+    font-size: 48px !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+    text-shadow: 0 0 2px rgba(0,0,0,0.9), 0 0 12px rgba(196,172,108,0.7), 0 2px 4px rgba(0,0,0,0.6) !important;
+    padding: 0 !important;
+    background: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    transform-origin: center;
     -webkit-font-feature-settings: 'liga';
+    font-feature-settings: 'liga';
     -webkit-font-smoothing: antialiased;
     position: absolute;
-    top: 12px;
-    right: 12px;
-    font-size: 48px;
+    top: 14px;
+    right: 16px;
     line-height: 1;
     color: var(--vitoria);
-    text-shadow:
-        0 0 2px rgba(0,0,0,0.9),
-        0 0 12px rgba(196,172,108,0.7),
-        0 2px 4px rgba(0,0,0,0.6);
     z-index: 4;
     animation: trofeuGlow 3s ease-in-out infinite;
-    transform-origin: center;
+    white-space: nowrap;
 }
 @keyframes trofeuGlow {
     0%, 100% {
@@ -840,26 +915,171 @@ body::before {
     vertical-align: middle;
 }
 
-/* AUSENTE / NÃO FOI */
+/* AUSENTE / NÃO FOI — versão clean e muito apagada */
 .ingresso.ausente {
-    filter: grayscale(0.85) contrast(0.9);
-    opacity: 0.72;
+    filter: grayscale(1) contrast(0.75) brightness(0.85);
+    opacity: 0.42;
+    background: #ebe6d5;
+    box-shadow:
+        0 2px 0 rgba(0,0,0,0.08),
+        0 8px 16px rgba(0,0,0,0.35),
+        0 0 0 1px rgba(0,0,0,0.15);
 }
+.ingresso.ausente:hover {
+    filter: grayscale(0.6) contrast(0.85) brightness(0.95);
+    opacity: 0.85;
+    transform: translate(-2px, -2px);
+}
+/* Esconde TUDO que polui — placar, detalhes, logos, resultado */
+.ingresso.ausente .placar-row,
+.ingresso.ausente .detalhes,
+.ingresso.ausente .confronto-logos,
+.ingresso.ausente .resultado-badge,
+.ingresso.ausente .classico-tag {
+    display: none;
+}
+/* Canhoto do ausente bem sutil */
+.ingresso.ausente .canhoto {
+    background: #3a3833;
+    color: #b8b3a8;
+}
+.ingresso.ausente .canhoto-selo {
+    font-size: 18px;
+    border-width: 1px;
+    opacity: 0.9;
+}
+/* Carimbo único e discreto em vez do "NÃO COMPARECEU" gigante */
 .ingresso.ausente .corpo::after {
-    content: 'NÃO COMPARECEU';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-12deg);
-    font-family: 'Anton', sans-serif;
-    font-size: 36px;
+    content: '— ausente —';
+    display: block;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 13px;
     letter-spacing: 0.15em;
-    color: var(--derrota);
-    border: 4px solid var(--derrota);
-    padding: 8px 16px;
-    opacity: 0.55;
-    pointer-events: none;
-    white-space: nowrap;
+    color: #7a7268;
+    text-transform: uppercase;
+    margin-top: 12px;
+    padding-top: 14px;
+    border-top: 1px dashed rgba(0,0,0,0.2);
+    text-align: center;
+}
+/* Confronto menor/discreto nos ausentes */
+.ingresso.ausente .confronto {
+    font-size: clamp(14px, 4cqw, 22px);
+    color: #4a4640;
+    margin-top: 8px;
+}
+.ingresso.ausente .corpo-topo { opacity: 0.7; }
+
+/* =========== ÍCONES DO MODAL =========== */
+.modal-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 16px;
+    background: var(--preto-profundo);
+    border: 1px solid var(--cinza-linha);
+}
+.modal-linha {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 10px;
+    align-items: center;
+}
+.modal-linha .mi {
+    font-family: 'Material Icons';
+    font-size: 22px;
+    font-weight: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    text-transform: none;
+    color: var(--ouro);
+    line-height: 1;
+    font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+}
+.modal-linha .modal-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ouro);
+    line-height: 1;
+    margin-bottom: 3px;
+}
+.modal-linha .modal-valor {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--branco);
+    line-height: 1.2;
+}
+
+/* Destaque do ASSENTO com ícone de cadeira gigante */
+.assento-destaque {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, rgba(156,138,82,0.15), rgba(0,0,0,0.4));
+    border: 1px solid var(--ouro-escuro);
+    margin-top: 4px;
+}
+.assento-destaque .mi-chair {
+    font-family: 'Material Icons';
+    font-size: 56px;
+    color: var(--ouro-claro);
+    text-shadow: 0 0 12px rgba(196,172,108,0.5);
+    font-feature-settings: 'liga';
+    line-height: 1;
+}
+.assento-destaque .ass-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.assento-destaque .ass-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--ouro);
+    text-transform: uppercase;
+}
+.assento-destaque .ass-valor {
+    font-family: 'Anton', sans-serif;
+    font-size: 26px;
+    color: var(--branco);
+    letter-spacing: 0.03em;
+    line-height: 1;
+}
+
+/* Cabeçalho do modal com os escudos dos times */
+.modal-confronto {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 10px;
+}
+.modal-confronto .escudo {
+    width: 56px;
+    height: 56px;
+}
+.modal-confronto .x {
+    font-family: 'Anton', sans-serif;
+    font-size: 32px;
+    color: var(--ouro);
+}
+.modal-times {
+    font-family: 'Anton', sans-serif;
+    font-size: 34px;
+    line-height: 1;
+    color: var(--branco);
+    text-align: center;
+    letter-spacing: 0.02em;
+    margin-bottom: 6px;
 }
 
 /* =========== MODAL DE DETALHES =========== */
@@ -1150,10 +1370,45 @@ function iniciaisClube(nome) {
     return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
 }
 
+// SVG inline do escudo do Corinthians — sempre carrega, sempre colorido
+const CORINTHIANS_SVG = `
+<svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg" aria-label="Corinthians">
+    <defs>
+        <linearGradient id="cor-gold" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="#d4b964"/>
+            <stop offset="100%" stop-color="#9c8a52"/>
+        </linearGradient>
+    </defs>
+    <!-- Escudo preto com borda dourada -->
+    <path d="M 50 4 L 94 16 L 94 58 C 94 82 74 100 50 106 C 26 100 6 82 6 58 L 6 16 Z"
+          fill="#000" stroke="url(#cor-gold)" stroke-width="2.5"/>
+    <!-- Divisão interna branca -->
+    <path d="M 50 12 L 86 22 L 86 56 C 86 76 70 92 50 98 C 30 92 14 76 14 56 L 14 22 Z"
+          fill="none" stroke="#f5f5f5" stroke-width="1"/>
+    <!-- Remos cruzados (estilizados) -->
+    <g stroke="#f5f5f5" stroke-width="2.2" stroke-linecap="round" fill="none">
+        <line x1="24" y1="34" x2="76" y2="76"/>
+        <line x1="76" y1="34" x2="24" y2="76"/>
+        <!-- Pás dos remos -->
+        <ellipse cx="22" cy="32" rx="4" ry="3" fill="#f5f5f5" transform="rotate(-45 22 32)"/>
+        <ellipse cx="78" cy="32" rx="4" ry="3" fill="#f5f5f5" transform="rotate(45 78 32)"/>
+        <ellipse cx="22" cy="78" rx="4" ry="3" fill="#f5f5f5" transform="rotate(45 22 78)"/>
+        <ellipse cx="78" cy="78" rx="4" ry="3" fill="#f5f5f5" transform="rotate(-45 78 78)"/>
+    </g>
+    <!-- SCCP -->
+    <text x="50" y="58" text-anchor="middle" fill="url(#cor-gold)"
+          font-family="Anton, Impact, sans-serif" font-size="16" font-weight="900"
+          letter-spacing="1">SCCP</text>
+</svg>`;
+
 function renderEscudo(nome) {
     const url = LOGOS[nome];
     const ehCor = nome === 'Corinthians';
     const classe = `escudo${ehCor ? ' corinthians' : ''}`;
+    // Corinthians: SVG inline garantido
+    if (ehCor) {
+        return `<span class="${classe}" title="${nome}">${CORINTHIANS_SVG}</span>`;
+    }
     if (url) {
         return `<span class="${classe}" title="${nome}"><img src="${url}" alt="${nome}" onerror="this.parentElement.innerHTML='<span class=\\'escudo-fallback\\'>${iniciaisClube(nome)}</span>'"></span>`;
     }
@@ -1430,36 +1685,59 @@ function abrirModal(idx) {
     const j = window.__JOGOS_ATUAL[idx];
     if (!j) return;
 
-    const adversario = j.time_casa === 'Corinthians' ? j.time_visitante : (j.time_visitante === 'Corinthians' ? j.time_casa : `${j.time_casa} × ${j.time_visitante}`);
+    const adversario = j.time_casa === 'Corinthians' ? j.time_visitante : (j.time_visitante === 'Corinthians' ? j.time_casa : j.time_casa);
     const placar = (j.gols_casa != null && j.gols_visitante != null)
         ? `${j.gols_casa}–${j.gols_visitante}` : '—';
+    const mandoPt = j.mando === 'MANDANTE' ? 'Casa' : j.mando === 'VISITANTE' ? 'Fora' : (j.mando || '—');
+    const resultadoPt = j.resultado === 'V' ? 'Vitória' : j.resultado === 'E' ? 'Empate' : j.resultado === 'D' ? 'Derrota' : '—';
+    const generoPt = j.genero === 'M' ? 'Masculino' : j.genero === 'F' ? 'Feminino' : j.genero || '—';
+    const iconeResultado = j.resultado === 'V' ? 'emoji_events' : j.resultado === 'E' ? 'equalizer' : j.resultado === 'D' ? 'heart_broken' : 'help_outline';
+    const iconeMando = j.mando === 'MANDANTE' ? 'home' : j.mando === 'VISITANTE' ? 'flight_takeoff' : 'swap_horiz';
 
     const conteudo = `
-        <h2 style="font-family:'Anton',sans-serif; font-size:38px; line-height:0.9; letter-spacing:0.02em; color:var(--ouro-claro); margin-bottom:6px;">
-            Corinthians × ${adversario}
-        </h2>
-        <div style="font-family:'Playfair Display',serif; font-style:italic; color:var(--cinza-claro); margin-bottom:22px; font-size:14px;">
+        <div class="modal-confronto">
+            ${renderEscudo('Corinthians')}
+            <span class="x">×</span>
+            ${renderEscudo(adversario)}
+        </div>
+        <h2 class="modal-times">Corinthians × ${adversario}</h2>
+        <div style="font-family:'Playfair Display',serif; font-style:italic; color:var(--cinza-claro); text-align:center; margin-bottom:22px; font-size:14px;">
             ${fmtDataExt(j.data)}
         </div>
-        <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:14px; padding:16px; background:var(--preto-profundo); border:1px solid var(--cinza-linha);">
-            ${linhaModal('Campeonato', j.campeonato || 'Amistoso')}
-            ${linhaModal('Gênero', j.genero === 'M' ? 'Masculino' : j.genero === 'F' ? 'Feminino' : j.genero || '—')}
-            ${linhaModal('Estádio', j.estadio || '—')}
-            ${linhaModal('Setor', j.setor || '—')}
-            ${linhaModal('Assento', j.assento || '—')}
-            ${linhaModal('Mando', j.mando === 'MANDANTE' ? 'Casa' : j.mando === 'VISITANTE' ? 'Fora' : j.mando || '—')}
-            ${linhaModal('Placar', placar)}
-            ${linhaModal('Resultado', j.resultado === 'V' ? 'Vitória' : j.resultado === 'E' ? 'Empate' : j.resultado === 'D' ? 'Derrota' : '—')}
-            ${linhaModal('Valor pago', j.valor_pago != null ? fmtMoeda(j.valor_pago) : 'Cortesia')}
-            ${linhaModal('Status', j.status_presenca || '—')}
-            ${linhaModal('Clássico', j.foi_classico ? 'Sim ⚔' : 'Não')}
-            ${linhaModal('Teve pênalti', j.teve_penal ? 'Sim' : 'Não')}
-            ${linhaModal('Fase/Rodada', j.fase || '—')}
-            ${linhaModal('Título conquistado', j.titulo_conquistado || '—')}
+
+        <!-- ASSENTO em destaque com ícone de cadeira -->
+        ${j.assento ? `
+        <div class="assento-destaque">
+            <span class="mi-chair">event_seat</span>
+            <div class="ass-info">
+                <span class="ass-label">Assento</span>
+                <span class="ass-valor">${j.assento}</span>
+            </div>
         </div>
+        <div style="height:12px;"></div>
+        ` : ''}
+
+        <div class="modal-grid">
+            ${linhaModal('emoji_events', 'Campeonato', j.campeonato || 'Amistoso')}
+            ${linhaModal(j.genero === 'F' ? 'female' : 'male', 'Gênero', generoPt)}
+            ${linhaModal('stadium', 'Estádio', j.estadio || '—')}
+            ${linhaModal('place', 'Setor', j.setor || '—')}
+            ${linhaModal(iconeMando, 'Mando', mandoPt)}
+            ${linhaModal('scoreboard', 'Placar', placar)}
+            ${linhaModal(iconeResultado, 'Resultado', resultadoPt)}
+            ${linhaModal('payments', 'Valor pago', j.valor_pago != null ? fmtMoeda(j.valor_pago) : 'Cortesia')}
+            ${linhaModal(j.status_presenca === 'PRESENTE' ? 'check_circle' : 'cancel', 'Status', j.status_presenca || '—')}
+            ${linhaModal('local_fire_department', 'Clássico', j.foi_classico ? 'Sim' : 'Não')}
+            ${linhaModal('sports_soccer', 'Teve pênalti', j.teve_penal ? 'Sim' : 'Não')}
+            ${linhaModal('military_tech', 'Fase/Rodada', j.fase || '—')}
+            ${linhaModal('workspace_premium', 'Título conquistado', j.titulo_conquistado || '—')}
+        </div>
+
+        ${renderGolsModal(j)}
+
         ${j.observacoes ? `
         <div style="margin-top:18px; padding:14px 16px; border-left:3px solid var(--ouro); background:rgba(156,138,82,0.06);">
-            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.18em; color:var(--ouro); margin-bottom:6px;">OBSERVAÇÕES</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.18em; color:var(--ouro); margin-bottom:6px;"><span class="mi" style="font-family:'Material Icons'; font-size:14px; vertical-align:middle;">sticky_note_2</span> OBSERVAÇÕES</div>
             <div style="font-family:'Playfair Display',serif; font-style:italic; color:var(--branco-suave); font-size:14px;">${j.observacoes}</div>
         </div>` : ''}
     `;
@@ -1471,11 +1749,37 @@ function abrirModal(idx) {
     document.getElementById('modal-fechar').addEventListener('click', fecharModal);
 }
 
-function linhaModal(label, valor) {
+function linhaModal(icon, label, valor) {
     return `
-        <div>
-            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.2em; color:var(--ouro); text-transform:uppercase;">${label}</div>
-            <div style="font-family:'Archivo',sans-serif; font-weight:700; font-size:14px; color:var(--branco); margin-top:2px;">${valor}</div>
+        <div class="modal-linha">
+            <span class="mi">${icon}</span>
+            <div>
+                <div class="modal-label">${label}</div>
+                <div class="modal-valor">${valor}</div>
+            </div>
+        </div>
+    `;
+}
+
+function renderGolsModal(j) {
+    if (!j.autores_gols || !Array.isArray(j.autores_gols) || j.autores_gols.length === 0) return '';
+    const gols = j.autores_gols.map(g => {
+        const min = g.minuto ? `<span style="color:var(--ouro); margin-right:8px; font-family:'JetBrains Mono',monospace; font-size:11px;">${g.minuto}'</span>` : '';
+        const team = g.time === 'Corinthians' ? 'var(--vitoria-claro)' : 'var(--cinza-claro)';
+        return `<div style="display:flex; align-items:center; padding:6px 0; border-bottom:1px dashed var(--cinza-linha);">
+            <span class="mi" style="font-family:'Material Icons'; font-size:16px; color:${team}; margin-right:8px;">sports_soccer</span>
+            ${min}
+            <span style="font-family:'Archivo',sans-serif; font-weight:700; color:${team}; font-size:13px;">${g.autor}</span>
+            <span style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.15em; color:var(--cinza-claro); text-transform:uppercase;">${g.time}</span>
+        </div>`;
+    }).join('');
+    return `
+        <div style="margin-top:18px; padding:14px 16px; background:var(--preto-card); border:1px solid var(--cinza-linha);">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.2em; color:var(--ouro); margin-bottom:8px; text-transform:uppercase;">
+                <span class="mi" style="font-family:'Material Icons'; font-size:16px; vertical-align:middle; text-transform:none; letter-spacing:normal;">sports_soccer</span>
+                Gols da partida
+            </div>
+            ${gols}
         </div>
     `;
 }
