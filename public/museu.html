@@ -734,9 +734,18 @@ const fmtMoedaCompact = v => {
     if (n >= 10000) return 'R$ ' + (n/1000).toFixed(1) + 'k';
     return 'R$ ' + n.toLocaleString('pt-BR', {maximumFractionDigits: 0});
 };
+// Aceita tanto "YYYY-MM-DD" quanto ISO completo ("2026-01-11T00:00:00.000Z")
+const parseData = d => {
+    if (!d) return null;
+    // Se veio só a parte da data, força meio-dia UTC pra evitar deslocar de fuso
+    const s = typeof d === 'string' && d.length === 10 ? d + 'T12:00:00Z' : d;
+    const dt = new Date(s);
+    return isNaN(dt.getTime()) ? null : dt;
+};
+
 const fmtDataExt = d => {
-    if (!d) return '—';
-    const dt = new Date(d + 'T12:00:00Z');
+    const dt = parseData(d);
+    if (!dt) return '—';
     return `${DIAS_NOME[dt.getUTCDay()]}, ${dt.getUTCDate()} de ${MESES_NOME[dt.getUTCMonth()]} de ${dt.getUTCFullYear()}`;
 };
 
@@ -844,10 +853,10 @@ function renderGaleria() {
 }
 
 function renderIngresso(j, idx) {
-    const dt = new Date(j.data + 'T12:00:00Z');
-    const dia = String(dt.getUTCDate()).padStart(2, '0');
-    const mes = MESES_ABREV[dt.getUTCMonth()];
-    const ano = dt.getUTCFullYear();
+    const dt = parseData(j.data);
+    const dia = dt ? String(dt.getUTCDate()).padStart(2, '0') : '—';
+    const mes = dt ? MESES_ABREV[dt.getUTCMonth()] : '';
+    const ano = dt ? dt.getUTCFullYear() : '';
 
     const isPres = j.status_presenca === 'PRESENTE';
     const resClass = isPres && j.resultado ? j.resultado.toLowerCase() : '';
