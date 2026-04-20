@@ -448,42 +448,206 @@ body::before {
 .ingresso.e .canhoto { color: var(--branco); }
 .ingresso.d .canhoto { color: var(--branco); }
 
-/* =========== DESTAQUE: FINAL =========== */
+/* =========== DESTAQUE: FINAL (refinado) =========== */
 .ingresso.fase-final {
-    box-shadow:
-        0 2px 0 rgba(0,0,0,0.1),
-        0 12px 32px rgba(156,138,82,0.4),
-        0 0 0 3px var(--ouro),
-        0 0 40px rgba(184,166,106,0.25);
+    background:
+        radial-gradient(circle at 50% 50%, #faf4dc 0%, #efe4b5 100%);
     grid-column: span 2;
-    min-height: 260px;
-}
-.ingresso.fase-final::after {
-    content: '🏆 FINAL';
-    position: absolute;
-    top: 10px;
-    right: -38px;
-    background: linear-gradient(135deg, var(--vitoria-claro), var(--ouro));
-    color: #1a1000;
-    font-family: 'Anton', sans-serif;
-    font-size: 14px;
-    letter-spacing: 0.2em;
-    padding: 6px 44px;
-    transform: rotate(35deg);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-    z-index: 3;
-    border: 1px solid rgba(0,0,0,0.25);
+    min-height: 280px;
+    /* Moldura quadrupla: borda dourada externa + preta fina + dourada interna */
+    box-shadow:
+        0 0 0 2px var(--ouro),
+        0 0 0 4px var(--preto),
+        0 0 0 5px var(--ouro-claro),
+        0 16px 40px rgba(0,0,0,0.55),
+        0 0 50px rgba(184,166,106,0.3),
+        inset 0 0 40px rgba(156,138,82,0.1);
 }
 .ingresso.fase-final:hover {
-    transform: translate(-4px, -6px) rotate(-0.3deg);
+    transform: translate(-4px, -5px);
     box-shadow:
-        0 4px 0 rgba(0,0,0,0.1),
-        0 18px 44px rgba(156,138,82,0.55),
-        0 0 0 3px var(--ouro-claro),
-        0 0 60px rgba(184,166,106,0.4);
+        0 0 0 2px var(--ouro-claro),
+        0 0 0 4px var(--preto),
+        0 0 0 5px var(--vitoria-claro),
+        0 22px 50px rgba(0,0,0,0.7),
+        0 0 70px rgba(184,166,106,0.5),
+        inset 0 0 40px rgba(156,138,82,0.15);
 }
-.ingresso.fase-final .confronto { font-size: 32px; }
-.ingresso.fase-final .canhoto-selo { font-size: 32px; }
+.ingresso.fase-final .confronto { font-size: 34px; }
+.ingresso.fase-final .canhoto-selo { font-size: 30px; }
+.ingresso.fase-final .canhoto { background: linear-gradient(180deg, var(--vitoria), var(--ouro-escuro)); }
+
+/* Selo diagonal "FINAL" — mais sofisticado */
+.ingresso.fase-final::after {
+    content: '★ FINAL ★';
+    position: absolute;
+    top: 14px;
+    right: -44px;
+    background: linear-gradient(180deg, #1a1a1a, #000);
+    color: var(--vitoria-claro);
+    font-family: 'Anton', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.35em;
+    padding: 7px 50px 5px;
+    transform: rotate(35deg);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.6), inset 0 0 0 1px var(--ouro);
+    z-index: 4;
+    text-shadow: 0 0 8px rgba(184,166,106,0.6);
+}
+
+/* Ornamentos art déco nos 4 cantos */
+.ingresso.fase-final .ornamento {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--ouro-escuro);
+    pointer-events: none;
+    z-index: 2;
+}
+.ingresso.fase-final .ornamento.tl { top: 8px; left: 128px; border-right: none; border-bottom: none; }
+.ingresso.fase-final .ornamento.tr { top: 8px; right: 8px; border-left: none; border-bottom: none; }
+.ingresso.fase-final .ornamento.bl { bottom: 8px; left: 128px; border-right: none; border-top: none; }
+.ingresso.fase-final .ornamento.br { bottom: 8px; right: 8px; border-left: none; border-top: none; }
+.ingresso.fase-final .ornamento::before {
+    content: '◆';
+    position: absolute;
+    font-size: 8px;
+    color: var(--ouro-escuro);
+}
+.ingresso.fase-final .ornamento.tl::before { top: -4px; left: -4px; }
+.ingresso.fase-final .ornamento.tr::before { top: -4px; right: -4px; }
+.ingresso.fase-final .ornamento.bl::before { bottom: -4px; left: -4px; }
+.ingresso.fase-final .ornamento.br::before { bottom: -4px; right: -4px; }
+
+/* Subtítulo "PARTIDA DECISIVA" */
+.ingresso.fase-final .subtitulo-final {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--ouro-escuro);
+    text-transform: uppercase;
+    text-align: center;
+    margin-top: -2px;
+    padding-bottom: 4px;
+    border-bottom: 1px double rgba(110,96,56,0.4);
+}
+
+/* =========== DESTAQUE: JOGO DO TÍTULO (MÁXIMO) =========== */
+.ingresso.titulo {
+    background:
+        radial-gradient(circle at 30% 20%, #fff3c2 0%, transparent 50%),
+        radial-gradient(circle at 70% 80%, #f5daa0 0%, transparent 50%),
+        linear-gradient(135deg, #f5e6a8 0%, #e7ce78 50%, #f5e6a8 100%);
+    background-size: 200% 200%;
+    animation: tituloShimmer 6s ease-in-out infinite;
+    min-height: 320px;
+    box-shadow:
+        0 0 0 3px var(--vitoria-claro),
+        0 0 0 5px var(--preto),
+        0 0 0 7px var(--vitoria),
+        0 0 0 9px var(--preto),
+        0 28px 60px rgba(0,0,0,0.75),
+        0 0 100px rgba(196,172,108,0.5),
+        inset 0 0 60px rgba(156,138,82,0.15);
+}
+@keyframes tituloShimmer {
+    0%, 100% { background-position: 0% 0%; }
+    50% { background-position: 100% 100%; }
+}
+.ingresso.titulo:hover {
+    transform: translate(-4px, -6px);
+    box-shadow:
+        0 0 0 3px var(--vitoria-claro),
+        0 0 0 5px var(--preto),
+        0 0 0 7px var(--vitoria-claro),
+        0 0 0 9px var(--preto),
+        0 34px 70px rgba(0,0,0,0.85),
+        0 0 120px rgba(196,172,108,0.7),
+        inset 0 0 60px rgba(156,138,82,0.2);
+}
+.ingresso.titulo .canhoto {
+    background: linear-gradient(180deg, #1a1a1a, #000);
+    color: var(--vitoria-claro);
+}
+.ingresso.titulo .canhoto-selo {
+    font-size: 30px;
+    border: 2px solid var(--vitoria-claro);
+    text-shadow: 0 0 12px rgba(196,172,108,0.8);
+}
+.ingresso.titulo .confronto {
+    font-size: 36px;
+    color: #0a0a0a;
+    text-shadow: 0 2px 4px rgba(196,172,108,0.3);
+}
+
+/* Fita de CAMPEÃO no topo */
+.ingresso.titulo .fita-campeao {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(180deg, var(--vitoria-claro), var(--vitoria) 55%, var(--ouro-escuro));
+    color: #0a0a0a;
+    font-family: 'Anton', sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.4em;
+    padding: 8px 32px;
+    border: 2px solid var(--preto);
+    z-index: 6;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.6);
+    white-space: nowrap;
+}
+.ingresso.titulo .fita-campeao::before,
+.ingresso.titulo .fita-campeao::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    border: 8px solid transparent;
+    border-top-color: var(--preto);
+}
+.ingresso.titulo .fita-campeao::before { left: -2px; }
+.ingresso.titulo .fita-campeao::after { right: -2px; }
+
+/* Banner embaixo com o nome do título */
+.ingresso.titulo .banner-titulo {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, transparent, rgba(0,0,0,0.9) 20%, rgba(0,0,0,0.9) 80%, transparent);
+    color: var(--vitoria-claro);
+    font-family: 'Anton', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.3em;
+    padding: 6px 36px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    z-index: 5;
+    text-shadow: 0 0 10px rgba(196,172,108,0.6);
+}
+.ingresso.titulo .banner-titulo::before { content: '★  '; color: var(--vitoria-claro); }
+.ingresso.titulo .banner-titulo::after  { content: '  ★'; color: var(--vitoria-claro); }
+
+/* No título substitui o selo ::after "FINAL" por algo mais rico */
+.ingresso.titulo::after {
+    content: '🏆';
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    font-size: 40px;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+    z-index: 4;
+    animation: trofeuGlow 3s ease-in-out infinite;
+}
+@keyframes trofeuGlow {
+    0%, 100% { transform: scale(1) rotate(-4deg); filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5)); }
+    50% { transform: scale(1.1) rotate(4deg); filter: drop-shadow(0 4px 12px rgba(196,172,108,0.8)); }
+}
+
+/* Corpo do título: adiciona mais respiração */
+.ingresso.titulo .corpo { padding-top: 28px; padding-bottom: 42px; }
+.ingresso.titulo .detalhes { margin-bottom: 20px; }
 
 /* Tag de fase pros demais (semi, quartas, etc) */
 .fase-tag {
@@ -871,12 +1035,31 @@ function renderIngresso(j, idx) {
 
     const fase = (j.fase || '').trim();
     const ehFinal = /^final$/i.test(fase);
+    const ehTitulo = !!(j.titulo_conquistado && j.titulo_conquistado.trim());
     const faseTag = fase && !ehFinal ? `<span class="fase-tag">${fase}</span>` : '';
 
-    const classes = ['ingresso', resClass, isPres ? '' : 'ausente', ehFinal ? 'fase-final' : ''].filter(Boolean).join(' ');
+    const classes = [
+        'ingresso',
+        resClass,
+        isPres ? '' : 'ausente',
+        ehFinal ? 'fase-final' : '',
+        ehTitulo ? 'titulo' : '',
+    ].filter(Boolean).join(' ');
+
+    // Elementos decorativos adicionais pros ingressos especiais
+    const fitaCampeao  = ehTitulo ? `<div class="fita-campeao">★ CAMPEÃO ★</div>` : '';
+    const bannerTitulo = ehTitulo ? `<div class="banner-titulo">${j.titulo_conquistado}</div>` : '';
+    const ornamentos   = ehFinal && !ehTitulo ? `
+        <span class="ornamento tl"></span><span class="ornamento tr"></span>
+        <span class="ornamento bl"></span><span class="ornamento br"></span>
+    ` : '';
+    const subFinal = ehFinal && !ehTitulo
+        ? `<div class="subtitulo-final">◆ Partida decisiva ◆</div>` : '';
 
     return `
         <article class="${classes}" data-idx="${idx}" title="Clique pra ver detalhes">
+            ${fitaCampeao}
+            ${ornamentos}
             <div class="canhoto">
                 <div>
                     <div class="canhoto-dia">${dia}</div>
@@ -892,6 +1075,7 @@ function renderIngresso(j, idx) {
                     <span class="id-ingresso">INGRESSO · ${j.campeonato || 'AMISTOSO'}${faseTag}</span>
                     ${j.foi_classico ? '<span class="classico-tag">CLÁSSICO</span>' : ''}
                 </div>
+                ${subFinal}
                 <div class="confronto">
                     Corinthians <span class="vs">×</span> ${adversario}
                 </div>
@@ -918,6 +1102,7 @@ function renderIngresso(j, idx) {
                     </div>
                 </div>
             </div>
+            ${bannerTitulo}
         </article>
     `;
 }
@@ -959,6 +1144,7 @@ function abrirModal(idx) {
             ${linhaModal('Clássico', j.foi_classico ? 'Sim ⚔' : 'Não')}
             ${linhaModal('Teve pênalti', j.teve_penal ? 'Sim' : 'Não')}
             ${linhaModal('Fase/Rodada', j.fase || '—')}
+            ${linhaModal('Título conquistado', j.titulo_conquistado || '—')}
         </div>
         ${j.observacoes ? `
         <div style="margin-top:18px; padding:14px 16px; border-left:3px solid var(--ouro); background:rgba(156,138,82,0.06);">
