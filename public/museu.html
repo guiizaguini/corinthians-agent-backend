@@ -1949,7 +1949,6 @@ function renderEstatisticas() {
     const topRiv = rankMapa(rivGols, g => g.autor).slice(0, 8);
     const topTimes = rankMapa(rivGols, g => g.time).slice(0, 5);
     const totalGols = gols.length;
-    const totalPen = gols.filter(g => g.ehPenalti).length;
     const totalContra = gols.filter(g => g.ehContra).length;
 
     // Jogo com mais gols na presença
@@ -1959,6 +1958,11 @@ function renderEstatisticas() {
             j, total: (Number(j.gols_casa) || 0) + (Number(j.gols_visitante) || 0)
         }))
         .sort((a, b) => b.total - a.total)[0];
+
+    // Público total — pessoas que os olhos já viram, somando os jogos presenciados
+    const publicoTotal = presentes.reduce((acc, j) => acc + (Number(j.publico_total) || 0), 0);
+    const jogosComPublico = presentes.filter(j => Number(j.publico_total) > 0).length;
+    const fmtNumBR = n => n.toLocaleString('pt-BR');
 
     // Set counter no cabeçalho
     document.getElementById('estatisticas-total').textContent =
@@ -2071,13 +2075,37 @@ function renderEstatisticas() {
         `Média de <strong style="color:var(--ouro-claro)">${(totalGols / Math.max(presentes.length, 1)).toFixed(2)}</strong> gols por jogo.`
     ));
 
-    // === Card 6: Curiosidades ===
+    // === Card 6: Pessoas que seus olhos já viram ===
+    const mediaPublico = jogosComPublico ? Math.round(publicoTotal / jogosComPublico) : 0;
+    cards.push(cardHTML(
+        'groups',
+        'Pessoas que seus olhos viram',
+        'SOMATÓRIO DE PÚBLICO',
+        `<div class="stat-destaque">
+            <span class="numero" style="font-size: clamp(36px, 10cqw, 60px);">${fmtNumBR(publicoTotal)}</span>
+            <span class="unidade">TORCEDORES<br>NOS ESTÁDIOS</span>
+        </div>
+        <div class="stat-split" style="margin-top:8px;">
+            <div class="stat-split-row">
+                <span class="label">Média por jogo</span>
+                <div class="bar"><div class="fill" style="width:100%"></div></div>
+                <span class="valor">${fmtNumBR(mediaPublico)}</span>
+            </div>
+            <div class="stat-split-row">
+                <span class="label">Jogos contabilizados</span>
+                <div class="bar"><div class="fill" style="width:${(jogosComPublico/Math.max(presentes.length,1))*100}%"></div></div>
+                <span class="valor">${jogosComPublico}/${presentes.length}</span>
+            </div>
+        </div>`,
+        `Em média, <strong style="color:var(--ouro-claro)">${fmtNumBR(mediaPublico)}</strong> pessoas dividiram o estádio com você a cada jogo.`
+    ));
+
+    // === Card 7: Curiosidades ===
     cards.push(cardHTML(
         'auto_awesome',
         'Curiosidades',
         'DETALHES PECULIARES',
         `<div class="stat-ranking">
-            <div class="stat-item"><span class="pos">◆</span><div class="nome">Pênaltis presenciados</div><span class="valor">${totalPen}</span></div>
             <div class="stat-item"><span class="pos">◆</span><div class="nome">Gols contra vistos</div><span class="valor">${totalContra}</span></div>
             <div class="stat-item"><span class="pos">◆</span><div class="nome">Rivais no 1º tempo</div><span class="valor">${distRiv1T}</span></div>
             <div class="stat-item"><span class="pos">◆</span><div class="nome">Rivais no 2º tempo</div><span class="valor">${distRiv2T}</span></div>
@@ -2588,6 +2616,18 @@ function renderGolsModal(j) {
     }
     if (!gols.length) return '';
 
+    // Limpa o nome: remove parenteses (pen., gol contra, etc.), sobras tipo "2x no 2T"
+    const limparAutor = (a) => {
+        if (!a) return '—';
+        return a
+            .replace(/\s*\([^)]*\)\s*/g, ' ')        // tira tudo entre parênteses
+            .replace(/\s*\d+x\s+no\s+\d?T\s*/gi, ' ')// "2x no 2T"
+            .replace(/\s*\(2x\)\s*/gi, ' ')
+            .replace(/\s*\d?T\s*$/i, ' ')            // "Igor Coronado 2T" -> "Igor Coronado"
+            .replace(/\s+/g, ' ')
+            .trim() || '—';
+    };
+
     const conteudo = gols.map(g => {
         const minFmt = formatarMinuto(g.minuto);
         const min = minFmt
@@ -2598,7 +2638,7 @@ function renderGolsModal(j) {
         return `<div style="display:flex; align-items:center; padding:7px 0; border-bottom:1px dashed var(--cinza-linha);">
             <span class="mi" style="font-family:'Material Icons'; font-size:16px; color:${team}; margin-right:8px;">sports_soccer</span>
             ${min}
-            <span style="font-family:'Archivo',sans-serif; font-weight:700; color:${team}; font-size:13px;">${g.autor || '—'}</span>
+            <span style="font-family:'Archivo',sans-serif; font-weight:700; color:${team}; font-size:13px;">${limparAutor(g.autor)}</span>
             <span style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.15em; color:var(--cinza-claro); text-transform:uppercase;">${(g.time || '').toUpperCase()}</span>
         </div>`;
     }).join('');
