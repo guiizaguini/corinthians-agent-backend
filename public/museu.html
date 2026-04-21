@@ -669,6 +669,33 @@ body::before {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+/* Linha de público — ocupa linha inteira, centralizada */
+.det-publico {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 6px;
+    padding-top: 8px;
+    border-top: 1px dotted rgba(0,0,0,0.2);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: #5a4a20;
+    text-transform: uppercase;
+}
+.det-publico strong { color: #0a0a0a; font-weight: 700; }
+.det-publico .mi-publico {
+    font-family: 'Material Icons';
+    font-size: 14px;
+    color: #8a7530;
+    font-weight: normal;
+    letter-spacing: normal;
+    text-transform: none;
+    -webkit-font-feature-settings: 'liga';
+    font-feature-settings: 'liga';
+}
 
 /* CORES POR RESULTADO */
 .ingresso.v { --cor-acento: var(--vitoria); --cor-acento-clara: var(--vitoria-claro); --cor-acento-escura: var(--ouro-escuro); }
@@ -1141,6 +1168,11 @@ body::before {
     /* Final e título: escala das firulas */
     .ingresso.fase-final::after { font-size: 10px; padding: 4px 36px 3px; right: -32px; }
     .campeao-tag, .classico-tag, .fase-tag { font-size: 7px; padding: 2px 6px; }
+    /* Ornamentos: alinhar com novo canhoto de 92px */
+    .ingresso.fase-final .ornamento.tl { left: 100px; }
+    .ingresso.fase-final .ornamento.bl { left: 100px; }
+    .ingresso.fase-final .ornamento { width: 24px; height: 24px; }
+    .ingresso.fase-final .subtitulo-final { font-size: 10px; }
 
     /* MODAL mobile */
     .modal-overlay { padding: 12px; }
@@ -1198,6 +1230,12 @@ body::before {
     .confronto-google .nome-clube { font-size: 10px; max-width: 70px; letter-spacing: 0; }
     .confronto-google .placar-gols { font-size: 22px; min-width: 18px; }
     .confronto-google .placar-separador { font-size: 14px; padding: 0; }
+
+    /* Ornamentos do final alinhados ao canhoto mobile 78px */
+    .ingresso.fase-final .ornamento.tl { left: 86px; }
+    .ingresso.fase-final .ornamento.bl { left: 86px; }
+    .ingresso.fase-final .ornamento { width: 20px; height: 20px; }
+    .ingresso.fase-final .subtitulo-final { font-size: 9px; letter-spacing: 0.15em; }
 
     .resultado-badge { font-size: 10px; padding: 2px 7px; letter-spacing: 0.15em; }
     .detalhes { grid-template-columns: 1fr 1fr; gap: 4px 8px; }
@@ -1658,9 +1696,14 @@ function renderIngresso(j, idx) {
     // (fita-campeao e banner-titulo estão hidden via CSS; mantidos só pra compat)
     const fitaCampeao  = '';
     const bannerTitulo = '';
-    // Sem ornamentos nem subtítulo "Partida decisiva" — todos os finais ficam iguais
-    const ornamentos   = '';
-    const subFinal     = '';
+    // Ornamentos nos cantos + subtítulo "Partida decisiva": aparecem em TODOS os finais
+    // (incluindo os que deram título). Referência visual: ingresso do 17/12/2025.
+    const ornamentos = ehFinal ? `
+        <span class="ornamento tl"></span><span class="ornamento tr"></span>
+        <span class="ornamento bl"></span><span class="ornamento br"></span>
+    ` : '';
+    const subFinal = ehFinal
+        ? `<div class="subtitulo-final">◆ Partida decisiva ◆</div>` : '';
 
     return `
         <article class="${classes}" data-idx="${idx}" title="Clique pra ver detalhes">
@@ -1704,6 +1747,11 @@ function renderIngresso(j, idx) {
                         <span class="det-label">Valor</span>
                         <span class="det-valor">${j.valor_pago != null ? fmtMoeda(j.valor_pago) : 'CORTESIA'}</span>
                     </div>
+                    ${j.publico_total ? `
+                    <div class="det-publico">
+                        <span class="mi-publico">groups</span>
+                        <span><strong>${Number(j.publico_total).toLocaleString('pt-BR')}</strong> torcedores no estádio</span>
+                    </div>` : ''}
                 </div>
             </div>
             ${bannerTitulo}
@@ -1778,6 +1826,7 @@ function abrirModal(idx) {
             ${linhaModal('sports_soccer', 'Teve pênalti', j.teve_penal ? 'Sim' : 'Não')}
             ${linhaModal('military_tech', 'Fase/Rodada', j.fase || '—')}
             ${linhaModal('workspace_premium', 'Título conquistado', j.titulo_conquistado || '—')}
+            ${linhaModal('groups', 'Público total', j.publico_total ? Number(j.publico_total).toLocaleString('pt-BR') + ' pessoas' : '—')}
         </div>
 
         ${renderGolsModal(j)}

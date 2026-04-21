@@ -102,7 +102,7 @@ router.get('/snapshot', async (req, res, next) => {
                     id, data, dia_semana, time_casa, time_visitante, campeonato, genero,
                     estadio, status_presenca, setor, assento, valor_pago,
                     gols_casa, gols_visitante, resultado, foi_classico, teve_penal,
-                    is_corinthians, mando, fase, titulo_conquistado, autores_gols, observacoes,
+                    is_corinthians, mando, fase, titulo_conquistado, autores_gols, publico_total, observacoes,
                     CASE WHEN time_casa='Corinthians' THEN time_visitante
                          WHEN time_visitante='Corinthians' THEN time_casa
                          ELSE time_casa || ' x ' || time_visitante END AS adversario
