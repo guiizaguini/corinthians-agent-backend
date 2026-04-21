@@ -2216,8 +2216,14 @@ function renderGaleria() {
     const jogos = filtrar().sort((a, b) => new Date(b.data) - new Date(a.data));
     const alvo = document.getElementById('galeria');
 
-    document.getElementById('filtro-info').textContent =
-        `${jogos.length} DE ${DADOS.jogos.length} INGRESSOS`;
+    // Quantos dos jogos totais do banco são PRESENTE (ingresso) vs AUSENTE
+    const totalPresente = DADOS.jogos.filter(j => j.status_presenca === 'PRESENTE').length;
+    const totalAusente = DADOS.jogos.filter(j => j.status_presenca === 'AUSENTE').length;
+    // Se nenhum filtro aplicado, mostra resumo completo. Se filtrou, mostra só o filtrado.
+    const semFiltro = jogos.length === totalPresente;
+    document.getElementById('filtro-info').textContent = semFiltro
+        ? `${totalPresente} INGRESSOS · ${totalAusente} AUSÊNCIAS REGISTRADAS`
+        : `${jogos.length} DE ${totalPresente} INGRESSOS`;
 
     if (!jogos.length) {
         alvo.innerHTML = '<div class="vazio">NENHUM INGRESSO PARA ESSES FILTROS</div>';
