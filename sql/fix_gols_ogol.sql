@@ -1,14 +1,13 @@
 -- =====================================================================
 -- NORMALIZAÇÃO DE gols_texto + publico_total + correções + DELETES
--- Fontes: ogol.com.br, Wikipedia (feminino), validação do usuário via meutimao
--- Gerado em 2026-04-21T21:15:09.607Z
--- 29 UPDATEs + 1 DELETEs
+-- Gerado em 2026-04-21T21:18:31.169Z
+-- 30 UPDATEs + 1 DELETEs
 -- =====================================================================
 
 BEGIN;
 
 -- --- DELETES ---
--- 2021-12-01 amistoso vs Nice em Paris — não aconteceu/não deve estar no banco
+-- 2021-12-01 amistoso vs Nice em Paris — não aconteceu
 DELETE FROM jogos WHERE id = 32;
 
 -- --- UPDATES ---
@@ -52,8 +51,15 @@ UPDATE jogos SET
     autores_gols = NULL
 WHERE id = 68;
 
+-- id 69: 2023-04-17 Corinthians 3x2 Palmeiras (null)
+-- OBS: minutos aproximados (apenas Vic 5'1T confirmado por reportagem)
+UPDATE jogos SET
+    gols_texto = 'Vic Albuquerque 5''1T (COR); Benítez 29''1T (PAL); Camilinha 37''1T (PAL); Tamires 3''2T (COR); Tarciane 41''2T (COR)',
+    autores_gols = NULL
+WHERE id = 69;
+
 -- id 73: 2023-06-28 Corinthians 4x0 Liverpool URU (Libertadores)
--- CORREÇÃO DE PLACAR: Corinthians 3-0 Liverpool URU (Libertadores) — confirmado pelo usuário
+-- CORREÇÃO DE PLACAR: Corinthians 3-0 Liverpool URU
 UPDATE jogos SET
     gols_texto = 'Matheus Araújo 32''1T (COR); Felipe Augusto 19''2T (COR); Adson 35''2T (COR)',
     gols_casa = 3,
@@ -134,7 +140,7 @@ UPDATE jogos SET
 WHERE id = 89;
 
 -- id 90: 2024-08-04 Corinthians 0x0 Juventude (Brasileiro)
--- CORREÇÃO DE PLACAR: Corinthians 1-1 Juventude (Brasileirão 2024) — confirmado pelo usuário
+-- CORREÇÃO DE PLACAR: Corinthians 1-1 Juventude (placar errado no banco)
 UPDATE jogos SET
     gols_texto = 'Alan Ruschel 4''1T (JUV); Pedro Henrique 3''2T (COR)',
     gols_casa = 1,
@@ -196,7 +202,7 @@ UPDATE jogos SET
 WHERE id = 117;
 
 -- id 118: 2025-12-21 Vasco 2x1 Corinthians (Copa do Brasil)
--- WARN: Banco=1COR-2ADV | Ogol=2COR-1ADV
+-- WARN: Banco=1COR-2ADV | Parse=2COR-1ADV
 UPDATE jogos SET
     gols_texto = 'Yuri Alberto 19''1T (COR); Nuno Moreira 41''1T (VAS); Memphis Depay 17''2T (COR)',
     publico_total = 67111,
@@ -211,7 +217,7 @@ WHERE id = 129;
 
 COMMIT;
 
--- PENDENTES (17): ainda sem dados de fonte confiável
+-- PENDENTES (16) — aguardando URLs do usuário
 -- id 33: 2022-01-25 Corinthians 0x0 Ferroviária (Paulista)
 -- id 34: 2022-01-30 Santo André 1x0 Corinthians (Paulista)
 -- id 37: 2022-02-10 Corinthians 3x0 Mirassol (Paulista)
@@ -219,7 +225,6 @@ COMMIT;
 -- id 42: 2022-05-01 Corinthians 1x0 Fortaleza (Brasileiro)
 -- id 44: 2022-05-22 Corinthians 1x1 São Paulo (Brasileiro)
 -- id 45: 2022-05-29 Corinthians 1x1 América-MG (Brasileiro)
--- id 69: 2023-04-17 Corinthians 3x2 Palmeiras (null)
 -- id 70: 2023-05-02 Corinthians 2x0 Remo (Copa do Brasil)
 -- id 71: 2023-05-02 Corinthians 0x2 Ind. Del Valle (Libertadores)
 -- id 72: 2023-05-31 Corinthians 2x0 Atlético-MG (Copa do Brasil)
@@ -230,8 +235,7 @@ COMMIT;
 -- id 104: 2025-03-27 Corinthians 0x0 Palmeiras (Paulista)
 -- id 105: 2025-04-05 Corinthians 3x0 Vasco (Brasileiro)
 
--- WARNS DE DIVERGÊNCIA (1):
--- id 118 | 2025-12-21 vs Corinthians | banco 2x1 | ogol 2-1
+-- WARNS (1):
+-- id 118 | 2025-12-21 vs Corinthians | banco 2x1 | parse 2-1
 
--- Verificação:
-SELECT id, gols_texto, publico_total, gols_casa, gols_visitante FROM jogos WHERE id IN (1, 23, 36, 38, 43, 68, 73, 75, 76, 77, 78, 80, 82, 83, 84, 85, 86, 89, 90, 92, 93, 94, 110, 113, 114, 116, 117, 118, 129) ORDER BY id;
+SELECT id, gols_texto, publico_total, gols_casa, gols_visitante FROM jogos WHERE id IN (1, 23, 36, 38, 43, 68, 69, 73, 75, 76, 77, 78, 80, 82, 83, 84, 85, 86, 89, 90, 92, 93, 94, 110, 113, 114, 116, 117, 118, 129) ORDER BY id;

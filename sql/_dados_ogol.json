@@ -114,6 +114,43 @@
     ]
   },
   {
+    "id_banco": 69,
+    "publico": null,
+    "gols": [
+      {
+        "n": "Vic Albuquerque",
+        "m": 5,
+        "t": "1T",
+        "team": "COR"
+      },
+      {
+        "n": "Benítez",
+        "m": 29,
+        "t": "1T",
+        "team": "PAL"
+      },
+      {
+        "n": "Camilinha",
+        "m": 37,
+        "t": "1T",
+        "team": "PAL"
+      },
+      {
+        "n": "Tamires",
+        "m": 48,
+        "t": "2T",
+        "team": "COR"
+      },
+      {
+        "n": "Tarciane",
+        "m": 86,
+        "t": "2T",
+        "team": "COR"
+      }
+    ],
+    "_obs": "minutos aproximados (apenas Vic 5'1T confirmado por reportagem)"
+  },
+  {
     "id_banco": 73,
     "publico": null,
     "gols": [
