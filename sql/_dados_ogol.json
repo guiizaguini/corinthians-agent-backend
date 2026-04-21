@@ -18,6 +18,84 @@
     ]
   },
   {
+    "id_banco": 10,
+    "publico": null,
+    "gols": [
+      {
+        "n": "Matheus Peixoto",
+        "m": "45+2",
+        "t": "1T",
+        "team": "BRA"
+      },
+      {
+        "n": "Balbuena",
+        "m": 20,
+        "t": "2T",
+        "team": "COR"
+      },
+      {
+        "n": "Vitinho",
+        "m": 25,
+        "t": "2T",
+        "team": "BRA"
+      },
+      {
+        "n": "Italo",
+        "m": 31,
+        "t": "2T",
+        "team": "BRA"
+      },
+      {
+        "n": "Pedrinho",
+        "m": 42,
+        "t": "2T",
+        "team": "COR"
+      }
+    ]
+  },
+  {
+    "id_banco": 12,
+    "publico": null,
+    "gols": [
+      {
+        "n": "Gustavo",
+        "m": 4,
+        "t": "1T",
+        "team": "COR"
+      },
+      {
+        "n": "Pedro Henrique (gol contra)",
+        "m": 24,
+        "t": "1T",
+        "team": "SAN"
+      }
+    ]
+  },
+  {
+    "id_banco": 13,
+    "publico": null,
+    "gols": [
+      {
+        "n": "Manoel",
+        "m": 34,
+        "t": "1T",
+        "team": "COR"
+      },
+      {
+        "n": "Pablo",
+        "m": 43,
+        "t": "1T",
+        "team": "SAO"
+      },
+      {
+        "n": "Gustavo",
+        "m": 10,
+        "t": "2T",
+        "team": "COR"
+      }
+    ]
+  },
+  {
     "id_banco": 23,
     "publico": 28862,
     "gols": [
@@ -36,6 +114,54 @@
       {
         "n": "Millene",
         "m": 80,
+        "t": "2T",
+        "team": "COR"
+      }
+    ]
+  },
+  {
+    "id_banco": 24,
+    "publico": null,
+    "gols": [
+      {
+        "n": "Everaldo",
+        "m": 16,
+        "t": "1T",
+        "team": "COR"
+      },
+      {
+        "n": "Janderson",
+        "m": 20,
+        "t": "2T",
+        "team": "COR"
+      }
+    ]
+  },
+  {
+    "id_banco": 26,
+    "publico": null,
+    "gols": [
+      {
+        "n": "Róger Guedes",
+        "m": 49,
+        "t": "1T",
+        "team": "COR"
+      },
+      {
+        "n": "Gilberto",
+        "m": 48,
+        "t": "1T",
+        "team": "BAH"
+      },
+      {
+        "n": "Cantillo",
+        "m": 6,
+        "t": "2T",
+        "team": "COR"
+      },
+      {
+        "n": "Jô",
+        "m": 25,
         "t": "2T",
         "team": "COR"
       }
@@ -104,6 +230,36 @@
         "m": 32,
         "t": "1T",
         "team": "COR"
+      }
+    ]
+  },
+  {
+    "id_banco": 52,
+    "publico": null,
+    "gols": [
+      {
+        "n": "Roni (gol contra)",
+        "m": 27,
+        "t": "2T",
+        "team": "PAL"
+      }
+    ]
+  },
+  {
+    "id_banco": 56,
+    "publico": null,
+    "gols": [
+      {
+        "n": "Yuri Alberto",
+        "m": 14,
+        "t": "2T",
+        "team": "COR"
+      },
+      {
+        "n": "Éder",
+        "m": 33,
+        "t": "2T",
+        "team": "SAO"
       }
     ]
   },

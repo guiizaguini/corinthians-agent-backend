@@ -1,8 +1,7 @@
 -- =====================================================================
 -- NORMALIZAÇÃO COMPLETA - gols_texto + publico + correções + DELETEs
--- Fontes: ogol.com.br, Wikipedia, reportagens (Gazeta, ESPN, CNN)
--- Gerado em 2026-04-21T21:25:08.538Z
--- 33 UPDATEs + 1 DELETEs
+-- Gerado em 2026-04-21T21:31:11.606Z
+-- 40 UPDATEs + 1 DELETEs
 -- =====================================================================
 
 BEGIN;
@@ -20,12 +19,42 @@ UPDATE jogos SET
     autores_gols = NULL
 WHERE id = 1;
 
+-- id 10: 2018-03-18 Corinthians 2x3 Bragantino (Paulista)
+UPDATE jogos SET
+    gols_texto = 'Matheus Peixoto 45+2''1T (BRA); Balbuena 20''2T (COR); Vitinho 25''2T (BRA); Italo 31''2T (BRA); Pedrinho 42''2T (COR)',
+    autores_gols = NULL
+WHERE id = 10;
+
+-- id 12: 2019-01-13 Corinthians 1x1 Santos (Amistoso)
+UPDATE jogos SET
+    gols_texto = 'Gustavo 4''1T (COR); Pedro Henrique (gol contra) 24''1T (SAN)',
+    autores_gols = NULL
+WHERE id = 12;
+
+-- id 13: 2019-02-17 Corinthians 2x1 São Paulo (Paulista)
+UPDATE jogos SET
+    gols_texto = 'Manoel 34''1T (COR); Pablo 43''1T (SAO); Gustavo 10''2T (COR)',
+    autores_gols = NULL
+WHERE id = 13;
+
 -- id 23: 2019-11-16 Corinthians 3x0 São Paulo (Paulista)
 UPDATE jogos SET
     gols_texto = 'Vic Albuquerque 4''1T (COR); Juliete 3''2T (COR); Millene 35''2T (COR)',
     publico_total = 28862,
     autores_gols = NULL
 WHERE id = 23;
+
+-- id 24: 2020-02-02 Corinthians 2x0 Santos (Paulista)
+UPDATE jogos SET
+    gols_texto = 'Everaldo 16''1T (COR); Janderson 20''2T (COR)',
+    autores_gols = NULL
+WHERE id = 24;
+
+-- id 26: 2021-10-05 Corinthians 3x1 Bahia (null)
+UPDATE jogos SET
+    gols_texto = 'Róger Guedes 45+4''1T (COR); Gilberto 45+3''1T (BAH); Cantillo 6''2T (COR); Jô 25''2T (COR)',
+    autores_gols = NULL
+WHERE id = 26;
 
 -- id 29: 2021-11-06 Corinthians 1x0 Fortaleza (null)
 UPDATE jogos SET
@@ -51,6 +80,18 @@ UPDATE jogos SET
     gols_texto = 'Júnior Moraes 8''1T (COR); Giuliano 32''1T (COR)',
     autores_gols = NULL
 WHERE id = 43;
+
+-- id 52: 2022-08-13 Corinthians 0x1 Palmeiras (Brasileiro)
+UPDATE jogos SET
+    gols_texto = 'Roni (gol contra) 27''2T (PAL)',
+    autores_gols = NULL
+WHERE id = 52;
+
+-- id 56: 2022-09-11 Corinthians 1x1 São Paulo (Brasileiro)
+UPDATE jogos SET
+    gols_texto = 'Yuri Alberto 14''2T (COR); Éder 33''2T (SAO)',
+    autores_gols = NULL
+WHERE id = 56;
 
 -- id 65: 2023-01-24 Corinthians 2x1 Guarani (Paulista)
 UPDATE jogos SET
@@ -238,16 +279,7 @@ WHERE id = 129;
 
 COMMIT;
 
--- PENDENTES - JOGOS COM GOLS_TEXTO RUIM (aguardando URL do usuário):
--- id 10: 2018-03-18 Corinthians 2x3 Bragantino (Paulista) | texto atual: "Bragantino venceu 3x2. Gols do Corinthians: Balbuena 21'2T e Pedrinho 42'2T"
--- id 12: 2019-01-13 Corinthians 1x1 Santos (Amistoso) | texto atual: "Gustavo 4'1T (COR); Pedro Henrique gol contra (SAN)"
--- id 13: 2019-02-17 Corinthians 2x1 São Paulo (Paulista) | texto atual: "Manoel (COR); Pablo (SAO); Gustavo (COR)"
--- id 24: 2020-02-02 Corinthians 2x0 Santos (Paulista) | texto atual: "Everaldo (COR); Janderson (COR)"
--- id 26: 2021-10-05 Corinthians 3x1 Bahia (null) | texto atual: "Gilberto (pen.) (BAH); Róger Guedes (pen.) 49'1T (COR); Cantillo 6'2T (COR); Jô 25'2T (COR)"
--- id 52: 2022-08-13 Corinthians 0x1 Palmeiras (Brasileiro) | texto atual: "Roni (gol contra) 2T (PAL)"
--- id 56: 2022-09-11 Corinthians 1x1 São Paulo (Brasileiro) | texto atual: "Yuri Alberto 1T (COR); Éder (pen.) 1T (SAO)"
-
--- PENDENTES - SEM gols_texto ou sem publico (originais):
+-- PENDENTES originais (16) - sem gols_texto ou sem publico:
 -- id 33: 2022-01-25 Corinthians 0x0 Ferroviária (Paulista)
 -- id 34: 2022-01-30 Santo André 1x0 Corinthians (Paulista)
 -- id 37: 2022-02-10 Corinthians 3x0 Mirassol (Paulista)
