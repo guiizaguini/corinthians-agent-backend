@@ -248,6 +248,33 @@ body::before {
 }
 
 /* =========== FILTROS =========== */
+.btn-filtros-toggle {
+    display: none; /* escondido no desktop, mostrado no mobile */
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: var(--preto-profundo);
+    color: var(--ouro);
+    border: none;
+    border-top: 1px solid var(--cinza-linha);
+    border-bottom: 1px solid var(--cinza-linha);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s;
+    position: sticky;
+    top: 0;
+    z-index: 11;
+}
+.btn-filtros-toggle:hover { background: #0a0a08; }
+.btn-filtros-toggle .material-icons { font-size: 18px; letter-spacing: normal; text-transform: none; }
+.btn-filtros-toggle .seta { transition: transform 0.25s; }
+.btn-filtros-toggle[aria-expanded="true"] .seta { transform: rotate(180deg); }
+
 .filtros {
     background: var(--preto-profundo);
     border-bottom: 1px solid var(--cinza-linha);
@@ -362,11 +389,11 @@ body::before {
         0 0 0 1px var(--cor-acento);
 }
 
-/* CANHOTO ESQUERDO */
+/* CANHOTO ESQUERDO (mesmo espaçamento do ingresso 17/12 — referência) */
 .canhoto {
     background: var(--cor-acento);
     color: #1a1000;
-    padding: 18px 10px;
+    padding: 22px 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -374,26 +401,28 @@ body::before {
     text-align: center;
     position: relative;
     z-index: 1;
+    gap: 10px;
 }
 .canhoto-dia {
     font-family: 'Anton', sans-serif;
     font-size: 56px;
-    line-height: 0.9;
+    line-height: 1;
     letter-spacing: -0.02em;
+    margin-bottom: 2px;
 }
 .canhoto-mes {
     font-family: 'Anton', sans-serif;
     font-size: 20px;
-    letter-spacing: 0.15em;
-    margin-top: -4px;
+    letter-spacing: 0.2em;
+    margin-top: 4px;
 }
 .canhoto-ano {
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     font-weight: 700;
-    letter-spacing: 0.18em;
-    opacity: 0.85;
-    margin-top: 2px;
+    letter-spacing: 0.22em;
+    opacity: 0.9;
+    margin-top: 6px;
 }
 .canhoto-selo {
     font-family: 'Anton', sans-serif;
@@ -508,7 +537,9 @@ body::before {
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 8px;
     margin: 6px 0 2px;
+    flex-wrap: wrap;
 }
 
 /* Quando é jogo sem placar (ausente/agendado/sem gols ainda) */
@@ -728,21 +759,13 @@ body::before {
         inset 0 0 40px rgba(156,138,82,0.15);
 }
 .ingresso.fase-final .confronto { font-size: clamp(18px, 5.5cqw, 34px); }
-.ingresso.fase-final .canhoto-selo { font-size: 28px; margin: 8px 0; }
-/* TODO FINAL usa o mesmo canhoto: gradiente dourado-escuro com TEXTO BRANCO.
-   Referência: ingresso do 17/12/2025. Aplica pra V, E, D e título.
-   Também serve pros ingressos da seção Jogos Históricos. */
+.ingresso.fase-final .canhoto-selo { font-size: 26px; margin: 6px 0; }
+/* Canhoto de todo FINAL: mesmo fundo dourado-escuro + texto branco
+   (as dimensões e espaçamentos vêm da base .canhoto). Serve pros históricos também. */
 .ingresso.fase-final .canhoto {
     background: linear-gradient(180deg, var(--vitoria), var(--ouro-escuro)) !important;
     color: var(--branco) !important;
-    padding: 22px 10px !important;
-    gap: 10px;
 }
-/* Espaçamento das linhas de data: dia / mês / ano respiram */
-.ingresso.fase-final .canhoto-dia  { line-height: 1 !important; margin-bottom: 2px !important; }
-.ingresso.fase-final .canhoto-mes  { margin-top: 4px !important; letter-spacing: 0.2em !important; }
-.ingresso.fase-final .canhoto-ano  { margin-top: 6px !important; letter-spacing: 0.22em !important; opacity: 0.95 !important; }
-.ingresso.fase-final .canhoto-num  { margin-top: 8px !important; opacity: 0.85 !important; }
 
 /* Detalhes (estádio, mando, setor, valor) — IDÊNTICOS em TODOS os finais.
    Fonte e cor forçadas pra não haver variação entre 17/12 e 21/12. */
@@ -1166,8 +1189,21 @@ body::before {
     .stats-topo { padding: 14px 18px; gap: 16px; }
     .stat-num { font-size: 28px; }
 
-    /* Filtros compactos */
-    .filtros { padding: 12px 14px; gap: 10px; }
+    /* Filtros colapsáveis no mobile */
+    .btn-filtros-toggle { display: flex; }
+    .filtros {
+        padding: 12px 14px; gap: 10px;
+        max-height: 0; overflow: hidden;
+        padding-top: 0; padding-bottom: 0;
+        border-bottom: none;
+        transition: max-height 0.3s ease, padding 0.3s ease, border 0.3s ease;
+        position: static;
+    }
+    .filtros.aberto {
+        max-height: 800px;
+        padding-top: 12px; padding-bottom: 12px;
+        border-bottom: 1px solid var(--cinza-linha);
+    }
     .filtro-grupo { flex: 1 1 calc(50% - 5px); }
     .filtros select, .filtros input { width: 100%; min-width: 0; font-size: 13px; padding: 7px 10px; }
     .btn-limpar { width: 100%; margin-top: 2px; }
@@ -1205,6 +1241,9 @@ body::before {
     /* Final e título: escala das firulas */
     .ingresso.fase-final::after { font-size: 10px; padding: 4px 36px 3px; right: -32px; }
     .campeao-tag, .classico-tag, .fase-tag { font-size: 7px; padding: 2px 6px; }
+    /* Selo VITÓRIA/EMPATE/DERROTA no canhoto dos finais: menor no mobile */
+    .ingresso.fase-final .canhoto-selo { font-size: 15px !important; padding: 3px 8px !important; margin: 4px 0 !important; }
+    .ingresso.fase-final .canhoto { padding: 14px 6px !important; gap: 6px !important; }
     /* Ornamentos: alinhar com novo canhoto de 92px */
     .ingresso.fase-final .ornamento.tl { left: 100px; }
     .ingresso.fase-final .ornamento.bl { left: 100px; }
@@ -1273,6 +1312,9 @@ body::before {
     .ingresso.fase-final .ornamento.bl { left: 86px; }
     .ingresso.fase-final .ornamento { width: 20px; height: 20px; }
     .ingresso.fase-final .subtitulo-final { font-size: 9px; letter-spacing: 0.15em; }
+    /* Selo ainda menor em celular */
+    .ingresso.fase-final .canhoto-selo { font-size: 12px !important; padding: 3px 6px !important; }
+    .ingresso.fase-final .canhoto { padding: 12px 4px !important; }
 
     .resultado-badge { font-size: 10px; padding: 2px 7px; letter-spacing: 0.15em; }
     .detalhes { grid-template-columns: 1fr 1fr; gap: 4px 8px; }
@@ -1353,7 +1395,12 @@ body::before {
 </header>
 
 <!-- FILTROS -->
-<div class="filtros">
+<button class="btn-filtros-toggle" id="btn-filtros-toggle" aria-expanded="false" aria-controls="filtros-wrap">
+    <span class="material-icons">tune</span>
+    <span>Filtros</span>
+    <span class="material-icons seta">expand_more</span>
+</button>
+<div class="filtros" id="filtros-wrap">
     <div class="filtro-grupo">
         <label class="filtro-label">Ano</label>
         <select id="f-ano"><option value="">TODOS</option></select>
@@ -1649,6 +1696,16 @@ function renderFiltros() {
         });
         renderGaleria();
     });
+
+    // Toggle mobile: abre/fecha os filtros
+    const btnToggle = document.getElementById('btn-filtros-toggle');
+    const wrapFiltros = document.getElementById('filtros-wrap');
+    if (btnToggle && wrapFiltros) {
+        btnToggle.addEventListener('click', () => {
+            const aberto = wrapFiltros.classList.toggle('aberto');
+            btnToggle.setAttribute('aria-expanded', String(aberto));
+        });
+    }
 }
 
 function filtrar() {
@@ -1759,14 +1816,15 @@ function renderIngresso(j, idx) {
             <div class="corpo">
                 <div class="corpo-topo">
                     <span class="id-ingresso">INGRESSO · ${j.campeonato || 'AMISTOSO'}${faseTag}</span>
-                    <span style="display:inline-flex; gap:6px; align-items:center;">
-                        ${j.foi_classico && !ehFinal ? '<span class="classico-tag">CLÁSSICO</span>' : ''}
-                        ${ehTitulo ? `<span class="campeao-tag" title="${j.titulo_conquistado}">Campeão</span>` : ''}
-                    </span>
+                    ${j.foi_classico && !ehFinal ? '<span class="classico-tag">CLÁSSICO</span>' : ''}
                 </div>
                 ${subFinal}
                 ${renderConfrontoGoogle(j, adversario, isPres)}
-                ${isPres && j.resultado ? `<div class="resultado-strip"><span class="resultado-badge">${resultadoPt}</span></div>` : ''}
+                ${isPres && j.resultado ? `
+                    <div class="resultado-strip">
+                        <span class="resultado-badge">${resultadoPt}</span>
+                        ${ehTitulo ? `<span class="campeao-tag" title="${j.titulo_conquistado}">Campeão</span>` : ''}
+                    </div>` : ''}
                 <div class="detalhes">
                     <div class="det-linha">
                         <span class="det-label">Estádio</span>
