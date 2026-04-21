@@ -509,7 +509,79 @@ body::before {
     gap: 8px;
 }
 
-/* =========== ESCUDOS / LOGOS =========== */
+/* =========== CONFRONTO ESTILO GOOGLE — escudo + nome empilhado, gols no meio =========== */
+.confronto-google {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 0 4px;
+    container-type: inline-size;
+}
+.time-bloco {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.time-bloco.casa { justify-content: flex-end; }
+.time-bloco.visitante { justify-content: flex-start; flex-direction: row-reverse; gap: 12px; }
+.time-bloco .time-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+}
+.time-bloco .escudo {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+}
+.time-bloco .nome-clube {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(11px, 3cqw, 14px);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: #0a0a0a;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 110px;
+    line-height: 1;
+}
+.placar-gols {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(26px, 7cqw, 38px);
+    line-height: 1;
+    color: #0a0a0a;
+    min-width: 28px;
+    text-align: center;
+}
+.placar-separador {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(18px, 4.5cqw, 24px);
+    color: var(--cor-acento-escura);
+    padding: 0 2px;
+}
+.placar-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Barra embaixo com resultado centralizado */
+.resultado-strip {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 6px 0 2px;
+}
+
+/* Quando é jogo sem placar (ausente/agendado/sem gols ainda) */
+.confronto-google.sem-placar .placar-area { display: none; }
+
+/* =========== ESCUDOS / LOGOS (legado, ainda usado no modal) =========== */
 .confronto-logos {
     display: flex;
     align-items: center;
@@ -757,148 +829,76 @@ body::before {
     border-bottom: 1px double rgba(110,96,56,0.4);
 }
 
-/* =========== DESTAQUE: JOGO DO TÍTULO (MÁXIMO) =========== */
+/* =========== DESTAQUE: JOGO DO TÍTULO (elegante, sóbrio) ===========
+   Mesmo tamanho e formato dos ingressos normais, só com detalhes dourados */
 .ingresso.titulo {
-    background:
-        radial-gradient(circle at 30% 20%, #fff3c2 0%, transparent 50%),
-        radial-gradient(circle at 70% 80%, #f5daa0 0%, transparent 50%),
-        linear-gradient(135deg, #f5e6a8 0%, #e7ce78 50%, #f5e6a8 100%);
-    background-size: 200% 200%;
-    animation: tituloShimmer 6s ease-in-out infinite;
-    min-height: 320px;
+    background: linear-gradient(135deg, #f6efd8 0%, #f0e4b8 100%);
     box-shadow:
-        0 0 0 3px var(--vitoria-claro),
-        0 0 0 5px var(--preto),
-        0 0 0 7px var(--vitoria),
-        0 0 0 9px var(--preto),
-        0 28px 60px rgba(0,0,0,0.75),
-        0 0 100px rgba(196,172,108,0.5),
-        inset 0 0 60px rgba(156,138,82,0.15);
-}
-@keyframes tituloShimmer {
-    0%, 100% { background-position: 0% 0%; }
-    50% { background-position: 100% 100%; }
+        0 0 0 1.5px var(--ouro),
+        0 2px 0 rgba(0,0,0,0.1),
+        0 12px 28px rgba(0,0,0,0.55),
+        0 0 0 2.5px rgba(184,166,106,0.15);
 }
 .ingresso.titulo:hover {
-    transform: translate(-4px, -6px);
+    transform: translate(-3px, -4px) rotate(-0.5deg);
     box-shadow:
-        0 0 0 3px var(--vitoria-claro),
-        0 0 0 5px var(--preto),
-        0 0 0 7px var(--vitoria-claro),
-        0 0 0 9px var(--preto),
-        0 34px 70px rgba(0,0,0,0.85),
-        0 0 120px rgba(196,172,108,0.7),
-        inset 0 0 60px rgba(156,138,82,0.2);
+        0 0 0 1.5px var(--ouro-claro),
+        0 4px 0 rgba(0,0,0,0.1),
+        0 20px 42px rgba(0,0,0,0.7),
+        0 0 0 2.5px rgba(184,166,106,0.25);
 }
 .ingresso.titulo .canhoto {
-    background: linear-gradient(180deg, #1a1a1a, #000);
-    color: var(--vitoria-claro);
+    background: linear-gradient(180deg, var(--vitoria-claro), var(--vitoria) 55%, var(--vitoria-escuro));
+    color: #1a1000;
 }
 .ingresso.titulo .canhoto-selo {
-    font-size: 30px;
-    border: 2px solid var(--vitoria-claro);
-    text-shadow: 0 0 12px rgba(196,172,108,0.8);
-}
-.ingresso.titulo .confronto {
-    font-size: clamp(20px, 6cqw, 36px);
-    color: #0a0a0a;
-    text-shadow: 0 2px 4px rgba(196,172,108,0.3);
+    font-size: 22px;
+    border: 2px solid currentColor;
 }
 
-/* Fita de CAMPEÃO no topo */
-.ingresso.titulo .fita-campeao {
-    position: absolute;
-    top: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: linear-gradient(180deg, var(--vitoria-claro), var(--vitoria) 55%, var(--ouro-escuro));
-    color: #0a0a0a;
-    font-family: 'Anton', sans-serif;
-    font-size: 15px;
-    letter-spacing: 0.4em;
-    padding: 8px 32px;
-    border: 2px solid var(--preto);
-    z-index: 6;
-    box-shadow: 0 6px 14px rgba(0,0,0,0.6);
-    white-space: nowrap;
-}
-.ingresso.titulo .fita-campeao::before,
-.ingresso.titulo .fita-campeao::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    border: 8px solid transparent;
-    border-top-color: var(--preto);
-}
-.ingresso.titulo .fita-campeao::before { left: -2px; }
-.ingresso.titulo .fita-campeao::after { right: -2px; }
+/* Remove fita e troféu flutuante (eram feios) */
+.ingresso.titulo .fita-campeao { display: none; }
+.ingresso.titulo::after { display: none; }
 
-/* Banner embaixo com o nome do título */
+/* Banner elegante embaixo com ícone de troféu Material Icons inline */
 .ingresso.titulo .banner-titulo {
     position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: linear-gradient(90deg, transparent, rgba(0,0,0,0.9) 20%, rgba(0,0,0,0.9) 80%, transparent);
+    bottom: 12px;
+    left: 16px;
+    right: 16px;
+    padding: 6px 12px;
+    background: linear-gradient(90deg, rgba(0,0,0,0.92), rgba(20,16,8,0.92));
     color: var(--vitoria-claro);
-    font-family: 'Anton', sans-serif;
-    font-size: 14px;
-    letter-spacing: 0.3em;
-    padding: 6px 36px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     z-index: 5;
-    text-shadow: 0 0 10px rgba(196,172,108,0.6);
+    border-left: 2px solid var(--ouro);
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
-.ingresso.titulo .banner-titulo::before { content: '★  '; color: var(--vitoria-claro); }
-.ingresso.titulo .banner-titulo::after  { content: '  ★'; color: var(--vitoria-claro); }
-
-/* Troféu Material Icons — substitui o emoji
-   IMPORTANTE: resetar TODAS as props herdadas do .fase-final::after
-   (background, transform, letter-spacing, padding, etc) */
-.ingresso.titulo::after {
+.ingresso.titulo .banner-titulo::before {
     content: 'emoji_events';
-    font-family: 'Material Icons', sans-serif !important;
-    font-weight: normal !important;
-    font-style: normal !important;
-    font-size: 48px !important;
-    letter-spacing: normal !important;
-    text-transform: none !important;
-    text-shadow: 0 0 2px rgba(0,0,0,0.9), 0 0 12px rgba(196,172,108,0.7), 0 2px 4px rgba(0,0,0,0.6) !important;
-    padding: 0 !important;
-    background: none !important;
-    background-color: transparent !important;
-    box-shadow: none !important;
-    border: none !important;
-    transform-origin: center;
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-size: 16px;
+    letter-spacing: normal;
+    text-transform: none;
+    color: var(--vitoria-claro);
+    line-height: 1;
     -webkit-font-feature-settings: 'liga';
     font-feature-settings: 'liga';
-    -webkit-font-smoothing: antialiased;
-    position: absolute;
-    top: 14px;
-    right: 16px;
-    line-height: 1;
-    color: var(--vitoria);
-    z-index: 4;
-    animation: trofeuGlow 3s ease-in-out infinite;
-    white-space: nowrap;
-}
-@keyframes trofeuGlow {
-    0%, 100% {
-        transform: scale(1) rotate(-4deg);
-        color: var(--vitoria);
-        text-shadow: 0 0 2px rgba(0,0,0,0.9), 0 0 12px rgba(196,172,108,0.7), 0 2px 4px rgba(0,0,0,0.6);
-    }
-    50% {
-        transform: scale(1.12) rotate(4deg);
-        color: var(--vitoria-claro);
-        text-shadow: 0 0 2px rgba(0,0,0,0.9), 0 0 22px rgba(196,172,108,1), 0 4px 10px rgba(0,0,0,0.7);
-    }
+    flex-shrink: 0;
 }
 
-/* Corpo do título: adiciona mais respiração */
-.ingresso.titulo .corpo { padding-top: 28px; padding-bottom: 42px; }
-.ingresso.titulo .detalhes { margin-bottom: 20px; }
+/* Corpo reserva espaço pro banner */
+.ingresso.titulo .corpo { padding-bottom: 42px; }
 
 /* Tag de fase pros demais (semi, quartas, etc) */
 .fase-tag {
@@ -1055,31 +1055,58 @@ body::before {
     line-height: 1;
 }
 
-/* Cabeçalho do modal com os escudos dos times */
-.modal-confronto {
-    display: flex;
+/* Placar estilo Google no modal */
+.modal-placar-google {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: center;
     gap: 18px;
     margin-bottom: 10px;
+    padding: 12px;
+    background: linear-gradient(180deg, rgba(20,20,20,0.6), rgba(5,5,5,0.85));
+    border: 1px solid var(--cinza-linha);
 }
-.modal-confronto .escudo {
+.modal-placar-google .mpg-time {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+.modal-placar-google .mpg-time .escudo {
     width: 56px;
     height: 56px;
 }
-.modal-confronto .x {
+.modal-placar-google .mpg-nome {
     font-family: 'Anton', sans-serif;
-    font-size: 32px;
-    color: var(--ouro);
-}
-.modal-times {
-    font-family: 'Anton', sans-serif;
-    font-size: 34px;
-    line-height: 1;
+    font-size: 16px;
     color: var(--branco);
+    letter-spacing: 0.03em;
     text-align: center;
-    letter-spacing: 0.02em;
-    margin-bottom: 6px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px;
+    line-height: 1;
+}
+.modal-placar-google .mpg-placar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.modal-placar-google .mpg-gols {
+    font-family: 'Anton', sans-serif;
+    font-size: 48px;
+    line-height: 1;
+    color: var(--ouro-claro);
+    min-width: 34px;
+    text-align: center;
+}
+.modal-placar-google .mpg-x {
+    font-family: 'Anton', sans-serif;
+    font-size: 30px;
+    color: var(--ouro);
 }
 
 /* =========== MODAL DE DETALHES =========== */
@@ -1225,23 +1252,6 @@ body::before {
     </div>
 </header>
 
-<!-- SEÇÃO: JOGOS HISTÓRICOS (SÓ TÍTULOS) -->
-<section class="historicos" id="historicos">
-    <div class="historicos-cabecalho">
-        <h2>
-            <span class="trofeu-header material-icons">emoji_events</span>
-            Jogos Históricos
-        </h2>
-        <div>
-            <div class="sub">As taças que você viu erguer ao vivo — o papel aqui pesa mais.</div>
-            <span class="contagem" id="historicos-contagem">—</span>
-        </div>
-    </div>
-    <div class="historicos-grid" id="historicos-grid">
-        <div class="historicos-vazio">NENHUM TÍTULO REGISTRADO AINDA</div>
-    </div>
-</section>
-
 <!-- FILTROS -->
 <div class="filtros">
     <div class="filtro-grupo">
@@ -1285,6 +1295,23 @@ body::before {
     <div class="loading">CARREGANDO ACERVO</div>
 </main>
 
+<!-- SEÇÃO: JOGOS HISTÓRICOS (SÓ TÍTULOS) — vem DEPOIS da galeria -->
+<section class="historicos" id="historicos">
+    <div class="historicos-cabecalho">
+        <h2>
+            <span class="trofeu-header material-icons">emoji_events</span>
+            Jogos Históricos
+        </h2>
+        <div>
+            <div class="sub">As taças que você viu erguer ao vivo — o papel aqui pesa mais.</div>
+            <span class="contagem" id="historicos-contagem">—</span>
+        </div>
+    </div>
+    <div class="historicos-grid" id="historicos-grid">
+        <div class="historicos-vazio">NENHUM TÍTULO REGISTRADO AINDA</div>
+    </div>
+</section>
+
 <!-- MODAL -->
 <div class="modal-overlay" id="modal">
     <div class="modal-conteudo" id="modal-conteudo">
@@ -1307,7 +1334,7 @@ let DADOS = null;
 
 // Mapa de escudos — SVGs públicos. Se o clube não estiver aqui, cai no fallback de iniciais.
 const LOGOS = {
-    'Corinthians':        'https://upload.wikimedia.org/wikipedia/commons/b/b3/Sport_Club_Corinthians_Paulista_%28oficial%29.svg',
+    'Corinthians':        'https://cdn.meutimao.com.br/_upload/forum/2023/09/20/lateral_esquerdo_a_peneira_comeca_agora_dp.png',
     'Palmeiras':          'https://upload.wikimedia.org/wikipedia/commons/1/10/Palmeiras_logo.svg',
     'São Paulo':          'https://upload.wikimedia.org/wikipedia/commons/6/6f/Brasao_do_Sao_Paulo_Futebol_Clube.svg',
     'Santos':             'https://upload.wikimedia.org/wikipedia/commons/1/10/Santos_logo.svg',
@@ -1370,45 +1397,37 @@ function iniciaisClube(nome) {
     return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
 }
 
-// SVG inline do escudo do Corinthians — sempre carrega, sempre colorido
-const CORINTHIANS_SVG = `
-<svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg" aria-label="Corinthians">
-    <defs>
-        <linearGradient id="cor-gold" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stop-color="#d4b964"/>
-            <stop offset="100%" stop-color="#9c8a52"/>
-        </linearGradient>
-    </defs>
-    <!-- Escudo preto com borda dourada -->
-    <path d="M 50 4 L 94 16 L 94 58 C 94 82 74 100 50 106 C 26 100 6 82 6 58 L 6 16 Z"
-          fill="#000" stroke="url(#cor-gold)" stroke-width="2.5"/>
-    <!-- Divisão interna branca -->
-    <path d="M 50 12 L 86 22 L 86 56 C 86 76 70 92 50 98 C 30 92 14 76 14 56 L 14 22 Z"
-          fill="none" stroke="#f5f5f5" stroke-width="1"/>
-    <!-- Remos cruzados (estilizados) -->
-    <g stroke="#f5f5f5" stroke-width="2.2" stroke-linecap="round" fill="none">
-        <line x1="24" y1="34" x2="76" y2="76"/>
-        <line x1="76" y1="34" x2="24" y2="76"/>
-        <!-- Pás dos remos -->
-        <ellipse cx="22" cy="32" rx="4" ry="3" fill="#f5f5f5" transform="rotate(-45 22 32)"/>
-        <ellipse cx="78" cy="32" rx="4" ry="3" fill="#f5f5f5" transform="rotate(45 78 32)"/>
-        <ellipse cx="22" cy="78" rx="4" ry="3" fill="#f5f5f5" transform="rotate(45 22 78)"/>
-        <ellipse cx="78" cy="78" rx="4" ry="3" fill="#f5f5f5" transform="rotate(-45 78 78)"/>
-    </g>
-    <!-- SCCP -->
-    <text x="50" y="58" text-anchor="middle" fill="url(#cor-gold)"
-          font-family="Anton, Impact, sans-serif" font-size="16" font-weight="900"
-          letter-spacing="1">SCCP</text>
-</svg>`;
+function renderConfrontoGoogle(j, adversario, isPres) {
+    const temPlacar = isPres && j.gols_casa != null && j.gols_visitante != null;
+    const corCasa = j.time_casa === 'Corinthians' ? 'Corinthians' : j.time_casa;
+    const corVisitante = j.time_visitante === 'Corinthians' ? 'Corinthians' : j.time_visitante;
+    // Mandante é o time da casa; visitante é o time de fora (não importa quem é Corinthians)
+    const classSem = temPlacar ? '' : 'sem-placar';
+    return `
+        <div class="confronto-google ${classSem}">
+            <div class="time-bloco casa">
+                <div class="time-stack">
+                    ${renderEscudo(corCasa)}
+                    <span class="nome-clube">${corCasa}</span>
+                </div>
+                ${temPlacar ? `<span class="placar-gols">${j.gols_casa}</span>` : ''}
+            </div>
+            ${temPlacar ? `<span class="placar-separador">×</span>` : `<span class="placar-separador" style="font-size:20px;">×</span>`}
+            <div class="time-bloco visitante">
+                <div class="time-stack">
+                    ${renderEscudo(corVisitante)}
+                    <span class="nome-clube">${corVisitante}</span>
+                </div>
+                ${temPlacar ? `<span class="placar-gols">${j.gols_visitante}</span>` : ''}
+            </div>
+        </div>
+    `;
+}
 
 function renderEscudo(nome) {
     const url = LOGOS[nome];
     const ehCor = nome === 'Corinthians';
     const classe = `escudo${ehCor ? ' corinthians' : ''}`;
-    // Corinthians: SVG inline garantido
-    if (ehCor) {
-        return `<span class="${classe}" title="${nome}">${CORINTHIANS_SVG}</span>`;
-    }
     if (url) {
         return `<span class="${classe}" title="${nome}"><img src="${url}" alt="${nome}" onerror="this.parentElement.innerHTML='<span class=\\'escudo-fallback\\'>${iniciaisClube(nome)}</span>'"></span>`;
     }
@@ -1541,6 +1560,8 @@ function filtrar() {
     };
 
     return DADOS.jogos.filter(j => {
+        // Nunca mostra AUSENTE no museu — só ingressos que foi de fato
+        if (j.status_presenca !== 'PRESENTE') return false;
         if (f.ano && new Date(j.data).getUTCFullYear() != f.ano) return false;
         if (f.camp && j.campeonato !== f.camp) return false;
         if (f.est && j.estadio !== f.est) return false;
@@ -1637,18 +1658,8 @@ function renderIngresso(j, idx) {
                     ${j.foi_classico ? '<span class="classico-tag">CLÁSSICO</span>' : ''}
                 </div>
                 ${subFinal}
-                <div class="confronto-logos">
-                    ${renderEscudo('Corinthians')}
-                    <span class="confronto-x">×</span>
-                    ${renderEscudo(adversario)}
-                </div>
-                <div class="confronto">
-                    Corinthians <span class="vs">×</span> ${adversario}
-                </div>
-                <div class="placar-row">
-                    <span class="placar">${placarStr}</span>
-                    ${isPres && j.resultado ? `<span class="resultado-badge">${resultadoPt}</span>` : ''}
-                </div>
+                ${renderConfrontoGoogle(j, adversario, isPres)}
+                ${isPres && j.resultado ? `<div class="resultado-strip"><span class="resultado-badge">${resultadoPt}</span></div>` : ''}
                 <div class="detalhes">
                     <div class="det-linha">
                         <span class="det-label">Estádio</span>
@@ -1695,14 +1706,23 @@ function abrirModal(idx) {
     const iconeMando = j.mando === 'MANDANTE' ? 'home' : j.mando === 'VISITANTE' ? 'flight_takeoff' : 'swap_horiz';
 
     const conteudo = `
-        <div class="modal-confronto">
-            ${renderEscudo('Corinthians')}
-            <span class="x">×</span>
-            ${renderEscudo(adversario)}
+        <div class="modal-placar-google">
+            <div class="mpg-time">
+                ${renderEscudo(j.time_casa)}
+                <span class="mpg-nome">${j.time_casa}</span>
+            </div>
+            <div class="mpg-placar">
+                ${j.gols_casa != null ? `<span class="mpg-gols">${j.gols_casa}</span>` : ''}
+                <span class="mpg-x">×</span>
+                ${j.gols_visitante != null ? `<span class="mpg-gols">${j.gols_visitante}</span>` : ''}
+            </div>
+            <div class="mpg-time">
+                ${renderEscudo(j.time_visitante)}
+                <span class="mpg-nome">${j.time_visitante}</span>
+            </div>
         </div>
-        <h2 class="modal-times">Corinthians × ${adversario}</h2>
         <div style="font-family:'Playfair Display',serif; font-style:italic; color:var(--cinza-claro); text-align:center; margin-bottom:22px; font-size:14px;">
-            ${fmtDataExt(j.data)}
+            ${fmtDataExt(j.data)} ${j.campeonato ? `· ${j.campeonato}` : ''} ${j.fase ? `· ${j.fase}` : ''}
         </div>
 
         <!-- ASSENTO em destaque com ícone de cadeira -->
