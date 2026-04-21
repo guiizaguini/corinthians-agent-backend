@@ -685,20 +685,25 @@ body::before {
     gap: 1px;
 }
 .det-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 8px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: #8a7530;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 9px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.22em !important;
+    text-transform: uppercase !important;
+    color: #8a7530 !important;
+    line-height: 1.2 !important;
 }
 .det-valor {
-    font-family: 'Archivo', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    color: #0a0a0a;
+    font-family: 'Archivo', sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #0a0a0a !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 1.3 !important;
 }
 /* Linha de público — ocupa linha inteira, centralizada */
 .det-publico {
@@ -761,43 +766,8 @@ body::before {
     text-shadow: 0 0 8px rgba(184,166,106,0.6);
 }
 
-/* Ornamentos art déco nos 4 cantos */
-.ingresso.fase-final .ornamento {
-    position: absolute;
-    width: 32px;
-    height: 32px;
-    border: 2px solid var(--ouro-escuro);
-    pointer-events: none;
-    z-index: 2;
-}
-.ingresso.fase-final .ornamento.tl { top: 8px; left: 128px; border-right: none; border-bottom: none; }
-.ingresso.fase-final .ornamento.tr { top: 8px; right: 8px; border-left: none; border-bottom: none; }
-.ingresso.fase-final .ornamento.bl { bottom: 8px; left: 128px; border-right: none; border-top: none; }
-.ingresso.fase-final .ornamento.br { bottom: 8px; right: 8px; border-left: none; border-top: none; }
-.ingresso.fase-final .ornamento::before {
-    content: '◆';
-    position: absolute;
-    font-size: 8px;
-    color: var(--ouro-escuro);
-}
-.ingresso.fase-final .ornamento.tl::before { top: -4px; left: -4px; }
-.ingresso.fase-final .ornamento.tr::before { top: -4px; right: -4px; }
-.ingresso.fase-final .ornamento.bl::before { bottom: -4px; left: -4px; }
-.ingresso.fase-final .ornamento.br::before { bottom: -4px; right: -4px; }
-
-/* Subtítulo "PARTIDA DECISIVA" */
-.ingresso.fase-final .subtitulo-final {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    color: var(--ouro-escuro);
-    text-transform: uppercase;
-    text-align: center;
-    margin-top: -2px;
-    padding-bottom: 4px;
-    border-bottom: 1px double rgba(110,96,56,0.4);
-}
+/* Ornamentos e subtítulo REMOVIDOS — ingresso de final fica idêntico ao comum,
+   distinguido só pela tag diagonal "★ FINAL ★" */
 
 /* =========== JOGO DO TÍTULO — IGUAL a um final sem taça ===========
    Única diferença visual: tag "Campeão" pequena no cabeçalho.
