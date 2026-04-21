@@ -729,7 +729,12 @@ body::before {
 }
 .ingresso.fase-final .confronto { font-size: clamp(18px, 5.5cqw, 34px); }
 .ingresso.fase-final .canhoto-selo { font-size: 30px; }
-.ingresso.fase-final .canhoto { background: linear-gradient(180deg, var(--vitoria), var(--ouro-escuro)); }
+/* TODO FINAL usa o mesmo canhoto: gradiente dourado-escuro com TEXTO BRANCO.
+   Referência: ingresso do 17/12/2025. Aplica pra V, E, D e título. */
+.ingresso.fase-final .canhoto {
+    background: linear-gradient(180deg, var(--vitoria), var(--ouro-escuro)) !important;
+    color: var(--branco) !important;
+}
 
 /* Selo diagonal "FINAL" — mais sofisticado */
 .ingresso.fase-final::after {
