@@ -247,6 +247,275 @@ body::before {
     .historicos-grid { grid-template-columns: 1fr; gap: 22px; }
 }
 
+/* =========== ESTATÍSTICAS =========== */
+.estatisticas {
+    padding: 50px 40px 60px;
+    background:
+        radial-gradient(ellipse at 50% 0%, rgba(156,138,82,0.08) 0%, transparent 55%),
+        linear-gradient(180deg, rgba(0,0,0,0.75), rgba(0,0,0,0.95));
+    border-top: 1px solid var(--ouro-escuro);
+    border-bottom: 1px solid var(--ouro-escuro);
+    position: relative;
+    z-index: 2;
+}
+.estatisticas-cabecalho {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 32px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--ouro-escuro);
+    max-width: 1800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.estatisticas-cabecalho h2 {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(32px, 5vw, 58px);
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ouro-claro);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.estatisticas-cabecalho h2 .mi-estat {
+    font-family: 'Material Icons';
+    font-size: 44px;
+    color: var(--ouro);
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: normal;
+    -webkit-font-feature-settings: 'liga';
+    font-feature-settings: 'liga';
+}
+.estatisticas-cabecalho .sub {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--cinza-claro);
+    max-width: 420px;
+    text-align: right;
+    line-height: 1.4;
+}
+.estatisticas-cabecalho .contagem {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--ouro);
+    margin-top: 4px;
+    display: block;
+    text-align: right;
+}
+.estatisticas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
+    gap: 20px;
+    max-width: 1800px;
+    margin: 0 auto;
+}
+.stat-loading {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--ouro);
+}
+
+/* Card */
+.stat-card {
+    background:
+        linear-gradient(180deg, rgba(20,20,20,0.7), rgba(5,5,5,0.85));
+    border: 1px solid var(--cinza-linha);
+    padding: 22px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: border-color 0.2s, transform 0.2s;
+}
+.stat-card:hover {
+    border-color: var(--ouro-escuro);
+    transform: translateY(-2px);
+}
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 36px; height: 2px;
+    background: var(--ouro);
+    transition: width 0.3s;
+}
+.stat-card:hover::before { width: 100%; }
+
+/* Título do card */
+.stat-titulo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--cinza-linha);
+}
+.stat-titulo .mi {
+    font-family: 'Material Icons';
+    font-size: 20px;
+    color: var(--ouro);
+    -webkit-font-feature-settings: 'liga';
+    font-feature-settings: 'liga';
+}
+.stat-titulo h3 {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--branco);
+    margin: 0;
+}
+.stat-titulo .mini {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--cinza-claro);
+    letter-spacing: 0.15em;
+}
+
+/* Número grande destacado */
+.stat-destaque {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+.stat-destaque .numero {
+    font-family: 'Anton', sans-serif;
+    font-size: 58px;
+    line-height: 1;
+    color: var(--ouro-claro);
+    letter-spacing: -0.02em;
+}
+.stat-destaque .unidade {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cinza-claro);
+}
+
+/* Ranking */
+.stat-ranking {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.stat-item {
+    display: grid;
+    grid-template-columns: 24px 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 7px 0;
+    border-bottom: 1px dashed rgba(156,138,82,0.12);
+}
+.stat-item:last-child { border-bottom: none; }
+.stat-item .pos {
+    font-family: 'Anton', sans-serif;
+    font-size: 18px;
+    color: var(--ouro-escuro);
+    text-align: center;
+    line-height: 1;
+}
+.stat-item.top1 .pos { color: var(--ouro-claro); font-size: 22px; }
+.stat-item .nome {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--branco);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.stat-item .nome .sub {
+    display: block;
+    font-weight: 400;
+    font-size: 10px;
+    color: var(--cinza-claro);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 1px;
+}
+.stat-item .valor {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--ouro-claro);
+    letter-spacing: 0.05em;
+}
+
+/* Barra comparativa (ex: 1T vs 2T) */
+.stat-split {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.stat-split-row {
+    display: grid;
+    grid-template-columns: 60px 1fr auto;
+    gap: 10px;
+    align-items: center;
+}
+.stat-split-row .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--ouro);
+    text-transform: uppercase;
+}
+.stat-split-row .bar {
+    height: 20px;
+    background: var(--cinza-divisa);
+    overflow: hidden;
+    position: relative;
+}
+.stat-split-row .bar .fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--ouro-escuro), var(--ouro));
+    transition: width 0.6s ease;
+}
+.stat-split-row .valor {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--branco);
+    min-width: 42px;
+    text-align: right;
+}
+
+/* Rodapé do card (texto informativo curto) */
+.stat-rodape {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--cinza-claro);
+    line-height: 1.4;
+    border-top: 1px dashed var(--cinza-linha);
+    padding-top: 10px;
+    margin-top: auto;
+}
+
+@media (max-width: 900px) {
+    .estatisticas { padding: 36px 14px 40px; }
+    .estatisticas-cabecalho { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .estatisticas-cabecalho .sub, .estatisticas-cabecalho .contagem { text-align: left; }
+    .estatisticas-cabecalho h2 { font-size: 36px; }
+    .estatisticas-cabecalho h2 .mi-estat { font-size: 30px; }
+    .estatisticas-grid { grid-template-columns: 1fr; gap: 14px; }
+    .stat-card { padding: 16px; }
+    .stat-destaque .numero { font-size: 44px; }
+}
+
 /* =========== FILTROS =========== */
 .btn-filtros-toggle {
     display: none; /* escondido no desktop, mostrado no mobile */
@@ -1367,6 +1636,23 @@ body::before {
     </div>
 </section>
 
+<!-- SEÇÃO: ESTATÍSTICAS DE GOLS -->
+<section class="estatisticas" id="estatisticas">
+    <div class="estatisticas-cabecalho">
+        <h2>
+            <span class="mi-estat material-icons">insights</span>
+            Estatísticas
+        </h2>
+        <div>
+            <div class="sub">O que os gols contam da sua caminhada nas arquibancadas.</div>
+            <span class="contagem" id="estatisticas-total">—</span>
+        </div>
+    </div>
+    <div class="estatisticas-grid" id="estatisticas-grid">
+        <div class="stat-loading">CALCULANDO</div>
+    </div>
+</section>
+
 <!-- MODAL -->
 <div class="modal-overlay" id="modal">
     <div class="modal-conteudo" id="modal-conteudo">
@@ -1529,6 +1815,7 @@ function renderTudo() {
     renderHistoricos();
     renderFiltros();
     renderGaleria();
+    renderEstatisticas();
 }
 
 function renderHistoricos() {
@@ -1556,6 +1843,218 @@ function renderHistoricos() {
         });
     });
     window.__JOGOS_HIST = titulos;
+}
+
+// ==================== ESTATÍSTICAS ====================
+function coletarGols() {
+    const presentes = DADOS.jogos.filter(j => j.status_presenca === 'PRESENTE');
+    const out = [];
+    presentes.forEach(j => {
+        let gols = Array.isArray(j.autores_gols) && j.autores_gols.length
+            ? j.autores_gols
+            : parseGolsTexto(j.gols_texto || '');
+        gols.forEach(g => {
+            const min = g.minuto || '';
+            const tempo = /2T/.test(min) ? '2T' : /1T/.test(min) ? '1T' : null;
+            // Autor sem "(pen.)" e "(gol contra)" pra agrupar limpo
+            const autorLimpo = (g.autor || '').replace(/\s*\([^)]+\)\s*/g, '').trim();
+            const ehContra = /gol contra/i.test(g.autor || '');
+            const ehPenalti = /pen\.?/i.test(g.autor || '') || /pen\.?/i.test(min);
+            const rival = j.time_casa === 'Corinthians' ? j.time_visitante : j.time_casa;
+            out.push({
+                autor: autorLimpo || g.autor,
+                time: g.time,
+                minuto: min,
+                tempo,
+                ehCorinthians: g.time === 'Corinthians',
+                ehContra, ehPenalti,
+                rival, data: j.data,
+            });
+        });
+    });
+    return out;
+}
+
+function rankMapa(items, keyFn) {
+    const m = {};
+    items.forEach(it => {
+        const k = keyFn(it);
+        if (!k) return;
+        if (!m[k]) m[k] = { chave: k, count: 0, extra: new Set() };
+        m[k].count++;
+    });
+    return Object.values(m).sort((a, b) => b.count - a.count);
+}
+
+function renderEstatisticas() {
+    const gols = coletarGols();
+    const corGols = gols.filter(g => g.ehCorinthians);
+    const rivGols = gols.filter(g => !g.ehCorinthians);
+
+    // Contadores rápidos
+    const dist1T = corGols.filter(g => g.tempo === '1T').length;
+    const dist2T = corGols.filter(g => g.tempo === '2T').length;
+    const distSem = corGols.filter(g => !g.tempo).length;
+    const maxDist = Math.max(dist1T, dist2T, 1);
+
+    const distRiv1T = rivGols.filter(g => g.tempo === '1T').length;
+    const distRiv2T = rivGols.filter(g => g.tempo === '2T').length;
+    const maxDistRiv = Math.max(distRiv1T, distRiv2T, 1);
+
+    // Rankings
+    const topCor = rankMapa(corGols, g => g.autor).slice(0, 8);
+    const topRiv = rankMapa(rivGols, g => g.autor).slice(0, 8);
+    const topTimes = rankMapa(rivGols, g => g.time).slice(0, 5);
+    const totalGols = gols.length;
+    const totalPen = gols.filter(g => g.ehPenalti).length;
+    const totalContra = gols.filter(g => g.ehContra).length;
+
+    // Jogo com mais gols na presença
+    const presentes = DADOS.jogos.filter(j => j.status_presenca === 'PRESENTE');
+    const maiorPlacar = presentes
+        .map(j => ({
+            j, total: (Number(j.gols_casa) || 0) + (Number(j.gols_visitante) || 0)
+        }))
+        .sort((a, b) => b.total - a.total)[0];
+
+    // Set counter no cabeçalho
+    document.getElementById('estatisticas-total').textContent =
+        `${totalGols} GOLS PRESENCIADOS · ${presentes.length} JOGOS`;
+
+    // Helpers de HTML
+    const itemHTML = (pos, nome, sub, valor) => `
+        <div class="stat-item ${pos === 1 ? 'top1' : ''}">
+            <span class="pos">${String(pos).padStart(2, '0')}</span>
+            <div class="nome">${nome}${sub ? `<span class="sub">${sub}</span>` : ''}</div>
+            <span class="valor">${valor}</span>
+        </div>`;
+
+    const cardHTML = (icon, titulo, mini, conteudo, rodape) => `
+        <div class="stat-card">
+            <div class="stat-titulo">
+                <span class="mi">${icon}</span>
+                <h3>${titulo}</h3>
+                ${mini ? `<span class="mini">${mini}</span>` : ''}
+            </div>
+            ${conteudo}
+            ${rodape ? `<div class="stat-rodape">${rodape}</div>` : ''}
+        </div>`;
+
+    const cards = [];
+
+    // === Card 1: Goleadores do Timão ===
+    cards.push(cardHTML(
+        'sports_soccer',
+        'Goleadores do Timão',
+        `${topCor.length} JOGADORES`,
+        `<div class="stat-ranking">
+            ${topCor.map((p, i) => itemHTML(i+1, p.chave, null, `${p.count} GOL${p.count > 1 ? 'S' : ''}`)).join('')}
+        </div>`,
+        topCor[0] ? `<strong style="color:var(--ouro-claro)">${topCor[0].chave}</strong> é o jogador do Timão que você mais viu balançar a rede.` : null
+    ));
+
+    // === Card 2: 1º tempo vs 2º tempo (Corinthians) ===
+    cards.push(cardHTML(
+        'schedule',
+        'Quando o Timão marca',
+        'DIVISÃO POR TEMPO',
+        `<div class="stat-split">
+            <div class="stat-split-row">
+                <span class="label">1º Tempo</span>
+                <div class="bar"><div class="fill" style="width:${(dist1T/maxDist)*100}%"></div></div>
+                <span class="valor">${dist1T}</span>
+            </div>
+            <div class="stat-split-row">
+                <span class="label">2º Tempo</span>
+                <div class="bar"><div class="fill" style="width:${(dist2T/maxDist)*100}%"></div></div>
+                <span class="valor">${dist2T}</span>
+            </div>
+            ${distSem ? `<div class="stat-split-row">
+                <span class="label">s/ tempo</span>
+                <div class="bar"><div class="fill" style="width:${(distSem/maxDist)*100}%; opacity:0.4"></div></div>
+                <span class="valor">${distSem}</span>
+            </div>` : ''}
+        </div>`,
+        dist2T > dist1T
+            ? 'Você viu mais gols do Timão no segundo tempo — costume de virada e acréscimos dramáticos.'
+            : dist1T > dist2T
+            ? 'O Timão prefere abrir o placar cedo nos jogos que você foi.'
+            : 'Equilíbrio entre primeiro e segundo tempo.'
+    ));
+
+    // === Card 3: Carrascos (rivais) ===
+    cards.push(cardHTML(
+        'dangerous',
+        'Carrascos da Fiel',
+        `RIVAIS QUE MARCARAM`,
+        `<div class="stat-ranking">
+            ${topRiv.slice(0, 8).map((p, i) => itemHTML(i+1, p.chave, null, `${p.count} GOL${p.count > 1 ? 'S' : ''}`)).join('') || '<div style="color:var(--cinza-claro); text-align:center; padding:10px;">Sem dados suficientes.</div>'}
+        </div>`,
+        topRiv[0] ? `<strong style="color:var(--derrota-claro)">${topRiv[0].chave}</strong> é o rival que mais tirou teu sono no estádio.` : null
+    ));
+
+    // === Card 4: Top times que marcaram contra você ===
+    cards.push(cardHTML(
+        'shield',
+        'Top 5 times algozes',
+        `QUEM MAIS MARCOU`,
+        `<div class="stat-ranking">
+            ${topTimes.map((t, i) => itemHTML(i+1, t.chave, null, `${t.count} GOL${t.count > 1 ? 'S' : ''}`)).join('') || '<div style="color:var(--cinza-claro); text-align:center; padding:10px;">—</div>'}
+        </div>`,
+        topTimes[0] ? `<strong style="color:var(--derrota-claro)">${topTimes[0].chave}</strong> é quem mais balançou a rede contra o Timão com você presente.` : null
+    ));
+
+    // === Card 5: Total de gols (destaque grande) ===
+    cards.push(cardHTML(
+        'tag',
+        'Total de gols vividos',
+        'SOMATÓRIO',
+        `<div class="stat-destaque">
+            <span class="numero">${totalGols}</span>
+            <span class="unidade">GOLS<br>NO ESTÁDIO</span>
+        </div>
+        <div class="stat-split" style="margin-top:8px;">
+            <div class="stat-split-row">
+                <span class="label">Timão</span>
+                <div class="bar"><div class="fill" style="width:${(corGols.length/Math.max(totalGols,1))*100}%"></div></div>
+                <span class="valor">${corGols.length}</span>
+            </div>
+            <div class="stat-split-row">
+                <span class="label">Rivais</span>
+                <div class="bar"><div class="fill" style="width:${(rivGols.length/Math.max(totalGols,1))*100}%; background:linear-gradient(90deg,var(--derrota-escuro),var(--derrota-claro))"></div></div>
+                <span class="valor">${rivGols.length}</span>
+            </div>
+        </div>`,
+        `Média de <strong style="color:var(--ouro-claro)">${(totalGols / Math.max(presentes.length, 1)).toFixed(2)}</strong> gols por jogo.`
+    ));
+
+    // === Card 6: Curiosidades ===
+    cards.push(cardHTML(
+        'auto_awesome',
+        'Curiosidades',
+        'DETALHES PECULIARES',
+        `<div class="stat-ranking">
+            <div class="stat-item"><span class="pos">◆</span><div class="nome">Pênaltis presenciados</div><span class="valor">${totalPen}</span></div>
+            <div class="stat-item"><span class="pos">◆</span><div class="nome">Gols contra vistos</div><span class="valor">${totalContra}</span></div>
+            <div class="stat-item"><span class="pos">◆</span><div class="nome">Rivais no 1º tempo</div><span class="valor">${distRiv1T}</span></div>
+            <div class="stat-item"><span class="pos">◆</span><div class="nome">Rivais no 2º tempo</div><span class="valor">${distRiv2T}</span></div>
+            ${maiorPlacar && maiorPlacar.total > 0 ? `
+            <div class="stat-item"><span class="pos">◆</span>
+                <div class="nome">Jogo com mais gols<span class="sub">${fmtDataCurta(maiorPlacar.j.data)} · ${maiorPlacar.j.time_casa} ${maiorPlacar.j.gols_casa}×${maiorPlacar.j.gols_visitante} ${maiorPlacar.j.time_visitante}</span></div>
+                <span class="valor">${maiorPlacar.total}</span>
+            </div>` : ''}
+        </div>`,
+        null
+    ));
+
+    document.getElementById('estatisticas-grid').innerHTML = cards.join('');
+}
+
+// Formato curto de data pra stats
+function fmtDataCurta(d) {
+    const dt = parseData(d);
+    if (!dt) return '—';
+    return `${String(dt.getUTCDate()).padStart(2,'0')}/${String(dt.getUTCMonth()+1).padStart(2,'0')}/${dt.getUTCFullYear()}`;
 }
 
 function abrirModalHist(idx) {
