@@ -509,35 +509,31 @@ body::before {
     gap: 8px;
 }
 
-/* =========== CONFRONTO ESTILO GOOGLE — escudo + nome empilhado, gols no meio =========== */
+/* =========== CONFRONTO ESTILO GOOGLE — flex simples, centrado =========== */
 .confronto-google {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    gap: 10px;
-    margin: 8px 0 4px;
-    container-type: inline-size;
-}
-.time-bloco {
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: center;
+    gap: 14px;
+    margin: 8px 0 4px;
+    container-type: inline-size;
+    padding: 0 8px;
 }
-.time-bloco.casa { justify-content: flex-end; }
-.time-bloco.visitante { justify-content: flex-start; flex-direction: row-reverse; gap: 12px; }
-.time-bloco .time-stack {
+.confronto-google .time-stack {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 4px;
     min-width: 0;
+    max-width: 130px;
+    flex-shrink: 1;
 }
-.time-bloco .escudo {
-    width: 42px;
-    height: 42px;
+.confronto-google .escudo {
+    width: 40px;
+    height: 40px;
     flex-shrink: 0;
 }
-.time-bloco .nome-clube {
+.confronto-google .nome-clube {
     font-family: 'Anton', sans-serif;
     font-size: clamp(11px, 3cqw, 14px);
     letter-spacing: 0.03em;
@@ -547,27 +543,24 @@ body::before {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 110px;
+    max-width: 100%;
     line-height: 1;
 }
-.placar-gols {
+.confronto-google .placar-gols {
     font-family: 'Anton', sans-serif;
-    font-size: clamp(26px, 7cqw, 38px);
+    font-size: clamp(24px, 6cqw, 34px);
     line-height: 1;
     color: #0a0a0a;
-    min-width: 28px;
+    min-width: 24px;
     text-align: center;
+    flex-shrink: 0;
 }
-.placar-separador {
+.confronto-google .placar-separador {
     font-family: 'Anton', sans-serif;
-    font-size: clamp(18px, 4.5cqw, 24px);
+    font-size: clamp(18px, 4.5cqw, 22px);
     color: var(--cor-acento-escura);
     padding: 0 2px;
-}
-.placar-area {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    flex-shrink: 0;
 }
 
 /* Barra embaixo com resultado centralizado */
@@ -829,23 +822,12 @@ body::before {
     border-bottom: 1px double rgba(110,96,56,0.4);
 }
 
-/* =========== DESTAQUE: JOGO DO TÍTULO (elegante, sóbrio) ===========
-   Mesmo tamanho e formato dos ingressos normais, só com detalhes dourados */
+/* =========== JOGO DO TÍTULO — mesmo tamanho do normal =========== */
 .ingresso.titulo {
+    /* Força mesmo tamanho do normal, mesmo tendo classe .fase-final */
+    grid-column: auto !important;
+    min-height: 220px !important;
     background: linear-gradient(135deg, #f6efd8 0%, #f0e4b8 100%);
-    box-shadow:
-        0 0 0 1.5px var(--ouro),
-        0 2px 0 rgba(0,0,0,0.1),
-        0 12px 28px rgba(0,0,0,0.55),
-        0 0 0 2.5px rgba(184,166,106,0.15);
-}
-.ingresso.titulo:hover {
-    transform: translate(-3px, -4px) rotate(-0.5deg);
-    box-shadow:
-        0 0 0 1.5px var(--ouro-claro),
-        0 4px 0 rgba(0,0,0,0.1),
-        0 20px 42px rgba(0,0,0,0.7),
-        0 0 0 2.5px rgba(184,166,106,0.25);
 }
 .ingresso.titulo .canhoto {
     background: linear-gradient(180deg, var(--vitoria-claro), var(--vitoria) 55%, var(--vitoria-escuro));
@@ -856,49 +838,40 @@ body::before {
     border: 2px solid currentColor;
 }
 
-/* Remove fita e troféu flutuante (eram feios) */
+/* Remove fita e banner preto (eram poluídos) */
 .ingresso.titulo .fita-campeao { display: none; }
-.ingresso.titulo::after { display: none; }
+.ingresso.titulo .banner-titulo { display: none; }
 
-/* Banner elegante embaixo com ícone de troféu Material Icons inline */
-.ingresso.titulo .banner-titulo {
-    position: absolute;
-    bottom: 12px;
-    left: 16px;
-    right: 16px;
-    padding: 6px 12px;
-    background: linear-gradient(90deg, rgba(0,0,0,0.92), rgba(20,16,8,0.92));
-    color: var(--vitoria-claro);
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 700;
-    font-size: 10px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    z-index: 5;
-    border-left: 2px solid var(--ouro);
-    display: flex;
+/* NÃO esconde mais o ::after — deixa o selo FINAL aparecer */
+.ingresso.titulo .corpo { padding-bottom: 18px; }
+
+/* Tag pequena CAMPEÃO no corpo-topo (como a CLÁSSICO) */
+.campeao-tag {
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
+    padding: 2px 8px;
+    background: var(--vitoria);
+    color: #1a1000;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-left: 6px;
+    white-space: nowrap;
+    border-radius: 2px;
 }
-.ingresso.titulo .banner-titulo::before {
+.campeao-tag::before {
     content: 'emoji_events';
     font-family: 'Material Icons';
     font-weight: normal;
-    font-size: 16px;
+    font-size: 11px;
     letter-spacing: normal;
     text-transform: none;
-    color: var(--vitoria-claro);
-    line-height: 1;
     -webkit-font-feature-settings: 'liga';
     font-feature-settings: 'liga';
-    flex-shrink: 0;
 }
-
-/* Corpo reserva espaço pro banner */
-.ingresso.titulo .corpo { padding-bottom: 42px; }
 
 /* Tag de fase pros demais (semi, quartas, etc) */
 .fase-tag {
@@ -1399,26 +1372,18 @@ function iniciaisClube(nome) {
 
 function renderConfrontoGoogle(j, adversario, isPres) {
     const temPlacar = isPres && j.gols_casa != null && j.gols_visitante != null;
-    const corCasa = j.time_casa === 'Corinthians' ? 'Corinthians' : j.time_casa;
-    const corVisitante = j.time_visitante === 'Corinthians' ? 'Corinthians' : j.time_visitante;
-    // Mandante é o time da casa; visitante é o time de fora (não importa quem é Corinthians)
-    const classSem = temPlacar ? '' : 'sem-placar';
     return `
-        <div class="confronto-google ${classSem}">
-            <div class="time-bloco casa">
-                <div class="time-stack">
-                    ${renderEscudo(corCasa)}
-                    <span class="nome-clube">${corCasa}</span>
-                </div>
-                ${temPlacar ? `<span class="placar-gols">${j.gols_casa}</span>` : ''}
+        <div class="confronto-google">
+            <div class="time-stack">
+                ${renderEscudo(j.time_casa)}
+                <span class="nome-clube">${j.time_casa}</span>
             </div>
-            ${temPlacar ? `<span class="placar-separador">×</span>` : `<span class="placar-separador" style="font-size:20px;">×</span>`}
-            <div class="time-bloco visitante">
-                <div class="time-stack">
-                    ${renderEscudo(corVisitante)}
-                    <span class="nome-clube">${corVisitante}</span>
-                </div>
-                ${temPlacar ? `<span class="placar-gols">${j.gols_visitante}</span>` : ''}
+            ${temPlacar ? `<span class="placar-gols">${j.gols_casa}</span>` : ''}
+            <span class="placar-separador">×</span>
+            ${temPlacar ? `<span class="placar-gols">${j.gols_visitante}</span>` : ''}
+            <div class="time-stack">
+                ${renderEscudo(j.time_visitante)}
+                <span class="nome-clube">${j.time_visitante}</span>
             </div>
         </div>
     `;
@@ -1655,7 +1620,10 @@ function renderIngresso(j, idx) {
             <div class="corpo">
                 <div class="corpo-topo">
                     <span class="id-ingresso">INGRESSO · ${j.campeonato || 'AMISTOSO'}${faseTag}</span>
-                    ${j.foi_classico ? '<span class="classico-tag">CLÁSSICO</span>' : ''}
+                    <span style="display:inline-flex; gap:6px; align-items:center;">
+                        ${j.foi_classico ? '<span class="classico-tag">CLÁSSICO</span>' : ''}
+                        ${ehTitulo ? `<span class="campeao-tag" title="${j.titulo_conquistado}">Campeão</span>` : ''}
+                    </span>
                 </div>
                 ${subFinal}
                 ${renderConfrontoGoogle(j, adversario, isPres)}
