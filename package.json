@@ -8,7 +8,8 @@
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
     "migrate": "node scripts/migrate.js",
-    "migrate:seed": "node scripts/migrate.js seed"
+    "migrate:seed": "node scripts/migrate.js seed",
+    "fix-gols": "node scripts/run_fix_sql.js sql/fix_gols_ogol.sql"
   },
   "engines": {
     "node": ">=20"
