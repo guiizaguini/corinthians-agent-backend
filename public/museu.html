@@ -218,75 +218,14 @@ body::before {
 
 .historicos-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
-    gap: 22px;
+    /* min() impede estouro quando a tela fica mais estreita que 440px */
+    grid-template-columns: repeat(auto-fill, minmax(min(440px, 100%), 1fr));
+    gap: 26px;
     max-width: 1800px;
     margin: 0 auto;
 }
-/* ===== COMPACTAÇÃO DOS INGRESSOS HISTÓRICOS =====
-   Anula span 2, reduz min-height, padding, banners e fontes */
-.historicos-grid .ingresso.fase-final,
-.historicos-grid .ingresso.titulo {
-    grid-column: auto !important;
-    min-height: 220px !important;
-}
-.historicos-grid .ingresso.fase-final .confronto,
-.historicos-grid .ingresso.titulo .confronto {
-    font-size: clamp(18px, 4.5cqw, 24px) !important;
-}
-
-/* Corpo com menos padding interno */
-.historicos-grid .ingresso.titulo .corpo {
-    padding-top: 22px !important;
-    padding-bottom: 30px !important;
-}
-.historicos-grid .ingresso.titulo .detalhes { margin-bottom: 0 !important; }
-
-/* Canhoto mais compacto */
-.historicos-grid .ingresso .canhoto { padding: 14px 8px; }
-.historicos-grid .ingresso .canhoto-dia { font-size: 42px; }
-.historicos-grid .ingresso .canhoto-mes { font-size: 16px; }
-.historicos-grid .ingresso.fase-final .canhoto-selo,
-.historicos-grid .ingresso.titulo .canhoto-selo {
-    font-size: 20px;
-    padding: 4px 10px;
-}
-
-/* Fita CAMPEÃO menor */
-.historicos-grid .ingresso.titulo .fita-campeao {
-    font-size: 11px;
-    padding: 5px 22px;
-    letter-spacing: 0.3em;
-    top: -8px;
-}
-.historicos-grid .ingresso.titulo .fita-campeao::before,
-.historicos-grid .ingresso.titulo .fita-campeao::after {
-    border-width: 6px;
-    bottom: -6px;
-}
-
-/* Banner do título embaixo menor */
-.historicos-grid .ingresso.titulo .banner-titulo {
-    font-size: 10px;
-    padding: 4px 20px;
-    letter-spacing: 0.22em;
-    bottom: 8px;
-}
-
-/* Troféu menor */
-.historicos-grid .ingresso.titulo::after {
-    font-size: 30px !important;
-    top: 10px !important;
-    right: 10px !important;
-}
-
-/* Selo diagonal FINAL menor */
-.historicos-grid .ingresso.fase-final:not(.titulo)::after {
-    font-size: 11px;
-    padding: 5px 40px 4px;
-    top: 10px;
-    right: -36px;
-}
+/* Históricos renderizam os ingressos exatamente como na galeria principal —
+   sem overrides de tamanho, fonte, padding ou banners */
 
 .historicos-vazio {
     font-family: 'JetBrains Mono', monospace;
@@ -374,7 +313,8 @@ body::before {
 .galeria {
     padding: 40px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+    /* min() impede estouro em tela estreita — card usa 100% se <440px */
+    grid-template-columns: repeat(auto-fill, minmax(min(440px, 100%), 1fr));
     gap: 26px;
     position: relative;
     z-index: 2;
@@ -501,12 +441,12 @@ body::before {
 
 /* CORPO DO INGRESSO */
 .corpo {
-    padding: 16px 22px 18px;
+    padding: 18px 24px 20px;
     position: relative;
     z-index: 1;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
 /* =========== CONFRONTO ESTILO GOOGLE — flex simples, centrado =========== */
@@ -515,7 +455,7 @@ body::before {
     align-items: center;
     justify-content: center;
     gap: 14px;
-    margin: 8px 0 4px;
+    margin: 14px 0 8px;
     container-type: inline-size;
     padding: 0 8px;
 }
@@ -737,20 +677,18 @@ body::before {
 .ingresso.e .canhoto { color: var(--branco); }
 .ingresso.d .canhoto { color: var(--branco); }
 
-/* =========== DESTAQUE: FINAL (refinado) =========== */
+/* =========== DESTAQUE: FINAL (refinado, mesmo tamanho do normal) =========== */
 .ingresso.fase-final {
     background:
         radial-gradient(circle at 50% 50%, #faf4dc 0%, #efe4b5 100%);
-    grid-column: span 2;
-    min-height: 280px;
-    /* Moldura quadrupla: borda dourada externa + preta fina + dourada interna */
+    /* Moldura tripla: borda dourada + preta fina + dourada interna */
     box-shadow:
         0 0 0 2px var(--ouro),
         0 0 0 4px var(--preto),
         0 0 0 5px var(--ouro-claro),
-        0 16px 40px rgba(0,0,0,0.55),
-        0 0 50px rgba(184,166,106,0.3),
-        inset 0 0 40px rgba(156,138,82,0.1);
+        0 12px 28px rgba(0,0,0,0.55),
+        0 0 30px rgba(184,166,106,0.2),
+        inset 0 0 30px rgba(156,138,82,0.08);
 }
 .ingresso.fase-final:hover {
     transform: translate(-4px, -5px);
@@ -1164,31 +1102,156 @@ body::before {
 ::-webkit-scrollbar-thumb:hover { background: var(--ouro-escuro); }
 
 /* =========== MOBILE =========== */
+/* ============ TABLET E SMALL DESKTOP (≤ 900px) ============ */
 @media (max-width: 900px) {
-    .cabecalho-topo { padding: 8px 16px; flex-wrap: wrap; gap: 6px 14px; font-size: 10px; }
-    .cabecalho-main { grid-template-columns: 1fr; padding: 24px 16px 28px; gap: 20px; }
+    /* Header */
+    .cabecalho-topo { padding: 8px 14px; flex-wrap: wrap; gap: 6px 12px; font-size: 10px; }
+    .cabecalho-main { grid-template-columns: 1fr; padding: 24px 14px 28px; gap: 20px; }
     .titulo { font-size: clamp(52px, 18vw, 100px); }
     .titulo .traco { width: 44px; height: 6px; margin: 0 10px 10px 0; }
     .subtitulo { font-size: 14px; max-width: 100%; }
     .stats-topo { padding: 14px 18px; gap: 16px; }
     .stat-num { font-size: 28px; }
-    .filtros { padding: 14px 16px; }
-    .filtro-grupo { flex: 1 1 calc(50% - 7px); }
-    .filtros select, .filtros input { width: 100%; min-width: 0; }
-    .btn-limpar { width: 100%; margin-top: 4px; }
-    .filtro-info { width: 100%; text-align: center; margin-left: 0; }
-    .galeria { padding: 24px 16px; gap: 20px; grid-template-columns: 1fr; }
-    .confronto { font-size: 22px; }
-    .canhoto { padding: 14px 8px; }
-    .canhoto-dia { font-size: 44px; }
-    .canhoto-mes { font-size: 16px; }
-    .canhoto-selo { font-size: 22px; }
+
+    /* Filtros compactos */
+    .filtros { padding: 12px 14px; gap: 10px; }
+    .filtro-grupo { flex: 1 1 calc(50% - 5px); }
+    .filtros select, .filtros input { width: 100%; min-width: 0; font-size: 13px; padding: 7px 10px; }
+    .btn-limpar { width: 100%; margin-top: 2px; }
+    .filtro-info { width: 100%; text-align: center; margin-left: 0; font-size: 10px; }
+
+    /* Galeria 1 coluna */
+    .galeria { padding: 20px 14px; gap: 16px; grid-template-columns: 1fr; }
+
+    /* Histórico */
+    .historicos { padding: 32px 14px 12px; }
+    .historicos-grid { grid-template-columns: 1fr; gap: 16px; }
+
+    /* Ingresso mais leve */
+    .ingresso { grid-template-columns: 92px 1fr; min-height: 200px; }
+    .picotado { left: 92px; }
     .ingresso:hover { transform: none; }
-    .modal-conteudo { padding: 22px 18px; }
+    .canhoto { padding: 12px 6px; }
+    .canhoto-dia { font-size: 38px; }
+    .canhoto-mes { font-size: 14px; }
+    .canhoto-ano { font-size: 10px; }
+    .canhoto-selo { font-size: 18px; padding: 4px 10px; }
+    .canhoto-num { font-size: 8px; }
+    .corpo { padding: 14px 16px 16px; gap: 8px; }
+    .corpo-topo { font-size: 8px; flex-wrap: wrap; gap: 4px; }
+    .confronto-google { gap: 10px; padding: 0; margin: 10px 0 4px; }
+    .confronto-google .escudo { width: 34px; height: 34px; }
+    .confronto-google .nome-clube { font-size: 11px; max-width: 80px; }
+    .confronto-google .placar-gols { font-size: 26px; min-width: 20px; }
+    .confronto-google .placar-separador { font-size: 16px; }
+    .resultado-badge { font-size: 12px; padding: 3px 8px; }
+    .placar { font-size: 18px; padding: 2px 8px; }
+    .detalhes { gap: 4px 10px; padding-top: 8px; }
+    .det-valor { font-size: 11px; }
+
+    /* Final e título: escala das firulas */
+    .ingresso.fase-final::after { font-size: 10px; padding: 4px 36px 3px; right: -32px; }
+    .campeao-tag, .classico-tag, .fase-tag { font-size: 7px; padding: 2px 6px; }
+
+    /* MODAL mobile */
+    .modal-overlay { padding: 12px; }
+    .modal-conteudo { padding: 20px 16px; max-width: 100%; max-height: calc(100vh - 24px); overflow-y: auto; }
+    .modal-grid { grid-template-columns: 1fr; gap: 10px; padding: 12px; }
+    .modal-placar-google { gap: 10px; padding: 10px; }
+    .modal-placar-google .mpg-time .escudo { width: 44px; height: 44px; }
+    .modal-placar-google .mpg-nome { font-size: 13px; max-width: 110px; }
+    .modal-placar-google .mpg-gols { font-size: 36px; min-width: 28px; }
+    .modal-placar-google .mpg-x { font-size: 24px; }
+    .assento-destaque { padding: 12px 14px; gap: 12px; }
+    .assento-destaque .mi-chair { font-size: 42px; }
+    .assento-destaque .ass-valor { font-size: 20px; }
 }
 
+/* ============ CELULAR (≤ 560px) ============ */
+@media (max-width: 560px) {
+    /* Header ainda mais compacto */
+    .cabecalho-topo { font-size: 9px; padding: 6px 12px; }
+    .cabecalho-main { padding: 18px 12px 22px; gap: 16px; }
+    .titulo { font-size: clamp(44px, 20vw, 80px); }
+    .subtitulo { font-size: 13px; padding-left: 10px; }
+    .stats-topo { padding: 12px 14px; gap: 12px; flex-wrap: wrap; }
+    .stat-num { font-size: 24px; }
+    .stat-label { font-size: 9px; letter-spacing: 0.12em; }
+
+    /* Filtros 100% largura cada */
+    .filtros { padding: 10px; gap: 8px; }
+    .filtro-grupo { flex: 1 1 100%; }
+    .filtro-label { font-size: 8px; }
+
+    /* Galeria sem padding lateral */
+    .galeria { padding: 14px 10px; gap: 12px; }
+    .historicos { padding: 24px 10px 10px; }
+    .historicos-grid { gap: 12px; }
+    .historicos-cabecalho h2 { font-size: 26px; }
+    .historicos-cabecalho h2 .trofeu-header { font-size: 26px; }
+    .historicos-cabecalho .sub { font-size: 12px; }
+
+    /* Ingresso ultracompacto */
+    .ingresso { grid-template-columns: 78px 1fr; min-height: 180px; }
+    .picotado { left: 78px; }
+    .canhoto { padding: 10px 4px; }
+    .canhoto-dia { font-size: 32px; }
+    .canhoto-mes { font-size: 12px; }
+    .canhoto-ano { font-size: 9px; letter-spacing: 0.12em; }
+    .canhoto-selo { font-size: 15px; padding: 3px 8px; }
+    .canhoto-num { font-size: 7px; letter-spacing: 0.12em; }
+    .corpo { padding: 12px 14px 14px; gap: 6px; }
+    .corpo-topo .id-ingresso { font-size: 8px; }
+
+    /* Confronto mini */
+    .confronto-google { gap: 8px; margin: 8px 0 4px; }
+    .confronto-google .escudo { width: 28px; height: 28px; }
+    .confronto-google .nome-clube { font-size: 10px; max-width: 70px; letter-spacing: 0; }
+    .confronto-google .placar-gols { font-size: 22px; min-width: 18px; }
+    .confronto-google .placar-separador { font-size: 14px; padding: 0; }
+
+    .resultado-badge { font-size: 10px; padding: 2px 7px; letter-spacing: 0.15em; }
+    .detalhes { grid-template-columns: 1fr 1fr; gap: 4px 8px; }
+    .det-label { font-size: 7px; letter-spacing: 0.15em; }
+    .det-valor { font-size: 10px; }
+
+    /* Modal celular: full-ish */
+    .modal-overlay { padding: 8px; }
+    .modal-conteudo { padding: 16px 12px; }
+    .modal-placar-google { gap: 8px; padding: 10px 8px; grid-template-columns: 1fr auto 1fr; }
+    .modal-placar-google .mpg-time .escudo { width: 36px; height: 36px; }
+    .modal-placar-google .mpg-nome { font-size: 11px; max-width: 90px; }
+    .modal-placar-google .mpg-gols { font-size: 28px; min-width: 22px; }
+    .modal-placar-google .mpg-x { font-size: 20px; }
+    .modal-linha .mi { font-size: 18px; }
+    .modal-linha .modal-label { font-size: 8px; }
+    .modal-linha .modal-valor { font-size: 12px; }
+    .assento-destaque { padding: 10px 12px; gap: 10px; }
+    .assento-destaque .mi-chair { font-size: 34px; }
+    .assento-destaque .ass-label { font-size: 9px; letter-spacing: 0.18em; }
+    .assento-destaque .ass-valor { font-size: 16px; }
+
+    /* Rodapé */
+    .rodape { padding: 30px 12px; font-size: 9px; letter-spacing: 0.08em; }
+}
+
+/* ============ CELULAR MUITO ESTREITO (≤ 380px) ============ */
+@media (max-width: 380px) {
+    .ingresso { grid-template-columns: 66px 1fr; }
+    .picotado { left: 66px; }
+    .canhoto-dia { font-size: 26px; }
+    .confronto-google { gap: 6px; }
+    .confronto-google .escudo { width: 24px; height: 24px; }
+    .confronto-google .nome-clube { font-size: 9px; max-width: 56px; }
+    .confronto-google .placar-gols { font-size: 18px; }
+    .confronto-google .placar-separador { font-size: 12px; }
+}
+
+/* ============ SEM HOVER (touch) ============ */
 @media (hover: none) {
     .ingresso:hover { transform: none; }
+    .ingresso.titulo:hover { transform: none; }
+    .ingresso.fase-final:hover { transform: none; }
 }
 </style>
 </head>
@@ -1593,15 +1656,12 @@ function renderIngresso(j, idx) {
         ehTitulo ? 'titulo' : '',
     ].filter(Boolean).join(' ');
 
-    // Elementos decorativos adicionais pros ingressos especiais
-    const fitaCampeao  = ehTitulo ? `<div class="fita-campeao">★ CAMPEÃO ★</div>` : '';
-    const bannerTitulo = ehTitulo ? `<div class="banner-titulo">${j.titulo_conquistado}</div>` : '';
-    const ornamentos   = ehFinal && !ehTitulo ? `
-        <span class="ornamento tl"></span><span class="ornamento tr"></span>
-        <span class="ornamento bl"></span><span class="ornamento br"></span>
-    ` : '';
-    const subFinal = ehFinal && !ehTitulo
-        ? `<div class="subtitulo-final">◆ Partida decisiva ◆</div>` : '';
+    // (fita-campeao e banner-titulo estão hidden via CSS; mantidos só pra compat)
+    const fitaCampeao  = '';
+    const bannerTitulo = '';
+    // Sem ornamentos nem subtítulo "Partida decisiva" — todos os finais ficam iguais
+    const ornamentos   = '';
+    const subFinal     = '';
 
     return `
         <article class="${classes}" data-idx="${idx}" title="Clique pra ver detalhes">
@@ -1621,7 +1681,7 @@ function renderIngresso(j, idx) {
                 <div class="corpo-topo">
                     <span class="id-ingresso">INGRESSO · ${j.campeonato || 'AMISTOSO'}${faseTag}</span>
                     <span style="display:inline-flex; gap:6px; align-items:center;">
-                        ${j.foi_classico ? '<span class="classico-tag">CLÁSSICO</span>' : ''}
+                        ${j.foi_classico && !ehFinal ? '<span class="classico-tag">CLÁSSICO</span>' : ''}
                         ${ehTitulo ? `<span class="campeao-tag" title="${j.titulo_conquistado}">Campeão</span>` : ''}
                     </span>
                 </div>
