@@ -1855,27 +1855,98 @@ function linhaModal(icon, label, valor) {
     `;
 }
 
-function renderGolsModal(j) {
-    // Prioridade: se tem autores_gols estruturado, usa. Senão, usa o gols_texto.
-    const temEstruturado = j.autores_gols && Array.isArray(j.autores_gols) && j.autores_gols.length > 0;
-    const temTexto = j.gols_texto && String(j.gols_texto).trim().length > 0;
-    if (!temEstruturado && !temTexto) return '';
+// Códigos de time curtos pros nomes completos (formato do gols_texto)
+const TIME_CODE_MAP = {
+    COR: 'Corinthians', PAL: 'Palmeiras', SAO: 'São Paulo', SAN: 'Santos', FLA: 'Flamengo',
+    VAS: 'Vasco', VASCO: 'Vasco', FLU: 'Fluminense', BOT: 'Botafogo', BAH: 'Bahia',
+    ATL: 'Atlético', CEA: 'Ceará', CUI: 'Cuiabá', CHA: 'Chapecoense', FOR: 'Fortaleza',
+    SPO: 'Sport', VIT: 'Vitória', CRI: 'Criciúma', BRA: 'Bragantino', PON: 'Ponte Preta',
+    FER: 'Ferroviária', INT: 'Internacional', GUA: 'Guarani', MIR: 'Mirassol', GRE: 'Grêmio',
+    OES: 'Oeste', ITU: 'Ituano', REM: 'Remo', IND: 'Ind. Del Valle', LIV: 'Liverpool URU',
+    NAC: 'Nacional URU', UCV: 'U. Central', BAR: 'Barcelona SC', UNI: 'Universitário',
+    RAC: 'Racing', PSG: 'PSG', NIC: 'Nice', DEP: 'Deportivo Cali', BOC: 'Boca Juniors',
+    AVA: 'Avaí', COR_F: 'Corinthians'
+};
 
-    let conteudo = '';
-    if (temEstruturado) {
-        conteudo = j.autores_gols.map(g => {
-            const min = g.minuto ? `<span style="color:var(--ouro); margin-right:8px; font-family:'JetBrains Mono',monospace; font-size:11px;">${g.minuto}'</span>` : '';
-            const team = g.time === 'Corinthians' ? 'var(--vitoria-claro)' : 'var(--cinza-claro)';
-            return `<div style="display:flex; align-items:center; padding:6px 0; border-bottom:1px dashed var(--cinza-linha);">
-                <span class="mi" style="font-family:'Material Icons'; font-size:16px; color:${team}; margin-right:8px;">sports_soccer</span>
-                ${min}
-                <span style="font-family:'Archivo',sans-serif; font-weight:700; color:${team}; font-size:13px;">${g.autor}</span>
-                <span style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.15em; color:var(--cinza-claro); text-transform:uppercase;">${g.time}</span>
-            </div>`;
-        }).join('');
-    } else {
-        conteudo = `<div style="font-family:'Archivo',sans-serif; color:var(--branco-suave); font-size:13px; line-height:1.5; padding:4px 0;">${j.gols_texto}</div>`;
+function parseGolsTexto(texto) {
+    if (!texto || !String(texto).trim()) return [];
+    // "0x0" com nada relevante
+    const semGols = /^0x0($|[\s\-().])/i.test(texto.trim());
+    if (semGols && !/[;\d]/.test(texto.replace(/0x0/gi, ''))) return [];
+
+    // Divide em entradas por ;
+    const entries = texto.split(';').map(e => e.trim()).filter(Boolean);
+    const result = [];
+
+    for (const entry of entries) {
+        // Pula entradas que são só explicação (ex: "Pênaltis: ...", "0x0 ...")
+        if (/^(p[eê]naltis|pen[aá]ltis|0x0)/i.test(entry)) continue;
+
+        // Extrai código do time do último (XXX) — aceita "(COR)", "(SAO)", "(BRA, pen.)"
+        const teamMatch = entry.match(/\(([A-Z]{3,4})(?:[^)]*)\)\s*$/);
+        const timeCode = teamMatch ? teamMatch[1] : null;
+        const timeNome = timeCode ? (TIME_CODE_MAP[timeCode] || timeCode) : null;
+
+        // Remove a última parênteses do time
+        let rest = entry.replace(/\([A-Z]{3,4}[^)]*\)\s*$/, '').trim();
+        // Remove ponto final se houver
+        rest = rest.replace(/[.,]\s*$/, '');
+
+        // Pega todos os minutos no formato "14'2T" / "45+1'2T" / "4'" / "33'"
+        const minRegex = /(\d+(?:\+\d+)?)'(?:\s*(\d?T))?/g;
+        const minMatches = [];
+        let m;
+        while ((m = minRegex.exec(rest)) !== null) {
+            minMatches.push({ min: m[1], tempo: m[2] || '', idx: m.index });
+        }
+
+        // Autor = tudo antes do primeiro minuto (ou entry inteira se não tiver minuto)
+        let autor;
+        if (minMatches.length > 0) {
+            autor = rest.slice(0, minMatches[0].idx).trim();
+            // Limpa "e ", ", " no final
+            autor = autor.replace(/[,\s]+(e|E)?\s*$/, '').trim();
+        } else {
+            autor = rest.trim();
+        }
+
+        // Se não tem autor nem minuto, pula
+        if (!autor && minMatches.length === 0) continue;
+
+        if (minMatches.length === 0) {
+            result.push({ autor, minuto: null, time: timeNome });
+        } else {
+            for (const mm of minMatches) {
+                const minFmt = mm.min + (mm.tempo ? `'${mm.tempo}` : `'`);
+                result.push({ autor, minuto: minFmt, time: timeNome });
+            }
+        }
     }
+    return result;
+}
+
+function renderGolsModal(j) {
+    // 1) Pega estruturado (JSONB autores_gols)
+    let gols = Array.isArray(j.autores_gols) ? j.autores_gols : [];
+    // 2) Se não tem, tenta parsear gols_texto
+    if (!gols.length && j.gols_texto) {
+        gols = parseGolsTexto(j.gols_texto);
+    }
+    if (!gols.length) return '';
+
+    const conteudo = gols.map(g => {
+        const min = g.minuto
+            ? `<span style="color:var(--ouro); margin-right:10px; font-family:'JetBrains Mono',monospace; font-size:11px; min-width:30px; display:inline-block;">${g.minuto}</span>`
+            : `<span style="margin-right:10px; min-width:30px; display:inline-block;"></span>`;
+        const isCor = g.time === 'Corinthians';
+        const team = isCor ? 'var(--vitoria-claro)' : 'var(--cinza-claro)';
+        return `<div style="display:flex; align-items:center; padding:7px 0; border-bottom:1px dashed var(--cinza-linha);">
+            <span class="mi" style="font-family:'Material Icons'; font-size:16px; color:${team}; margin-right:8px;">sports_soccer</span>
+            ${min}
+            <span style="font-family:'Archivo',sans-serif; font-weight:700; color:${team}; font-size:13px;">${g.autor || '—'}</span>
+            <span style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.15em; color:var(--cinza-claro); text-transform:uppercase;">${(g.time || '').toUpperCase()}</span>
+        </div>`;
+    }).join('');
 
     return `
         <div style="margin-top:18px; padding:14px 16px; background:var(--preto-card); border:1px solid var(--cinza-linha);">
