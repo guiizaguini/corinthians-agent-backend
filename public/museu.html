@@ -2420,9 +2420,32 @@ function parseGolsTexto(texto) {
     return result;
 }
 
+// Formata o minuto garantindo apóstrofe + deriva 1T/2T quando só tem número
+function formatarMinuto(minuto) {
+    if (minuto === null || minuto === undefined || minuto === '') return null;
+    const s = String(minuto).trim();
+    // Já veio com tempo explícito ("14'2T", "45+1'1T", "33'")
+    if (/[12]T/.test(s)) return s;
+    // Só número (ex: "43", "73", "45+4")
+    const m = s.match(/^(\d+)(?:\+(\d+))?'?$/);
+    if (m) {
+        const num = parseInt(m[1]);
+        const acr = m[2] ? `+${m[2]}` : '';
+        // Deriva tempo: 1º tempo = minuto total ≤ 45; 2º tempo = > 45
+        const tempo = num <= 45 ? '1T' : '2T';
+        // No 2T, converte pra minuto do próprio tempo (ex: 73 → 28'2T)
+        if (num > 45 && !acr) {
+            return `${num - 45}'${tempo}`;
+        }
+        return `${num}${acr}'${tempo}`;
+    }
+    // Qualquer outro formato: só garante a apóstrofe
+    return s.endsWith("'") ? s : s + "'";
+}
+
 function renderGolsModal(j) {
     // 1) Pega estruturado (JSONB autores_gols)
-    let gols = Array.isArray(j.autores_gols) ? j.autores_gols : [];
+    let gols = Array.isArray(j.autores_gols) ? j.autores_gols.slice() : [];
     // 2) Se não tem, tenta parsear gols_texto
     if (!gols.length && j.gols_texto) {
         gols = parseGolsTexto(j.gols_texto);
@@ -2430,9 +2453,10 @@ function renderGolsModal(j) {
     if (!gols.length) return '';
 
     const conteudo = gols.map(g => {
-        const min = g.minuto
-            ? `<span style="color:var(--ouro); margin-right:10px; font-family:'JetBrains Mono',monospace; font-size:11px; min-width:30px; display:inline-block;">${g.minuto}</span>`
-            : `<span style="margin-right:10px; min-width:30px; display:inline-block;"></span>`;
+        const minFmt = formatarMinuto(g.minuto);
+        const min = minFmt
+            ? `<span style="color:var(--ouro); margin-right:10px; font-family:'JetBrains Mono',monospace; font-size:11px; min-width:48px; display:inline-block;">${minFmt}</span>`
+            : `<span style="margin-right:10px; min-width:48px; display:inline-block; color:var(--cinza-medio); font-family:'JetBrains Mono',monospace; font-size:10px;">—'</span>`;
         const isCor = g.time === 'Corinthians';
         const team = isCor ? 'var(--vitoria-claro)' : 'var(--cinza-claro)';
         return `<div style="display:flex; align-items:center; padding:7px 0; border-bottom:1px dashed var(--cinza-linha);">
