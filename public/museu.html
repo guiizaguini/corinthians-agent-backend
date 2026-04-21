@@ -1849,10 +1849,22 @@ function renderHistoricos() {
 function coletarGols() {
     const presentes = DADOS.jogos.filter(j => j.status_presenca === 'PRESENTE');
     const out = [];
+    const alertas = []; // pra debug no console
     presentes.forEach(j => {
+        const contexto = {
+            time_casa: j.time_casa,
+            time_visitante: j.time_visitante,
+            gols_casa: Number(j.gols_casa),
+            gols_visitante: Number(j.gols_visitante),
+        };
         let gols = Array.isArray(j.autores_gols) && j.autores_gols.length
-            ? j.autores_gols
-            : parseGolsTexto(j.gols_texto || '');
+            ? j.autores_gols.slice()
+            : parseGolsTexto(j.gols_texto || '', contexto);
+
+        // Sanity check: gol contra conta pro time adversário do marcador "original"
+        // Ex: "Felipe Melo (gol contra) (COR)" — Felipe Melo é do adversário mas o gol é pro Corinthians.
+        // O parser já registra `time: 'Corinthians'`, então o contador fica certo, mas não queremos
+        // listar "Felipe Melo" como goleador do Corinthians.
         gols.forEach(g => {
             const min = g.minuto || '';
             const tempo = /2T/.test(min) ? '2T' : /1T/.test(min) ? '1T' : null;
@@ -1861,17 +1873,46 @@ function coletarGols() {
             const ehContra = /gol contra/i.test(g.autor || '');
             const ehPenalti = /pen\.?/i.test(g.autor || '') || /pen\.?/i.test(min);
             const rival = j.time_casa === 'Corinthians' ? j.time_visitante : j.time_casa;
+
+            // Aplica normalização de apelidos/abreviações
+            const autorFinal = normalizarNome(autorLimpo || g.autor);
+
+            // Gol contra: o autor NÃO é goleador do time que creditou.
+            // Excluímos ele do ranking atribuindo a um "bucket" separado.
+            const ehCor = g.time === 'Corinthians';
+
             out.push({
-                autor: autorLimpo || g.autor,
+                autor: autorFinal,
                 time: g.time,
                 minuto: min,
                 tempo,
-                ehCorinthians: g.time === 'Corinthians',
+                // Se é gol contra, o AUTOR não é goleador do time creditado.
+                ehCorinthians: ehCor && !ehContra,
+                ehRival: !ehCor && !ehContra,
                 ehContra, ehPenalti,
-                rival, data: j.data,
+                rival, data: j.data, jogoId: j.id,
             });
         });
+
+        // Validação: total parseado bate com placar?
+        const corIsHome = j.time_casa === 'Corinthians';
+        const totalCorEsperado = corIsHome ? Number(j.gols_casa || 0) : Number(j.gols_visitante || 0);
+        const totalAdvEsperado = corIsHome ? Number(j.gols_visitante || 0) : Number(j.gols_casa || 0);
+        const corParseados = gols.filter(g => g.time === 'Corinthians').length;
+        const advParseados = gols.filter(g => g.time && g.time !== 'Corinthians').length;
+        if (corParseados !== totalCorEsperado || advParseados !== totalAdvEsperado) {
+            alertas.push({
+                id: j.id, data: j.data, adv: corIsHome ? j.time_visitante : j.time_casa,
+                placar: `${j.gols_casa}x${j.gols_visitante}`,
+                esperado: `${totalCorEsperado}COR / ${totalAdvEsperado}ADV`,
+                parseado: `${corParseados}COR / ${advParseados}ADV`,
+                texto: j.gols_texto,
+            });
+        }
     });
+    if (alertas.length) {
+        console.warn('[gols] jogos com contagem divergente:', alertas);
+    }
     return out;
 }
 
@@ -1888,8 +1929,10 @@ function rankMapa(items, keyFn) {
 
 function renderEstatisticas() {
     const gols = coletarGols();
+    // ehCorinthians: gol efetivamente de um jogador do Timão (gol contra não entra)
+    // ehRival: gol marcado por jogador adversário com a bola indo pra rede do Corinthians
     const corGols = gols.filter(g => g.ehCorinthians);
-    const rivGols = gols.filter(g => !g.ehCorinthians);
+    const rivGols = gols.filter(g => g.ehRival);
 
     // Contadores rápidos
     const dist1T = corGols.filter(g => g.tempo === '1T').length;
@@ -2367,15 +2410,67 @@ const TIME_CODE_MAP = {
     AVA: 'Avaí', COR_F: 'Corinthians'
 };
 
-function parseGolsTexto(texto) {
+// ===== Normalização de nomes de jogadores =====
+// Mapeia variações pra um nome canônico, evitando dupla contagem.
+// Adicione aqui sempre que detectar um alias novo.
+const ALIAS_MAP = {
+    'y. alberto': 'Yuri Alberto',
+    'y alberto': 'Yuri Alberto',
+    'yuri a.': 'Yuri Alberto',
+    'yuri a': 'Yuri Alberto',
+    'r. augusto': 'Renato Augusto',
+    'r augusto': 'Renato Augusto',
+    'renato a.': 'Renato Augusto',
+    'g. mosquera': 'Gustavo Mosquera',
+    'roger guedes': 'Róger Guedes',
+    'r. guedes': 'Róger Guedes',
+    'rogerio ceni': 'Rogério Ceni',
+    'cassio': 'Cássio',
+    'fagner': 'Fagner',
+    'gil': 'Gil',
+    'jo': 'Jô',
+    'jô': 'Jô',
+    'paulinho': 'Paulinho',
+    'pedrinho': 'Pedrinho',
+};
+
+function normalizarNome(nome) {
+    if (!nome) return nome;
+    // Remove acentos pra buscar no mapa (mantém o retorno com acento)
+    const norm = nome.trim().toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    if (ALIAS_MAP[norm]) return ALIAS_MAP[norm];
+    // Capitaliza consistentemente (Yuri alberto -> Yuri Alberto)
+    return nome.trim().split(/\s+/).map(w => {
+        if (w.length <= 2) return w.toLowerCase();
+        return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+    }).join(' ');
+}
+
+function parseGolsTexto(texto, contexto = {}) {
     if (!texto || !String(texto).trim()) return [];
-    const tr = texto.trim();
+    let tr = texto.trim();
     // "0x0" sem mais nada relevante
     if (/^0x0\s*$/i.test(tr)) return [];
+
+    // FIX #1: remove cauda de pênaltis/informação extra depois de "|" ou "Pênaltis:"
+    tr = tr.split(/\s*\|\s*/)[0].trim();
+    tr = tr.replace(/\bp[eê]naltis?\s*:.*$/i, '').trim();
+
+    // FIX #2: detecta marcador global "(todos COR)" / "(TODOS COR)" / "(todos do Corinthians)"
+    // Se presente, aplicamos o time a TODAS as entradas que não tiverem marcador próprio.
+    let globalTime = null;
+    const globalMatch = tr.match(/\((?:todos|todas)[^)]*?([A-Z]{3,4})\)\s*$/i);
+    if (globalMatch) {
+        const code = globalMatch[1].toUpperCase();
+        globalTime = TIME_CODE_MAP[code] || code;
+        tr = tr.slice(0, globalMatch.index).trim().replace(/[;,]\s*$/, '');
+    }
 
     // Divide em entradas por ; (cada uma = 1 gol ou autor com múltiplos minutos)
     const entries = tr.split(';').map(e => e.trim()).filter(Boolean);
     const result = [];
+    let ultimoTime = null; // pra herança sequencial se necessário
 
     for (const entry of entries) {
         if (/^(p[eê]naltis|0x0)\b/i.test(entry)) continue;
@@ -2383,7 +2478,11 @@ function parseGolsTexto(texto) {
         // ÚLTIMO (XXX) do final = time. Aceita "(COR)", "(COR, pen.)", etc.
         const teamMatch = entry.match(/\(([A-Z]{3,4})(?:\s*,[^)]*)?\)\s*$/);
         const timeCode = teamMatch ? teamMatch[1] : null;
-        const timeNome = timeCode ? (TIME_CODE_MAP[timeCode] || timeCode) : null;
+        let timeNome = timeCode ? (TIME_CODE_MAP[timeCode] || timeCode) : null;
+
+        // FIX: se não veio marcador próprio, usa o global, senão o último visto
+        if (!timeNome) timeNome = globalTime || ultimoTime;
+        if (timeCode) ultimoTime = timeNome;
 
         // Remove só o último parênteses (o do time)
         let rest = entry.slice(0, teamMatch ? teamMatch.index : entry.length).trim();
@@ -2417,6 +2516,38 @@ function parseGolsTexto(texto) {
             }
         }
     }
+
+    // FIX #3: sanity check — se temos gols_casa/gols_visitante e o parser
+    // deixou entradas sem time, tenta inferir pelo saldo esperado.
+    if (contexto.gols_casa != null && contexto.gols_visitante != null &&
+        contexto.time_casa && contexto.time_visitante) {
+        const semTime = result.filter(g => !g.time);
+        if (semTime.length) {
+            const corIsHome = contexto.time_casa === 'Corinthians';
+            const timeCor = 'Corinthians';
+            const timeAdv = corIsHome ? contexto.time_visitante : contexto.time_casa;
+            const totalCor = corIsHome ? contexto.gols_casa : contexto.gols_visitante;
+            const totalAdv = corIsHome ? contexto.gols_visitante : contexto.gols_casa;
+            const jaCor = result.filter(g => g.time === timeCor).length;
+            const jaAdv = result.filter(g => g.time && g.time !== timeCor).length;
+            const faltaCor = Math.max(0, totalCor - jaCor);
+            const faltaAdv = Math.max(0, totalAdv - jaAdv);
+            // Se sobra perfeitamente pra um só lado, distribui
+            if (semTime.length === faltaCor && faltaAdv === 0) {
+                semTime.forEach(g => g.time = timeCor);
+            } else if (semTime.length === faltaAdv && faltaCor === 0) {
+                semTime.forEach(g => g.time = timeAdv);
+            } else if (faltaCor + faltaAdv === semTime.length) {
+                // Distribui na ordem: primeiro os do Corinthians que faltam, depois adv
+                let ci = 0;
+                semTime.forEach(g => {
+                    if (ci < faltaCor) { g.time = timeCor; ci++; }
+                    else g.time = timeAdv;
+                });
+            }
+        }
+    }
+
     return result;
 }
 
@@ -2446,9 +2577,14 @@ function formatarMinuto(minuto) {
 function renderGolsModal(j) {
     // 1) Pega estruturado (JSONB autores_gols)
     let gols = Array.isArray(j.autores_gols) ? j.autores_gols.slice() : [];
-    // 2) Se não tem, tenta parsear gols_texto
+    // 2) Se não tem, tenta parsear gols_texto (com contexto pra inferência)
     if (!gols.length && j.gols_texto) {
-        gols = parseGolsTexto(j.gols_texto);
+        gols = parseGolsTexto(j.gols_texto, {
+            time_casa: j.time_casa,
+            time_visitante: j.time_visitante,
+            gols_casa: Number(j.gols_casa),
+            gols_visitante: Number(j.gols_visitante),
+        });
     }
     if (!gols.length) return '';
 
