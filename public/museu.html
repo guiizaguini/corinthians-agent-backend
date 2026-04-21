@@ -1945,8 +1945,8 @@ function renderEstatisticas() {
     const maxDistRiv = Math.max(distRiv1T, distRiv2T, 1);
 
     // Rankings
-    const topCor = rankMapa(corGols, g => g.autor).slice(0, 8);
-    const topRiv = rankMapa(rivGols, g => g.autor).slice(0, 8);
+    const topCor = rankMapa(corGols, g => g.autor).slice(0, 10);
+    const topRiv = rankMapa(rivGols, g => g.autor).slice(0, 10);
     const topTimes = rankMapa(rivGols, g => g.time).slice(0, 5);
     const totalGols = gols.length;
     const totalContra = gols.filter(g => g.ehContra).length;
@@ -2035,7 +2035,7 @@ function renderEstatisticas() {
         'Carrascos da Fiel',
         `RIVAIS QUE MARCARAM`,
         `<div class="stat-ranking">
-            ${topRiv.slice(0, 8).map((p, i) => itemHTML(i+1, p.chave, null, `${p.count} GOL${p.count > 1 ? 'S' : ''}`)).join('') || '<div style="color:var(--cinza-claro); text-align:center; padding:10px;">Sem dados suficientes.</div>'}
+            ${topRiv.slice(0, 10).map((p, i) => itemHTML(i+1, p.chave, null, `${p.count} GOL${p.count > 1 ? 'S' : ''}`)).join('') || '<div style="color:var(--cinza-claro); text-align:center; padding:10px;">Sem dados suficientes.</div>'}
         </div>`,
         topRiv[0] ? `<strong style="color:var(--derrota-claro)">${topRiv[0].chave}</strong> é o rival que mais tirou teu sono no estádio.` : null
     ));
