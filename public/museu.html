@@ -1856,24 +1856,34 @@ function linhaModal(icon, label, valor) {
 }
 
 function renderGolsModal(j) {
-    if (!j.autores_gols || !Array.isArray(j.autores_gols) || j.autores_gols.length === 0) return '';
-    const gols = j.autores_gols.map(g => {
-        const min = g.minuto ? `<span style="color:var(--ouro); margin-right:8px; font-family:'JetBrains Mono',monospace; font-size:11px;">${g.minuto}'</span>` : '';
-        const team = g.time === 'Corinthians' ? 'var(--vitoria-claro)' : 'var(--cinza-claro)';
-        return `<div style="display:flex; align-items:center; padding:6px 0; border-bottom:1px dashed var(--cinza-linha);">
-            <span class="mi" style="font-family:'Material Icons'; font-size:16px; color:${team}; margin-right:8px;">sports_soccer</span>
-            ${min}
-            <span style="font-family:'Archivo',sans-serif; font-weight:700; color:${team}; font-size:13px;">${g.autor}</span>
-            <span style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.15em; color:var(--cinza-claro); text-transform:uppercase;">${g.time}</span>
-        </div>`;
-    }).join('');
+    // Prioridade: se tem autores_gols estruturado, usa. Senão, usa o gols_texto.
+    const temEstruturado = j.autores_gols && Array.isArray(j.autores_gols) && j.autores_gols.length > 0;
+    const temTexto = j.gols_texto && String(j.gols_texto).trim().length > 0;
+    if (!temEstruturado && !temTexto) return '';
+
+    let conteudo = '';
+    if (temEstruturado) {
+        conteudo = j.autores_gols.map(g => {
+            const min = g.minuto ? `<span style="color:var(--ouro); margin-right:8px; font-family:'JetBrains Mono',monospace; font-size:11px;">${g.minuto}'</span>` : '';
+            const team = g.time === 'Corinthians' ? 'var(--vitoria-claro)' : 'var(--cinza-claro)';
+            return `<div style="display:flex; align-items:center; padding:6px 0; border-bottom:1px dashed var(--cinza-linha);">
+                <span class="mi" style="font-family:'Material Icons'; font-size:16px; color:${team}; margin-right:8px;">sports_soccer</span>
+                ${min}
+                <span style="font-family:'Archivo',sans-serif; font-weight:700; color:${team}; font-size:13px;">${g.autor}</span>
+                <span style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.15em; color:var(--cinza-claro); text-transform:uppercase;">${g.time}</span>
+            </div>`;
+        }).join('');
+    } else {
+        conteudo = `<div style="font-family:'Archivo',sans-serif; color:var(--branco-suave); font-size:13px; line-height:1.5; padding:4px 0;">${j.gols_texto}</div>`;
+    }
+
     return `
         <div style="margin-top:18px; padding:14px 16px; background:var(--preto-card); border:1px solid var(--cinza-linha);">
             <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.2em; color:var(--ouro); margin-bottom:8px; text-transform:uppercase;">
                 <span class="mi" style="font-family:'Material Icons'; font-size:16px; vertical-align:middle; text-transform:none; letter-spacing:normal;">sports_soccer</span>
                 Gols da partida
             </div>
-            ${gols}
+            ${conteudo}
         </div>
     `;
 }
