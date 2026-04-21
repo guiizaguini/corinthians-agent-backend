@@ -1870,29 +1870,27 @@ const TIME_CODE_MAP = {
 
 function parseGolsTexto(texto) {
     if (!texto || !String(texto).trim()) return [];
-    // "0x0" com nada relevante
-    const semGols = /^0x0($|[\s\-().])/i.test(texto.trim());
-    if (semGols && !/[;\d]/.test(texto.replace(/0x0/gi, ''))) return [];
+    const tr = texto.trim();
+    // "0x0" sem mais nada relevante
+    if (/^0x0\s*$/i.test(tr)) return [];
 
-    // Divide em entradas por ;
-    const entries = texto.split(';').map(e => e.trim()).filter(Boolean);
+    // Divide em entradas por ; (cada uma = 1 gol ou autor com múltiplos minutos)
+    const entries = tr.split(';').map(e => e.trim()).filter(Boolean);
     const result = [];
 
     for (const entry of entries) {
-        // Pula entradas que são só explicação (ex: "Pênaltis: ...", "0x0 ...")
-        if (/^(p[eê]naltis|pen[aá]ltis|0x0)/i.test(entry)) continue;
+        if (/^(p[eê]naltis|0x0)\b/i.test(entry)) continue;
 
-        // Extrai código do time do último (XXX) — aceita "(COR)", "(SAO)", "(BRA, pen.)"
-        const teamMatch = entry.match(/\(([A-Z]{3,4})(?:[^)]*)\)\s*$/);
+        // ÚLTIMO (XXX) do final = time. Aceita "(COR)", "(COR, pen.)", etc.
+        const teamMatch = entry.match(/\(([A-Z]{3,4})(?:\s*,[^)]*)?\)\s*$/);
         const timeCode = teamMatch ? teamMatch[1] : null;
         const timeNome = timeCode ? (TIME_CODE_MAP[timeCode] || timeCode) : null;
 
-        // Remove a última parênteses do time
-        let rest = entry.replace(/\([A-Z]{3,4}[^)]*\)\s*$/, '').trim();
-        // Remove ponto final se houver
+        // Remove só o último parênteses (o do time)
+        let rest = entry.slice(0, teamMatch ? teamMatch.index : entry.length).trim();
         rest = rest.replace(/[.,]\s*$/, '');
 
-        // Pega todos os minutos no formato "14'2T" / "45+1'2T" / "4'" / "33'"
+        // Pega os minutos (ex: "14'2T", "45+1'2T", "4'", "33'")
         const minRegex = /(\d+(?:\+\d+)?)'(?:\s*(\d?T))?/g;
         const minMatches = [];
         let m;
@@ -1900,24 +1898,22 @@ function parseGolsTexto(texto) {
             minMatches.push({ min: m[1], tempo: m[2] || '', idx: m.index });
         }
 
-        // Autor = tudo antes do primeiro minuto (ou entry inteira se não tiver minuto)
+        // Autor = tudo antes do primeiro minuto (preserva "(gol contra)" e "(pen.)" no nome)
         let autor;
         if (minMatches.length > 0) {
             autor = rest.slice(0, minMatches[0].idx).trim();
-            // Limpa "e ", ", " no final
             autor = autor.replace(/[,\s]+(e|E)?\s*$/, '').trim();
         } else {
             autor = rest.trim();
         }
 
-        // Se não tem autor nem minuto, pula
         if (!autor && minMatches.length === 0) continue;
 
         if (minMatches.length === 0) {
             result.push({ autor, minuto: null, time: timeNome });
         } else {
             for (const mm of minMatches) {
-                const minFmt = mm.min + (mm.tempo ? `'${mm.tempo}` : `'`);
+                const minFmt = mm.min + `'` + (mm.tempo || '');
                 result.push({ autor, minuto: minFmt, time: timeNome });
             }
         }
