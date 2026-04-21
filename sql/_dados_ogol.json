@@ -1,6 +1,6 @@
 [
   {"id_banco":1,"publico":25603,"gols":[{"n":"Ralf","m":7,"t":"1T","team":"COR"},{"n":"Alexandre Pato","m":52,"t":"2T","team":"COR"}]},
-  {"id_banco":36,"publico":null,"gols":[{"n":"Neto Berola","m":6,"t":"1T","team":"ITU"},{"n":"Fábio Santos","m":31,"t":"1T","team":"COR"},{"n":"Cleberson","m":42,"t":"1T","team":"ITU"},{"n":"Giuliano","m":46,"t":"2T","team":"COR"},{"n":"Paulinho","m":72,"t":"2T","team":"COR"}]},
+  {"id_banco":36,"publico":null,"gols":[{"n":"Gabi Portilho","m":10,"t":"1T","team":"COR"},{"n":"Tamires","m":34,"t":"1T","team":"COR"},{"n":"Jaqueline","m":77,"t":"2T","team":"COR"}]},
   {"id_banco":38,"publico":null,"gols":[{"n":"Gustavo Mosquito","m":80,"t":"2T","team":"COR"}]},
   {"id_banco":43,"publico":null,"gols":[{"n":"Júnior Moraes","m":8,"t":"1T","team":"COR"},{"n":"Giuliano","m":32,"t":"1T","team":"COR"}]},
   {"id_banco":73,"publico":null,"gols":[{"n":"Matheus Araújo","m":32,"t":"1T","team":"COR"},{"n":"Felipe Augusto","m":64,"t":"2T","team":"COR"},{"n":"Adson","m":80,"t":"2T","team":"COR"}]},
