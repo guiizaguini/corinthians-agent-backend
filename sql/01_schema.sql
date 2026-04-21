@@ -44,6 +44,7 @@ CREATE TABLE jogos (
     fase              VARCHAR(40),   -- "Final","Semifinal","Quartas","Oitavas","Grupos","Rodada 12",...
     titulo_conquistado VARCHAR(60),  -- Se esse jogo deu o troféu (ex: "Copa do Brasil 2025")
     autores_gols      JSONB,         -- [{"time":"Corinthians","autor":"Yuri Alberto","minuto":23}]
+    publico_total     INTEGER,       -- público total do jogo (não pagante necessariamente)
     observacoes       TEXT,
     created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()

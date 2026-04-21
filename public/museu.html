@@ -760,28 +760,17 @@ body::before {
     border-bottom: 1px double rgba(110,96,56,0.4);
 }
 
-/* =========== JOGO DO TÍTULO — mesmo tamanho do normal =========== */
+/* =========== JOGO DO TÍTULO — IGUAL a um final sem taça ===========
+   Única diferença visual: tag "Campeão" pequena no cabeçalho.
+   Herda fundo, moldura, canhoto e selo FINAL da classe .fase-final */
 .ingresso.titulo {
-    /* Força mesmo tamanho do normal, mesmo tendo classe .fase-final */
+    /* Mesmo tamanho do normal (anula span 2 herdado) */
     grid-column: auto !important;
-    min-height: 220px !important;
-    background: linear-gradient(135deg, #f6efd8 0%, #f0e4b8 100%);
-}
-.ingresso.titulo .canhoto {
-    background: linear-gradient(180deg, var(--vitoria-claro), var(--vitoria) 55%, var(--vitoria-escuro));
-    color: #1a1000;
-}
-.ingresso.titulo .canhoto-selo {
-    font-size: 22px;
-    border: 2px solid currentColor;
 }
 
-/* Remove fita e banner preto (eram poluídos) */
-.ingresso.titulo .fita-campeao { display: none; }
+/* Esconde ornamentos antigos (não usados mais, mantidos por compat) */
+.ingresso.titulo .fita-campeao,
 .ingresso.titulo .banner-titulo { display: none; }
-
-/* NÃO esconde mais o ::after — deixa o selo FINAL aparecer */
-.ingresso.titulo .corpo { padding-bottom: 18px; }
 
 /* Tag pequena CAMPEÃO no corpo-topo (como a CLÁSSICO) */
 .campeao-tag {
@@ -1370,7 +1359,9 @@ let DADOS = null;
 
 // Mapa de escudos — SVGs públicos. Se o clube não estiver aqui, cai no fallback de iniciais.
 const LOGOS = {
+    // ---- Corinthians (inline colorido) ----
     'Corinthians':        'https://cdn.meutimao.com.br/_upload/forum/2023/09/20/lateral_esquerdo_a_peneira_comeca_agora_dp.png',
+    // ---- Brasileiros grandes ----
     'Palmeiras':          'https://upload.wikimedia.org/wikipedia/commons/1/10/Palmeiras_logo.svg',
     'São Paulo':          'https://upload.wikimedia.org/wikipedia/commons/6/6f/Brasao_do_Sao_Paulo_Futebol_Clube.svg',
     'Santos':             'https://upload.wikimedia.org/wikipedia/commons/1/10/Santos_logo.svg',
@@ -1387,7 +1378,7 @@ const LOGOS = {
     'Sport':              'https://upload.wikimedia.org/wikipedia/commons/2/25/Sport_Club_do_Recife_%28logo%29.svg',
     'Vitória':            'https://upload.wikimedia.org/wikipedia/commons/b/bc/Esporte_Clube_Vit%C3%B3ria_logo_3.svg',
     'Bragantino':         'https://upload.wikimedia.org/wikipedia/commons/a/a1/Red_Bull_Bragantino_logo_%282020%29.svg',
-    'RB Brasil':          'https://upload.wikimedia.org/wikipedia/commons/a/a1/Red_Bull_Bragantino_logo_%282020%29.svg',
+    'RB Brasil':          'https://upload.wikimedia.org/wikipedia/commons/6/68/Red_Bull_Brasil_logo.svg',
     'Atlético-PR':        'https://upload.wikimedia.org/wikipedia/commons/f/f0/Club_Athletico_Paranaense_%282018%29.svg',
     'Atlético-GO':        'https://upload.wikimedia.org/wikipedia/commons/9/97/AtleticoGoianiense.svg',
     'Coritiba':           'https://upload.wikimedia.org/wikipedia/commons/3/3c/Coritiba_Foot_Ball_Club_%282011%29.svg',
@@ -1397,30 +1388,38 @@ const LOGOS = {
     'Chapecoense':        'https://upload.wikimedia.org/wikipedia/commons/a/a0/Associa%C3%A7%C3%A3o_Chapecoense_de_Futebol_logo.svg',
     'América-MG':         'https://upload.wikimedia.org/wikipedia/commons/5/5e/Am%C3%A9rica_Futebol_Clube_%28MG%29_-_logo_until_2019.svg',
     'Avaí':               'https://upload.wikimedia.org/wikipedia/commons/6/6d/Avai_FC.svg',
-    'Criciúma':           'https://upload.wikimedia.org/wikipedia/commons/9/96/Criciúma_Esporte_Clube_logo.svg',
-    'Ponte Preta':        'https://upload.wikimedia.org/wikipedia/commons/6/63/Ponte_Preta_logo.svg',
+    'Criciúma':           'https://upload.wikimedia.org/wikipedia/commons/9/96/Cricima_Esporte_Clube_logo.svg',
+    'CSA':                'https://upload.wikimedia.org/wikipedia/commons/9/9f/CSA-AL.svg',
+    // ---- Paulistas menores ----
+    'Ponte Preta':        'https://upload.wikimedia.org/wikipedia/commons/6/63/Associa%C3%A7%C3%A3o_Atl%C3%A9tica_Ponte_Preta.svg',
     'Ferroviária':        'https://upload.wikimedia.org/wikipedia/commons/0/0b/Associa%C3%A7%C3%A3o_Ferrovi%C3%A1ria_de_Esportes_logo.svg',
     'Guarani':            'https://upload.wikimedia.org/wikipedia/commons/b/bf/Guarani_FC.svg',
     'Mirassol':           'https://upload.wikimedia.org/wikipedia/commons/a/a2/Mirassol_FC.svg',
     'Novorizontino':      'https://upload.wikimedia.org/wikipedia/commons/3/34/Gr%C3%AAmio_Novorizontino_logo.svg',
     'Ituano':             'https://upload.wikimedia.org/wikipedia/commons/0/06/Ituano_FC_-_logo.svg',
-    'Oeste':              'https://upload.wikimedia.org/wikipedia/commons/9/90/Oeste_FC.svg',
+    'Oeste':              'https://upload.wikimedia.org/wikipedia/commons/6/68/Oeste_FC_SP.svg',
     'Botafogo-SP':        'https://upload.wikimedia.org/wikipedia/commons/3/3e/Botafogo_Futebol_Clube_%28SP%29_logo.svg',
     'Capivariano':        'https://upload.wikimedia.org/wikipedia/commons/c/c1/Capivariano_FC_logo.svg',
-    'Água Santa':         'https://upload.wikimedia.org/wikipedia/commons/0/0c/Esporte_Clube_%C3%81gua_Santa_logo.svg',
-    'Velo Clube':         'https://upload.wikimedia.org/wikipedia/commons/f/f6/Rio_Claro_Velo_Clube_logo.svg',
+    'Água Santa':         'https://upload.wikimedia.org/wikipedia/commons/2/21/Escudo_ES_%C3%81gua_Santa.svg',
+    'Velo Clube':         'https://upload.wikimedia.org/wikipedia/commons/9/9f/Velo_Clube_Rioclarense_logo.svg',
     'São Bernardo':       'https://upload.wikimedia.org/wikipedia/commons/5/51/S%C3%A3o_Bernardo_Futebol_Clube_logo.svg',
     'Santo André':        'https://upload.wikimedia.org/wikipedia/commons/c/c6/Esporte_Clube_Santo_Andr%C3%A9.svg',
+    'RB Bragantino':      'https://upload.wikimedia.org/wikipedia/commons/a/a1/Red_Bull_Bragantino_logo_%282020%29.svg',
+    'Red Bull Bragantino':'https://upload.wikimedia.org/wikipedia/commons/a/a1/Red_Bull_Bragantino_logo_%282020%29.svg',
+    'Portuguesa-RJ':      'https://upload.wikimedia.org/wikipedia/commons/e/e4/Associa%C3%A7%C3%A3o_Atl%C3%A9tica_Portuguesa_%28Rio_de_Janeiro%29_logo.svg',
+    'Remo':               'https://upload.wikimedia.org/wikipedia/commons/a/a8/Clube_do_Remo.svg',
+    // ---- Sul-americanos ----
     'Boca Juniors':       'https://upload.wikimedia.org/wikipedia/commons/c/cb/Boca_Juniors_logo18.svg',
     'Racing':             'https://upload.wikimedia.org/wikipedia/commons/8/82/Escudo_del_Racing_Club_de_Avellaneda.svg',
     'Nacional URU':       'https://upload.wikimedia.org/wikipedia/commons/2/25/Club_Nacional_de_Football_escudo.svg',
     'Liverpool URU':      'https://upload.wikimedia.org/wikipedia/commons/3/3b/Liverpool_F%C3%BAtbol_Club.svg',
     'Ind. Del Valle':     'https://upload.wikimedia.org/wikipedia/commons/6/66/Independiente_del_Valle_logo.svg',
-    'Universitário':      'https://upload.wikimedia.org/wikipedia/commons/f/f6/Universitario_de_Deportes_logo.svg',
-    'Deportivo Cali':     'https://upload.wikimedia.org/wikipedia/commons/8/8b/Deportivo_Cali_logo.svg',
+    'Universitário':      'https://upload.wikimedia.org/wikipedia/commons/9/99/Club_Universitario_de_Deportes.svg',
+    'Deportivo Cali':     'https://upload.wikimedia.org/wikipedia/commons/8/8b/Escudo_Asociaci%C3%B3n_Deportivo_Cali.svg',
     'Barcelona SC':       'https://upload.wikimedia.org/wikipedia/commons/2/24/Escudo_del_Barcelona_SC.svg',
-    'U. Central [VEN]':   'https://upload.wikimedia.org/wikipedia/commons/8/8c/Caracas_FC.svg',
+    'U. Central [VEN]':   'https://upload.wikimedia.org/wikipedia/commons/7/7a/Caracas_FC_logo.svg',
     'Guarani (PAR)':      'https://upload.wikimedia.org/wikipedia/commons/6/6a/Club_Guarani_logo.svg',
+    // ---- Europeus ----
     'PSG':                'https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg',
     'Nice':               'https://upload.wikimedia.org/wikipedia/commons/d/dd/Logo_OGC_Nice_2013.svg',
 };
