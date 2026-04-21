@@ -42,6 +42,18 @@
     ]
   },
   {
+    "id_banco": 29,
+    "publico": 36059,
+    "gols": [
+      {
+        "n": "Cantillo",
+        "m": 87,
+        "t": "2T",
+        "team": "COR"
+      }
+    ]
+  },
+  {
     "id_banco": 36,
     "publico": null,
     "gols": [
@@ -91,6 +103,30 @@
         "n": "Giuliano",
         "m": 32,
         "t": "1T",
+        "team": "COR"
+      }
+    ]
+  },
+  {
+    "id_banco": 65,
+    "publico": null,
+    "gols": [
+      {
+        "n": "Bruninho",
+        "m": 1,
+        "t": "1T",
+        "team": "GUA"
+      },
+      {
+        "n": "Róger Guedes",
+        "m": "45+2",
+        "t": "1T",
+        "team": "COR"
+      },
+      {
+        "n": "Fábio Santos",
+        "m": 52,
+        "t": "2T",
         "team": "COR"
       }
     ]
@@ -543,6 +579,18 @@
         "m": 62,
         "t": "2T",
         "team": "COR"
+      }
+    ]
+  },
+  {
+    "id_banco": 123,
+    "publico": 45660,
+    "gols": [
+      {
+        "n": "Flaco López",
+        "m": 84,
+        "t": "2T",
+        "team": "PAL"
       }
     ]
   },

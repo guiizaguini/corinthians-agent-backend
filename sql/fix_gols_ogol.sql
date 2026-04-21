@@ -1,13 +1,14 @@
 -- =====================================================================
--- NORMALIZAÇÃO DE gols_texto + publico_total + correções + DELETES
--- Gerado em 2026-04-21T21:18:31.169Z
--- 30 UPDATEs + 1 DELETEs
+-- NORMALIZAÇÃO COMPLETA - gols_texto + publico + correções + DELETEs
+-- Fontes: ogol.com.br, Wikipedia, reportagens (Gazeta, ESPN, CNN)
+-- Gerado em 2026-04-21T21:25:08.538Z
+-- 33 UPDATEs + 1 DELETEs
 -- =====================================================================
 
 BEGIN;
 
 -- --- DELETES ---
--- 2021-12-01 amistoso vs Nice em Paris — não aconteceu
+-- 2021-12-01 amistoso vs Nice — não aconteceu
 DELETE FROM jogos WHERE id = 32;
 
 -- --- UPDATES ---
@@ -26,6 +27,13 @@ UPDATE jogos SET
     autores_gols = NULL
 WHERE id = 23;
 
+-- id 29: 2021-11-06 Corinthians 1x0 Fortaleza (null)
+UPDATE jogos SET
+    gols_texto = 'Cantillo 42''2T (COR)',
+    publico_total = 36059,
+    autores_gols = NULL
+WHERE id = 29;
+
 -- id 36: 2022-02-06 Corinthians 3x0 Palmeiras (null)
 UPDATE jogos SET
     gols_texto = 'Gabi Portilho 10''1T (COR); Tamires 34''1T (COR); Jaqueline 32''2T (COR)',
@@ -43,6 +51,12 @@ UPDATE jogos SET
     gols_texto = 'Júnior Moraes 8''1T (COR); Giuliano 32''1T (COR)',
     autores_gols = NULL
 WHERE id = 43;
+
+-- id 65: 2023-01-24 Corinthians 2x1 Guarani (Paulista)
+UPDATE jogos SET
+    gols_texto = 'Bruninho 1''1T (GUA); Róger Guedes 45+2''1T (COR); Fábio Santos 7''2T (COR)',
+    autores_gols = NULL
+WHERE id = 65;
 
 -- id 68: 2023-03-12 Corinthians 1x1 Ituano (Paulista)
 UPDATE jogos SET
@@ -140,7 +154,7 @@ UPDATE jogos SET
 WHERE id = 89;
 
 -- id 90: 2024-08-04 Corinthians 0x0 Juventude (Brasileiro)
--- CORREÇÃO DE PLACAR: Corinthians 1-1 Juventude (placar errado no banco)
+-- CORREÇÃO DE PLACAR: Corinthians 1-1 Juventude
 UPDATE jogos SET
     gols_texto = 'Alan Ruschel 4''1T (JUV); Pedro Henrique 3''2T (COR)',
     gols_casa = 1,
@@ -209,6 +223,13 @@ UPDATE jogos SET
     autores_gols = NULL
 WHERE id = 118;
 
+-- id 123: 2026-02-08 Corinthians 0x1 Palmeiras (Paulista)
+UPDATE jogos SET
+    gols_texto = 'Flaco López 39''2T (PAL)',
+    publico_total = 45660,
+    autores_gols = NULL
+WHERE id = 123;
+
 -- id 129: 2026-03-11 Corinthians 0x2 Coritiba (Brasileiro)
 UPDATE jogos SET
     gols_texto = 'Jacy 37''1T (CTB); Lucas Ronier 8''2T (CTB)',
@@ -217,7 +238,16 @@ WHERE id = 129;
 
 COMMIT;
 
--- PENDENTES (16) — aguardando URLs do usuário
+-- PENDENTES - JOGOS COM GOLS_TEXTO RUIM (aguardando URL do usuário):
+-- id 10: 2018-03-18 Corinthians 2x3 Bragantino (Paulista) | texto atual: "Bragantino venceu 3x2. Gols do Corinthians: Balbuena 21'2T e Pedrinho 42'2T"
+-- id 12: 2019-01-13 Corinthians 1x1 Santos (Amistoso) | texto atual: "Gustavo 4'1T (COR); Pedro Henrique gol contra (SAN)"
+-- id 13: 2019-02-17 Corinthians 2x1 São Paulo (Paulista) | texto atual: "Manoel (COR); Pablo (SAO); Gustavo (COR)"
+-- id 24: 2020-02-02 Corinthians 2x0 Santos (Paulista) | texto atual: "Everaldo (COR); Janderson (COR)"
+-- id 26: 2021-10-05 Corinthians 3x1 Bahia (null) | texto atual: "Gilberto (pen.) (BAH); Róger Guedes (pen.) 49'1T (COR); Cantillo 6'2T (COR); Jô 25'2T (COR)"
+-- id 52: 2022-08-13 Corinthians 0x1 Palmeiras (Brasileiro) | texto atual: "Roni (gol contra) 2T (PAL)"
+-- id 56: 2022-09-11 Corinthians 1x1 São Paulo (Brasileiro) | texto atual: "Yuri Alberto 1T (COR); Éder (pen.) 1T (SAO)"
+
+-- PENDENTES - SEM gols_texto ou sem publico (originais):
 -- id 33: 2022-01-25 Corinthians 0x0 Ferroviária (Paulista)
 -- id 34: 2022-01-30 Santo André 1x0 Corinthians (Paulista)
 -- id 37: 2022-02-10 Corinthians 3x0 Mirassol (Paulista)
@@ -237,5 +267,3 @@ COMMIT;
 
 -- WARNS (1):
 -- id 118 | 2025-12-21 vs Corinthians | banco 2x1 | parse 2-1
-
-SELECT id, gols_texto, publico_total, gols_casa, gols_visitante FROM jogos WHERE id IN (1, 23, 36, 38, 43, 68, 69, 73, 75, 76, 77, 78, 80, 82, 83, 84, 85, 86, 89, 90, 92, 93, 94, 110, 113, 114, 116, 117, 118, 129) ORDER BY id;
