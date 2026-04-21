@@ -1,11 +1,17 @@
 -- =====================================================================
--- NORMALIZAÇÃO DE gols_texto + publico_total + correções de placar
--- Fonte: OGOL + Wikipedia (feminino) + meutimao (validação do usuário)
--- Gerado em 2026-04-21T21:08:49.645Z
--- 24 UPDATEs de jogos
+-- NORMALIZAÇÃO DE gols_texto + publico_total + correções + DELETES
+-- Fontes: ogol.com.br, Wikipedia (feminino), validação do usuário via meutimao
+-- Gerado em 2026-04-21T21:15:09.607Z
+-- 29 UPDATEs + 1 DELETEs
 -- =====================================================================
 
 BEGIN;
+
+-- --- DELETES ---
+-- 2021-12-01 amistoso vs Nice em Paris — não aconteceu/não deve estar no banco
+DELETE FROM jogos WHERE id = 32;
+
+-- --- UPDATES ---
 
 -- id 1: 2013-08-11 Corinthians 2x0 Vitória (Brasileiro)
 UPDATE jogos SET
@@ -13,6 +19,13 @@ UPDATE jogos SET
     publico_total = 25603,
     autores_gols = NULL
 WHERE id = 1;
+
+-- id 23: 2019-11-16 Corinthians 3x0 São Paulo (Paulista)
+UPDATE jogos SET
+    gols_texto = 'Vic Albuquerque 4''1T (COR); Juliete 3''2T (COR); Millene 35''2T (COR)',
+    publico_total = 28862,
+    autores_gols = NULL
+WHERE id = 23;
 
 -- id 36: 2022-02-06 Corinthians 3x0 Palmeiras (null)
 UPDATE jogos SET
@@ -31,6 +44,13 @@ UPDATE jogos SET
     gols_texto = 'Júnior Moraes 8''1T (COR); Giuliano 32''1T (COR)',
     autores_gols = NULL
 WHERE id = 43;
+
+-- id 68: 2023-03-12 Corinthians 1x1 Ituano (Paulista)
+UPDATE jogos SET
+    gols_texto = 'Raí Ramos 26''1T (ITU); Paulinho 35''1T (COR)',
+    publico_total = 43888,
+    autores_gols = NULL
+WHERE id = 68;
 
 -- id 73: 2023-06-28 Corinthians 4x0 Liverpool URU (Libertadores)
 -- CORREÇÃO DE PLACAR: Corinthians 3-0 Liverpool URU (Libertadores) — confirmado pelo usuário
@@ -66,6 +86,13 @@ UPDATE jogos SET
     autores_gols = NULL
 WHERE id = 78;
 
+-- id 80: 2024-01-25 Corinthians 1x0 Cruzeiro (Copinha)
+UPDATE jogos SET
+    gols_texto = 'Kayke 39''2T (COR)',
+    publico_total = 48905,
+    autores_gols = NULL
+WHERE id = 80;
+
 -- id 82: 2024-02-04 Corinthians 1x3 Novorizontino (Paulista)
 UPDATE jogos SET
     gols_texto = 'Jenison 45+2''1T (NOV); Jenison 3''2T (NOV); Jenison 13''2T (NOV); Yuri Alberto 27''2T (COR)',
@@ -77,6 +104,13 @@ UPDATE jogos SET
     gols_texto = 'Ángel Romero 22''1T (COR); Yuri Alberto 19''2T (COR); Ángel Romero 28''2T (COR); Pedro Raul 44''2T (COR)',
     autores_gols = NULL
 WHERE id = 83;
+
+-- id 84: 2024-04-14 Corinthians 0x0 Atlético-MG (Brasileiro)
+UPDATE jogos SET
+    gols_texto = '',
+    publico_total = 44597,
+    autores_gols = NULL
+WHERE id = 84;
 
 -- id 85: 2024-05-04 Corinthians 0x0 Fortaleza (Brasileiro)
 UPDATE jogos SET
@@ -169,11 +203,15 @@ UPDATE jogos SET
     autores_gols = NULL
 WHERE id = 118;
 
+-- id 129: 2026-03-11 Corinthians 0x2 Coritiba (Brasileiro)
+UPDATE jogos SET
+    gols_texto = 'Jacy 37''1T (CTB); Lucas Ronier 8''2T (CTB)',
+    autores_gols = NULL
+WHERE id = 129;
+
 COMMIT;
 
--- PENDENTES (23): busca manual
--- id 23: 2019-11-16 Corinthians 3x0 São Paulo (Paulista)
--- id 32: 2021-12-01 PSG ?x? Nice (null)
+-- PENDENTES (17): ainda sem dados de fonte confiável
 -- id 33: 2022-01-25 Corinthians 0x0 Ferroviária (Paulista)
 -- id 34: 2022-01-30 Santo André 1x0 Corinthians (Paulista)
 -- id 37: 2022-02-10 Corinthians 3x0 Mirassol (Paulista)
@@ -181,22 +219,19 @@ COMMIT;
 -- id 42: 2022-05-01 Corinthians 1x0 Fortaleza (Brasileiro)
 -- id 44: 2022-05-22 Corinthians 1x1 São Paulo (Brasileiro)
 -- id 45: 2022-05-29 Corinthians 1x1 América-MG (Brasileiro)
--- id 68: 2023-03-12 Corinthians 1x1 Ituano (Paulista)
 -- id 69: 2023-04-17 Corinthians 3x2 Palmeiras (null)
 -- id 70: 2023-05-02 Corinthians 2x0 Remo (Copa do Brasil)
 -- id 71: 2023-05-02 Corinthians 0x2 Ind. Del Valle (Libertadores)
 -- id 72: 2023-05-31 Corinthians 2x0 Atlético-MG (Copa do Brasil)
--- id 80: 2024-01-25 Corinthians 1x0 Cruzeiro (Copinha)
--- id 84: 2024-04-14 Corinthians 0x0 Atlético-MG (Brasileiro)
 -- id 98: 2025-02-09 Corinthians 2x0 São Bernardo (Paulista)
 -- id 100: 2025-02-26 Corinthians 3x2 U. Central [VEN] (Libertadores)
 -- id 102: 2025-03-09 Corinthians 2x1 Santos (Paulista)
 -- id 103: 2025-03-12 Corinthians 2x0 Barcelona SC (Libertadores)
 -- id 104: 2025-03-27 Corinthians 0x0 Palmeiras (Paulista)
 -- id 105: 2025-04-05 Corinthians 3x0 Vasco (Brasileiro)
--- id 129: 2026-03-11 Corinthians 0x2 Coritiba (Brasileiro)
 
--- WARNS REMANESCENTES (1):
+-- WARNS DE DIVERGÊNCIA (1):
 -- id 118 | 2025-12-21 vs Corinthians | banco 2x1 | ogol 2-1
 
-SELECT id, gols_texto, publico_total, gols_casa, gols_visitante FROM jogos WHERE id IN (1, 36, 38, 43, 73, 75, 76, 77, 78, 82, 83, 85, 86, 89, 90, 92, 93, 94, 110, 113, 114, 116, 117, 118) ORDER BY id;
+-- Verificação:
+SELECT id, gols_texto, publico_total, gols_casa, gols_visitante FROM jogos WHERE id IN (1, 23, 36, 38, 43, 68, 73, 75, 76, 77, 78, 80, 82, 83, 84, 85, 86, 89, 90, 92, 93, 94, 110, 113, 114, 116, 117, 118, 129) ORDER BY id;
