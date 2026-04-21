@@ -728,12 +728,44 @@ body::before {
         inset 0 0 40px rgba(156,138,82,0.15);
 }
 .ingresso.fase-final .confronto { font-size: clamp(18px, 5.5cqw, 34px); }
-.ingresso.fase-final .canhoto-selo { font-size: 30px; }
+.ingresso.fase-final .canhoto-selo { font-size: 28px; margin: 8px 0; }
 /* TODO FINAL usa o mesmo canhoto: gradiente dourado-escuro com TEXTO BRANCO.
-   Referência: ingresso do 17/12/2025. Aplica pra V, E, D e título. */
+   Referência: ingresso do 17/12/2025. Aplica pra V, E, D e título.
+   Também serve pros ingressos da seção Jogos Históricos. */
 .ingresso.fase-final .canhoto {
     background: linear-gradient(180deg, var(--vitoria), var(--ouro-escuro)) !important;
     color: var(--branco) !important;
+    padding: 22px 10px !important;
+    gap: 10px;
+}
+/* Espaçamento das linhas de data: dia / mês / ano respiram */
+.ingresso.fase-final .canhoto-dia  { line-height: 1 !important; margin-bottom: 2px !important; }
+.ingresso.fase-final .canhoto-mes  { margin-top: 4px !important; letter-spacing: 0.2em !important; }
+.ingresso.fase-final .canhoto-ano  { margin-top: 6px !important; letter-spacing: 0.22em !important; opacity: 0.95 !important; }
+.ingresso.fase-final .canhoto-num  { margin-top: 8px !important; opacity: 0.85 !important; }
+
+/* Detalhes (estádio, mando, setor, valor) — IDÊNTICOS em TODOS os finais.
+   Fonte e cor forçadas pra não haver variação entre 17/12 e 21/12. */
+.ingresso.fase-final .det-label {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 9px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.22em !important;
+    text-transform: uppercase !important;
+    color: #8a7530 !important;
+}
+.ingresso.fase-final .det-valor {
+    font-family: 'Archivo', sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #0a0a0a !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+}
+.ingresso.fase-final .detalhes {
+    padding-top: 12px !important;
+    border-top: 1px dashed rgba(110,96,56,0.5) !important;
+    gap: 6px 16px !important;
 }
 
 /* Selo diagonal "FINAL" — mais sofisticado */
