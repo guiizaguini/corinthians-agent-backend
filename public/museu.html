@@ -735,61 +735,13 @@ body::before {
 .ingresso.e .canhoto { color: var(--branco); }
 .ingresso.d .canhoto { color: var(--branco); }
 
-/* =========== DESTAQUE: FINAL (refinado, mesmo tamanho do normal) =========== */
+/* =========== INGRESSO DE FINAL ===========
+   Visualmente IGUAL a um ingresso comum — só muda pela tag diagonal "★ FINAL ★"
+   no canto superior direito. Sem borda dourada, sem subtítulo, sem ornamentos. */
 .ingresso.fase-final {
-    background:
-        radial-gradient(circle at 50% 50%, #faf4dc 0%, #efe4b5 100%);
-    /* Moldura tripla: borda dourada + preta fina + dourada interna */
-    box-shadow:
-        0 0 0 2px var(--ouro),
-        0 0 0 4px var(--preto),
-        0 0 0 5px var(--ouro-claro),
-        0 12px 28px rgba(0,0,0,0.55),
-        0 0 30px rgba(184,166,106,0.2),
-        inset 0 0 30px rgba(156,138,82,0.08);
+    /* Nenhum override de fundo, moldura ou canhoto — herda tudo do .ingresso base */
 }
-.ingresso.fase-final:hover {
-    transform: translate(-4px, -5px);
-    box-shadow:
-        0 0 0 2px var(--ouro-claro),
-        0 0 0 4px var(--preto),
-        0 0 0 5px var(--vitoria-claro),
-        0 22px 50px rgba(0,0,0,0.7),
-        0 0 70px rgba(184,166,106,0.5),
-        inset 0 0 40px rgba(156,138,82,0.15);
-}
-.ingresso.fase-final .confronto { font-size: clamp(18px, 5.5cqw, 34px); }
-.ingresso.fase-final .canhoto-selo { font-size: 26px; margin: 6px 0; }
-/* Canhoto de todo FINAL: mesmo fundo dourado-escuro + texto branco
-   (as dimensões e espaçamentos vêm da base .canhoto). Serve pros históricos também. */
-.ingresso.fase-final .canhoto {
-    background: linear-gradient(180deg, var(--vitoria), var(--ouro-escuro)) !important;
-    color: var(--branco) !important;
-}
-
-/* Detalhes (estádio, mando, setor, valor) — IDÊNTICOS em TODOS os finais.
-   Fonte e cor forçadas pra não haver variação entre 17/12 e 21/12. */
-.ingresso.fase-final .det-label {
-    font-family: 'JetBrains Mono', monospace !important;
-    font-size: 9px !important;
-    font-weight: 500 !important;
-    letter-spacing: 0.22em !important;
-    text-transform: uppercase !important;
-    color: #8a7530 !important;
-}
-.ingresso.fase-final .det-valor {
-    font-family: 'Archivo', sans-serif !important;
-    font-size: 13px !important;
-    font-weight: 700 !important;
-    color: #0a0a0a !important;
-    letter-spacing: normal !important;
-    text-transform: none !important;
-}
-.ingresso.fase-final .detalhes {
-    padding-top: 12px !important;
-    border-top: 1px dashed rgba(110,96,56,0.5) !important;
-    gap: 6px 16px !important;
-}
+/* Sem hover especial — usa o hover padrão do .ingresso */
 
 /* Selo diagonal "FINAL" — mais sofisticado */
 .ingresso.fase-final::after {
@@ -1238,17 +1190,9 @@ body::before {
     .detalhes { gap: 4px 10px; padding-top: 8px; }
     .det-valor { font-size: 11px; }
 
-    /* Final e título: escala das firulas */
+    /* Final no mobile: só ajusta a tag diagonal "★ FINAL ★" pra caber */
     .ingresso.fase-final::after { font-size: 10px; padding: 4px 36px 3px; right: -32px; }
     .campeao-tag, .classico-tag, .fase-tag { font-size: 7px; padding: 2px 6px; }
-    /* Selo VITÓRIA/EMPATE/DERROTA no canhoto dos finais: menor no mobile */
-    .ingresso.fase-final .canhoto-selo { font-size: 15px !important; padding: 3px 8px !important; margin: 4px 0 !important; }
-    .ingresso.fase-final .canhoto { padding: 14px 6px !important; gap: 6px !important; }
-    /* Ornamentos: alinhar com novo canhoto de 92px */
-    .ingresso.fase-final .ornamento.tl { left: 100px; }
-    .ingresso.fase-final .ornamento.bl { left: 100px; }
-    .ingresso.fase-final .ornamento { width: 24px; height: 24px; }
-    .ingresso.fase-final .subtitulo-final { font-size: 10px; }
 
     /* MODAL mobile */
     .modal-overlay { padding: 12px; }
@@ -1307,14 +1251,8 @@ body::before {
     .confronto-google .placar-gols { font-size: 22px; min-width: 18px; }
     .confronto-google .placar-separador { font-size: 14px; padding: 0; }
 
-    /* Ornamentos do final alinhados ao canhoto mobile 78px */
-    .ingresso.fase-final .ornamento.tl { left: 86px; }
-    .ingresso.fase-final .ornamento.bl { left: 86px; }
-    .ingresso.fase-final .ornamento { width: 20px; height: 20px; }
-    .ingresso.fase-final .subtitulo-final { font-size: 9px; letter-spacing: 0.15em; }
-    /* Selo ainda menor em celular */
-    .ingresso.fase-final .canhoto-selo { font-size: 12px !important; padding: 3px 6px !important; }
-    .ingresso.fase-final .canhoto { padding: 12px 4px !important; }
+    /* Final em celular: só o selo diagonal */
+    .ingresso.fase-final::after { font-size: 9px; padding: 3px 30px 2px; right: -28px; }
 
     .resultado-badge { font-size: 10px; padding: 2px 7px; letter-spacing: 0.15em; }
     .detalhes { grid-template-columns: 1fr 1fr; gap: 4px 8px; }
@@ -1787,17 +1725,12 @@ function renderIngresso(j, idx) {
         ehTitulo ? 'titulo' : '',
     ].filter(Boolean).join(' ');
 
-    // (fita-campeao e banner-titulo estão hidden via CSS; mantidos só pra compat)
+    // Todos os elementos decorativos extras foram removidos.
+    // O ingresso de final fica idêntico a um ingresso comum, só muda pela tag "★ FINAL ★".
     const fitaCampeao  = '';
     const bannerTitulo = '';
-    // Ornamentos nos cantos + subtítulo "Partida decisiva": aparecem em TODOS os finais
-    // (incluindo os que deram título). Referência visual: ingresso do 17/12/2025.
-    const ornamentos = ehFinal ? `
-        <span class="ornamento tl"></span><span class="ornamento tr"></span>
-        <span class="ornamento bl"></span><span class="ornamento br"></span>
-    ` : '';
-    const subFinal = ehFinal
-        ? `<div class="subtitulo-final">◆ Partida decisiva ◆</div>` : '';
+    const ornamentos   = '';
+    const subFinal     = '';
 
     return `
         <article class="${classes}" data-idx="${idx}" title="Clique pra ver detalhes">
