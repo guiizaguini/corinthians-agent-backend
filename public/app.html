@@ -1743,44 +1743,63 @@ main {
     letter-spacing: 0.04em;
 }
 
-/* Feed de atividades dos amigos */
+/* Feed de atividades dos amigos — formato "post" */
 .feed-list {
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 0.85rem;
 }
 .feed-item {
     background: var(--bg-card);
     border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 0.95rem 1.1rem;
-    display: grid;
-    grid-template-columns: 42px 1fr auto;
+    border-radius: 16px;
+    padding: 1.1rem 1.25rem 1rem;
+    display: flex;
+    flex-direction: column;
     gap: 0.85rem;
-    align-items: center;
     transition: all 150ms;
     cursor: pointer;
     box-shadow: var(--shadow-sm);
 }
-.feed-item:hover { border-color: var(--accent); transform: translateY(-1px); }
-.feed-item .feed-text {
-    font-family: 'SN Pro','Oswald',sans-serif;
-    font-size: 0.92rem;
-    color: var(--ink-soft);
-    line-height: 1.4;
+.feed-item:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
+/* Cabeçalho do post: avatar + nome + ação + tempo */
+.feed-head {
+    display: grid;
+    grid-template-columns: 42px 1fr auto;
+    gap: 0.75rem;
+    align-items: center;
 }
-.feed-item .feed-text strong {
+.feed-author {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+}
+.feed-author-name {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
+    font-size: 0.92rem;
     color: var(--ink);
     text-transform: uppercase;
     letter-spacing: 0.03em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
-.feed-item .feed-text .feed-game {
+.feed-action {
+    font-family: 'SN Pro','Oswald',sans-serif;
+    font-size: 0.78rem;
+    color: var(--ink-mute);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+.feed-action .material-icons {
+    font-size: 0.95rem;
     color: var(--accent);
-    font-weight: 600;
 }
-.feed-item .feed-time {
+.feed-time {
     font-family: 'Oswald', sans-serif;
     font-weight: 500;
     font-size: 0.65rem;
@@ -1790,18 +1809,79 @@ main {
     text-align: right;
     white-space: nowrap;
 }
+
+/* Conteúdo do post — bloco que destaca o jogo/nota */
+.feed-content {
+    background: var(--bg-base);
+    border: 1px solid var(--line-soft);
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+.feed-content-game {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+.feed-content-score {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: var(--ink);
+    letter-spacing: 0.04em;
+}
+.feed-content-title {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+}
+.feed-content-body {
+    font-family: 'SN Pro','Oswald',sans-serif;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+.feed-content-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.7rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.05em;
+    margin-top: 0.2rem;
+}
+
 .feed-result {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
     font-size: 0.7rem;
-    padding: 0.15rem 0.45rem;
-    letter-spacing: 0.1em;
-    margin-left: 0.4rem;
-    display: inline-block;
+    padding: 0.2rem 0.55rem;
+    letter-spacing: 0.12em;
+    border-radius: 6px;
 }
 .feed-result.v { background: var(--accent-soft); color: var(--accent); }
 .feed-result.e { background: rgba(255,255,255,0.06); color: var(--ink-mute); }
 .feed-result.d { background: rgba(92,31,42,0.4); color: #c07086; }
+body.light-theme .feed-result.e { background: rgba(0,0,0,0.06); }
+body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(--vinho); }
 
 /* Companions no modal de attendance — chips redondos */
 .companions-picker {
@@ -2036,6 +2116,37 @@ main {
                     <span class="material-icons" style="font-size:1.05rem;vertical-align:middle;margin-right:0.3rem;">download</span>
                     Baixar imagem
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Ver nota (read-only do feed) -->
+    <div class="modal-overlay" id="noteViewModal">
+        <div class="modal modal-lg">
+            <div style="display:flex;align-items:center;gap:0.85rem;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--line);">
+                <div class="user-avatar-sm" id="nvAvatar" style="width:48px;height:48px;font-size:1.05rem;">—</div>
+                <div style="flex:1;min-width:0;">
+                    <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:1rem;color:var(--ink);text-transform:uppercase;letter-spacing:0.03em;" id="nvAuthor">—</div>
+                    <div style="font-family:'SN Pro','Oswald',sans-serif;font-size:0.78rem;color:var(--ink-mute);" id="nvMeta">—</div>
+                </div>
+                <span id="nvTime" style="font-family:'Oswald',sans-serif;font-size:0.65rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink-mute);"></span>
+            </div>
+
+            <div id="nvGameBlock" style="display:none;background:var(--bg-base);border:1px solid var(--line-soft);border-radius:12px;padding:0.95rem 1.1rem;margin-bottom:1.25rem;">
+                <div style="font-family:'Oswald',sans-serif;font-weight:600;font-size:0.7rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent);margin-bottom:0.35rem;" id="nvComp"></div>
+                <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:1.15rem;color:var(--ink);text-transform:uppercase;" id="nvTeams"></div>
+                <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.3rem;">
+                    <span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:1.5rem;color:var(--ink);" id="nvScore"></span>
+                    <span id="nvResult"></span>
+                </div>
+            </div>
+
+            <h2 id="nvTitle" style="display:none;margin-bottom:0.85rem;"></h2>
+            <div id="nvBody" style="font-family:'SN Pro','Oswald',sans-serif;font-size:1rem;color:var(--ink);line-height:1.65;white-space:pre-wrap;"></div>
+
+            <div class="modal-actions">
+                <button class="btn-secondary" id="nvClose">Fechar</button>
+                <button class="btn-primary" id="nvVerColecao">Ver coleção do amigo</button>
             </div>
         </div>
     </div>
@@ -3949,40 +4060,66 @@ main {
                            : diffH < 168 ? `${Math.floor(diffH/24)}d atrás`
                            : dt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
 
-                const gameLabel = item.time_casa
-                    ? `<span class="feed-game">${escapeHtml(item.time_casa)} × ${escapeHtml(item.time_visitante)}</span>`
-                    : '';
-                const placar = (item.gols_casa != null) ? ` · ${item.gols_casa} × ${item.gols_visitante}` : '';
                 const resCls = item.resultado === 'V' ? 'v' : item.resultado === 'D' ? 'd' : item.resultado === 'E' ? 'e' : '';
                 const resTag = item.resultado ? `<span class="feed-result ${resCls}">${item.resultado}</span>` : '';
+                const gameTeams = item.time_casa
+                    ? `${escapeHtml(item.time_casa)} × ${escapeHtml(item.time_visitante)}`
+                    : '';
 
-                let textHtml;
+                let actionLine, contentBlock;
                 if (item.type === 'note') {
-                    const titlePart = item.title ? ` <em style="color:var(--accent);font-style:normal;font-weight:600;">"${escapeHtml(item.title)}"</em>` : '';
-                    const bodyPreview = item.body ? `<div style="margin-top:0.4rem;font-size:0.86rem;color:var(--ink-mute);font-family:'SN Pro','Oswald',sans-serif;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">"${escapeHtml(item.body)}"</div>` : '';
-                    textHtml = `
-                        <strong>${escapeHtml(handle)}</strong>
-                        <span class="material-icons" style="font-size:0.95rem;vertical-align:middle;color:var(--accent);">edit_note</span>
-                        publicou uma nota${item.time_casa ? ' sobre ' + gameLabel.toString() : ''}${titlePart}
-                        ${bodyPreview}
+                    actionLine = `<span class="material-icons">edit_note</span> publicou uma nota`;
+                    const titleHtml = item.title ? `<div class="feed-content-title">${escapeHtml(item.title)}</div>` : '';
+                    const gameHtml = gameTeams ? `<div class="feed-content-game">${gameTeams}</div>` : '';
+                    contentBlock = `
+                        <div class="feed-content">
+                            ${gameHtml}
+                            ${titleHtml}
+                            <div class="feed-content-body">${escapeHtml(item.body || '')}</div>
+                        </div>
                     `;
                 } else {
-                    textHtml = `
-                        <strong>${escapeHtml(handle)}</strong> marcou presença em
-                        ${gameLabel}${placar} ${resTag}
+                    actionLine = `<span class="material-icons">stadium</span> marcou presença`;
+                    const placarHtml = (item.gols_casa != null)
+                        ? `<span class="feed-content-score">${item.gols_casa} × ${item.gols_visitante}</span>`
+                        : '';
+                    contentBlock = `
+                        <div class="feed-content">
+                            <div class="feed-content-game">${gameTeams}</div>
+                            <div class="feed-content-meta">
+                                ${placarHtml}
+                                ${resTag}
+                            </div>
+                        </div>
                     `;
                 }
 
                 return `
-                    <div class="feed-item" data-friend-id="${item.user_id}" data-type="${item.type}">
-                        <div class="user-avatar-sm">${initials}</div>
-                        <div class="feed-text">${textHtml}</div>
-                        <div class="feed-time">${when}</div>
+                    <div class="feed-item" data-friend-id="${item.user_id}" data-type="${item.type}" data-ref-id="${item.ref_id}">
+                        <div class="feed-head">
+                            <div class="user-avatar-sm">${initials}</div>
+                            <div class="feed-author">
+                                <div class="feed-author-name">${escapeHtml(handle)}</div>
+                                <div class="feed-action">${actionLine}</div>
+                            </div>
+                            <div class="feed-time">${when}</div>
+                        </div>
+                        ${contentBlock}
                     </div>
                 `;
             }).join('');
             list.querySelectorAll('.feed-item').forEach(el => {
-                el.addEventListener('click', () => openFriendCollection(parseInt(el.dataset.friendId)));
+                el.addEventListener('click', () => {
+                    const type = el.dataset.type;
+                    const friendId = parseInt(el.dataset.friendId);
+                    const refId = parseInt(el.dataset.refId);
+                    if (type === 'note') {
+                        const noteData = (feed.find(f => f.type === 'note' && f.ref_id === refId));
+                        if (noteData) openNoteView(noteData);
+                    } else {
+                        openFriendCollection(friendId);
+                    }
+                });
             });
         } catch (err) {
             list.innerHTML = `<div class="empty">Erro: ${err.message}</div>`;
@@ -4043,6 +4180,68 @@ main {
     });
     document.getElementById('friendCollectionModal').addEventListener('click', (e) => {
         if (e.target.id === 'friendCollectionModal') document.getElementById('friendCollectionModal').classList.remove('show');
+    });
+
+    // ============ Modal: Ver nota completa (read-only) ============
+    let noteViewAuthorId = null;
+
+    function openNoteView(note) {
+        noteViewAuthorId = note.user_id;
+        const author = (note.display_name || note.username || 'Amigo').toUpperCase();
+        const handle = note.username ? `@${note.username}` : '';
+        const club = note.club_name || '';
+        const meta = [handle, club].filter(Boolean).join(' · ');
+
+        const dt = new Date(note.created_at);
+        const when = dt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+
+        document.getElementById('nvAvatar').textContent = avatarInitials(note.display_name || note.username);
+        document.getElementById('nvAuthor').textContent = author;
+        document.getElementById('nvMeta').textContent = meta;
+        document.getElementById('nvTime').textContent = when;
+
+        // Bloco do jogo (se a nota tiver game)
+        const gameBlock = document.getElementById('nvGameBlock');
+        if (note.time_casa) {
+            gameBlock.style.display = '';
+            const compParts = [note.campeonato || 'Amistoso'];
+            document.getElementById('nvComp').textContent = compParts.join(' · ');
+            document.getElementById('nvTeams').textContent = `${note.time_casa} × ${note.time_visitante}`;
+            document.getElementById('nvScore').textContent = (note.gols_casa != null) ? `${note.gols_casa} × ${note.gols_visitante}` : '';
+            const resBox = document.getElementById('nvResult');
+            if (note.resultado) {
+                const map = { V: { txt: 'Vitória', cls: 'v' }, E: { txt: 'Empate', cls: 'e' }, D: { txt: 'Derrota', cls: 'd' } };
+                const r = map[note.resultado];
+                resBox.innerHTML = `<span class="feed-result ${r.cls}" style="font-size:0.78rem;padding:0.25rem 0.65rem;">${r.txt}</span>`;
+            } else {
+                resBox.innerHTML = '';
+            }
+        } else {
+            gameBlock.style.display = 'none';
+        }
+
+        // Title + body
+        const titleEl = document.getElementById('nvTitle');
+        if (note.title) {
+            titleEl.style.display = '';
+            titleEl.textContent = note.title;
+        } else {
+            titleEl.style.display = 'none';
+        }
+        document.getElementById('nvBody').textContent = note.body || '';
+
+        document.getElementById('noteViewModal').classList.add('show');
+    }
+
+    document.getElementById('nvClose').addEventListener('click', () => {
+        document.getElementById('noteViewModal').classList.remove('show');
+    });
+    document.getElementById('noteViewModal').addEventListener('click', (e) => {
+        if (e.target.id === 'noteViewModal') document.getElementById('noteViewModal').classList.remove('show');
+    });
+    document.getElementById('nvVerColecao').addEventListener('click', () => {
+        document.getElementById('noteViewModal').classList.remove('show');
+        if (noteViewAuthorId) openFriendCollection(noteViewAuthorId);
     });
 
     function updateBell() {
