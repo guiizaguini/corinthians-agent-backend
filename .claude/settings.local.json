@@ -11,7 +11,9 @@
       "Bash(node --check src/routes/me.js)",
       "Bash(node --check src/routes/clubs.js)",
       "Bash(node --check scripts/migrate_v2.js)",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(cp /tmp/check_scores.mjs ./check_scores_tmp.mjs)",
+      "Bash(railway run *)"
     ]
   }
 }

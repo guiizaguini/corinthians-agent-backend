@@ -7,10 +7,11 @@
     --cinza-claro: #a8a49a;
     --cinza-medio: #6c6a62;
     --cinza-linha: #2a2824;
-    /* Accent default = neutro (sem clube). Paginas podem sobrescrever via inline style. */
-    --accent: #b8a66a;
-    --accent-hover: #d0bf84;
-    --accent-soft: rgba(184, 166, 106, 0.18);
+    /* Accent default = neutro bone/pearl (sem clube). Sobrescrito pelo signup
+       quando o user seleciona um time no dropdown. */
+    --accent: #d4cfc2;
+    --accent-hover: #ece7d8;
+    --accent-soft: rgba(212,207,194,0.16);
     --vinho: #5c1f2a;
 }
 

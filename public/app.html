@@ -19,11 +19,12 @@
     --cinza-medio: #6c6a62;
     --cinza-linha: #2a2824;
     --cinza-divisa: #1e1c18;
-    /* --accent* é sobrescrito via JS conforme o clube do user */
-    --accent: #b8a66a;
-    --accent-hover: #d0bf84;
-    --accent-soft: rgba(184, 166, 106, 0.18);
-    --accent-dark: #6e6038;
+    /* --accent* é sobrescrito via JS conforme o clube do user.
+       Default (sem clube) = bone/pearl neutro, propositalmente sem identidade de time. */
+    --accent: #d4cfc2;
+    --accent-hover: #ece7d8;
+    --accent-soft: rgba(212,207,194,0.16);
+    --accent-dark: #6d6a62;
     --vitoria: var(--accent);
     --vitoria-claro: var(--accent-hover);
     --vitoria-escuro: var(--accent-dark);
@@ -181,7 +182,7 @@ main {
     gap: 0;
     border-bottom: 1px solid var(--cinza-linha);
     margin-bottom: 1.5rem;
-    overflow-x: auto;
+    flex-wrap: wrap;
 }
 .tab {
     background: transparent;
@@ -294,15 +295,39 @@ main {
 .game-score.d { color: #a95a68; }
 
 .game-badge {
-    display: inline-block;
-    padding: 0.3rem 0.7rem;
-    font-size: 0.65rem;
-    letter-spacing: 0.18em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     font-weight: 700;
+    white-space: nowrap;
 }
-.game-badge.presente { background: var(--accent-soft); color: var(--accent-hover); }
-.game-badge.marcar { border: 1px solid var(--cinza-linha); color: var(--cinza-medio); }
+.game-badge .material-icons { font-size: 1.1rem; }
+
+.game-badge.presente {
+    color: var(--accent);
+    background: transparent;
+}
+.game-badge.presente .material-icons {
+    color: var(--accent);
+    font-size: 1.6rem;
+}
+
+.game-badge.marcar {
+    background: var(--accent);
+    color: var(--preto);
+    transition: all 150ms ease;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.4);
+}
+.game-row:hover .game-badge.marcar {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 0 rgba(0,0,0,0.4);
+}
+.game-badge.marcar .material-icons { font-size: 1.05rem; }
 
 /* ================= INGRESSO (estilo museu) ================= */
 .galeria {
@@ -325,7 +350,7 @@ main {
     box-shadow:
         0 2px 0 rgba(0,0,0,0.1),
         0 12px 28px rgba(0,0,0,0.55),
-        0 0 0 1px rgba(156,138,82,0.15);
+        0 0 0 1px rgba(0,0,0,0.18);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
     overflow: hidden;
@@ -686,6 +711,18 @@ main {
             <h2 id="modalTitle">—</h2>
             <div class="meta" id="modalMeta">—</div>
 
+            <div id="placarEditBlock" style="margin-top:1rem;padding:0.9rem 1rem;border:1px dashed var(--cinza-linha);background:var(--preto-card-2);display:none;">
+                <div style="font-size:0.68rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--cinza-claro);margin-bottom:0.6rem;">Placar final</div>
+                <div id="placarTeams" style="display:flex;align-items:center;gap:0.5rem;font-family:'Archivo',sans-serif;">
+                    <span id="placarCasa" style="flex:1;font-size:0.85rem;color:var(--branco-suave);text-align:right;"></span>
+                    <input type="number" id="fGolsCasa" min="0" max="99" style="width:3.5rem;text-align:center;" placeholder="-">
+                    <span style="color:var(--cinza-medio);">×</span>
+                    <input type="number" id="fGolsVis" min="0" max="99" style="width:3.5rem;text-align:center;" placeholder="-">
+                    <span id="placarVis" style="flex:1;font-size:0.85rem;color:var(--branco-suave);"></span>
+                </div>
+                <div style="font-size:0.7rem;color:var(--cinza-medio);margin-top:0.5rem;font-style:italic;">Deixa em branco se ainda não jogou.</div>
+            </div>
+
             <label>Status</label>
             <select id="fStatus" style="font-family:'Archivo',sans-serif;">
                 <option value="PRESENTE">Fui (presente)</option>
@@ -782,24 +819,14 @@ main {
         const root = document.documentElement;
         const badge = document.getElementById('clubBadge');
 
-        // Corinthians: paleta dourado/preto/branco forçada
+        // Corinthians: paleta dourado/preto/branco forçada (identidade do clube)
         if (club && club.slug === 'corinthians') {
-            root.style.setProperty('--accent', '#9c8a52');
-            root.style.setProperty('--accent-hover', '#b8a66a');
-            root.style.setProperty('--accent-soft', 'rgba(156,138,82,0.18)');
-            root.style.setProperty('--accent-dark', '#6e6038');
+            setAccentPalette(root, '#9c8a52');
         } else if (club && club.primary_color) {
-            root.style.setProperty('--accent', club.primary_color);
-            const rgb = hexToRgb(club.primary_color);
-            if (rgb) root.style.setProperty('--accent-soft', `rgba(${rgb.r},${rgb.g},${rgb.b},0.18)`);
-            // darker for accent-dark (mix com preto)
-            if (rgb) root.style.setProperty('--accent-dark',
-                `rgb(${Math.floor(rgb.r*0.55)},${Math.floor(rgb.g*0.55)},${Math.floor(rgb.b*0.55)})`);
+            setAccentPalette(root, club.primary_color);
         } else {
-            root.style.setProperty('--accent', '#b8a66a');
-            root.style.setProperty('--accent-hover', '#d0bf84');
-            root.style.setProperty('--accent-soft', 'rgba(184,166,106,0.18)');
-            root.style.setProperty('--accent-dark', '#6e6038');
+            // Sem clube: neutro bone/pearl, não-dourado
+            setAccentPalette(root, '#d4cfc2');
         }
 
         if (club && club.name) {
@@ -815,6 +842,29 @@ main {
     function hexToRgb(hex) {
         const m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex);
         return m ? { r: parseInt(m[1], 16), g: parseInt(m[2], 16), b: parseInt(m[3], 16) } : null;
+    }
+
+    function clamp(v, min = 0, max = 255) { return Math.max(min, Math.min(max, v)); }
+
+    function setAccentPalette(root, baseHex) {
+        const rgb = hexToRgb(baseHex);
+        if (!rgb) return;
+        // hover = ~15% mais claro
+        const h = {
+            r: clamp(Math.round(rgb.r + (255 - rgb.r) * 0.28)),
+            g: clamp(Math.round(rgb.g + (255 - rgb.g) * 0.28)),
+            b: clamp(Math.round(rgb.b + (255 - rgb.b) * 0.28)),
+        };
+        // dark = ~45% mais escuro
+        const d = {
+            r: Math.round(rgb.r * 0.55),
+            g: Math.round(rgb.g * 0.55),
+            b: Math.round(rgb.b * 0.55),
+        };
+        root.style.setProperty('--accent', baseHex);
+        root.style.setProperty('--accent-hover', `rgb(${h.r},${h.g},${h.b})`);
+        root.style.setProperty('--accent-soft', `rgba(${rgb.r},${rgb.g},${rgb.b},0.18)`);
+        root.style.setProperty('--accent-dark', `rgb(${d.r},${d.g},${d.b})`);
     }
 
     // ===============================================
@@ -899,8 +949,13 @@ main {
 
     function renderKpis() {
         const g = snapshot.geral || {};
+        const hero = document.getElementById('heroTitle');
+        const sub = document.getElementById('heroSubtitle');
         if (!g.jogos) {
+            // Zero: reseta o hero pro estado inicial
             document.getElementById('kpis').style.display = 'none';
+            hero.textContent = 'Seu diário começa aqui';
+            sub.textContent = 'Marque os jogos que você foi, registre valor pago e setor.';
             return;
         }
         document.getElementById('kpis').style.display = '';
@@ -912,8 +967,9 @@ main {
         const gasto = snapshot.gastos?.total?.gasto_total || 0;
         document.getElementById('kpiGasto').textContent = `R$ ${Number(gasto).toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:0})}`;
         const clubeNome = user.club_short || user.club_name || 'seu time';
-        document.getElementById('heroTitle').textContent = `${g.jogos} jogos com o ${clubeNome}`;
-        document.getElementById('heroSubtitle').textContent = `${g.vitorias}V · ${g.empates}E · ${g.derrotas}D · ${g.aproveitamento_pct}% de aproveitamento`;
+        const jogosLabel = g.jogos === 1 ? 'jogo' : 'jogos';
+        hero.textContent = `${g.jogos} ${jogosLabel} com o ${clubeNome}`;
+        sub.textContent = `${g.vitorias}V · ${g.empates}E · ${g.derrotas}D · ${g.aproveitamento_pct || 0}% de aproveitamento`;
     }
 
     function populateYears() {
@@ -954,8 +1010,8 @@ main {
         const scoreClass = game.resultado === 'V' ? 'v' : game.resultado === 'D' ? 'd' : '';
         const isMine = !!game.attendance_id && game.status_presenca === 'PRESENTE';
         const badge = isMine
-            ? '<span class="game-badge presente">Fui</span>'
-            : '<span class="game-badge marcar">+ Marcar</span>';
+            ? '<span class="game-badge presente" title="Você foi nesse jogo"><span class="material-icons">check_circle</span></span>'
+            : '<span class="game-badge marcar"><span class="material-icons">add</span>Marcar</span>';
 
         return `
             <div class="game-row ${isMine ? 'attended' : ''}" data-id="${game.id}">
@@ -1116,6 +1172,13 @@ main {
         document.getElementById('fValor').value = game.valor_pago ?? '';
         document.getElementById('fObs').value = game.observacoes || '';
 
+        // Placar edit: sempre visível (pra corrigir ou completar)
+        document.getElementById('placarEditBlock').style.display = '';
+        document.getElementById('placarCasa').textContent = game.time_casa;
+        document.getElementById('placarVis').textContent = game.time_visitante;
+        document.getElementById('fGolsCasa').value = game.gols_casa ?? '';
+        document.getElementById('fGolsVis').value = game.gols_visitante ?? '';
+
         document.getElementById('btnDelete').style.display = game.attendance_id ? '' : 'none';
         document.getElementById('modal').classList.add('show');
     }
@@ -1144,7 +1207,26 @@ main {
                 valor_pago: document.getElementById('fValor').value ? parseFloat(document.getElementById('fValor').value) : null,
                 observacoes: document.getElementById('fObs').value.trim() || null,
             };
-            await api('/attendances', { method: 'POST', body: JSON.stringify(body) });
+
+            const gcRaw = document.getElementById('fGolsCasa').value;
+            const gvRaw = document.getElementById('fGolsVis').value;
+            const golsCasa = gcRaw !== '' ? parseInt(gcRaw, 10) : null;
+            const golsVis = gvRaw !== '' ? parseInt(gvRaw, 10) : null;
+            const placarMudou =
+                (golsCasa ?? null) !== (editingGame.gols_casa ?? null) ||
+                (golsVis ?? null) !== (editingGame.gols_visitante ?? null);
+
+            const tasks = [
+                api('/attendances', { method: 'POST', body: JSON.stringify(body) }),
+            ];
+            if (placarMudou) {
+                tasks.push(api(`/games/${editingGame.id}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ gols_casa: golsCasa, gols_visitante: golsVis }),
+                }));
+            }
+            await Promise.all(tasks);
+
             closeModal();
             await loadAll();
         } catch (err) {
