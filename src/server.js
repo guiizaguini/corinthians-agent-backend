@@ -44,27 +44,8 @@ app.get('/health', async (req, res) => {
 });
 
 // =============================================================
-// API v2 — SaaS (auth JWT)
-// =============================================================
-app.use('/auth', authRouter);
-app.use('/clubs', clubsRouter);
-app.use('/games', requireUser, gamesRouter);
-app.use('/attendances', requireUser, attendancesRouter);
-app.use('/me', requireUser, meRouter);
-app.use('/notes', requireUser, notesRouter);
-app.use('/social', requireUser, socialRouter);
-app.use('/admin', requireUser, requireAdmin, adminRouter);
-
-// =============================================================
-// API v1 legada — continua funcionando pro dashboard antigo
-// e pro MCP Agent
-// =============================================================
-app.use('/public', publicRouter);
-app.use('/jogos', requireApiKey, jogosRouter);
-app.use('/estatisticas', requireApiKey, estatisticasRouter);
-
-// =============================================================
-// Páginas estáticas
+// Páginas estáticas — definidas ANTES das APIs pra evitar
+// que `app.use('/admin', requireUser, ...)` intercepte o GET /admin
 // =============================================================
 app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public', 'login.html'));
@@ -88,6 +69,26 @@ app.get('/museu', (req, res) => {
 });
 
 app.use(express.static(path.join(__dirname, '..', 'public')));
+
+// =============================================================
+// API v2 — SaaS (auth JWT)
+// =============================================================
+app.use('/auth', authRouter);
+app.use('/clubs', clubsRouter);
+app.use('/games', requireUser, gamesRouter);
+app.use('/attendances', requireUser, attendancesRouter);
+app.use('/me', requireUser, meRouter);
+app.use('/notes', requireUser, notesRouter);
+app.use('/social', requireUser, socialRouter);
+app.use('/admin', requireUser, requireAdmin, adminRouter);
+
+// =============================================================
+// API v1 legada — continua funcionando pro dashboard antigo
+// e pro MCP Agent
+// =============================================================
+app.use('/public', publicRouter);
+app.use('/jogos', requireApiKey, jogosRouter);
+app.use('/estatisticas', requireApiKey, estatisticasRouter);
 
 app.get('/', (req, res) => {
     // Raiz: landing page white-label
