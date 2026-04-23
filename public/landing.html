@@ -6,7 +6,7 @@
 <title>Arquibancada — Diário do Torcedor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,800;1,6..72,400;1,6..72,600;1,6..72,800&family=Space+Mono:wght@400;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
 :root {
@@ -34,19 +34,18 @@ html { scroll-behavior: smooth; }
 body {
     background: var(--paper);
     color: var(--ink);
-    font-family: 'Manrope', 'Archivo', sans-serif;
+    font-family: 'Oswald', sans-serif;
     font-size: 16px;
     line-height: 1.5;
     overflow-x: hidden;
 }
 
-/* Itálico de personalidade — Instrument Serif só nas ênfases dos headlines.
-   Tem só 1 peso (400) mas a fonte tem caráter editorial forte. */
+/* Ênfase no headline — Oswald não tem itálico, então usamos cor accent + peso 700 */
 h1 em, h2 em, h3 em,
 .hero p em, .how-head aside em, .final-cta .lede em {
-    font-family: 'Instrument Serif', serif;
-    font-style: italic;
-    font-weight: 400;
+    font-style: normal;
+    font-weight: 700;
+    color: var(--vinho);
 }
 
 /* Textura de papel (grain) */
@@ -77,14 +76,14 @@ nav {
 }
 .brand-row { display: flex; align-items: baseline; gap: 0.75rem; }
 .brand {
-    font-family: 'Anton', sans-serif;
+    font-family: 'Oswald', sans-serif;
     font-size: 1.5rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--ink);
 }
 .brand-mark {
-    font-family: 'Space Mono', monospace;
+    font-family: 'Oswald', sans-serif;
     font-size: 0.7rem;
     letter-spacing: 0.3em;
     text-transform: uppercase;
@@ -93,7 +92,7 @@ nav {
 
 .nav-links { display: flex; gap: 0.5rem; align-items: center; }
 .btn {
-    font-family: 'Archivo', sans-serif;
+    font-family: 'Oswald', sans-serif;
     font-weight: 700;
     font-size: 0.78rem;
     letter-spacing: 0.2em;
@@ -140,7 +139,7 @@ nav {
 }
 
 .hero-eyebrow {
-    font-family: 'Space Mono', monospace;
+    font-family: 'Oswald', sans-serif;
     font-size: 0.8rem;
     letter-spacing: 0.28em;
     text-transform: uppercase;
@@ -158,8 +157,8 @@ nav {
 }
 
 .hero h1 {
-    font-family: 'Newsreader', serif;
-    font-weight: 800;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
     font-size: clamp(2.75rem, 6.5vw, 5.5rem);
     line-height: 0.98;
     letter-spacing: -0.025em;
@@ -167,7 +166,7 @@ nav {
     color: var(--ink);
 }
 .hero h1 em {
-    font-style: italic;
+    font-style: normal; font-weight: 600;
     font-weight: 700;
     color: var(--vinho);
 }
@@ -187,8 +186,8 @@ nav {
 }
 
 .hero p.lede {
-    font-family: 'Newsreader', serif;
-    font-style: italic;
+    font-family: 'Oswald', sans-serif;
+    font-style: normal; font-weight: 600;
     font-size: clamp(1.05rem, 1.6vw, 1.3rem);
     color: var(--ink-soft);
     max-width: 520px;
@@ -205,7 +204,7 @@ nav {
     display: flex;
     gap: 2rem;
     flex-wrap: wrap;
-    font-family: 'Space Mono', monospace;
+    font-family: 'Oswald', sans-serif;
     font-size: 0.72rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
@@ -237,7 +236,7 @@ nav {
         0 16px 32px rgba(0,0,0,0.28),
         0 0 0 1px rgba(107,82,40,0.2);
     transition: transform 400ms cubic-bezier(0.2, 0.9, 0.3, 1.1);
-    font-family: 'Archivo', sans-serif;
+    font-family: 'Oswald', sans-serif;
     overflow: hidden;
 }
 .mock-ticket::before {
@@ -260,11 +259,11 @@ nav {
     color: #1a1000;
     text-align: center;
 }
-.mock-ticket .mt-dia { font-family: 'Anton', sans-serif; font-size: 2.75rem; line-height: 1; }
-.mock-ticket .mt-mes { font-family: 'Anton', sans-serif; font-size: 1.05rem; letter-spacing: 0.2em; }
-.mock-ticket .mt-ano { font-family: 'Space Mono', monospace; font-size: 0.62rem; letter-spacing: 0.22em; opacity: 0.75; }
+.mock-ticket .mt-dia { font-family: 'Oswald', sans-serif; font-size: 2.75rem; line-height: 1; }
+.mock-ticket .mt-mes { font-family: 'Oswald', sans-serif; font-size: 1.05rem; letter-spacing: 0.2em; }
+.mock-ticket .mt-ano { font-family: 'Oswald', sans-serif; font-size: 0.62rem; letter-spacing: 0.22em; opacity: 0.75; }
 .mock-ticket .mt-selo {
-    font-family: 'Anton', sans-serif;
+    font-family: 'Oswald', sans-serif;
     font-size: 1rem;
     letter-spacing: 0.08em;
     padding: 0.3rem 0.6rem;
@@ -303,7 +302,7 @@ nav {
     z-index: 1;
 }
 .mt-comp {
-    font-family: 'Space Mono', monospace;
+    font-family: 'Oswald', sans-serif;
     font-size: 0.58rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -312,19 +311,19 @@ nav {
     border-bottom: 1px dashed rgba(0,0,0,0.25);
 }
 .mt-teams {
-    font-family: 'Anton', sans-serif;
+    font-family: 'Oswald', sans-serif;
     font-size: 1.1rem;
     letter-spacing: 0.02em;
     line-height: 1.1;
     text-transform: uppercase;
 }
 .mt-score {
-    font-family: 'Anton', sans-serif;
+    font-family: 'Oswald', sans-serif;
     font-size: 1.75rem;
     letter-spacing: 0.04em;
 }
 .mt-result {
-    font-family: 'Anton', sans-serif;
+    font-family: 'Oswald', sans-serif;
     font-size: 0.72rem;
     letter-spacing: 0.2em;
     padding: 0.2rem 0.55rem;
@@ -333,7 +332,7 @@ nav {
     align-self: flex-start;
 }
 .mt-footer {
-    font-family: 'Space Mono', monospace;
+    font-family: 'Oswald', sans-serif;
     font-size: 0.58rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
@@ -403,20 +402,20 @@ nav {
     gap: 0.25rem;
 }
 .stat-value {
-    font-family: 'Newsreader', serif;
-    font-weight: 800;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
     font-size: clamp(2.5rem, 4.5vw, 3.75rem);
     line-height: 1;
     color: var(--ink);
     letter-spacing: -0.03em;
 }
 .stat-value em {
-    font-style: italic;
+    font-style: normal; font-weight: 600;
     font-weight: 700;
     color: var(--vinho);
 }
 .stat-label {
-    font-family: 'Space Mono', monospace;
+    font-family: 'Oswald', sans-serif;
     font-size: 0.72rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -439,7 +438,7 @@ nav {
     flex-wrap: wrap;
 }
 .section-eyebrow {
-    font-family: 'Space Mono', monospace;
+    font-family: 'Oswald', sans-serif;
     font-size: 0.78rem;
     letter-spacing: 0.28em;
     text-transform: uppercase;
@@ -456,17 +455,17 @@ nav {
     background: var(--vinho);
 }
 .how h2 {
-    font-family: 'Newsreader', serif;
-    font-weight: 800;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
     font-size: clamp(2rem, 4.5vw, 3.5rem);
     line-height: 1.05;
     letter-spacing: -0.02em;
     max-width: 720px;
 }
-.how h2 em { font-style: italic; color: var(--vinho); font-weight: 700; }
+.how h2 em { font-style: normal; font-weight: 600; color: var(--vinho); font-weight: 700; }
 .how-head aside {
-    font-family: 'Newsreader', serif;
-    font-style: italic;
+    font-family: 'Oswald', sans-serif;
+    font-style: normal; font-weight: 600;
     font-size: 1.05rem;
     color: var(--ink-mute);
     max-width: 280px;
@@ -491,9 +490,9 @@ nav {
 }
 
 .step-num {
-    font-family: 'Newsreader', serif;
-    font-weight: 800;
-    font-style: italic;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-style: normal; font-weight: 600;
     font-size: 7rem;
     line-height: 0.8;
     color: var(--vinho);
@@ -515,8 +514,8 @@ nav {
 }
 
 .step-item h3 {
-    font-family: 'Newsreader', serif;
-    font-weight: 800;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
     font-size: 1.5rem;
     line-height: 1.1;
     letter-spacing: -0.01em;
@@ -571,18 +570,18 @@ nav {
     .dark-section-inner { grid-template-columns: 0.9fr 1.1fr; align-items: center; }
 }
 .dark-section h2 {
-    font-family: 'Newsreader', serif;
-    font-weight: 800;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
     font-size: clamp(2rem, 4vw, 3.25rem);
     line-height: 1.05;
     letter-spacing: -0.02em;
     color: var(--branco);
     margin-top: 0.75rem;
 }
-.dark-section h2 em { font-style: italic; color: #c8a760; font-weight: 700; }
+.dark-section h2 em { font-style: normal; font-weight: 600; color: #c8a760; font-weight: 700; }
 .dark-section p {
-    font-family: 'Newsreader', serif;
-    font-style: italic;
+    font-family: 'Oswald', sans-serif;
+    font-style: normal; font-weight: 600;
     font-size: 1.05rem;
     color: #b8aea0;
     margin-top: 1.25rem;
@@ -604,7 +603,7 @@ nav {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
-    font-family: 'Archivo', sans-serif;
+    font-family: 'Oswald', sans-serif;
     border-left: 4px solid var(--vinho);
     box-shadow: 0 6px 16px rgba(0,0,0,0.45);
     transition: transform 220ms;
@@ -626,7 +625,7 @@ nav {
 .mini-ticket.d { border-left-color: var(--vinho); }
 .mini-ticket.e { border-left-color: #5c5a54; }
 .mini-ticket .mini-date {
-    font-family: 'Space Mono', monospace;
+    font-family: 'Oswald', sans-serif;
     font-size: 0.65rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -634,7 +633,7 @@ nav {
     position: relative; z-index: 1;
 }
 .mini-ticket .mini-teams {
-    font-family: 'Anton', sans-serif;
+    font-family: 'Oswald', sans-serif;
     font-size: 0.95rem;
     letter-spacing: 0.02em;
     text-transform: uppercase;
@@ -642,7 +641,7 @@ nav {
     position: relative; z-index: 1;
 }
 .mini-ticket .mini-score {
-    font-family: 'Anton', sans-serif;
+    font-family: 'Oswald', sans-serif;
     font-size: 1.3rem;
     letter-spacing: 0.04em;
     margin-top: auto;
@@ -662,15 +661,15 @@ nav {
     text-align: center;
 }
 .clubs h2 {
-    font-family: 'Newsreader', serif;
-    font-weight: 800;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
     font-size: clamp(1.75rem, 3.5vw, 2.75rem);
     line-height: 1.1;
     margin-bottom: 0.5rem;
 }
 .clubs p {
-    font-family: 'Newsreader', serif;
-    font-style: italic;
+    font-family: 'Oswald', sans-serif;
+    font-style: normal; font-weight: 600;
     color: var(--ink-mute);
     margin-bottom: 2.5rem;
 }
@@ -681,7 +680,7 @@ nav {
     gap: 0.5rem;
 }
 .club-chip {
-    font-family: 'Anton', sans-serif;
+    font-family: 'Oswald', sans-serif;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     font-size: 0.9rem;
@@ -728,17 +727,17 @@ nav {
     border-top: 1px solid var(--ink-line);
 }
 .final-cta h2 {
-    font-family: 'Newsreader', serif;
-    font-weight: 800;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
     font-size: clamp(2rem, 5vw, 3.75rem);
     line-height: 1.02;
     letter-spacing: -0.025em;
     margin-bottom: 1.25rem;
 }
-.final-cta h2 em { font-style: italic; color: var(--vinho); font-weight: 700; }
+.final-cta h2 em { font-style: normal; font-weight: 600; color: var(--vinho); font-weight: 700; }
 .final-cta .lede {
-    font-family: 'Newsreader', serif;
-    font-style: italic;
+    font-family: 'Oswald', sans-serif;
+    font-style: normal; font-weight: 600;
     font-size: 1.15rem;
     color: var(--ink-soft);
     max-width: 540px;
@@ -754,7 +753,7 @@ footer {
     border-top: 1px solid var(--ink-line);
     padding: 2rem;
     text-align: center;
-    font-family: 'Space Mono', monospace;
+    font-family: 'Oswald', sans-serif;
     font-size: 0.72rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
