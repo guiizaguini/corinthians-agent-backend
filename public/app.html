@@ -234,98 +234,199 @@ main {
 }
 .checkbox-wrap input { width: auto; }
 
-/* ================= Catálogo (lista simples) ================= */
+/* ================= Catálogo (cards) ================= */
 .games-grid {
     display: grid;
-    gap: 1px;
-    background: var(--cinza-linha);
-    border: 1px solid var(--cinza-linha);
-}
-
-.game-row {
-    background: var(--preto-card);
-    padding: 1rem 1.25rem;
-    display: grid;
-    grid-template-columns: 90px 1fr 90px auto;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 1rem;
-    align-items: center;
-    cursor: pointer;
-    transition: background 120ms;
 }
-.game-row:hover { background: var(--preto-card-2); }
-.game-row.attended { border-left: 3px solid var(--accent); padding-left: calc(1.25rem - 3px); }
 
-.game-date {
+.game-card {
+    position: relative;
+    background: var(--preto-card);
+    border: 1px solid var(--cinza-linha);
+    padding: 1.1rem 1.1rem 1rem;
+    cursor: pointer;
+    transition: all 180ms ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    min-height: 200px;
+    overflow: hidden;
+}
+.game-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--cinza-linha);
+    transition: background 180ms;
+}
+.game-card:hover {
+    background: var(--preto-card-2);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(0,0,0,0.6);
+}
+.game-card:hover::before { background: var(--accent); }
+
+.game-card.attended {
+    border-color: var(--accent);
+}
+.game-card.attended::before {
+    background: var(--accent);
+    height: 3px;
+}
+
+.gc-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.5rem;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.78rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--cinza-medio);
+}
+.gc-comp {
+    max-width: 60%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.gc-date-stack {
+    text-align: right;
+    line-height: 1.3;
+    font-size: 0.68rem;
     color: var(--cinza-claro);
 }
-.game-date .weekday {
+.gc-date-stack .gc-weekday {
     display: block;
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     color: var(--cinza-medio);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.14em;
 }
 
-.game-teams {
-    font-family: 'Playfair Display', serif;
+.gc-teams {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    margin: 0.1rem 0;
+}
+.gc-team {
+    font-family: 'Archivo', sans-serif;
     font-size: 1rem;
     font-weight: 700;
     color: var(--branco);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
-.game-teams .comp {
-    display: block;
-    font-family: 'Archivo', sans-serif;
-    font-size: 0.7rem;
+.gc-vs {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--cinza-medio);
+    letter-spacing: 0.25em;
+}
+
+.gc-score {
+    font-family: 'Anton', sans-serif;
+    font-size: 1.9rem;
+    line-height: 1;
+    color: var(--branco);
+    letter-spacing: -0.01em;
+}
+.gc-score.v { color: var(--accent); }
+.gc-score.d { color: #a95a68; }
+.gc-score.e { color: var(--cinza-claro); }
+.gc-score .gc-x {
+    color: var(--cinza-medio);
+    font-size: 0.75em;
+    margin: 0 0.3em;
+    font-weight: 400;
+}
+.gc-score.empty {
+    font-size: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.15em;
+    color: var(--cinza-medio);
+    text-transform: uppercase;
+}
+
+.gc-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     color: var(--cinza-medio);
-    font-weight: 500;
-    margin-top: 0.2rem;
+}
+.gc-meta .material-icons {
+    font-size: 0.95rem;
+    color: var(--cinza-medio);
 }
 
-.game-score {
-    font-family: 'Anton', sans-serif;
-    font-size: 1.4rem;
-    color: var(--branco);
-    text-align: center;
+.gc-footer {
+    margin-top: auto;
+    padding-top: 0.75rem;
+    border-top: 1px dashed var(--cinza-linha);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
 }
-.game-score.v { color: var(--vitoria); }
-.game-score.d { color: #a95a68; }
+
+.gc-classico {
+    padding: 0.2rem 0.55rem;
+    background: rgba(92,31,42,0.45);
+    color: #d89aa4;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 700;
+}
 
 .game-badge {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
     padding: 0.35rem 0.7rem;
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
     font-weight: 700;
     white-space: nowrap;
+    margin-left: auto;
 }
-.game-badge .material-icons { font-size: 1.1rem; }
+.game-badge .material-icons { font-size: 1.05rem; }
 
 .game-badge.presente {
     color: var(--accent);
     background: transparent;
+    padding: 0.25rem 0.4rem;
 }
 .game-badge.presente .material-icons {
     color: var(--accent);
-    font-size: 1.6rem;
+    font-size: 1.5rem;
 }
 
 .game-badge.marcar {
     background: var(--accent);
     color: var(--preto);
     transition: all 150ms ease;
-    box-shadow: 0 2px 0 rgba(0,0,0,0.4);
+    box-shadow: 0 2px 0 rgba(0,0,0,0.5);
 }
-.game-row:hover .game-badge.marcar {
+.game-card:hover .game-badge.marcar {
     background: var(--accent-hover);
     transform: translateY(-1px);
-    box-shadow: 0 3px 0 rgba(0,0,0,0.4);
+    box-shadow: 0 3px 0 rgba(0,0,0,0.5);
 }
 .game-badge.marcar .material-icons { font-size: 1.05rem; }
 
@@ -560,6 +661,39 @@ main {
 .ingresso.ausente { opacity: 0.72; filter: saturate(0.4); }
 .ingresso.ausente .canhoto-selo { background: rgba(0,0,0,0.1); }
 
+/* Ações no ingresso (lápis + lixeira) */
+.ingresso-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    gap: 4px;
+    z-index: 5;
+    opacity: 0;
+    transition: opacity 150ms;
+}
+.ingresso:hover .ingresso-actions { opacity: 1; }
+@media (hover: none) {
+    .ingresso-actions { opacity: 1; }
+}
+.ingresso-action {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.7);
+    color: #f0ead6;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 120ms;
+}
+.ingresso-action:hover { background: rgba(0,0,0,0.9); transform: scale(1.1); }
+.ingresso-action.edit:hover { color: var(--accent-hover); }
+.ingresso-action.del:hover { color: #e29aa6; }
+.ingresso-action .material-icons { font-size: 16px; }
+
 @media (max-width: 540px) {
     .ingresso { grid-template-columns: 92px 1fr; min-height: 200px; }
     .picotado { left: 92px; }
@@ -661,9 +795,8 @@ main {
 .loading { text-align: center; padding: 3rem 1rem; color: var(--cinza-claro); font-size: 0.85rem; }
 .empty { text-align: center; padding: 2.5rem 1rem; color: var(--cinza-medio); font-size: 0.9rem; }
 
-@media (max-width: 700px) {
-    .game-row { grid-template-columns: 70px 1fr auto; gap: 0.75rem; }
-    .game-score { grid-column: 1 / -1; text-align: left; font-size: 1.1rem; }
+@media (max-width: 540px) {
+    .games-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
 }
 </style>
 </head>
@@ -676,6 +809,7 @@ main {
         <div class="user-info">
             <span class="club-badge" id="clubBadge"></span>
             <span>Olá, <strong id="userName">—</strong></span>
+            <a href="/admin" class="btn-ghost" id="linkAdmin" style="display:none;text-decoration:none;">Admin</a>
             <button class="btn-ghost" id="btnProfile">Perfil</button>
             <button class="btn-ghost" id="btnLogout">Sair</button>
         </div>
@@ -705,23 +839,41 @@ main {
         </div>
     </div>
 
+    <!-- Modal: Resumo da partida (read-only) -->
+    <div class="modal-overlay" id="summaryModal">
+        <div class="modal" style="max-width:540px;">
+            <div id="summaryHead" style="text-align:center;padding-bottom:1rem;border-bottom:1px solid var(--cinza-linha);margin-bottom:1.2rem;">
+                <div id="summaryComp" style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem;"></div>
+                <div id="summaryTeams" style="display:flex;align-items:center;justify-content:center;gap:1.2rem;margin:0.5rem 0;flex-wrap:wrap;">
+                    <div style="flex:1;min-width:0;text-align:right;">
+                        <div id="summaryHomeName" style="font-family:'Playfair Display',serif;font-weight:700;font-size:1.1rem;color:var(--branco);"></div>
+                    </div>
+                    <div id="summaryScore" style="font-family:'Anton',sans-serif;font-size:2.5rem;color:var(--branco);min-width:5rem;text-align:center;letter-spacing:0.04em;"></div>
+                    <div style="flex:1;min-width:0;text-align:left;">
+                        <div id="summaryAwayName" style="font-family:'Playfair Display',serif;font-weight:700;font-size:1.1rem;color:var(--branco);"></div>
+                    </div>
+                </div>
+                <div id="summaryDate" style="font-family:'Playfair Display',serif;font-style:italic;color:var(--cinza-claro);font-size:0.9rem;margin-top:0.5rem;"></div>
+                <div id="summaryResult" style="margin-top:0.7rem;"></div>
+            </div>
+
+            <div id="summaryGols" style="margin-bottom:1.2rem;"></div>
+
+            <div id="summaryDetails" style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;font-size:0.85rem;"></div>
+
+            <div id="summaryObs" style="margin-top:1rem;"></div>
+
+            <div class="modal-actions">
+                <button class="btn-secondary" id="summaryClose">Fechar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal: Marcar presença -->
     <div class="modal-overlay" id="modal">
         <div class="modal">
             <h2 id="modalTitle">—</h2>
             <div class="meta" id="modalMeta">—</div>
-
-            <div id="placarEditBlock" style="margin-top:1rem;padding:0.9rem 1rem;border:1px dashed var(--cinza-linha);background:var(--preto-card-2);display:none;">
-                <div style="font-size:0.68rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--cinza-claro);margin-bottom:0.6rem;">Placar final</div>
-                <div id="placarTeams" style="display:flex;align-items:center;gap:0.5rem;font-family:'Archivo',sans-serif;">
-                    <span id="placarCasa" style="flex:1;font-size:0.85rem;color:var(--branco-suave);text-align:right;"></span>
-                    <input type="number" id="fGolsCasa" min="0" max="99" style="width:3.5rem;text-align:center;" placeholder="-">
-                    <span style="color:var(--cinza-medio);">×</span>
-                    <input type="number" id="fGolsVis" min="0" max="99" style="width:3.5rem;text-align:center;" placeholder="-">
-                    <span id="placarVis" style="flex:1;font-size:0.85rem;color:var(--branco-suave);"></span>
-                </div>
-                <div style="font-size:0.7rem;color:var(--cinza-medio);margin-top:0.5rem;font-style:italic;">Deixa em branco se ainda não jogou.</div>
-            </div>
 
             <label>Status</label>
             <select id="fStatus" style="font-family:'Archivo',sans-serif;">
@@ -907,6 +1059,7 @@ main {
             const me = await api('/auth/me');
             user = me.user;
             localStorage.setItem('fiel_user', JSON.stringify(user));
+            document.getElementById('linkAdmin').style.display = user.is_admin ? '' : 'none';
             applyClubTheme(user.club_id ? {
                 slug: user.club_slug,
                 name: user.club_name,
@@ -1004,28 +1157,45 @@ main {
     // ===============================================
     function renderGameRow(game) {
         const d = formatDate(game.data);
-        const score = game.gols_casa != null
-            ? `${game.gols_casa}<span style="color:var(--cinza-medio);"> x </span>${game.gols_visitante}`
-            : '—';
-        const scoreClass = game.resultado === 'V' ? 'v' : game.resultado === 'D' ? 'd' : '';
+        const hasScore = game.gols_casa != null && game.gols_visitante != null;
+        const scoreClass = game.resultado === 'V' ? 'v' : game.resultado === 'D' ? 'd' : game.resultado === 'E' ? 'e' : '';
         const isMine = !!game.attendance_id && game.status_presenca === 'PRESENTE';
         const badge = isMine
             ? '<span class="game-badge presente" title="Você foi nesse jogo"><span class="material-icons">check_circle</span></span>'
             : '<span class="game-badge marcar"><span class="material-icons">add</span>Marcar</span>';
 
+        const scoreHtml = hasScore
+            ? `<div class="gc-score ${scoreClass}">${game.gols_casa}<span class="gc-x">×</span>${game.gols_visitante}</div>`
+            : `<div class="gc-score empty">sem placar</div>`;
+
+        const comp = game.campeonato || 'Amistoso';
+        const fase = game.fase ? ` · ${game.fase}` : '';
+
         return `
-            <div class="game-row ${isMine ? 'attended' : ''}" data-id="${game.id}">
-                <div class="game-date">
-                    <span class="weekday">${escapeHtml(d.weekday)}</span>
-                    ${escapeHtml(d.main)}
+            <article class="game-card ${isMine ? 'attended' : ''}" data-id="${game.id}">
+                <div class="gc-head">
+                    <span class="gc-comp">${escapeHtml(comp + fase)}</span>
+                    <div class="gc-date-stack">
+                        <span class="gc-weekday">${escapeHtml(d.weekday)}</span>
+                        ${escapeHtml(d.main)}
+                    </div>
                 </div>
-                <div class="game-teams">
-                    ${escapeHtml(game.time_casa)} × ${escapeHtml(game.time_visitante)}
-                    <span class="comp">${escapeHtml(game.campeonato || '—')}${game.estadio ? ' · ' + escapeHtml(game.estadio) : ''}</span>
+                <div class="gc-teams">
+                    <span class="gc-team">${escapeHtml(game.time_casa)}</span>
+                    <span class="gc-vs">vs</span>
+                    <span class="gc-team">${escapeHtml(game.time_visitante)}</span>
                 </div>
-                <div class="game-score ${scoreClass}">${score}</div>
-                <div>${badge}</div>
-            </div>
+                ${scoreHtml}
+                ${game.estadio ? `
+                <div class="gc-meta">
+                    <span class="material-icons">stadium</span>
+                    <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(game.estadio)}</span>
+                </div>` : ''}
+                <div class="gc-footer">
+                    ${game.foi_classico ? '<span class="gc-classico">Clássico</span>' : '<span></span>'}
+                    ${badge}
+                </div>
+            </article>
         `;
     }
 
@@ -1050,8 +1220,8 @@ main {
             return;
         }
         container.innerHTML = filtered.map(renderGameRow).join('');
-        container.querySelectorAll('.game-row').forEach(row => {
-            row.addEventListener('click', () => openModal(parseInt(row.dataset.id)));
+        container.querySelectorAll('.game-card').forEach(card => {
+            card.addEventListener('click', () => openModal(parseInt(card.dataset.id)));
         });
     }
 
@@ -1082,7 +1252,15 @@ main {
         const hasPlacar = g.gols_casa != null && g.gols_visitante != null;
 
         return `
-            <article class="${classes}" data-id="${g.id}" title="Clique pra editar">
+            <article class="${classes}" data-id="${g.id}" title="Clique pra ver detalhes">
+                <div class="ingresso-actions">
+                    <button class="ingresso-action edit" data-edit="${g.id}" title="Editar dados do ingresso">
+                        <span class="material-icons">edit</span>
+                    </button>
+                    <button class="ingresso-action del" data-del="${g.attendance_id}" title="Remover ingresso">
+                        <span class="material-icons">delete</span>
+                    </button>
+                </div>
                 <div class="canhoto">
                     <div>
                         <div class="canhoto-dia">${dia}</div>
@@ -1147,13 +1325,148 @@ main {
             return;
         }
         container.innerHTML = mine.map(renderIngresso).join('');
+
+        // Click no ingresso = abre resumo READ-ONLY
         container.querySelectorAll('.ingresso').forEach(el => {
-            el.addEventListener('click', () => openModal(parseInt(el.dataset.id)));
+            el.addEventListener('click', (e) => {
+                // Ignora cliques nos botões de ação
+                if (e.target.closest('.ingresso-action')) return;
+                openSummary(parseInt(el.dataset.id));
+            });
+        });
+
+        // Lápis = edita
+        container.querySelectorAll('.ingresso-action.edit').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openModal(parseInt(btn.dataset.edit));
+            });
+        });
+
+        // Lixeira = remove (com confirm)
+        container.querySelectorAll('.ingresso-action.del').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                if (!confirm('Remover esse ingresso?')) return;
+                try {
+                    await api(`/attendances/${btn.dataset.del}`, { method: 'DELETE' });
+                    await loadAll();
+                } catch (err) {
+                    alert('Erro: ' + err.message);
+                }
+            });
         });
     }
 
     // ===============================================
-    // Modal: presença
+    // Modal: Resumo da partida (read-only)
+    // ===============================================
+    function openSummary(gameId) {
+        const g = allGames.find(x => x.id === gameId);
+        if (!g) return;
+
+        const d = formatDate(g.data);
+        const dateExt = new Date(g.data).toLocaleDateString('pt-BR', {
+            weekday: 'long', day: '2-digit', month: 'long', year: 'numeric',
+        });
+
+        const compParts = [g.campeonato || 'Amistoso'];
+        if (g.fase) compParts.push(g.fase);
+        document.getElementById('summaryComp').textContent = compParts.join(' · ');
+
+        document.getElementById('summaryHomeName').textContent = g.time_casa;
+        document.getElementById('summaryAwayName').textContent = g.time_visitante;
+
+        const hasScore = g.gols_casa != null && g.gols_visitante != null;
+        document.getElementById('summaryScore').innerHTML = hasScore
+            ? `${g.gols_casa}<span style="color:var(--cinza-medio);margin:0 0.25em;">×</span>${g.gols_visitante}`
+            : `<span style="font-size:0.7rem;letter-spacing:0.2em;color:var(--cinza-medio);font-family:'JetBrains Mono',monospace;">SEM PLACAR</span>`;
+
+        document.getElementById('summaryDate').textContent = dateExt;
+
+        // Resultado badge
+        const resBox = document.getElementById('summaryResult');
+        if (g.resultado) {
+            const map = { V: { txt: 'Vitória', bg: 'rgba(168,144,80,0.25)', fg: '#caa865' },
+                          E: { txt: 'Empate',  bg: 'rgba(255,255,255,0.08)', fg: '#a8a49a' },
+                          D: { txt: 'Derrota', bg: 'rgba(92,31,42,0.4)',     fg: '#c07086' } };
+            const r = map[g.resultado];
+            resBox.innerHTML = `<span style="display:inline-block;padding:0.3rem 0.8rem;background:${r.bg};color:${r.fg};font-family:'Anton',sans-serif;font-size:0.85rem;letter-spacing:0.2em;text-transform:uppercase;">${r.txt}</span>`;
+        } else {
+            resBox.innerHTML = '';
+        }
+
+        // Autores de gols
+        const golsBox = document.getElementById('summaryGols');
+        const autores = Array.isArray(g.autores_gols) ? g.autores_gols
+                       : (g.autores_gols && typeof g.autores_gols === 'object') ? g.autores_gols
+                       : [];
+        if (Array.isArray(autores) && autores.length) {
+            const linhas = autores.map(a => {
+                const ehCasa = a.time === g.time_casa;
+                const min = a.minuto != null ? `${a.minuto}'` : '';
+                return `
+                    <div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0.7rem;background:var(--preto-card-2);border-left:2px solid var(--accent);">
+                        <span class="material-icons" style="font-size:1.1rem;color:var(--accent);">sports_soccer</span>
+                        <span style="flex:1;font-size:0.88rem;color:var(--branco-suave);">${escapeHtml(a.autor || '—')}</span>
+                        <span style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--cinza-claro);letter-spacing:0.1em;">${escapeHtml(a.time || '')} · ${min}</span>
+                    </div>
+                `;
+            }).join('');
+            golsBox.innerHTML = `
+                <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--cinza-claro);margin-bottom:0.6rem;">Gols</div>
+                <div style="display:flex;flex-direction:column;gap:0.3rem;">${linhas}</div>
+            `;
+        } else if (hasScore && (g.gols_casa > 0 || g.gols_visitante > 0)) {
+            golsBox.innerHTML = `
+                <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--cinza-medio);margin-bottom:0.6rem;font-style:italic;">Autores dos gols não cadastrados</div>
+            `;
+        } else {
+            golsBox.innerHTML = '';
+        }
+
+        // Detalhes (estádio, mando, classico, público, ingresso do user)
+        const mandoPt = g.mando === 'MANDANTE' ? 'Casa' : g.mando === 'VISITANTE' ? 'Fora' : 'Neutro';
+        const detalhes = [];
+        if (g.estadio) detalhes.push({ icon: 'stadium', label: 'Estádio', value: g.estadio });
+        detalhes.push({ icon: 'place', label: 'Mando', value: mandoPt });
+        if (g.foi_classico) detalhes.push({ icon: 'local_fire_department', label: 'Clássico', value: 'Sim' });
+        if (g.publico_total) detalhes.push({ icon: 'groups', label: 'Público', value: Number(g.publico_total).toLocaleString('pt-BR') });
+        if (g.titulo_conquistado) detalhes.push({ icon: 'emoji_events', label: 'Título', value: g.titulo_conquistado });
+        if (g.setor) detalhes.push({ icon: 'event_seat', label: 'Seu setor', value: g.setor });
+        if (g.assento) detalhes.push({ icon: 'chair', label: 'Seu assento', value: g.assento });
+        if (g.valor_pago != null) detalhes.push({ icon: 'payments', label: 'Você pagou', value: fmtMoeda(g.valor_pago) });
+
+        document.getElementById('summaryDetails').innerHTML = detalhes.map(d => `
+            <div style="display:flex;gap:0.5rem;align-items:center;padding:0.5rem 0;border-bottom:1px dotted var(--cinza-divisa,#1e1c18);">
+                <span class="material-icons" style="font-size:1.1rem;color:var(--cinza-medio);">${d.icon}</span>
+                <div style="display:flex;flex-direction:column;">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--cinza-medio);">${d.label}</span>
+                    <span style="font-size:0.85rem;color:var(--branco);">${escapeHtml(d.value)}</span>
+                </div>
+            </div>
+        `).join('');
+
+        // Observações
+        document.getElementById('summaryObs').innerHTML = g.observacoes ? `
+            <div style="padding:0.8rem 1rem;border-left:3px solid var(--accent);background:var(--accent-soft);">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:0.4rem;">Sua observação</div>
+                <div style="font-family:'Playfair Display',serif;font-style:italic;color:var(--branco-suave);font-size:0.9rem;">${escapeHtml(g.observacoes)}</div>
+            </div>
+        ` : '';
+
+        document.getElementById('summaryModal').classList.add('show');
+    }
+
+    document.getElementById('summaryClose').addEventListener('click', () => {
+        document.getElementById('summaryModal').classList.remove('show');
+    });
+    document.getElementById('summaryModal').addEventListener('click', (e) => {
+        if (e.target.id === 'summaryModal') document.getElementById('summaryModal').classList.remove('show');
+    });
+
+    // ===============================================
+    // Modal: presença (edit)
     // ===============================================
     function openModal(gameId) {
         const game = allGames.find(g => g.id === gameId);
@@ -1171,13 +1484,6 @@ main {
         document.getElementById('fAssento').value = game.assento || '';
         document.getElementById('fValor').value = game.valor_pago ?? '';
         document.getElementById('fObs').value = game.observacoes || '';
-
-        // Placar edit: sempre visível (pra corrigir ou completar)
-        document.getElementById('placarEditBlock').style.display = '';
-        document.getElementById('placarCasa').textContent = game.time_casa;
-        document.getElementById('placarVis').textContent = game.time_visitante;
-        document.getElementById('fGolsCasa').value = game.gols_casa ?? '';
-        document.getElementById('fGolsVis').value = game.gols_visitante ?? '';
 
         document.getElementById('btnDelete').style.display = game.attendance_id ? '' : 'none';
         document.getElementById('modal').classList.add('show');
@@ -1207,26 +1513,7 @@ main {
                 valor_pago: document.getElementById('fValor').value ? parseFloat(document.getElementById('fValor').value) : null,
                 observacoes: document.getElementById('fObs').value.trim() || null,
             };
-
-            const gcRaw = document.getElementById('fGolsCasa').value;
-            const gvRaw = document.getElementById('fGolsVis').value;
-            const golsCasa = gcRaw !== '' ? parseInt(gcRaw, 10) : null;
-            const golsVis = gvRaw !== '' ? parseInt(gvRaw, 10) : null;
-            const placarMudou =
-                (golsCasa ?? null) !== (editingGame.gols_casa ?? null) ||
-                (golsVis ?? null) !== (editingGame.gols_visitante ?? null);
-
-            const tasks = [
-                api('/attendances', { method: 'POST', body: JSON.stringify(body) }),
-            ];
-            if (placarMudou) {
-                tasks.push(api(`/games/${editingGame.id}`, {
-                    method: 'PATCH',
-                    body: JSON.stringify({ gols_casa: golsCasa, gols_visitante: golsVis }),
-                }));
-            }
-            await Promise.all(tasks);
-
+            await api('/attendances', { method: 'POST', body: JSON.stringify(body) });
             closeModal();
             await loadAll();
         } catch (err) {

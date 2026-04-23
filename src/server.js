@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import 'dotenv/config';
 
 import { requireApiKey } from './middleware/auth.js';
-import { requireUser } from './middleware/authUser.js';
+import { requireUser, requireAdmin } from './middleware/authUser.js';
 import { pool } from './db/pool.js';
 
 // Rotas novas (v2 — SaaS)
@@ -14,6 +14,7 @@ import clubsRouter from './routes/clubs.js';
 import gamesRouter from './routes/games.js';
 import attendancesRouter from './routes/attendances.js';
 import meRouter from './routes/me.js';
+import adminRouter from './routes/admin.js';
 
 // Rotas legadas (v1 — continuam vivas durante a transição)
 import jogosRouter from './routes/jogos.js';
@@ -48,6 +49,7 @@ app.use('/clubs', clubsRouter);
 app.use('/games', requireUser, gamesRouter);
 app.use('/attendances', requireUser, attendancesRouter);
 app.use('/me', requireUser, meRouter);
+app.use('/admin', requireUser, requireAdmin, adminRouter);
 
 // =============================================================
 // API v1 legada — continua funcionando pro dashboard antigo
@@ -68,6 +70,9 @@ app.get('/signup', (req, res) => {
 });
 app.get('/app', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public', 'app.html'));
+});
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'admin.html'));
 });
 
 // Legado (continua servindo o site antigo do Guilherme)

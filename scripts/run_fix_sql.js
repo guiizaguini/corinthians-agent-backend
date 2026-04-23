@@ -8,7 +8,18 @@
 import 'dotenv/config';
 import fs from 'node:fs';
 import path from 'node:path';
-import { pool } from '../src/db/pool.js';
+import dns from 'node:dns/promises';
+
+// Fallback pra DATABASE_PUBLIC_URL quando rodando via `railway run` local
+if (process.env.DATABASE_URL && process.env.DATABASE_PUBLIC_URL) {
+    try { await dns.lookup(new URL(process.env.DATABASE_URL).hostname); }
+    catch {
+        console.log('[run_fix_sql] DATABASE_URL interna não resolveu, usando DATABASE_PUBLIC_URL');
+        process.env.DATABASE_URL = process.env.DATABASE_PUBLIC_URL;
+    }
+}
+
+const { pool } = await import('../src/db/pool.js');
 
 const arquivoSql = process.argv[2];
 if (!arquivoSql) {

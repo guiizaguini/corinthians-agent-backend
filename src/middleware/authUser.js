@@ -32,3 +32,13 @@ export async function requireUser(req, res, next) {
         next(err);
     }
 }
+
+/**
+ * Exige que o usuário autenticado seja admin (is_admin = TRUE).
+ * Use DEPOIS de requireUser.
+ */
+export function requireAdmin(req, res, next) {
+    if (!req.user) return res.status(401).json({ error: 'not_authenticated' });
+    if (!req.user.is_admin) return res.status(403).json({ error: 'admin_required' });
+    next();
+}

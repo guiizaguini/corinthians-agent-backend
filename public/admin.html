@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Arquibancada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;500;700&family=Archivo:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+:root {
+    --preto: #000000;
+    --preto-card: #0d0d0d;
+    --preto-card-2: #141414;
+    --branco: #f5f5f5;
+    --cinza-claro: #a8a49a;
+    --cinza-medio: #6c6a62;
+    --cinza-linha: #2a2824;
+    --accent: #d4cfc2;
+    --accent-hover: #ece7d8;
+    --vinho: #5c1f2a;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: var(--preto);
+    color: var(--branco);
+    font-family: 'Archivo', sans-serif;
+    min-height: 100vh;
+}
+
+header {
+    padding: 1.25rem 2rem;
+    border-bottom: 1px solid var(--cinza-linha);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.brand {
+    font-family: 'Anton', sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 0.16em;
+    color: var(--accent);
+    text-transform: uppercase;
+}
+.brand small {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--cinza-medio);
+    margin-left: 0.5rem;
+    font-weight: 400;
+    text-transform: uppercase;
+}
+.nav-links { display: flex; gap: 0.6rem; align-items: center; }
+.btn {
+    background: transparent;
+    border: 1px solid var(--cinza-linha);
+    color: var(--cinza-claro);
+    padding: 0.5rem 0.9rem;
+    font-family: inherit;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: all 120ms;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn-primary {
+    background: var(--accent);
+    color: var(--preto);
+    border-color: var(--accent);
+    font-weight: 700;
+}
+.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: var(--preto); }
+.btn-danger {
+    border-color: var(--vinho);
+    color: #a95a68;
+}
+.btn-danger:hover { background: rgba(92,31,42,0.3); border-color: var(--vinho); color: var(--branco); }
+
+main { max-width: 1400px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+h1 {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.35rem;
+    text-transform: uppercase;
+}
+.subtitle {
+    color: var(--cinza-claro);
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+}
+
+.toolbar {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+    align-items: center;
+}
+.toolbar input, .toolbar select {
+    background: var(--preto-card-2);
+    border: 1px solid var(--cinza-linha);
+    color: var(--branco);
+    padding: 0.55rem 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    outline: none;
+}
+.toolbar input:focus, .toolbar select:focus { border-color: var(--accent); }
+
+.toolbar .spacer { flex: 1; }
+
+.table-wrap { overflow-x: auto; border: 1px solid var(--cinza-linha); }
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+}
+thead th {
+    background: var(--preto-card);
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cinza-claro);
+    border-bottom: 1px solid var(--cinza-linha);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+tbody td {
+    padding: 0.7rem 1rem;
+    background: var(--preto-card);
+    border-top: 1px solid var(--cinza-divisa, #1e1c18);
+    font-size: 0.88rem;
+    color: var(--branco);
+    vertical-align: middle;
+}
+tbody tr:hover td { background: var(--preto-card-2); }
+
+td.td-mono { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: var(--cinza-claro); }
+td.td-score { font-family: 'Anton', sans-serif; font-size: 1.1rem; letter-spacing: 0.02em; }
+td.td-actions { text-align: right; white-space: nowrap; }
+td.td-actions .btn { padding: 0.3rem 0.6rem; font-size: 0.65rem; margin-left: 0.3rem; }
+
+.club-tag {
+    padding: 0.22rem 0.55rem;
+    background: rgba(255,255,255,0.06);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.res-tag {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    font-family: 'Anton', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    min-width: 1.8rem;
+    text-align: center;
+}
+.res-tag.v { background: rgba(168,144,80,0.22); color: #caa865; }
+.res-tag.e { background: rgba(255,255,255,0.08); color: #a8a49a; }
+.res-tag.d { background: rgba(92,31,42,0.35); color: #c07086; }
+
+.pager {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--cinza-claro);
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 100;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem 1rem;
+    overflow-y: auto;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+    background: var(--preto-card);
+    border: 1px solid var(--cinza-linha);
+    max-width: 560px;
+    width: 100%;
+    padding: 2rem 1.75rem;
+}
+.modal h2 {
+    font-family: 'Anton', sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+}
+.modal .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--cinza-claro);
+    margin-bottom: 1.2rem;
+}
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.9rem 1rem;
+}
+.form-grid .full { grid-column: 1 / -1; }
+.form-grid label {
+    display: block;
+    font-size: 0.66rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--cinza-claro);
+    margin-bottom: 0.3rem;
+}
+.form-grid input, .form-grid select, .form-grid textarea {
+    width: 100%;
+    background: var(--preto-card-2);
+    border: 1px solid var(--cinza-linha);
+    color: var(--branco);
+    padding: 0.6rem 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.88rem;
+    outline: none;
+}
+.form-grid select { font-family: 'Archivo', sans-serif; cursor: pointer; }
+.form-grid input:focus, .form-grid select:focus, .form-grid textarea:focus { border-color: var(--accent); }
+
+.check-row {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    font-size: 0.82rem;
+    color: var(--cinza-claro);
+    cursor: pointer;
+}
+.check-row input { width: auto; }
+
+.modal-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    justify-content: flex-end;
+}
+
+.loading { text-align: center; padding: 2.5rem 1rem; color: var(--cinza-claro); font-size: 0.85rem; }
+.error-box {
+    padding: 0.7rem 0.9rem;
+    margin-top: 0.8rem;
+    background: rgba(92,31,42,0.3);
+    border-left: 3px solid var(--vinho);
+    color: #d0b6bc;
+    font-size: 0.82rem;
+    display: none;
+}
+.error-box.show { display: block; }
+</style>
+</head>
+<body>
+    <header>
+        <div class="brand">Arquibancada <small>Admin</small></div>
+        <div class="nav-links">
+            <a href="/app" class="btn"><span class="material-icons" style="font-size:1rem;">arrow_back</span> Voltar pro app</a>
+            <button class="btn" id="btnLogout">Sair</button>
+        </div>
+    </header>
+
+    <main>
+        <h1>Catálogo de jogos</h1>
+        <p class="subtitle">Cadastre, edite e remova jogos de qualquer clube. Cada jogo é visível pros torcedores do clube dele.</p>
+
+        <div class="toolbar">
+            <select id="filterClub"><option value="">Todos os clubes</option></select>
+            <input type="number" id="filterYear" placeholder="Ano" min="1900" max="2100" style="width:90px;">
+            <input type="search" id="filterSearch" placeholder="Buscar rival, estádio, campeonato..." style="min-width:260px;">
+            <div class="spacer"></div>
+            <button class="btn-primary btn" id="btnNew"><span class="material-icons" style="font-size:1rem;">add</span> Novo jogo</button>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Clube</th>
+                        <th>Confronto</th>
+                        <th>Placar</th>
+                        <th>R</th>
+                        <th>Campeonato</th>
+                        <th>Estádio</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="gamesBody">
+                    <tr><td colspan="8" class="loading">Carregando...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="pager">
+            <span id="pagerInfo">—</span>
+            <div>
+                <button class="btn" id="prevPage">← Anterior</button>
+                <button class="btn" id="nextPage">Próxima →</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal formulário -->
+    <div class="modal-overlay" id="formModal">
+        <div class="modal">
+            <h2 id="formTitle">Novo jogo</h2>
+            <div class="meta" id="formMeta">Preencha os dados do jogo</div>
+
+            <div class="form-grid">
+                <div class="full">
+                    <label>Clube (catálogo)</label>
+                    <select id="fClub"></select>
+                </div>
+                <div>
+                    <label>Data</label>
+                    <input type="date" id="fData" required>
+                </div>
+                <div>
+                    <label>Gênero</label>
+                    <select id="fGenero">
+                        <option value="M">Masculino</option>
+                        <option value="F">Feminino</option>
+                        <option value="S-20">Sub-20</option>
+                    </select>
+                </div>
+                <div class="full">
+                    <label>Time da casa</label>
+                    <input type="text" id="fTimeCasa" maxlength="60" required>
+                </div>
+                <div class="full">
+                    <label>Time visitante</label>
+                    <input type="text" id="fTimeVis" maxlength="60" required>
+                </div>
+                <div>
+                    <label>Gols casa</label>
+                    <input type="number" id="fGolsCasa" min="0" max="99">
+                </div>
+                <div>
+                    <label>Gols visitante</label>
+                    <input type="number" id="fGolsVis" min="0" max="99">
+                </div>
+                <div class="full">
+                    <label>Campeonato</label>
+                    <input type="text" id="fCampeonato" maxlength="40" placeholder="Brasileiro, Paulista, Libertadores...">
+                </div>
+                <div class="full">
+                    <label>Estádio</label>
+                    <input type="text" id="fEstadio" maxlength="60">
+                </div>
+                <div>
+                    <label>Fase/Rodada</label>
+                    <input type="text" id="fFase" maxlength="40" placeholder="Final, Semifinal, Rodada 12...">
+                </div>
+                <div>
+                    <label>Público total</label>
+                    <input type="number" id="fPublico" min="0">
+                </div>
+                <div class="full">
+                    <label>Título conquistado (se ganhou algo nesse jogo)</label>
+                    <input type="text" id="fTitulo" maxlength="60" placeholder="Copa do Brasil 2025, etc">
+                </div>
+                <div class="full">
+                    <label class="check-row">
+                        <input type="checkbox" id="fClassico"> Foi clássico
+                    </label>
+                    <label class="check-row" style="margin-top:0.4rem;">
+                        <input type="checkbox" id="fPenal"> Teve pênalti
+                    </label>
+                </div>
+            </div>
+
+            <div class="error-box" id="formErr"></div>
+
+            <div class="modal-actions">
+                <button class="btn" id="btnFormCancel">Cancelar</button>
+                <button class="btn-danger btn" id="btnFormDelete" style="display:none;">Remover</button>
+                <button class="btn-primary btn" id="btnFormSave">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const token = localStorage.getItem('fiel_token');
+    if (!token) window.location.replace('/login');
+
+    document.getElementById('btnLogout').addEventListener('click', () => {
+        localStorage.removeItem('fiel_token');
+        localStorage.removeItem('fiel_user');
+        window.location.replace('/login');
+    });
+
+    async function api(path, opts = {}) {
+        const res = await fetch(path, {
+            ...opts,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+                ...(opts.headers || {}),
+            },
+        });
+        if (res.status === 401) { window.location.replace('/login'); throw new Error('unauthorized'); }
+        if (res.status === 403) { alert('Você não tem acesso a esse painel.'); window.location.replace('/app'); throw new Error('forbidden'); }
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || `HTTP ${res.status}`);
+        }
+        return res.json();
+    }
+
+    let clubs = [];
+    let editing = null;
+    const LIMIT = 50;
+    let offset = 0;
+    let total = 0;
+
+    async function init() {
+        try {
+            const { user } = await api('/auth/me');
+            if (!user.is_admin) {
+                alert('Você não tem acesso ao painel admin.');
+                window.location.replace('/app');
+                return;
+            }
+            const res = await fetch('/clubs');
+            const data = await res.json();
+            clubs = data.clubs;
+            populateClubSelects();
+            await loadGames();
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    function populateClubSelects() {
+        const filter = document.getElementById('filterClub');
+        const form = document.getElementById('fClub');
+        filter.innerHTML = '<option value="">Todos os clubes</option>';
+        form.innerHTML = '';
+        for (const c of clubs) {
+            const o1 = document.createElement('option');
+            o1.value = c.id; o1.textContent = c.name;
+            filter.appendChild(o1);
+            const o2 = document.createElement('option');
+            o2.value = c.id; o2.textContent = c.name;
+            form.appendChild(o2);
+        }
+    }
+
+    async function loadGames() {
+        const body = document.getElementById('gamesBody');
+        body.innerHTML = '<tr><td colspan="8" class="loading">Carregando...</td></tr>';
+
+        const params = new URLSearchParams();
+        params.set('limit', LIMIT);
+        params.set('offset', offset);
+        const cid = document.getElementById('filterClub').value;
+        const ano = document.getElementById('filterYear').value;
+        const search = document.getElementById('filterSearch').value.trim();
+        if (cid) params.set('club_id', cid);
+        if (ano) params.set('ano', ano);
+        if (search) params.set('search', search);
+
+        try {
+            const { games, total: t } = await api('/admin/games?' + params);
+            total = t;
+            if (!games.length) {
+                body.innerHTML = '<tr><td colspan="8" class="loading">Nenhum jogo encontrado.</td></tr>';
+            } else {
+                body.innerHTML = games.map(renderRow).join('');
+                body.querySelectorAll('[data-edit]').forEach(b => {
+                    b.addEventListener('click', () => openEdit(parseInt(b.dataset.edit)));
+                });
+                body.querySelectorAll('[data-del]').forEach(b => {
+                    b.addEventListener('click', () => deleteGame(parseInt(b.dataset.del)));
+                });
+            }
+            updatePager();
+        } catch (err) {
+            body.innerHTML = `<tr><td colspan="8" class="loading">Erro: ${err.message}</td></tr>`;
+        }
+    }
+
+    function updatePager() {
+        const from = total === 0 ? 0 : offset + 1;
+        const to = Math.min(offset + LIMIT, total);
+        document.getElementById('pagerInfo').textContent = `${from}–${to} de ${total}`;
+        document.getElementById('prevPage').disabled = offset === 0;
+        document.getElementById('nextPage').disabled = to >= total;
+    }
+
+    function esc(s) {
+        return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+    function fmtDate(iso) {
+        const d = new Date(iso);
+        return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+
+    function renderRow(g) {
+        const placar = g.gols_casa != null ? `${g.gols_casa} × ${g.gols_visitante}` : '—';
+        const resClass = g.resultado === 'V' ? 'v' : g.resultado === 'E' ? 'e' : g.resultado === 'D' ? 'd' : '';
+        return `
+            <tr>
+                <td class="td-mono">${fmtDate(g.data)}</td>
+                <td><span class="club-tag">${esc(g.club_name)}</span></td>
+                <td>${esc(g.time_casa)} <span style="color:var(--cinza-medio);">vs</span> ${esc(g.time_visitante)}</td>
+                <td class="td-score">${placar}</td>
+                <td>${g.resultado ? `<span class="res-tag ${resClass}">${g.resultado}</span>` : '—'}</td>
+                <td>${esc(g.campeonato || '—')}</td>
+                <td class="td-mono">${esc(g.estadio || '—')}</td>
+                <td class="td-actions">
+                    <button class="btn" data-edit="${g.id}" title="Editar"><span class="material-icons" style="font-size:0.9rem;">edit</span></button>
+                    <button class="btn btn-danger" data-del="${g.id}" title="Remover"><span class="material-icons" style="font-size:0.9rem;">delete</span></button>
+                </td>
+            </tr>
+        `;
+    }
+
+    async function deleteGame(id) {
+        if (!confirm('Remover esse jogo? Remove também as presenças associadas de qualquer torcedor.')) return;
+        try {
+            await api(`/admin/games/${id}`, { method: 'DELETE' });
+            await loadGames();
+        } catch (err) {
+            alert('Erro: ' + err.message);
+        }
+    }
+
+    // ============ Modal form ============
+    function openCreate() {
+        editing = null;
+        document.getElementById('formTitle').textContent = 'Novo jogo';
+        document.getElementById('formMeta').textContent = 'Preencha os dados do jogo';
+        document.getElementById('btnFormDelete').style.display = 'none';
+        document.getElementById('formErr').classList.remove('show');
+        clearForm();
+        document.getElementById('formModal').classList.add('show');
+    }
+
+    function clearForm() {
+        document.getElementById('fClub').value = clubs[0]?.id || '';
+        document.getElementById('fData').value = '';
+        document.getElementById('fGenero').value = 'M';
+        document.getElementById('fTimeCasa').value = '';
+        document.getElementById('fTimeVis').value = '';
+        document.getElementById('fGolsCasa').value = '';
+        document.getElementById('fGolsVis').value = '';
+        document.getElementById('fCampeonato').value = '';
+        document.getElementById('fEstadio').value = '';
+        document.getElementById('fFase').value = '';
+        document.getElementById('fPublico').value = '';
+        document.getElementById('fTitulo').value = '';
+        document.getElementById('fClassico').checked = false;
+        document.getElementById('fPenal').checked = false;
+    }
+
+    async function openEdit(id) {
+        try {
+            const { games } = await api(`/admin/games?limit=500`);
+            const g = games.find(x => x.id === id);
+            if (!g) { alert('Jogo não encontrado'); return; }
+            editing = g;
+            document.getElementById('formTitle').textContent = 'Editar jogo';
+            document.getElementById('formMeta').textContent = `#${g.id} · ${fmtDate(g.data)}`;
+            document.getElementById('btnFormDelete').style.display = '';
+            document.getElementById('formErr').classList.remove('show');
+            document.getElementById('fClub').value = g.club_id;
+            document.getElementById('fData').value = g.data.split('T')[0];
+            document.getElementById('fGenero').value = g.genero || 'M';
+            document.getElementById('fTimeCasa').value = g.time_casa;
+            document.getElementById('fTimeVis').value = g.time_visitante;
+            document.getElementById('fGolsCasa').value = g.gols_casa ?? '';
+            document.getElementById('fGolsVis').value = g.gols_visitante ?? '';
+            document.getElementById('fCampeonato').value = g.campeonato || '';
+            document.getElementById('fEstadio').value = g.estadio || '';
+            document.getElementById('fFase').value = g.fase || '';
+            document.getElementById('fPublico').value = g.publico_total ?? '';
+            document.getElementById('fTitulo').value = g.titulo_conquistado || '';
+            document.getElementById('fClassico').checked = !!g.foi_classico;
+            document.getElementById('fPenal').checked = !!g.teve_penal;
+            document.getElementById('formModal').classList.add('show');
+        } catch (err) {
+            alert('Erro: ' + err.message);
+        }
+    }
+
+    function closeForm() { document.getElementById('formModal').classList.remove('show'); }
+
+    document.getElementById('btnNew').addEventListener('click', openCreate);
+    document.getElementById('btnFormCancel').addEventListener('click', closeForm);
+    document.getElementById('formModal').addEventListener('click', (e) => {
+        if (e.target.id === 'formModal') closeForm();
+    });
+
+    document.getElementById('btnFormDelete').addEventListener('click', async () => {
+        if (!editing) return;
+        if (!confirm('Remover esse jogo?')) return;
+        try {
+            await api(`/admin/games/${editing.id}`, { method: 'DELETE' });
+            closeForm();
+            await loadGames();
+        } catch (err) {
+            document.getElementById('formErr').textContent = err.message;
+            document.getElementById('formErr').classList.add('show');
+        }
+    });
+
+    document.getElementById('btnFormSave').addEventListener('click', async () => {
+        const err = document.getElementById('formErr');
+        err.classList.remove('show');
+        const btn = document.getElementById('btnFormSave');
+        btn.disabled = true;
+        btn.textContent = 'Salvando...';
+        try {
+            const body = {
+                club_id: parseInt(document.getElementById('fClub').value),
+                data: document.getElementById('fData').value,
+                genero: document.getElementById('fGenero').value,
+                time_casa: document.getElementById('fTimeCasa').value.trim(),
+                time_visitante: document.getElementById('fTimeVis').value.trim(),
+                gols_casa: document.getElementById('fGolsCasa').value !== '' ? parseInt(document.getElementById('fGolsCasa').value) : null,
+                gols_visitante: document.getElementById('fGolsVis').value !== '' ? parseInt(document.getElementById('fGolsVis').value) : null,
+                campeonato: document.getElementById('fCampeonato').value.trim() || null,
+                estadio: document.getElementById('fEstadio').value.trim() || null,
+                fase: document.getElementById('fFase').value.trim() || null,
+                publico_total: document.getElementById('fPublico').value !== '' ? parseInt(document.getElementById('fPublico').value) : null,
+                titulo_conquistado: document.getElementById('fTitulo').value.trim() || null,
+                foi_classico: document.getElementById('fClassico').checked,
+                teve_penal: document.getElementById('fPenal').checked,
+            };
+            if (editing) {
+                const { club_id, ...patch } = body;
+                await api(`/admin/games/${editing.id}`, { method: 'PATCH', body: JSON.stringify(patch) });
+            } else {
+                await api('/admin/games', { method: 'POST', body: JSON.stringify(body) });
+            }
+            closeForm();
+            await loadGames();
+        } catch (e) {
+            err.textContent = e.message;
+            err.classList.add('show');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Salvar';
+        }
+    });
+
+    // Filters
+    let filterTimer;
+    function debouncedReload() {
+        clearTimeout(filterTimer);
+        filterTimer = setTimeout(() => { offset = 0; loadGames(); }, 350);
+    }
+    document.getElementById('filterClub').addEventListener('change', () => { offset = 0; loadGames(); });
+    document.getElementById('filterYear').addEventListener('input', debouncedReload);
+    document.getElementById('filterSearch').addEventListener('input', debouncedReload);
+    document.getElementById('prevPage').addEventListener('click', () => { offset = Math.max(0, offset - LIMIT); loadGames(); });
+    document.getElementById('nextPage').addEventListener('click', () => { offset += LIMIT; loadGames(); });
+
+    init();
+</script>
+</body>
+</html>
