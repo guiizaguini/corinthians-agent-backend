@@ -16,9 +16,30 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import dns from 'node:dns/promises';
 import { fileURLToPath } from 'node:url';
 import bcrypt from 'bcryptjs';
-import { pool } from '../src/db/pool.js';
+import 'dotenv/config';
+
+// Quando rodando via `railway run` de um PC local, o Railway injeta a
+// DATABASE_URL interna (postgres.railway.internal), que só resolve dentro da
+// rede deles. Se o hostname não resolver aqui, cai pro DATABASE_PUBLIC_URL.
+async function maybeSwapToPublicUrl() {
+    const url = process.env.DATABASE_URL;
+    const publicUrl = process.env.DATABASE_PUBLIC_URL;
+    if (!url || !publicUrl) return;
+    try {
+        await dns.lookup(new URL(url).hostname);
+    } catch {
+        console.log('[migrate:v2] DATABASE_URL interna não resolveu, usando DATABASE_PUBLIC_URL');
+        process.env.DATABASE_URL = publicUrl;
+    }
+}
+
+await maybeSwapToPublicUrl();
+
+// Dynamic import DEPOIS do swap, pra pool.js ler a URL já ajustada.
+const { pool } = await import('../src/db/pool.js');
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const sqlDir = path.resolve(__dirname, '..', 'sql');

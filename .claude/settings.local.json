@@ -9,7 +9,9 @@
       "Bash(node --check src/routes/games.js)",
       "Bash(node --check src/routes/attendances.js)",
       "Bash(node --check src/routes/me.js)",
-      "Bash(node --check src/routes/clubs.js)"
+      "Bash(node --check src/routes/clubs.js)",
+      "Bash(node --check scripts/migrate_v2.js)",
+      "Bash(node -e ' *)"
     ]
   }
 }
