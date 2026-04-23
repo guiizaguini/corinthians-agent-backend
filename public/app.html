@@ -7,72 +7,80 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.cdnfonts.com/css/sn-pro" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
 :root {
-    /* Paleta papel — espelha a landing pra dar consistência visual */
-    --paper: #ece4d2;
-    --paper-soft: #f3ecda;
-    --paper-deep: #e0d6bf;
-    --ink: #141414;
-    --ink-soft: #3a3531;
-    --ink-mute: #6a625a;
-    --ink-line: #c9bfa8;
-    --ink-divider: #d6cdb8;
-    --vinho: #6b1f2a;
+    /* DARK SPORT — preto profundo + cor do clube dominante */
+    --bg-base: #0d0d0d;
+    --bg-card: #181818;
+    --bg-card-2: #232323;
+    --bg-elevated: #2a2a2a;
+    --ink: #f5f0e4;
+    --ink-soft: #c4bdb0;
+    --ink-mute: #7a7468;
+    --line: #2c2a26;
+    --line-soft: #1d1b18;
+    --vinho: #8a3441;
 
-    /* Accent dinâmico — sobrescrito por JS conforme clube do user. Default = vinho. */
-    --accent: #6b1f2a;
-    --accent-hover: #8a3441;
-    --accent-soft: rgba(107,31,42,0.12);
-    --accent-dark: #3c0d18;
+    /* Accent dinâmico — sobrescrito por JS conforme clube. Default = vinho. */
+    --accent: #8a3441;
+    --accent-hover: #b34e5e;
+    --accent-soft: rgba(138,52,65,0.18);
+    --accent-glow: rgba(138,52,65,0.35);
+    --accent-dark: #4a1a23;
 
-    /* Resultados (em cards/badges) */
+    /* Resultados */
     --vitoria: var(--accent);
     --vitoria-claro: var(--accent-hover);
     --vitoria-escuro: var(--accent-dark);
-    --empate: #8a857d;
-    --empate-claro: #a8a39a;
-    --empate-escuro: #5a554d;
-    --derrota: #6b1f2a;
-    --derrota-claro: #8a3441;
+    --empate: #5c5a54;
+    --empate-claro: #7e7c76;
+    --empate-escuro: #3c3a34;
+    --derrota: #5c1f2a;
+    --derrota-claro: #7a3744;
     --derrota-escuro: #3c0d18;
     --ouro: var(--accent);
     --ouro-escuro: var(--accent-dark);
 
-    /* Aliases pra código antigo continuar funcionando.
-       Atenção: --preto continua sendo a tinta preta (ingressos usam pra picotado). */
-    --preto: #141414;
-    --preto-card: var(--paper-soft);
-    --preto-card-2: var(--paper-deep);
+    /* Aliases pra código existente continuar funcionando.
+       --paper aliasa pra bg-base pq o picotado dos ingressos usa essa var
+       pra "vazar" o fundo da página. */
+    --paper: var(--bg-base);
+    --paper-soft: var(--bg-card);
+    --paper-deep: var(--bg-card-2);
+    --preto: #0d0d0d;
+    --preto-card: var(--bg-card);
+    --preto-card-2: var(--bg-card-2);
     --branco: var(--ink);
     --branco-suave: var(--ink-soft);
     --cinza-claro: var(--ink-mute);
-    --cinza-medio: #8d877c;
-    --cinza-linha: var(--ink-line);
-    --cinza-divisa: var(--ink-divider);
+    --cinza-medio: #5a564f;
+    --cinza-linha: var(--line);
+    --cinza-divisa: var(--line-soft);
+    --ink-line: var(--line);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    background: var(--paper);
+    background: var(--bg-base);
     color: var(--ink);
     font-family: 'Oswald', sans-serif;
     min-height: 100vh;
     position: relative;
 }
 
-/* Textura de papel sutil */
+/* Textura sport — gradiente da cor do clube no canto + grain sutil */
 body::before {
     content: '';
     position: fixed;
     inset: 0;
     background-image:
-        radial-gradient(ellipse at 20% 30%, rgba(139,107,40,0.05) 0%, transparent 40%),
-        radial-gradient(ellipse at 80% 80%, rgba(107,31,42,0.04) 0%, transparent 50%),
-        repeating-linear-gradient(0deg, transparent 0 2px, rgba(107,82,40,0.025) 2px 3px);
-    mix-blend-mode: multiply;
+        radial-gradient(ellipse 80% 50% at 80% 0%, var(--accent-soft) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 0% 100%, var(--accent-soft) 0%, transparent 60%),
+        radial-gradient(circle at 1px 1px, rgba(255,255,255,0.025) 1px, transparent 1.5px);
+    background-size: 100% 100%, 100% 100%, 3px 3px;
     pointer-events: none;
     z-index: 0;
 }
@@ -81,17 +89,27 @@ header {
     position: relative;
     z-index: 1;
     padding: 1.5rem 2rem;
-    border-bottom: 1px solid var(--ink-line);
+    border-bottom: 1px solid var(--line);
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
     flex-wrap: wrap;
+    background: rgba(0,0,0,0.4);
+}
+header::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: -1px;
+    height: 3px;
+    background: var(--accent);
+    box-shadow: 0 0 20px var(--accent-glow);
 }
 
 .brand-wrap { display: flex; flex-direction: column; gap: 0.15rem; }
 .brand {
     font-family: 'Oswald', sans-serif;
+    font-weight: 700;
     font-size: 1.75rem;
     letter-spacing: 0.18em;
     color: var(--ink);
@@ -159,23 +177,26 @@ main {
 .hero h1 {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: clamp(1.9rem, 4.2vw, 3rem);
+    font-size: clamp(2rem, 4.5vw, 3.25rem);
     line-height: 1.05;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
     margin-bottom: 0.6rem;
     color: var(--ink);
+    text-transform: uppercase;
 }
 .hero h1 em {
     font-family: 'Oswald', sans-serif;
     font-style: normal;
     font-weight: 700;
     color: var(--accent);
+    text-shadow: 0 0 24px var(--accent-glow);
 }
 .hero p {
-    font-family: 'Oswald', sans-serif;
-    font-style: normal; font-weight: 600;
-    color: var(--ink-mute);
-    font-size: 1.05rem;
+    font-family: 'SN Pro', 'Oswald', sans-serif;
+    font-weight: 400;
+    color: var(--ink-soft);
+    font-size: 1rem;
+    letter-spacing: 0.01em;
 }
 
 /* ================= Carteirinha (compacta + cheia) ================= */
@@ -183,11 +204,15 @@ main {
     display: flex;
     align-items: center;
     gap: 1.25rem;
-    padding: 1rem 1.25rem;
-    background: var(--paper-soft);
-    border: 1px solid var(--ink-line);
+    padding: 1.1rem 1.5rem;
+    background:
+        linear-gradient(95deg, var(--accent-soft) 0%, transparent 50%),
+        linear-gradient(180deg, var(--bg-card) 0%, var(--bg-card-2) 100%);
+    border: 1px solid var(--line);
     margin-bottom: 1.5rem;
-    box-shadow: 0 1px 0 rgba(0,0,0,0.03);
+    box-shadow:
+        0 0 30px var(--accent-glow),
+        0 4px 16px rgba(0,0,0,0.4);
     position: relative;
     overflow: hidden;
 }
@@ -198,6 +223,20 @@ main {
     left: 0;
     width: 6px;
     background: var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+}
+.carteirinha-bar::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 50%;
+    height: 100%;
+    background-image: repeating-linear-gradient(
+        135deg,
+        transparent 0 12px,
+        rgba(255,255,255,0.015) 12px 14px
+    );
+    pointer-events: none;
 }
 .cart-avatar {
     width: 56px;
@@ -257,136 +296,201 @@ main {
 }
 
 /* ================= Carteirinha cheia (modal) ================= */
+/* Cartão estilo carteira de crédito (proporção 1.586) — Fiel Torcedor vibe */
 .cartao {
-    width: 340px;
-    max-width: 100%;
-    aspect-ratio: 0.62;  /* proporção tipo carteira */
-    background: linear-gradient(155deg, var(--paper-soft) 0%, var(--paper-deep) 100%);
-    border: 1px solid var(--ink-line);
-    box-shadow: 0 16px 40px rgba(20,15,10,0.32);
-    display: flex;
-    flex-direction: column;
-    color: var(--ink);
+    width: 100%;
+    max-width: 460px;
+    aspect-ratio: 1.586;
+    background:
+        radial-gradient(ellipse at 100% 0%, var(--accent-glow) 0%, transparent 55%),
+        linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 50%, #0a0a0a 100%);
+    border: 1px solid var(--accent);
+    box-shadow:
+        0 0 40px var(--accent-glow),
+        0 24px 50px rgba(0,0,0,0.6),
+        inset 0 1px 0 rgba(255,255,255,0.12);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    color: #f5f0e4;
     margin: 0 auto;
     position: relative;
     overflow: hidden;
+    padding: 1.1rem 1.3rem;
+    border-radius: 14px;
 }
+/* Hologram strip */
 .cartao::before {
     content: '';
     position: absolute;
-    inset: 0;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     background-image:
-        repeating-linear-gradient(0deg, transparent 0 2px, rgba(107,82,40,0.04) 2px 3px),
-        radial-gradient(ellipse at 15% 15%, rgba(139,107,40,0.12) 0%, transparent 50%);
+        repeating-linear-gradient(115deg,
+            transparent 0 45px,
+            rgba(255,255,255,0.04) 45px 46px,
+            transparent 46px 90px),
+        radial-gradient(ellipse at 30% 100%, rgba(255,255,255,0.08) 0%, transparent 40%);
     pointer-events: none;
-    mix-blend-mode: multiply;
 }
+/* "Chip" decorativo */
+.cartao::after {
+    content: '';
+    position: absolute;
+    bottom: 1.1rem;
+    left: 1.3rem;
+    width: 38px;
+    height: 28px;
+    background:
+        linear-gradient(135deg, #d4b86a 0%, #8a6e30 100%);
+    border-radius: 4px;
+    box-shadow:
+        inset 0 0 0 1px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.3);
+    background-image:
+        linear-gradient(135deg, #d4b86a 0%, #8a6e30 100%),
+        linear-gradient(0deg, transparent 33%, rgba(0,0,0,0.4) 33%, rgba(0,0,0,0.4) 66%, transparent 66%);
+}
+
 .cartao-header {
-    background: var(--accent);
-    color: var(--paper);
-    padding: 0.85rem 1.1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-family: 'Oswald', sans-serif;
-    font-weight: 600;
-    font-size: 0.7rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    position: relative;
-    z-index: 1;
-}
-.cartao-body {
-    padding: 1.5rem 1.25rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 0.6rem;
-    position: relative;
-    z-index: 1;
-}
-.cartao-avatar {
-    width: 96px;
-    height: 96px;
-    border-radius: 50%;
-    background: var(--ink);
-    color: var(--paper);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Oswald', sans-serif;
-    font-weight: 700;
-    font-size: 2.4rem;
-    text-transform: uppercase;
-    margin: 0.5rem auto 0.75rem;
-    border: 4px solid var(--accent);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
-}
-.cartao-nome {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 700;
-    font-size: 1.4rem;
-    line-height: 1.1;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--ink);
-    margin-top: 0.4rem;
-}
-.cartao-clube {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 500;
-    font-size: 0.78rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--accent);
-    padding-bottom: 0.5rem;
-    border-bottom: 1.5px solid var(--ink-line);
-    width: 100%;
-    margin-bottom: 0.75rem;
-}
-.cartao-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem;
-    width: 100%;
-    margin-top: auto;
-    padding-top: 0.75rem;
-}
-.cartao-stat {
-    text-align: center;
-}
-.cartao-stat-num {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 700;
-    font-size: 1.55rem;
-    line-height: 1;
-    color: var(--ink);
-}
-.cartao-stat-label {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 500;
-    font-size: 0.55rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--ink-mute);
-    margin-top: 0.25rem;
-}
-.cartao-footer {
-    background: var(--ink);
-    color: var(--paper);
-    padding: 0.7rem 1.1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-family: 'Oswald', sans-serif;
     font-weight: 500;
     font-size: 0.62rem;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.28em;
     text-transform: uppercase;
+    color: rgba(245,240,228,0.8);
     position: relative;
     z-index: 1;
+    background: transparent;
+    padding: 0;
+    margin-bottom: 0.5rem;
+}
+.cartao-header strong {
+    font-weight: 700;
+    color: #f5f0e4;
+}
+
+.cartao-body {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 1rem;
+    align-items: center;
+    padding: 0;
+    position: relative;
+    z-index: 1;
+    text-align: left;
+}
+.cartao-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.45);
+    color: #f5f0e4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 2.1rem;
+    text-transform: uppercase;
+    border: 3px solid rgba(245,240,228,0.85);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    margin: 0;
+}
+.cartao-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    overflow: hidden;
+}
+.cartao-categoria {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 0.6rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(245,240,228,0.75);
+    margin-bottom: 0.2rem;
+}
+.cartao-nome {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.3rem;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #f5f0e4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: 0;
+}
+.cartao-clube {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #f5f0e4;
+    border: none;
+    padding: 0;
+    margin-top: 0.2rem;
+    width: auto;
+    opacity: 0.95;
+}
+.cartao-stats {
+    display: flex;
+    gap: 1.2rem;
+    margin-top: 0.4rem;
+    padding: 0;
+    width: auto;
+}
+.cartao-stat {
+    text-align: left;
+}
+.cartao-stat-num {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    line-height: 1;
+    color: #f5f0e4;
+}
+.cartao-stat-label {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 0.5rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(245,240,228,0.65);
+    margin-top: 0.2rem;
+}
+.cartao-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    gap: 1rem;
+    flex-direction: column;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(245,240,228,0.75);
+    background: transparent;
+    padding: 0;
+    position: relative;
+    z-index: 1;
+    text-align: right;
+    margin-top: 0.4rem;
+}
+.cartao-footer .cartao-num {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #f5f0e4;
+    letter-spacing: 0.15em;
 }
 
 /* ================= KPIs ================= */
@@ -394,20 +498,34 @@ main {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 1px;
-    background: var(--ink-line);
-    border: 1px solid var(--ink-line);
+    background: var(--line);
+    border: 1px solid var(--line);
     margin-bottom: 2rem;
-    box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    position: relative;
+}
+.kpis::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; top: 0;
+    height: 3px;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+    z-index: 1;
 }
 .kpi {
-    background: var(--paper-soft);
-    padding: 1.4rem 1rem;
+    background: var(--bg-card);
+    padding: 1.5rem 1rem 1.4rem;
     text-align: center;
+    position: relative;
+    transition: background 200ms;
 }
+.kpi:hover { background: var(--bg-card-2); }
 .kpi-label {
     font-family: 'Oswald', sans-serif;
+    font-weight: 500;
     font-size: 0.62rem;
-    letter-spacing: 0.22em;
+    letter-spacing: 0.24em;
     text-transform: uppercase;
     color: var(--ink-mute);
     margin-bottom: 0.5rem;
@@ -415,12 +533,15 @@ main {
 .kpi-value {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 2.4rem;
+    font-size: 2.5rem;
     color: var(--ink);
     line-height: 1;
     letter-spacing: -0.02em;
 }
-.kpi-value.v { color: var(--accent); }
+.kpi-value.v {
+    color: var(--accent);
+    text-shadow: 0 0 18px var(--accent-glow);
+}
 .kpi-value.e { color: var(--ink-mute); }
 .kpi-value.d { color: var(--vinho); }
 
@@ -428,7 +549,7 @@ main {
 .tabs {
     display: flex;
     gap: 0;
-    border-bottom: 1.5px solid var(--ink-line);
+    border-bottom: 1.5px solid var(--line);
     margin-bottom: 1.5rem;
     flex-wrap: wrap;
 }
@@ -436,20 +557,25 @@ main {
     background: transparent;
     border: none;
     color: var(--ink-mute);
-    padding: 0.95rem 1.35rem;
+    padding: 0.95rem 1.45rem;
     font-family: 'Oswald', sans-serif;
-    font-weight: 600;
-    font-size: 0.75rem;
-    letter-spacing: 0.2em;
+    font-weight: 500;
+    font-size: 0.78rem;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     cursor: pointer;
-    border-bottom: 2.5px solid transparent;
+    border-bottom: 3px solid transparent;
     margin-bottom: -1.5px;
     transition: all 150ms;
     white-space: nowrap;
 }
 .tab:hover { color: var(--ink); }
-.tab.active { color: var(--ink); border-bottom-color: var(--accent); font-weight: 700; }
+.tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    font-weight: 700;
+    box-shadow: 0 4px 12px var(--accent-glow);
+}
 
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
@@ -493,8 +619,8 @@ main {
 
 .game-card {
     position: relative;
-    background: var(--paper-soft);
-    border: 1px solid var(--ink-line);
+    background: var(--bg-card);
+    border: 1px solid var(--line);
     padding: 1.1rem 1.1rem 1rem;
     cursor: pointer;
     transition: all 180ms ease;
@@ -503,7 +629,6 @@ main {
     gap: 0.85rem;
     min-height: 200px;
     overflow: hidden;
-    box-shadow: 0 1px 0 rgba(0,0,0,0.03);
 }
 .game-card::before {
     content: '';
@@ -512,24 +637,28 @@ main {
     left: 0;
     right: 0;
     height: 2px;
-    background: var(--ink-line);
-    transition: background 180ms;
+    background: var(--line);
+    transition: all 180ms;
 }
 .game-card:hover {
-    background: #f8f1de;
+    background: var(--bg-card-2);
     border-color: var(--accent);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 22px rgba(20,15,10,0.18);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 0 1px var(--accent-glow);
 }
-.game-card:hover::before { background: var(--accent); }
+.game-card:hover::before {
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+}
 
 .game-card.attended {
     border-color: var(--accent);
-    background: var(--accent-soft);
+    background: linear-gradient(180deg, var(--accent-soft) 0%, var(--bg-card) 45%);
 }
 .game-card.attended::before {
     background: var(--accent);
     height: 3px;
+    box-shadow: 0 0 10px var(--accent-glow);
 }
 
 .gc-head {
@@ -580,25 +709,30 @@ main {
     text-overflow: ellipsis;
     white-space: nowrap;
     line-height: 1.15;
+    text-transform: uppercase;
 }
 .gc-vs {
     font-family: 'Oswald', sans-serif;
-    font-style: normal; font-weight: 600;
-    font-size: 0.85rem;
-    color: var(--ink-mute);
-    letter-spacing: 0.05em;
+    font-weight: 500;
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
 }
 
 .gc-score {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 2.1rem;
+    font-size: 2.4rem;
     line-height: 1;
     color: var(--ink);
     letter-spacing: -0.02em;
 }
-.gc-score.v { color: var(--accent); }
-.gc-score.d { color: var(--vinho); }
+.gc-score.v {
+    color: var(--accent);
+    text-shadow: 0 0 14px var(--accent-glow);
+}
+.gc-score.d { color: #c07086; }
 .gc-score.e { color: var(--ink-mute); }
 .gc-score .gc-x {
     color: var(--ink-mute);
@@ -1014,13 +1148,13 @@ main {
 
 .modal input, .modal select, .modal textarea {
     width: 100%;
-    background: var(--paper);
-    border: 1.5px solid var(--ink-line);
+    background: var(--bg-base);
+    border: 1.5px solid var(--line);
     color: var(--ink);
-    padding: 0.7rem 0.85rem;
-    font-family: 'Oswald', sans-serif;
-    font-weight: 500;
-    font-size: 0.9rem;
+    padding: 0.75rem 0.9rem;
+    font-family: 'SN Pro', 'Oswald', sans-serif;
+    font-weight: 400;
+    font-size: 0.95rem;
     outline: none;
     resize: vertical;
 }
@@ -1189,16 +1323,17 @@ main {
     letter-spacing: 0.02em;
 }
 .nota-card .nota-body {
-    font-family: 'Oswald', sans-serif;
+    font-family: 'SN Pro', sans-serif;
     font-weight: 400;
-    font-size: 0.92rem;
+    font-size: 0.93rem;
     color: var(--ink-soft);
-    line-height: 1.45;
+    line-height: 1.55;
     flex: 1;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
+    letter-spacing: 0.005em;
 }
 .nota-card .nota-footer {
     margin-top: auto;
@@ -1250,11 +1385,306 @@ main {
 
 /* Modal larger pra editor de nota */
 .modal.modal-lg { max-width: 600px; }
-.modal textarea.note-body {
-    min-height: 180px;
+.modal.modal-xl { max-width: 760px; }
+
+/* ================= Rede Social ================= */
+.rede-search-bar {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    align-items: center;
+}
+.rede-search-bar input {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1.5px solid var(--line);
+    color: var(--ink);
+    padding: 0.7rem 0.95rem;
+    font-family: 'SN Pro','Oswald',sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+}
+.rede-search-bar input:focus { border-color: var(--accent); }
+
+.rede-section {
+    margin-bottom: 2rem;
+}
+.rede-section h3 {
     font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-bottom: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.rede-section h3 .badge {
+    background: var(--accent);
+    color: var(--paper);
+    padding: 0.1rem 0.5rem;
+    font-size: 0.72rem;
+    border-radius: 8px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+.user-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 0.75rem;
+}
+.user-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    padding: 0.9rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    transition: all 150ms;
+}
+.user-card:hover { border-color: var(--accent); }
+.user-avatar-sm {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+.user-info-sm { flex: 1; min-width: 0; }
+.user-name-sm {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--ink);
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+.user-meta-sm {
+    font-family: 'SN Pro','Oswald',sans-serif;
+    font-size: 0.78rem;
+    color: var(--ink-mute);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.user-meta-sm .at { color: var(--accent); font-weight: 600; }
+.user-actions-sm {
+    display: flex;
+    gap: 0.3rem;
+    flex-shrink: 0;
+}
+.user-action {
+    background: transparent;
+    border: 1.5px solid var(--line);
+    color: var(--ink-soft);
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 150ms;
+}
+.user-action:hover { border-color: var(--accent); color: var(--accent); }
+.user-action.accept:hover { border-color: #4ec96d; color: #4ec96d; }
+.user-action.reject:hover, .user-action.del:hover { border-color: var(--vinho); color: var(--vinho); }
+.user-action .material-icons { font-size: 1rem; }
+.user-action.add-text {
+    width: auto;
+    padding: 0 0.7rem;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+.relation-tag {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    padding: 0.25rem 0.55rem;
+    border: 1px solid var(--line);
+}
+.relation-tag.friend { color: var(--accent); border-color: var(--accent); }
+.relation-tag.pending { color: var(--ink-mute); }
+
+/* Comparação de stats */
+.compare-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+.compare-col {
+    text-align: center;
+    padding: 1rem 0.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+}
+.compare-col h4 {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin-bottom: 0.2rem;
+    letter-spacing: 0.04em;
+}
+.compare-col .compare-club {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+.compare-vs {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: var(--accent);
+    align-self: center;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.compare-stats {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0.5rem 1rem;
+    margin-top: 1.2rem;
+    padding-top: 1.2rem;
+    border-top: 1px dashed var(--line);
+    align-items: center;
+}
+.compare-row-label {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    text-align: center;
+}
+.compare-row-num {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--ink);
+}
+.compare-row-num.win { color: var(--accent); text-shadow: 0 0 14px var(--accent-glow); }
+.compare-row-num.left { text-align: right; }
+.compare-row-num.right { text-align: left; }
+
+.common-games {
+    margin-top: 1.5rem;
+    padding-top: 1.2rem;
+    border-top: 1px dashed var(--line);
+}
+.common-games h4 {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-bottom: 0.75rem;
+}
+.common-game-row {
+    display: grid;
+    grid-template-columns: 70px 1fr auto;
+    gap: 0.75rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid var(--line-soft);
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    align-items: center;
+}
+.common-game-row .cg-date {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.72rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.05em;
+}
+.common-game-row .cg-score {
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.04em;
+}
+
+/* Companions no modal de attendance */
+.companions-picker {
+    margin-top: 0.4rem;
+    padding: 0.85rem;
+    background: var(--bg-base);
+    border: 1.5px solid var(--line);
+    max-height: 180px;
+    overflow-y: auto;
+}
+.companions-picker .empty-friends {
+    font-family: 'SN Pro','Oswald',sans-serif;
+    color: var(--ink-mute);
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 0.5rem;
+}
+.companion-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 0.2rem;
+    cursor: pointer;
+    user-select: none;
+}
+.companion-row:hover { color: var(--accent); }
+.companion-row input { accent-color: var(--accent); }
+.companion-row .companion-name {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--ink);
+}
+.companion-row .companion-handle {
+    font-family: 'SN Pro','Oswald',sans-serif;
+    color: var(--ink-mute);
+    font-size: 0.78rem;
+    margin-left: auto;
+}
+
+.companions-summary {
+    margin-top: 0.5rem;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+.modal textarea.note-body {
+    min-height: 200px;
+    font-family: 'SN Pro', sans-serif;
     font-weight: 400;
-    line-height: 1.5;
+    line-height: 1.55;
     font-size: 1rem;
 }
 </style>
@@ -1283,6 +1713,12 @@ main {
             <label for="pName">Nome</label>
             <input id="pName" type="text" maxlength="80">
 
+            <label for="pUsername">Username (pra os amigos te encontrarem)</label>
+            <input id="pUsername" type="text" maxlength="30" placeholder="ex: guizaguini" pattern="[a-zA-Z0-9_.]{3,30}">
+            <div style="font-size:0.7rem;color:var(--ink-mute);margin-top:0.25rem;font-family:'SN Pro','Oswald',sans-serif;">
+                3 a 30 caracteres · só letras, números, _ ou .
+            </div>
+
             <label for="pEmail">Email (não editável)</label>
             <input id="pEmail" type="email" disabled style="opacity:0.5;">
 
@@ -1300,33 +1736,37 @@ main {
 
     <!-- Modal: Carteirinha cheia -->
     <div class="modal-overlay" id="cartModal">
-        <div class="modal" style="max-width:380px;background:transparent;border:none;box-shadow:none;padding:0;">
+        <div class="modal" style="max-width:520px;background:transparent;border:none;box-shadow:none;padding:0;">
             <div class="cartao" id="cartao">
                 <div class="cartao-header">
-                    <span>Arquibancada · Sócio Oficial</span>
+                    <strong>Arquibancada</strong>
+                    <span>Sócio Oficial</span>
                 </div>
                 <div class="cartao-body">
                     <div class="cartao-avatar" id="cartaoAvatar">—</div>
-                    <div class="cartao-nome" id="cartaoNome">—</div>
-                    <div class="cartao-clube" id="cartaoClube">—</div>
-                    <div class="cartao-stats">
-                        <div class="cartao-stat">
-                            <div class="cartao-stat-num" id="cartaoJogos">0</div>
-                            <div class="cartao-stat-label">Jogos</div>
-                        </div>
-                        <div class="cartao-stat">
-                            <div class="cartao-stat-num" id="cartaoVit">0</div>
-                            <div class="cartao-stat-label">Vitórias</div>
-                        </div>
-                        <div class="cartao-stat">
-                            <div class="cartao-stat-num" id="cartaoApr">—</div>
-                            <div class="cartao-stat-label">Aprov.</div>
+                    <div class="cartao-info">
+                        <div class="cartao-categoria">Torcedor Cadastrado</div>
+                        <div class="cartao-nome" id="cartaoNome">—</div>
+                        <div class="cartao-clube" id="cartaoClube">—</div>
+                        <div class="cartao-stats">
+                            <div class="cartao-stat">
+                                <div class="cartao-stat-num" id="cartaoJogos">0</div>
+                                <div class="cartao-stat-label">Jogos</div>
+                            </div>
+                            <div class="cartao-stat">
+                                <div class="cartao-stat-num" id="cartaoVit">0</div>
+                                <div class="cartao-stat-label">Vitórias</div>
+                            </div>
+                            <div class="cartao-stat">
+                                <div class="cartao-stat-num" id="cartaoApr">—</div>
+                                <div class="cartao-stat-label">Aproveit.</div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="cartao-footer">
-                    <span id="cartaoNum">Nº 0001</span>
-                    <span id="cartaoDesde">Sócio desde —</span>
+                    <span id="cartaoDesde">SÓCIO DESDE —</span>
+                    <span class="cartao-num" id="cartaoNum">Nº 0001</span>
                 </div>
             </div>
             <div class="modal-actions" style="margin-top:1.25rem;">
@@ -1380,6 +1820,18 @@ main {
                     <span class="material-icons" style="font-size:1.05rem;vertical-align:middle;margin-right:0.3rem;">download</span>
                     Baixar imagem
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Comparação com amigo -->
+    <div class="modal-overlay" id="compareModal">
+        <div class="modal modal-xl">
+            <h2>Comparação</h2>
+            <div class="meta">Suas estatísticas vs as do seu amigo</div>
+            <div id="compareContent"><div class="loading">Carregando...</div></div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="compareClose">Fechar</button>
             </div>
         </div>
     </div>
@@ -1440,6 +1892,12 @@ main {
             <label>Valor pago (R$)</label>
             <input type="number" id="fValor" step="0.01" min="0" placeholder="0.00">
 
+            <label>Foi com algum amigo?</label>
+            <div class="companions-picker" id="fCompanions">
+                <div class="empty-friends">Adicione amigos na aba Rede social pra marcar quem foi com você.</div>
+            </div>
+            <div class="companions-summary" id="fCompanionsSummary"></div>
+
             <label>Observações</label>
             <textarea id="fObs" rows="3" placeholder="Ex: primeiro jogo com meu filho"></textarea>
 
@@ -1483,9 +1941,10 @@ main {
         </section>
 
         <div class="tabs">
-            <button class="tab active" data-tab="catalog">Catálogo de jogos</button>
+            <button class="tab active" data-tab="catalog">Catálogo</button>
             <button class="tab" data-tab="mine">Meus ingressos</button>
             <button class="tab" data-tab="notas">Notas</button>
+            <button class="tab" data-tab="rede">Rede social</button>
         </div>
 
         <div class="tab-panel active" id="tabCatalog">
@@ -1499,6 +1958,33 @@ main {
 
         <div class="tab-panel" id="tabMine">
             <div id="mineList" class="galeria"><div class="loading">Carregando seus ingressos...</div></div>
+        </div>
+
+        <div class="tab-panel" id="tabRede">
+            <div class="rede-search-bar">
+                <input type="search" id="redeSearch" placeholder="Buscar amigo por @username ou nome...">
+                <button class="btn-ghost" id="redeRefresh" title="Atualizar"><span class="material-icons">refresh</span></button>
+            </div>
+
+            <div class="rede-section" id="searchResultsSection" style="display:none;">
+                <h3>Resultados da busca</h3>
+                <div class="user-list" id="searchResults"></div>
+            </div>
+
+            <div class="rede-section" id="incomingSection" style="display:none;">
+                <h3>Solicitações recebidas <span class="badge" id="incomingBadge">0</span></h3>
+                <div class="user-list" id="incomingList"></div>
+            </div>
+
+            <div class="rede-section" id="outgoingSection" style="display:none;">
+                <h3>Solicitações enviadas</h3>
+                <div class="user-list" id="outgoingList"></div>
+            </div>
+
+            <div class="rede-section">
+                <h3>Meus amigos <span id="friendsCount" style="color:var(--ink-mute);font-weight:400;font-size:0.85em;">(0)</span></h3>
+                <div class="user-list" id="friendsList"><div class="loading">Carregando...</div></div>
+            </div>
         </div>
 
         <div class="tab-panel" id="tabNotas">
@@ -1705,12 +2191,14 @@ main {
                 return;
             }
 
-            const [gamesRes, snap] = await Promise.all([
+            const [gamesRes, snap, friendsRes] = await Promise.all([
                 api('/games?limit=1000'),
                 api('/me/snapshot'),
+                api('/social/friends').catch(() => ({ friends: [], incoming: [], outgoing: [] })),
             ]);
             allGames = gamesRes.games;
             snapshot = snap;
+            friendsState = friendsRes;
             renderKpis();
             renderCatalog();
             renderMine();
@@ -2070,6 +2558,10 @@ main {
         if (g.setor) detalhes.push({ icon: 'event_seat', label: 'Seu setor', value: g.setor });
         if (g.assento) detalhes.push({ icon: 'chair', label: 'Seu assento', value: g.assento });
         if (g.valor_pago != null) detalhes.push({ icon: 'payments', label: 'Você pagou', value: fmtMoeda(g.valor_pago) });
+        if (Array.isArray(g.companions) && g.companions.length) {
+            const names = g.companions.map(c => c.display_name || ('@' + c.username)).join(', ');
+            detalhes.push({ icon: 'group', label: 'Foi com', value: names });
+        }
 
         document.getElementById('summaryDetails').innerHTML = detalhes.map(d => `
             <div style="display:flex;gap:0.5rem;align-items:center;padding:0.5rem 0;border-bottom:1px dotted var(--cinza-divisa,#1e1c18);">
@@ -2195,8 +2687,47 @@ main {
         document.getElementById('fValor').value = game.valor_pago ?? '';
         document.getElementById('fObs').value = game.observacoes || '';
 
+        renderCompanionsPicker(game.companions || []);
+
         document.getElementById('btnDelete').style.display = game.attendance_id ? '' : 'none';
         document.getElementById('modal').classList.add('show');
+    }
+
+    function renderCompanionsPicker(currentCompanions) {
+        const container = document.getElementById('fCompanions');
+        const friends = friendsState.friends || [];
+        if (!friends.length) {
+            container.innerHTML = '<div class="empty-friends">Adicione amigos na aba Rede social pra marcar quem foi com você.</div>';
+            updateCompanionsSummary();
+            return;
+        }
+        const currentIds = new Set(currentCompanions.map(c => c.user_id));
+        container.innerHTML = friends.map(f => {
+            const checked = currentIds.has(f.user_id) ? 'checked' : '';
+            return `
+                <label class="companion-row">
+                    <input type="checkbox" value="${f.user_id}" ${checked}>
+                    <span class="companion-name">${escapeHtml(f.display_name || f.username || '—')}</span>
+                    <span class="companion-handle">${f.username ? '@' + escapeHtml(f.username) : ''}</span>
+                </label>
+            `;
+        }).join('');
+        container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            cb.addEventListener('change', updateCompanionsSummary);
+        });
+        updateCompanionsSummary();
+    }
+
+    function updateCompanionsSummary() {
+        const checked = document.querySelectorAll('#fCompanions input[type="checkbox"]:checked');
+        const sum = document.getElementById('fCompanionsSummary');
+        if (!checked.length) { sum.textContent = ''; return; }
+        sum.textContent = `Foi com ${checked.length} ${checked.length === 1 ? 'amigo' : 'amigos'}`;
+    }
+
+    function getSelectedCompanions() {
+        return Array.from(document.querySelectorAll('#fCompanions input[type="checkbox"]:checked'))
+            .map(cb => parseInt(cb.value));
     }
 
     function closeModal() {
@@ -2226,6 +2757,7 @@ main {
                 assento: document.getElementById('fAssento').value.trim() || null,
                 valor_pago: document.getElementById('fValor').value ? parseFloat(document.getElementById('fValor').value) : null,
                 observacoes: document.getElementById('fObs').value.trim() || null,
+                companion_user_ids: getSelectedCompanions(),
             };
             await api('/attendances', { method: 'POST', body: JSON.stringify(body) });
             closeModal();
@@ -2283,6 +2815,7 @@ main {
     document.getElementById('btnProfile').addEventListener('click', async () => {
         await ensureClubsLoaded();
         document.getElementById('pName').value = user.display_name || '';
+        document.getElementById('pUsername').value = user.username || '';
         document.getElementById('pEmail').value = user.email || '';
         pClub.value = user.club_slug || '';
         profileModal.classList.add('show');
@@ -2300,13 +2833,13 @@ main {
         btn.disabled = true;
         btn.textContent = 'Salvando...';
         try {
-            await api('/auth/me', {
-                method: 'PATCH',
-                body: JSON.stringify({
-                    display_name: document.getElementById('pName').value.trim() || null,
-                    club_slug: pClub.value || null,
-                }),
-            });
+            const usernameVal = document.getElementById('pUsername').value.trim().toLowerCase();
+            const body = {
+                display_name: document.getElementById('pName').value.trim() || null,
+                club_slug: pClub.value || null,
+                username: usernameVal || null,
+            };
+            const res = await api('/auth/me', { method: 'PATCH', body: JSON.stringify(body) });
             profileModal.classList.remove('show');
             await loadAll();
             document.getElementById('userName').textContent = user.display_name || user.email?.split('@')[0] || 'torcedor';
@@ -2415,94 +2948,175 @@ main {
         const canvas = document.getElementById('shareCanvas');
         const ctx = canvas.getContext('2d');
         const accent = getAccentColor();
-        drawTexturedBackground(ctx);
 
-        // Header
-        ctx.fillStyle = accent;
-        ctx.fillRect(60, 60, 960, 100);
-        ctx.fillStyle = '#ece4d2';
-        ctx.font = 'bold 32px Oswald, sans-serif';
+        // BG escuro com glow do clube
+        ctx.fillStyle = '#0a0a0a';
+        ctx.fillRect(0, 0, 1080, 1080);
+        const grd = ctx.createRadialGradient(820, 200, 0, 540, 540, 700);
+        grd.addColorStop(0, accent + '40');
+        grd.addColorStop(1, 'transparent');
+        ctx.fillStyle = grd;
+        ctx.fillRect(0, 0, 1080, 1080);
+
+        // Cartão horizontal (proporção credit card 1.586:1)
+        // Largura 880, altura 555, centralizado vertical, padding-top
+        const cx0 = 100, cy0 = 240, cw = 880, ch = 555;
+        const radius = 28;
+
+        // Sombra do cartão
+        ctx.shadowColor = 'rgba(0,0,0,0.6)';
+        ctx.shadowBlur = 60;
+        ctx.shadowOffsetY = 30;
+
+        // Gradient bg do cartão
+        const cardGrd = ctx.createLinearGradient(cx0, cy0, cx0 + cw, cy0 + ch);
+        cardGrd.addColorStop(0, accent);
+        cardGrd.addColorStop(0.5, shadeHex(accent, -0.4));
+        cardGrd.addColorStop(1, '#0a0a0a');
+        ctx.fillStyle = cardGrd;
+        roundRect(ctx, cx0, cy0, cw, ch, radius);
+        ctx.fill();
+
+        // Reset shadow
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetY = 0;
+
+        // Hologram stripes
+        ctx.save();
+        ctx.beginPath();
+        roundRect(ctx, cx0, cy0, cw, ch, radius);
+        ctx.clip();
+        ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+        ctx.lineWidth = 2;
+        for (let x = -200; x < cw + 100; x += 80) {
+            ctx.beginPath();
+            ctx.moveTo(cx0 + x, cy0);
+            ctx.lineTo(cx0 + x + 200, cy0 + ch);
+            ctx.stroke();
+        }
+        ctx.restore();
+
+        // Header (top do cartão)
+        ctx.fillStyle = '#f5f0e4';
+        ctx.font = 'bold 22px Oswald, sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillText('ARQUIBANCADA', cx0 + 40, cy0 + 40);
+        ctx.fillStyle = 'rgba(245,240,228,0.7)';
+        ctx.font = '500 16px Oswald, sans-serif';
+        ctx.fillText('SÓCIO OFICIAL', cx0 + 40, cy0 + 72);
+
+        // Avatar circle (esquerda do meio)
+        const initials = getInitials(user.display_name, user.email);
+        const avatarCx = cx0 + 110, avatarCy = cy0 + 290;
+        ctx.fillStyle = 'rgba(0,0,0,0.45)';
+        ctx.beginPath();
+        ctx.arc(avatarCx, avatarCy, 75, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(245,240,228,0.85)';
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.arc(avatarCx, avatarCy, 75, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fillStyle = '#f5f0e4';
+        ctx.font = 'bold 60px Oswald, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('ARQUIBANCADA · SÓCIO OFICIAL', 540, 110);
+        ctx.fillText(initials, avatarCx, avatarCy + 4);
 
-        // Card body bg
-        ctx.fillStyle = '#f3ecda';
-        ctx.fillRect(60, 160, 960, 720);
-        ctx.strokeStyle = '#c9bfa8';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(60, 160, 960, 720);
-
-        // Avatar circle
-        const initials = getInitials(user.display_name, user.email);
-        ctx.fillStyle = '#141414';
-        ctx.beginPath();
-        ctx.arc(540, 320, 110, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = accent;
-        ctx.lineWidth = 8;
-        ctx.beginPath();
-        ctx.arc(540, 320, 110, 0, Math.PI * 2);
-        ctx.stroke();
+        // Info à direita do avatar
+        const infoX = avatarCx + 100;
+        ctx.textAlign = 'left';
+        ctx.fillStyle = 'rgba(245,240,228,0.7)';
+        ctx.font = '500 14px Oswald, sans-serif';
+        ctx.textBaseline = 'top';
+        ctx.fillText('TORCEDOR CADASTRADO', infoX, cy0 + 220);
 
         ctx.fillStyle = '#f5f0e4';
-        ctx.font = 'bold 90px Oswald, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(initials, 540, 325);
-
-        // Name
-        ctx.fillStyle = '#141414';
-        ctx.font = 'bold 56px Oswald, sans-serif';
+        ctx.font = 'bold 38px Oswald, sans-serif';
         const name = (user.display_name || user.email?.split('@')[0] || 'Torcedor').toUpperCase();
-        ctx.fillText(name, 540, 510);
+        ctx.fillText(name, infoX, cy0 + 245);
 
-        // Club
-        ctx.fillStyle = accent;
-        ctx.font = '500 32px Oswald, sans-serif';
-        ctx.fillText((user.club_name || 'SEM CLUBE').toUpperCase(), 540, 565);
+        ctx.fillStyle = '#f5f0e4';
+        ctx.font = '600 22px Oswald, sans-serif';
+        ctx.fillText((user.club_name || 'SEM CLUBE').toUpperCase(), infoX, cy0 + 295);
 
-        // Stats row
+        // Stats horizontais
         const g = snapshot?.geral || {};
         const stats = [
             { num: g.jogos || 0, label: 'JOGOS' },
             { num: g.vitorias || 0, label: 'VITÓRIAS' },
-            { num: g.aproveitamento_pct != null ? `${g.aproveitamento_pct}%` : '—', label: 'APROV.' },
+            { num: g.aproveitamento_pct != null ? `${g.aproveitamento_pct}%` : '—', label: 'APROVEIT.' },
         ];
-
-        ctx.strokeStyle = '#c9bfa8';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.moveTo(140, 640);
-        ctx.lineTo(940, 640);
-        ctx.stroke();
-
-        const colWidth = 800 / stats.length;
-        stats.forEach((s, i) => {
-            const cx = 140 + colWidth * i + colWidth / 2;
-            ctx.fillStyle = '#141414';
-            ctx.font = 'bold 80px Oswald, sans-serif';
-            ctx.fillText(s.num, cx, 720);
-            ctx.fillStyle = '#6a625a';
-            ctx.font = '500 22px Oswald, sans-serif';
-            ctx.fillText(s.label, cx, 790);
+        let statX = infoX;
+        stats.forEach((s) => {
+            ctx.fillStyle = '#f5f0e4';
+            ctx.font = 'bold 32px Oswald, sans-serif';
+            const numStr = String(s.num);
+            ctx.fillText(numStr, statX, cy0 + 360);
+            ctx.fillStyle = 'rgba(245,240,228,0.65)';
+            ctx.font = '500 12px Oswald, sans-serif';
+            ctx.fillText(s.label, statX, cy0 + 400);
+            statX += Math.max(120, ctx.measureText(numStr).width + 80);
         });
 
-        // Bottom strip (footer card)
-        ctx.fillStyle = '#141414';
-        ctx.fillRect(60, 880, 960, 100);
-        ctx.fillStyle = '#ece4d2';
-        ctx.font = '500 28px Oswald, sans-serif';
-        ctx.textAlign = 'left';
-        ctx.fillText(`Nº ${String(user.id).padStart(4, '0')}`, 100, 930);
-        ctx.textAlign = 'right';
-        ctx.fillText(`SÓCIO DESDE ${fmtMonthYear(user.created_at || new Date().toISOString()).toUpperCase()}`, 980, 930);
+        // Chip dourado (parte de baixo esquerda)
+        const chipX = cx0 + 40, chipY = cy0 + ch - 70;
+        const chipGrd = ctx.createLinearGradient(chipX, chipY, chipX + 60, chipY + 42);
+        chipGrd.addColorStop(0, '#d4b86a');
+        chipGrd.addColorStop(1, '#8a6e30');
+        ctx.fillStyle = chipGrd;
+        roundRect(ctx, chipX, chipY, 60, 42, 6);
+        ctx.fill();
+        // chip linhas
+        ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(chipX + 8, chipY + 14); ctx.lineTo(chipX + 52, chipY + 14);
+        ctx.moveTo(chipX + 8, chipY + 28); ctx.lineTo(chipX + 52, chipY + 28);
+        ctx.stroke();
 
-        // Bottom brand
-        ctx.fillStyle = '#6a625a';
-        ctx.font = '500 24px Oswald, sans-serif';
+        // Footer info (direita)
+        ctx.textAlign = 'right';
+        ctx.fillStyle = 'rgba(245,240,228,0.7)';
+        ctx.font = '500 12px Oswald, sans-serif';
+        ctx.fillText(`SÓCIO DESDE ${fmtMonthYear(user.created_at || new Date().toISOString()).toUpperCase()}`, cx0 + cw - 40, cy0 + ch - 70);
+        ctx.fillStyle = '#f5f0e4';
+        ctx.font = 'bold 22px Oswald, sans-serif';
+        ctx.fillText(`Nº ${String(user.id).padStart(4, '0')}`, cx0 + cw - 40, cy0 + ch - 40);
+
+        // Brand abaixo do cartão
         ctx.textAlign = 'center';
-        ctx.fillText('arquibancada · diário do torcedor', 540, 1040);
+        ctx.fillStyle = 'rgba(245,240,228,0.5)';
+        ctx.font = '500 18px Oswald, sans-serif';
+        ctx.fillText('arquibancada · diário do torcedor', 540, cy0 + ch + 80);
+    }
+
+    // Helpers de canvas
+    function roundRect(ctx, x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+    }
+    function shadeHex(hex, percent) {
+        const m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex.trim());
+        if (!m) return hex;
+        let [r, g, b] = [parseInt(m[1],16), parseInt(m[2],16), parseInt(m[3],16)];
+        if (percent < 0) {
+            r = Math.round(r * (1 + percent));
+            g = Math.round(g * (1 + percent));
+            b = Math.round(b * (1 + percent));
+        } else {
+            r = Math.round(r + (255 - r) * percent);
+            g = Math.round(g + (255 - g) * percent);
+            b = Math.round(b + (255 - b) * percent);
+        }
+        return `rgb(${r},${g},${b})`;
     }
 
     function renderShareNota(note) {
@@ -2781,15 +3395,271 @@ main {
     document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', () => {
             const target = tab.dataset.tab;
-            const panelId = target === 'catalog' ? 'tabCatalog'
-                          : target === 'mine' ? 'tabMine'
-                          : 'tabNotas';
+            const panelMap = { catalog: 'tabCatalog', mine: 'tabMine', notas: 'tabNotas', rede: 'tabRede' };
+            const panelId = panelMap[target] || 'tabCatalog';
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
             tab.classList.add('active');
             document.getElementById(panelId).classList.add('active');
             if (target === 'notas') loadNotas();
+            if (target === 'rede') loadFriends();
         });
+    });
+
+    // ===============================================
+    // REDE SOCIAL
+    // ===============================================
+    let friendsState = { friends: [], incoming: [], outgoing: [] };
+
+    function avatarInitials(name) {
+        const src = (name || 'U').trim();
+        const parts = src.split(/\s+/);
+        if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        return src.substring(0, 2).toUpperCase();
+    }
+
+    function renderUserCard(u, mode) {
+        // mode: 'friend' | 'incoming' | 'outgoing' | 'search'
+        const handle = u.username ? `<span class="at">@${escapeHtml(u.username)}</span>` : '';
+        const club = u.club_name ? ` · ${escapeHtml(u.club_name)}` : '';
+        const name = (u.display_name || u.username || 'Sem nome').toUpperCase();
+        const initials = avatarInitials(u.display_name || u.username);
+
+        let actions = '';
+        if (mode === 'friend') {
+            actions = `
+                <button class="user-action" title="Comparar" data-compare="${u.user_id}"><span class="material-icons">compare_arrows</span></button>
+                <button class="user-action del" title="Remover" data-unfriend="${u.friendship_id}"><span class="material-icons">person_remove</span></button>
+            `;
+        } else if (mode === 'incoming') {
+            actions = `
+                <button class="user-action accept" title="Aceitar" data-accept="${u.friendship_id}"><span class="material-icons">check</span></button>
+                <button class="user-action reject" title="Rejeitar" data-reject="${u.friendship_id}"><span class="material-icons">close</span></button>
+            `;
+        } else if (mode === 'outgoing') {
+            actions = `
+                <span class="relation-tag pending">Aguardando</span>
+                <button class="user-action del" title="Cancelar" data-reject="${u.friendship_id}"><span class="material-icons">close</span></button>
+            `;
+        } else if (mode === 'search') {
+            const f = u.friendship;
+            if (f && f.status === 'ACCEPTED') {
+                actions = `<span class="relation-tag friend">Já é amigo</span>`;
+            } else if (f && f.status === 'PENDING' && f.i_requested) {
+                actions = `<span class="relation-tag pending">Solicitado</span>`;
+            } else if (f && f.status === 'PENDING' && !f.i_requested) {
+                actions = `<button class="user-action accept add-text" data-accept="${f.id}">Aceitar</button>`;
+            } else {
+                actions = `<button class="user-action add-text" data-add-username="${escapeHtml(u.username || '')}" data-add-id="${u.id}">Adicionar</button>`;
+            }
+        }
+
+        const userId = u.user_id || u.id;
+        return `
+            <div class="user-card">
+                <div class="user-avatar-sm">${initials}</div>
+                <div class="user-info-sm">
+                    <div class="user-name-sm">${escapeHtml(name)}</div>
+                    <div class="user-meta-sm">${handle}${club}</div>
+                </div>
+                <div class="user-actions-sm">${actions}</div>
+            </div>
+        `;
+    }
+
+    function bindUserCardActions(container) {
+        container.querySelectorAll('[data-compare]').forEach(b => {
+            b.addEventListener('click', () => openCompare(parseInt(b.dataset.compare)));
+        });
+        container.querySelectorAll('[data-unfriend]').forEach(b => {
+            b.addEventListener('click', async () => {
+                if (!confirm('Remover amizade?')) return;
+                try { await api(`/social/friends/${b.dataset.unfriend}`, { method: 'DELETE' }); await loadFriends(); }
+                catch (e) { alert('Erro: ' + e.message); }
+            });
+        });
+        container.querySelectorAll('[data-accept]').forEach(b => {
+            b.addEventListener('click', async () => {
+                try { await api(`/social/friends/${b.dataset.accept}/accept`, { method: 'POST' }); await loadFriends(); await searchUsers(); }
+                catch (e) { alert('Erro: ' + e.message); }
+            });
+        });
+        container.querySelectorAll('[data-reject]').forEach(b => {
+            b.addEventListener('click', async () => {
+                try { await api(`/social/friends/${b.dataset.reject}`, { method: 'DELETE' }); await loadFriends(); await searchUsers(); }
+                catch (e) { alert('Erro: ' + e.message); }
+            });
+        });
+        container.querySelectorAll('[data-add-id]').forEach(b => {
+            b.addEventListener('click', async () => {
+                try {
+                    const username = b.dataset.addUsername;
+                    const id = parseInt(b.dataset.addId);
+                    await api('/social/friends/request', {
+                        method: 'POST',
+                        body: JSON.stringify(username ? { username } : { user_id: id }),
+                    });
+                    await searchUsers();
+                    await loadFriends();
+                } catch (e) {
+                    const msg = {
+                        already_friends: 'Vocês já são amigos',
+                        request_already_pending: 'Já existe um pedido pendente',
+                        cannot_friend_self: 'Não dá pra adicionar você mesmo',
+                    }[e.message] || e.message;
+                    alert('Erro: ' + msg);
+                }
+            });
+        });
+    }
+
+    async function loadFriends() {
+        try {
+            const data = await api('/social/friends');
+            friendsState = data;
+
+            // Friends
+            document.getElementById('friendsCount').textContent = `(${data.friends.length})`;
+            const fl = document.getElementById('friendsList');
+            if (!data.friends.length) {
+                fl.innerHTML = '<div class="empty" style="grid-column:1/-1;">Você ainda não tem amigos. Use a busca acima pra encontrar pelo @username.</div>';
+            } else {
+                fl.innerHTML = data.friends.map(u => renderUserCard(u, 'friend')).join('');
+                bindUserCardActions(fl);
+            }
+
+            // Incoming
+            const incSec = document.getElementById('incomingSection');
+            if (data.incoming.length) {
+                incSec.style.display = '';
+                document.getElementById('incomingBadge').textContent = data.incoming.length;
+                const il = document.getElementById('incomingList');
+                il.innerHTML = data.incoming.map(u => renderUserCard(u, 'incoming')).join('');
+                bindUserCardActions(il);
+            } else {
+                incSec.style.display = 'none';
+            }
+
+            // Outgoing
+            const outSec = document.getElementById('outgoingSection');
+            if (data.outgoing.length) {
+                outSec.style.display = '';
+                const ol = document.getElementById('outgoingList');
+                ol.innerHTML = data.outgoing.map(u => renderUserCard(u, 'outgoing')).join('');
+                bindUserCardActions(ol);
+            } else {
+                outSec.style.display = 'none';
+            }
+        } catch (err) {
+            document.getElementById('friendsList').innerHTML = `<div class="empty">Erro: ${err.message}</div>`;
+        }
+    }
+
+    let searchTimer;
+    async function searchUsers() {
+        const q = document.getElementById('redeSearch').value.trim();
+        const sec = document.getElementById('searchResultsSection');
+        const list = document.getElementById('searchResults');
+        if (q.length < 2) {
+            sec.style.display = 'none';
+            return;
+        }
+        sec.style.display = '';
+        list.innerHTML = '<div class="loading">Buscando...</div>';
+        try {
+            const { users } = await api('/social/users/search?q=' + encodeURIComponent(q));
+            if (!users.length) {
+                list.innerHTML = '<div class="empty" style="grid-column:1/-1;">Ninguém encontrado.</div>';
+                return;
+            }
+            list.innerHTML = users.map(u => renderUserCard(u, 'search')).join('');
+            bindUserCardActions(list);
+        } catch (e) {
+            list.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
+        }
+    }
+
+    document.getElementById('redeSearch').addEventListener('input', () => {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(searchUsers, 300);
+    });
+    document.getElementById('redeRefresh').addEventListener('click', loadFriends);
+
+    async function openCompare(userId) {
+        document.getElementById('compareModal').classList.add('show');
+        document.getElementById('compareContent').innerHTML = '<div class="loading">Carregando...</div>';
+        try {
+            const data = await api(`/social/compare/${userId}`);
+            const me = data.me, fr = data.friend;
+
+            const fmtMoney = (v) => `R$ ${Number(v || 0).toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
+            const wins = (a, b) => Number(a || 0) > Number(b || 0);
+            const meCls = (a, b, isWin = true) => isWin && wins(a, b) ? 'win' : '';
+            const frCls = (a, b, isWin = true) => isWin && wins(b, a) ? 'win' : '';
+
+            const rows = [
+                ['Jogos',         me.jogos, fr.jogos, true],
+                ['Vitórias',      me.vitorias, fr.vitorias, true],
+                ['Empates',       me.empates, fr.empates, false],
+                ['Derrotas',      me.derrotas, fr.derrotas, false],
+                ['Aproveitamento', me.aproveitamento_pct != null ? `${me.aproveitamento_pct}%` : '—', fr.aproveitamento_pct != null ? `${fr.aproveitamento_pct}%` : '—', true],
+                ['Clássicos',     me.classicos, fr.classicos, true],
+                ['Gasto total',   fmtMoney(me.gasto_total), fmtMoney(fr.gasto_total), false],
+            ];
+
+            const meName = (me.display_name || me.username || 'Você').toUpperCase();
+            const frName = (fr.display_name || fr.username || 'Amigo').toUpperCase();
+
+            const commonHtml = data.common.count
+                ? data.common.games.map(g => {
+                    const dt = new Date(g.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+                    const placar = g.gols_casa != null ? `${g.gols_casa} × ${g.gols_visitante}` : '—';
+                    return `
+                        <div class="common-game-row">
+                            <span class="cg-date">${dt}</span>
+                            <span>${escapeHtml(g.time_casa)} × ${escapeHtml(g.time_visitante)}</span>
+                            <span class="cg-score">${placar}</span>
+                        </div>
+                    `;
+                }).join('')
+                : '<div class="empty" style="padding:1rem;">Vocês ainda não foram juntos em nenhum jogo.</div>';
+
+            document.getElementById('compareContent').innerHTML = `
+                <div class="compare-grid">
+                    <div class="compare-col">
+                        <h4>${escapeHtml(meName)}</h4>
+                        <div class="compare-club">${escapeHtml(me.club_name || 'Sem time')}</div>
+                    </div>
+                    <div class="compare-vs">VS</div>
+                    <div class="compare-col">
+                        <h4>${escapeHtml(frName)}</h4>
+                        <div class="compare-club">${escapeHtml(fr.club_name || 'Sem time')}</div>
+                    </div>
+                </div>
+
+                <div class="compare-stats">
+                    ${rows.map(([label, a, b, isWin]) => `
+                        <div class="compare-row-num left ${meCls(a, b, isWin)}">${escapeHtml(String(a ?? 0))}</div>
+                        <div class="compare-row-label">${label}</div>
+                        <div class="compare-row-num right ${frCls(a, b, isWin)}">${escapeHtml(String(b ?? 0))}</div>
+                    `).join('')}
+                </div>
+
+                <div class="common-games">
+                    <h4>Jogos que vocês foram juntos · ${data.common.count}</h4>
+                    ${commonHtml}
+                </div>
+            `;
+        } catch (e) {
+            document.getElementById('compareContent').innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
+        }
+    }
+
+    document.getElementById('compareClose').addEventListener('click', () => {
+        document.getElementById('compareModal').classList.remove('show');
+    });
+    document.getElementById('compareModal').addEventListener('click', (e) => {
+        if (e.target.id === 'compareModal') document.getElementById('compareModal').classList.remove('show');
     });
 
     loadAll();

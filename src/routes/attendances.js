@@ -15,9 +15,37 @@ const AttendanceSchema = z.object({
     assento: z.string().max(40).optional().nullable(),
     valor_pago: z.number().nonnegative().optional().nullable(),
     observacoes: z.string().max(2000).optional().nullable(),
+    companion_user_ids: z.array(z.number().int().positive()).optional(),
 });
 
 const AttendanceUpdateSchema = AttendanceSchema.partial().omit({ game_id: true });
+
+// Substitui a lista de companions de uma attendance pelos IDs informados.
+// Só aceita companions que sejam amigos ACEITOS do dono.
+async function syncCompanions(attendanceId, ownerUserId, companionIds) {
+    await query('DELETE FROM attendance_companions WHERE attendance_id = $1', [attendanceId]);
+    if (!companionIds || !companionIds.length) return;
+
+    // Filtra só amigos
+    const { rows: friends } = await query(
+        `SELECT CASE WHEN requester_id = $1 THEN recipient_id ELSE requester_id END AS friend_id
+         FROM friendships
+         WHERE status = 'ACCEPTED'
+           AND (requester_id = $1 OR recipient_id = $1)`,
+        [ownerUserId]
+    );
+    const friendSet = new Set(friends.map(r => r.friend_id));
+    const valid = companionIds.filter(id => friendSet.has(id) && id !== ownerUserId);
+
+    for (const id of valid) {
+        await query(
+            `INSERT INTO attendance_companions (attendance_id, companion_user_id)
+             VALUES ($1, $2)
+             ON CONFLICT DO NOTHING`,
+            [attendanceId, id]
+        );
+    }
+}
 
 async function gameBelongsToUserClub(gameId, clubId) {
     const { rows } = await query(
@@ -37,7 +65,17 @@ router.get('/', async (req, res, next) => {
                 a.id, a.game_id, a.status, a.setor, a.assento,
                 a.valor_pago, a.observacoes, a.created_at, a.updated_at,
                 g.data, g.time_casa, g.time_visitante, g.campeonato, g.estadio,
-                g.gols_casa, g.gols_visitante, g.resultado, g.foi_classico
+                g.gols_casa, g.gols_visitante, g.resultado, g.foi_classico,
+                COALESCE((
+                    SELECT json_agg(json_build_object(
+                        'user_id', u.id,
+                        'username', u.username,
+                        'display_name', u.display_name
+                    ))
+                    FROM attendance_companions ac
+                    JOIN users u ON u.id = ac.companion_user_id
+                    WHERE ac.attendance_id = a.id
+                ), '[]'::json) AS companions
              FROM attendances a
              JOIN games g ON g.id = a.game_id
              WHERE a.user_id = $1
@@ -81,6 +119,9 @@ router.post('/', async (req, res, next) => {
                 body.valor_pago ?? null, body.observacoes ?? null,
             ]
         );
+        if (body.companion_user_ids !== undefined) {
+            await syncCompanions(rows[0].id, req.user.id, body.companion_user_ids);
+        }
         res.status(201).json({ attendance: rows[0] });
     } catch (err) { next(err); }
 });
@@ -106,18 +147,33 @@ router.patch('/:id', async (req, res, next) => {
             values.push(v);
             fields.push(`${k} = $${values.length}`);
         }
-        if (!fields.length) return res.status(400).json({ error: 'nenhum_campo_valido' });
 
-        values.push(req.params.id);
-        values.push(req.user.id);
-        const { rows } = await query(
-            `UPDATE attendances SET ${fields.join(', ')}
-             WHERE id = $${values.length - 1} AND user_id = $${values.length}
-             RETURNING *`,
-            values
-        );
-        if (!rows.length) return res.status(404).json({ error: 'attendance_not_found' });
-        res.json({ attendance: rows[0] });
+        let attendance;
+        if (fields.length) {
+            values.push(req.params.id);
+            values.push(req.user.id);
+            const { rows } = await query(
+                `UPDATE attendances SET ${fields.join(', ')}
+                 WHERE id = $${values.length - 1} AND user_id = $${values.length}
+                 RETURNING *`,
+                values
+            );
+            if (!rows.length) return res.status(404).json({ error: 'attendance_not_found' });
+            attendance = rows[0];
+        } else {
+            const { rows } = await query(
+                'SELECT * FROM attendances WHERE id = $1 AND user_id = $2',
+                [req.params.id, req.user.id]
+            );
+            if (!rows.length) return res.status(404).json({ error: 'attendance_not_found' });
+            attendance = rows[0];
+        }
+
+        if (parsed.data.companion_user_ids !== undefined) {
+            await syncCompanions(attendance.id, req.user.id, parsed.data.companion_user_ids);
+        }
+
+        res.json({ attendance });
     } catch (err) { next(err); }
 });
 

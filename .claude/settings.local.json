@@ -16,7 +16,8 @@
       "Bash(railway run *)",
       "Bash(node --check src/routes/admin.js)",
       "Bash(node --check src/middleware/authUser.js)",
-      "Bash(node --check src/routes/notes.js)"
+      "Bash(node --check src/routes/notes.js)",
+      "Bash(node --check src/routes/social.js)"
     ]
   }
 }

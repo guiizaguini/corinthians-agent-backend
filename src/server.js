@@ -15,6 +15,7 @@ import gamesRouter from './routes/games.js';
 import attendancesRouter from './routes/attendances.js';
 import meRouter from './routes/me.js';
 import notesRouter from './routes/notes.js';
+import socialRouter from './routes/social.js';
 import adminRouter from './routes/admin.js';
 
 // Rotas legadas (v1 — continuam vivas durante a transição)
@@ -51,6 +52,7 @@ app.use('/games', requireUser, gamesRouter);
 app.use('/attendances', requireUser, attendancesRouter);
 app.use('/me', requireUser, meRouter);
 app.use('/notes', requireUser, notesRouter);
+app.use('/social', requireUser, socialRouter);
 app.use('/admin', requireUser, requireAdmin, adminRouter);
 
 // =============================================================

@@ -17,6 +17,7 @@ const SignupSchema = z.object({
 const UpdateMeSchema = z.object({
     display_name: z.string().min(1).max(80).optional(),
     club_slug: z.string().min(1).max(40).nullable().optional(),
+    username: z.string().regex(/^[a-z0-9_.]{3,30}$/i, 'use letras/números/_/., 3 a 30').nullable().optional(),
 });
 
 const LoginSchema = z.object({
@@ -115,7 +116,7 @@ router.post('/login', async (req, res, next) => {
 router.get('/me', requireUser, async (req, res, next) => {
     try {
         const { rows } = await query(
-            `SELECT u.id, u.email, u.display_name, u.club_id, u.is_admin,
+            `SELECT u.id, u.email, u.username, u.display_name, u.club_id, u.is_admin, u.created_at,
                     c.slug AS club_slug, c.name AS club_name, c.short_name AS club_short,
                     c.primary_color, c.secondary_color
              FROM users u
@@ -136,7 +137,7 @@ router.patch('/me', requireUser, async (req, res, next) => {
         if (!parsed.success) {
             return res.status(400).json({ error: 'validation_failed' });
         }
-        const { display_name, club_slug } = parsed.data;
+        const { display_name, club_slug, username } = parsed.data;
 
         const fields = [];
         const values = [];
@@ -154,13 +155,25 @@ router.patch('/me', requireUser, async (req, res, next) => {
             values.push(clubId);
             fields.push(`club_id = $${values.length}`);
         }
+        if (username !== undefined) {
+            const u = username ? username.toLowerCase().trim() : null;
+            if (u) {
+                const { rows: dup } = await query(
+                    'SELECT id FROM users WHERE LOWER(username) = $1 AND id <> $2',
+                    [u, req.user.id]
+                );
+                if (dup.length) return res.status(409).json({ error: 'username_taken' });
+            }
+            values.push(u);
+            fields.push(`username = $${values.length}`);
+        }
         if (!fields.length) return res.status(400).json({ error: 'nenhum_campo_valido' });
 
         values.push(req.user.id);
         const { rows } = await query(
             `UPDATE users SET ${fields.join(', ')}
              WHERE id = $${values.length}
-             RETURNING id, email, display_name, club_id, is_admin`,
+             RETURNING id, email, username, display_name, club_id, is_admin`,
             values
         );
         res.json({ user: rows[0] });

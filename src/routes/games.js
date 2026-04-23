@@ -53,6 +53,16 @@ router.get('/', async (req, res, next) => {
                 a.assento      AS assento,
                 a.valor_pago   AS valor_pago,
                 a.observacoes  AS observacoes,
+                COALESCE((
+                    SELECT json_agg(json_build_object(
+                        'user_id', u.id,
+                        'username', u.username,
+                        'display_name', u.display_name
+                    ))
+                    FROM attendance_companions ac
+                    JOIN users u ON u.id = ac.companion_user_id
+                    WHERE ac.attendance_id = a.id
+                ), '[]'::json) AS companions,
                 CASE
                     WHEN g.time_casa = (SELECT name FROM clubs WHERE id = g.club_id) THEN g.time_visitante
                     WHEN g.time_visitante = (SELECT name FROM clubs WHERE id = g.club_id) THEN g.time_casa

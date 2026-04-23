@@ -1,0 +1,252 @@
+import express from 'express';
+import { z } from 'zod';
+import { query } from '../db/pool.js';
+
+/**
+ * Rotas de rede social: busca de users, amizades, comparação de stats.
+ * requireUser é aplicado upstream.
+ */
+const router = express.Router();
+
+const USERNAME_RE = /^[a-z0-9_.]{3,30}$/i;
+
+// =============================================================
+// GET /social/users/search?q=...
+// Busca por username (prefix) ou display_name (substring)
+// =============================================================
+router.get('/users/search', async (req, res, next) => {
+    try {
+        const q = String(req.query.q || '').trim();
+        if (q.length < 2) return res.json({ users: [] });
+        const like = `%${q.toLowerCase()}%`;
+        const { rows } = await query(
+            `SELECT u.id, u.username, u.display_name, c.name AS club_name, c.short_name AS club_short,
+                    f.id AS friendship_id, f.status AS friendship_status, f.requester_id
+             FROM users u
+             LEFT JOIN clubs c ON c.id = u.club_id
+             LEFT JOIN friendships f
+               ON ((f.requester_id = $2 AND f.recipient_id = u.id)
+                OR (f.recipient_id = $2 AND f.requester_id = u.id))
+             WHERE u.id <> $2
+               AND (
+                 LOWER(u.username) LIKE $1
+                 OR LOWER(u.display_name) LIKE $1
+               )
+             ORDER BY
+               CASE WHEN LOWER(u.username) = LOWER($3) THEN 0 ELSE 1 END,
+               u.username NULLS LAST,
+               u.display_name
+             LIMIT 20`,
+            [like, req.user.id, q]
+        );
+        // Marca relação
+        const out = rows.map(r => ({
+            id: r.id,
+            username: r.username,
+            display_name: r.display_name,
+            club_name: r.club_name,
+            club_short: r.club_short,
+            friendship: r.friendship_id ? {
+                id: r.friendship_id,
+                status: r.friendship_status,
+                i_requested: r.requester_id === req.user.id,
+            } : null,
+        }));
+        res.json({ users: out });
+    } catch (err) { next(err); }
+});
+
+// =============================================================
+// GET /social/friends
+// Retorna { friends: [...accepted], incoming: [...pending], outgoing: [...pending] }
+// =============================================================
+router.get('/friends', async (req, res, next) => {
+    try {
+        const { rows } = await query(
+            `SELECT
+                f.id, f.status, f.requester_id, f.recipient_id, f.created_at,
+                CASE WHEN f.requester_id = $1 THEN f.recipient_id ELSE f.requester_id END AS other_id,
+                u.username, u.display_name,
+                c.name AS club_name, c.short_name AS club_short, c.primary_color
+             FROM friendships f
+             JOIN users u ON u.id = (CASE WHEN f.requester_id = $1 THEN f.recipient_id ELSE f.requester_id END)
+             LEFT JOIN clubs c ON c.id = u.club_id
+             WHERE f.requester_id = $1 OR f.recipient_id = $1
+             ORDER BY f.created_at DESC`,
+            [req.user.id]
+        );
+
+        const friends = [], incoming = [], outgoing = [];
+        for (const r of rows) {
+            const item = {
+                friendship_id: r.id,
+                user_id: r.other_id,
+                username: r.username,
+                display_name: r.display_name,
+                club_name: r.club_name,
+                club_short: r.club_short,
+                primary_color: r.primary_color,
+                created_at: r.created_at,
+            };
+            if (r.status === 'ACCEPTED') friends.push(item);
+            else if (r.requester_id === req.user.id) outgoing.push(item);
+            else incoming.push(item);
+        }
+        res.json({ friends, incoming, outgoing });
+    } catch (err) { next(err); }
+});
+
+// =============================================================
+// POST /social/friends/request — manda pedido de amizade
+// Aceita { username } ou { user_id }
+// =============================================================
+const RequestSchema = z.object({
+    username: z.string().regex(USERNAME_RE).optional(),
+    user_id: z.number().int().positive().optional(),
+}).refine(d => d.username || d.user_id, { message: 'username ou user_id' });
+
+router.post('/friends/request', async (req, res, next) => {
+    try {
+        const parsed = RequestSchema.safeParse(req.body);
+        if (!parsed.success) return res.status(400).json({ error: 'validation_failed' });
+
+        let recipientId = parsed.data.user_id;
+        if (!recipientId) {
+            const { rows } = await query(
+                'SELECT id FROM users WHERE LOWER(username) = LOWER($1)',
+                [parsed.data.username]
+            );
+            if (!rows.length) return res.status(404).json({ error: 'user_not_found' });
+            recipientId = rows[0].id;
+        }
+
+        if (recipientId === req.user.id) {
+            return res.status(400).json({ error: 'cannot_friend_self' });
+        }
+
+        // Já existe amizade em qualquer direção?
+        const { rows: existing } = await query(
+            `SELECT id, status, requester_id FROM friendships
+             WHERE (requester_id = $1 AND recipient_id = $2)
+                OR (requester_id = $2 AND recipient_id = $1)`,
+            [req.user.id, recipientId]
+        );
+        if (existing.length) {
+            const e = existing[0];
+            if (e.status === 'ACCEPTED') return res.status(409).json({ error: 'already_friends' });
+            // Se já tem pending invertido, aceita automaticamente (handshake)
+            if (e.status === 'PENDING' && e.requester_id !== req.user.id) {
+                await query('UPDATE friendships SET status = $1 WHERE id = $2', ['ACCEPTED', e.id]);
+                return res.json({ friendship: { id: e.id, status: 'ACCEPTED' } });
+            }
+            return res.status(409).json({ error: 'request_already_pending' });
+        }
+
+        const { rows } = await query(
+            `INSERT INTO friendships (requester_id, recipient_id, status)
+             VALUES ($1, $2, 'PENDING')
+             RETURNING id, status, created_at`,
+            [req.user.id, recipientId]
+        );
+        res.status(201).json({ friendship: rows[0] });
+    } catch (err) { next(err); }
+});
+
+// =============================================================
+// POST /social/friends/:id/accept — aceita pedido pendente
+// Só o recipient pode aceitar
+// =============================================================
+router.post('/friends/:id/accept', async (req, res, next) => {
+    try {
+        const { rows } = await query(
+            `UPDATE friendships SET status = 'ACCEPTED'
+             WHERE id = $1 AND recipient_id = $2 AND status = 'PENDING'
+             RETURNING *`,
+            [req.params.id, req.user.id]
+        );
+        if (!rows.length) return res.status(404).json({ error: 'request_not_found' });
+        res.json({ friendship: rows[0] });
+    } catch (err) { next(err); }
+});
+
+// =============================================================
+// DELETE /social/friends/:id — rejeita pendente OU desfaz amizade
+// Qualquer um dos dois lados pode deletar
+// =============================================================
+router.delete('/friends/:id', async (req, res, next) => {
+    try {
+        const { rowCount } = await query(
+            `DELETE FROM friendships
+             WHERE id = $1 AND (requester_id = $2 OR recipient_id = $2)`,
+            [req.params.id, req.user.id]
+        );
+        if (!rowCount) return res.status(404).json({ error: 'friendship_not_found' });
+        res.json({ removido: true });
+    } catch (err) { next(err); }
+});
+
+// =============================================================
+// GET /social/compare/:user_id — comparação de stats
+// Requer amizade ACEITA
+// =============================================================
+router.get('/compare/:user_id', async (req, res, next) => {
+    try {
+        const otherId = parseInt(req.params.user_id);
+
+        const { rows: f } = await query(
+            `SELECT id FROM friendships
+             WHERE status = 'ACCEPTED'
+               AND ((requester_id = $1 AND recipient_id = $2)
+                 OR (requester_id = $2 AND recipient_id = $1))`,
+            [req.user.id, otherId]
+        );
+        if (!f.length) return res.status(403).json({ error: 'not_friends' });
+
+        const statsSql = `
+            SELECT
+                u.id AS user_id, u.username, u.display_name, c.name AS club_name, c.short_name AS club_short,
+                COUNT(g.id) FILTER (WHERE a.status='PRESENTE' AND g.resultado IS NOT NULL)::int AS jogos,
+                SUM(CASE WHEN a.status='PRESENTE' AND g.resultado='V' THEN 1 ELSE 0 END)::int AS vitorias,
+                SUM(CASE WHEN a.status='PRESENTE' AND g.resultado='E' THEN 1 ELSE 0 END)::int AS empates,
+                SUM(CASE WHEN a.status='PRESENTE' AND g.resultado='D' THEN 1 ELSE 0 END)::int AS derrotas,
+                ROUND(
+                    (SUM(CASE WHEN a.status='PRESENTE' AND g.resultado='V' THEN 3 ELSE 0 END)
+                     + SUM(CASE WHEN a.status='PRESENTE' AND g.resultado='E' THEN 1 ELSE 0 END))::numeric
+                    / NULLIF(COUNT(g.id) FILTER (WHERE a.status='PRESENTE' AND g.resultado IS NOT NULL)*3, 0) * 100,
+                    2
+                ) AS aproveitamento_pct,
+                COALESCE(SUM(a.valor_pago), 0)::numeric AS gasto_total,
+                COUNT(g.id) FILTER (WHERE a.status='PRESENTE' AND g.foi_classico)::int AS classicos
+             FROM users u
+             LEFT JOIN clubs c ON c.id = u.club_id
+             LEFT JOIN attendances a ON a.user_id = u.id
+             LEFT JOIN games g ON g.id = a.game_id
+             WHERE u.id = $1
+             GROUP BY u.id, u.username, u.display_name, c.name, c.short_name
+        `;
+
+        const [meRes, friendRes, commonRes] = await Promise.all([
+            query(statsSql, [req.user.id]),
+            query(statsSql, [otherId]),
+            query(`
+                SELECT g.id, g.data, g.time_casa, g.time_visitante, g.gols_casa, g.gols_visitante, g.resultado
+                FROM attendances a1
+                JOIN attendances a2 ON a2.game_id = a1.game_id AND a2.user_id = $2 AND a2.status = 'PRESENTE'
+                JOIN games g ON g.id = a1.game_id
+                WHERE a1.user_id = $1 AND a1.status = 'PRESENTE'
+                ORDER BY g.data DESC
+            `, [req.user.id, otherId]),
+        ]);
+
+        res.json({
+            me: meRes.rows[0],
+            friend: friendRes.rows[0],
+            common: {
+                count: commonRes.rows.length,
+                games: commonRes.rows,
+            },
+        });
+    } catch (err) { next(err); }
+});
+
+export default router;

@@ -63,6 +63,11 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE INDEX IF NOT EXISTS idx_users_club ON users(club_id);
 
+-- Username (handle) pra rede social — único e case-insensitive
+ALTER TABLE users ADD COLUMN IF NOT EXISTS username VARCHAR(30);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username_lower
+    ON users(LOWER(username)) WHERE username IS NOT NULL;
+
 -- =============================================================
 -- GAMES (catálogo — fatos do jogo, sem dados pessoais do torcedor)
 -- Cada jogo pertence a um clube (do ponto de vista da UI do torcedor).
@@ -139,6 +144,38 @@ CREATE INDEX IF NOT EXISTS idx_notes_attendance ON notes(attendance_id);
 CREATE INDEX IF NOT EXISTS idx_notes_game ON notes(game_id);
 
 -- =============================================================
+-- FRIENDSHIPS (rede social)
+-- requester_id manda solicitação pra recipient_id
+-- status PENDING vira ACCEPTED quando recipient aceita
+-- =============================================================
+CREATE TABLE IF NOT EXISTS friendships (
+    id              SERIAL PRIMARY KEY,
+    requester_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    recipient_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    status          VARCHAR(15) NOT NULL DEFAULT 'PENDING'
+                    CHECK (status IN ('PENDING','ACCEPTED')),
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (requester_id, recipient_id),
+    CHECK (requester_id <> recipient_id)
+);
+CREATE INDEX IF NOT EXISTS idx_friendships_requester ON friendships(requester_id);
+CREATE INDEX IF NOT EXISTS idx_friendships_recipient ON friendships(recipient_id);
+CREATE INDEX IF NOT EXISTS idx_friendships_status ON friendships(status);
+
+-- =============================================================
+-- ATTENDANCE_COMPANIONS (n:n entre attendances e users)
+-- "fui no jogo X com fulano e ciclano"
+-- =============================================================
+CREATE TABLE IF NOT EXISTS attendance_companions (
+    attendance_id        INTEGER NOT NULL REFERENCES attendances(id) ON DELETE CASCADE,
+    companion_user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (attendance_id, companion_user_id)
+);
+CREATE INDEX IF NOT EXISTS idx_companions_user ON attendance_companions(companion_user_id);
+
+-- =============================================================
 -- Triggers de updated_at (reutiliza função existente se já houver)
 -- =============================================================
 CREATE OR REPLACE FUNCTION trg_touch_updated_at() RETURNS TRIGGER AS $$
@@ -162,4 +199,8 @@ CREATE TRIGGER tr_attendances_touch BEFORE UPDATE ON attendances
 
 DROP TRIGGER IF EXISTS tr_notes_touch ON notes;
 CREATE TRIGGER tr_notes_touch BEFORE UPDATE ON notes
+    FOR EACH ROW EXECUTE FUNCTION trg_touch_updated_at();
+
+DROP TRIGGER IF EXISTS tr_friendships_touch ON friendships;
+CREATE TRIGGER tr_friendships_touch BEFORE UPDATE ON friendships
     FOR EACH ROW EXECUTE FUNCTION trg_touch_updated_at();
