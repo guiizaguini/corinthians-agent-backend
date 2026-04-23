@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arquibancada — Diário do Torcedor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=Archivo:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+    --preto: #000000;
+    --preto-card: #0d0d0d;
+    --preto-card-2: #141414;
+    --branco: #f5f5f5;
+    --branco-suave: #e6e4de;
+    --cinza-claro: #a8a49a;
+    --cinza-medio: #6c6a62;
+    --cinza-linha: #2a2824;
+    --accent: #b8a66a;
+    --accent-hover: #d0bf84;
+    --accent-soft: rgba(184, 166, 106, 0.18);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+    background: var(--preto);
+    color: var(--branco);
+    font-family: 'Archivo', sans-serif;
+    line-height: 1.5;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at 1px 1px, rgba(255,255,255,0.025) 1px, transparent 1.5px),
+        radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.85) 100%);
+    background-size: 3px 3px, 100% 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+nav {
+    position: relative;
+    z-index: 10;
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.brand {
+    font-family: 'Anton', sans-serif;
+    font-size: 1.75rem;
+    letter-spacing: 0.16em;
+    color: var(--accent);
+    text-transform: uppercase;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.btn {
+    padding: 0.6rem 1.2rem;
+    font-family: 'Archivo', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 120ms ease;
+    border: 1px solid transparent;
+}
+
+.btn-ghost {
+    background: transparent;
+    border-color: var(--cinza-linha);
+    color: var(--cinza-claro);
+}
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+.btn-primary {
+    background: var(--accent);
+    color: var(--preto);
+    border-color: var(--accent);
+}
+.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+
+main {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+}
+
+/* =========== HERO =========== */
+.hero {
+    padding: 5rem 0 4rem;
+    text-align: center;
+    max-width: 820px;
+    margin: 0 auto;
+}
+
+.hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+}
+
+.hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: clamp(2.5rem, 6vw, 4.75rem);
+    line-height: 1.02;
+    letter-spacing: -0.015em;
+    margin-bottom: 1.5rem;
+}
+
+.hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+}
+
+.hero p {
+    font-size: clamp(1rem, 1.5vw, 1.15rem);
+    color: var(--branco-suave);
+    max-width: 620px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.55;
+}
+
+.hero-cta {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.hero-cta .btn {
+    padding: 0.9rem 1.8rem;
+    font-size: 0.82rem;
+}
+
+/* =========== FEATURES =========== */
+.section-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: clamp(1.5rem, 3vw, 2.1rem);
+    text-align: center;
+    margin-bottom: 2.5rem;
+    margin-top: 4rem;
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1px;
+    background: var(--cinza-linha);
+    border: 1px solid var(--cinza-linha);
+    margin: 0 auto;
+}
+
+.feature {
+    background: var(--preto-card);
+    padding: 2rem 1.5rem;
+    transition: background 150ms;
+}
+.feature:hover { background: var(--preto-card-2); }
+
+.feature-icon {
+    font-family: 'Anton', sans-serif;
+    font-size: 2rem;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    display: inline-block;
+}
+
+.feature h3 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    margin-bottom: 0.5rem;
+    color: var(--branco);
+}
+
+.feature p {
+    font-size: 0.92rem;
+    color: var(--cinza-claro);
+    line-height: 1.55;
+}
+
+/* =========== HOW IT WORKS =========== */
+.steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.step {
+    padding: 1.5rem;
+    background: var(--preto-card);
+    border-left: 2px solid var(--accent);
+}
+
+.step-num {
+    font-family: 'Anton', sans-serif;
+    font-size: 2.25rem;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 0.6rem;
+}
+
+.step h4 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 0.4rem;
+}
+
+.step p {
+    font-size: 0.88rem;
+    color: var(--cinza-claro);
+    line-height: 1.5;
+}
+
+/* =========== CTA FINAL =========== */
+.cta-final {
+    text-align: center;
+    padding: 5rem 1rem 3rem;
+    margin-top: 3rem;
+}
+
+.cta-final h2 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    margin-bottom: 1rem;
+    line-height: 1.1;
+}
+
+.cta-final p {
+    color: var(--cinza-claro);
+    margin-bottom: 2rem;
+    max-width: 540px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.clubs-pill-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.club-pill {
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--cinza-linha);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--cinza-claro);
+}
+
+/* =========== FOOTER =========== */
+footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--cinza-linha);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cinza-medio);
+}
+
+@media (max-width: 600px) {
+    nav { padding: 1rem; }
+    .hero { padding: 3rem 0 2.5rem; }
+}
+</style>
+</head>
+<body>
+    <nav>
+        <div class="brand">Arquibancada</div>
+        <div class="nav-links">
+            <a href="/login" class="btn btn-ghost">Entrar</a>
+            <a href="/signup" class="btn btn-primary">Criar conta</a>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="hero-eyebrow">Diário do Torcedor</div>
+            <h1>Cada jogo que você <em>foi</em>,<br>vira memória pra sempre.</h1>
+            <p>
+                Registre os ingressos dos jogos que você assistiu ao vivo, acompanhe seu
+                retrospecto contra cada rival, veja quanto já gastou com futebol e tenha
+                um museu pessoal do seu clube.
+            </p>
+            <div class="hero-cta">
+                <a href="/signup" class="btn btn-primary">Começar grátis</a>
+                <a href="/login" class="btn btn-ghost">Já tenho conta</a>
+            </div>
+        </section>
+
+        <h2 class="section-title">O que você ganha</h2>
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">01</div>
+                <h3>Catálogo automático</h3>
+                <p>Os jogos do seu time já estão prontos. Você só marca em qual você foi, quanto pagou e em que setor.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">02</div>
+                <h3>Retrospecto pessoal</h3>
+                <p>Seu aproveitamento, vitórias, derrotas contra cada rival — só dos jogos que você realmente presenciou.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">03</div>
+                <h3>Quanto você gastou</h3>
+                <p>Total gasto, ticket médio, ingresso mais caro. Curiosidade pura ou remorso depois do boleto — você decide.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">04</div>
+                <h3>Museu dos ingressos</h3>
+                <p>Cada jogo vira um ingresso no estilo clássico, com data, setor, placar e resultado. Pra lembrar com orgulho (ou revolta).</p>
+            </div>
+        </div>
+
+        <h2 class="section-title">Como funciona</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">1</div>
+                <h4>Cria sua conta</h4>
+                <p>Email, senha e seu time. Leva 20 segundos.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <h4>Marca os jogos</h4>
+                <p>Percorre o catálogo do seu clube e marca cada jogo que você foi ao estádio.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <h4>Acompanha as estatísticas</h4>
+                <p>Seu retrospecto atualiza em tempo real. Compare anos, rivais, setores.</p>
+            </div>
+        </div>
+
+        <section class="cta-final">
+            <h2>Seu time já está no catálogo.</h2>
+            <p>Times com catálogo pronto:</p>
+            <div class="clubs-pill-row" id="clubsRow">
+                <span class="club-pill">Corinthians</span>
+                <span class="club-pill">Palmeiras</span>
+                <span class="club-pill">São Paulo</span>
+                <span class="club-pill">Santos</span>
+                <span class="club-pill">Flamengo</span>
+                <span class="club-pill">Vasco</span>
+                <span class="club-pill">Fluminense</span>
+                <span class="club-pill">Botafogo</span>
+                <span class="club-pill">Grêmio</span>
+                <span class="club-pill">Internacional</span>
+                <span class="club-pill">Atlético-MG</span>
+                <span class="club-pill">Cruzeiro</span>
+            </div>
+            <div style="margin-top:2.5rem;">
+                <a href="/signup" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 0.85rem;">Criar minha conta</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        Arquibancada · Diário do Torcedor
+    </footer>
+
+<script>
+    // Se já tá logado, manda pro /app
+    if (localStorage.getItem('fiel_token')) {
+        window.location.replace('/app');
+    }
+</script>
+</body>
+</html>

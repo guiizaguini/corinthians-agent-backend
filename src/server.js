@@ -81,8 +81,8 @@ app.get('/museu', (req, res) => {
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.get('/', (req, res) => {
-    // Raiz: manda pro login (novo fluxo SaaS)
-    res.redirect('/login');
+    // Raiz: landing page white-label
+    res.sendFile(path.join(__dirname, '..', 'public', 'landing.html'));
 });
 
 app.get('/api', (req, res) => {
