@@ -15,7 +15,8 @@
       "Bash(cp /tmp/check_scores.mjs ./check_scores_tmp.mjs)",
       "Bash(railway run *)",
       "Bash(node --check src/routes/admin.js)",
-      "Bash(node --check src/middleware/authUser.js)"
+      "Bash(node --check src/middleware/authUser.js)",
+      "Bash(node --check src/routes/notes.js)"
     ]
   }
 }

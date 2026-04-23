@@ -120,6 +120,25 @@ CREATE INDEX IF NOT EXISTS idx_attendances_user ON attendances(user_id);
 CREATE INDEX IF NOT EXISTS idx_attendances_game ON attendances(game_id);
 
 -- =============================================================
+-- NOTES (histórias do torcedor sobre jogos)
+-- Pode ser standalone ou tied a uma attendance
+-- =============================================================
+CREATE TABLE IF NOT EXISTS notes (
+    id              SERIAL PRIMARY KEY,
+    user_id         INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    attendance_id   INTEGER REFERENCES attendances(id) ON DELETE SET NULL,
+    game_id         INTEGER REFERENCES games(id) ON DELETE SET NULL,
+    title           VARCHAR(140),
+    body            TEXT NOT NULL,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_notes_user ON notes(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_notes_attendance ON notes(attendance_id);
+CREATE INDEX IF NOT EXISTS idx_notes_game ON notes(game_id);
+
+-- =============================================================
 -- Triggers de updated_at (reutiliza função existente se já houver)
 -- =============================================================
 CREATE OR REPLACE FUNCTION trg_touch_updated_at() RETURNS TRIGGER AS $$
@@ -139,4 +158,8 @@ CREATE TRIGGER tr_games_touch BEFORE UPDATE ON games
 
 DROP TRIGGER IF EXISTS tr_attendances_touch ON attendances;
 CREATE TRIGGER tr_attendances_touch BEFORE UPDATE ON attendances
+    FOR EACH ROW EXECUTE FUNCTION trg_touch_updated_at();
+
+DROP TRIGGER IF EXISTS tr_notes_touch ON notes;
+CREATE TRIGGER tr_notes_touch BEFORE UPDATE ON notes
     FOR EACH ROW EXECUTE FUNCTION trg_touch_updated_at();

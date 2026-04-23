@@ -178,6 +178,217 @@ main {
     font-size: 1.05rem;
 }
 
+/* ================= Carteirinha (compacta + cheia) ================= */
+.carteirinha-bar {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1rem 1.25rem;
+    background: var(--paper-soft);
+    border: 1px solid var(--ink-line);
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.03);
+    position: relative;
+    overflow: hidden;
+}
+.carteirinha-bar::before {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 0;
+    width: 6px;
+    background: var(--accent);
+}
+.cart-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.cart-info { flex: 1; min-width: 0; }
+.cart-num {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 0.65rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-bottom: 0.15rem;
+}
+.cart-name {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    line-height: 1.1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.cart-club {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 0.85rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+.cart-actions {
+    display: flex;
+    gap: 0.4rem;
+    flex-shrink: 0;
+}
+.cart-actions .material-icons { font-size: 1rem; }
+@media (max-width: 600px) {
+    .cart-actions { flex-direction: column; }
+    .cart-actions .btn-ghost { padding: 0.4rem 0.6rem; font-size: 0.66rem; }
+}
+
+/* ================= Carteirinha cheia (modal) ================= */
+.cartao {
+    width: 340px;
+    max-width: 100%;
+    aspect-ratio: 0.62;  /* proporção tipo carteira */
+    background: linear-gradient(155deg, var(--paper-soft) 0%, var(--paper-deep) 100%);
+    border: 1px solid var(--ink-line);
+    box-shadow: 0 16px 40px rgba(20,15,10,0.32);
+    display: flex;
+    flex-direction: column;
+    color: var(--ink);
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+}
+.cartao::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        repeating-linear-gradient(0deg, transparent 0 2px, rgba(107,82,40,0.04) 2px 3px),
+        radial-gradient(ellipse at 15% 15%, rgba(139,107,40,0.12) 0%, transparent 50%);
+    pointer-events: none;
+    mix-blend-mode: multiply;
+}
+.cartao-header {
+    background: var(--accent);
+    color: var(--paper);
+    padding: 0.85rem 1.1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+}
+.cartao-body {
+    padding: 1.5rem 1.25rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.6rem;
+    position: relative;
+    z-index: 1;
+}
+.cartao-avatar {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 2.4rem;
+    text-transform: uppercase;
+    margin: 0.5rem auto 0.75rem;
+    border: 4px solid var(--accent);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+}
+.cartao-nome {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.4rem;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    margin-top: 0.4rem;
+}
+.cartao-clube {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 0.78rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding-bottom: 0.5rem;
+    border-bottom: 1.5px solid var(--ink-line);
+    width: 100%;
+    margin-bottom: 0.75rem;
+}
+.cartao-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    width: 100%;
+    margin-top: auto;
+    padding-top: 0.75rem;
+}
+.cartao-stat {
+    text-align: center;
+}
+.cartao-stat-num {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.55rem;
+    line-height: 1;
+    color: var(--ink);
+}
+.cartao-stat-label {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 0.55rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-top: 0.25rem;
+}
+.cartao-footer {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0.7rem 1.1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+}
+
 /* ================= KPIs ================= */
 .kpis {
     display: grid;
@@ -932,6 +1143,120 @@ main {
 @media (max-width: 540px) {
     .games-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
 }
+
+/* ================= Notas ================= */
+.notas-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+.notas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+.nota-card {
+    background: var(--paper-soft);
+    border: 1px solid var(--ink-line);
+    padding: 1.1rem 1.2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.03);
+    position: relative;
+    min-height: 180px;
+}
+.nota-card .nota-game {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding-bottom: 0.55rem;
+    border-bottom: 1px dashed var(--ink-line);
+}
+.nota-card .nota-title {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--ink);
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+.nota-card .nota-body {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 400;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+    line-height: 1.45;
+    flex: 1;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+}
+.nota-card .nota-footer {
+    margin-top: auto;
+    padding-top: 0.75rem;
+    border-top: 1px dashed var(--ink-line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+}
+.nota-actions {
+    display: flex;
+    gap: 0.3rem;
+}
+.nota-action {
+    background: transparent;
+    border: 1.5px solid var(--ink-line);
+    color: var(--ink-mute);
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 150ms;
+}
+.nota-action:hover { border-color: var(--accent); color: var(--accent); }
+.nota-action.del:hover { border-color: var(--vinho); color: var(--vinho); }
+.nota-action .material-icons { font-size: 0.95rem; }
+
+/* Share preview canvas */
+.share-canvas-wrap {
+    background: #000;
+    padding: 1rem;
+    text-align: center;
+    margin: 1rem 0;
+    overflow: auto;
+}
+.share-canvas-wrap canvas {
+    max-width: 100%;
+    height: auto;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+/* Modal larger pra editor de nota */
+.modal.modal-lg { max-width: 600px; }
+.modal textarea.note-body {
+    min-height: 180px;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 400;
+    line-height: 1.5;
+    font-size: 1rem;
+}
 </style>
 </head>
 <body>
@@ -969,6 +1294,92 @@ main {
             <div class="modal-actions">
                 <button class="btn-secondary" id="pCancel">Cancelar</button>
                 <button class="btn-primary" id="pSave">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Carteirinha cheia -->
+    <div class="modal-overlay" id="cartModal">
+        <div class="modal" style="max-width:380px;background:transparent;border:none;box-shadow:none;padding:0;">
+            <div class="cartao" id="cartao">
+                <div class="cartao-header">
+                    <span>Arquibancada · Sócio Oficial</span>
+                </div>
+                <div class="cartao-body">
+                    <div class="cartao-avatar" id="cartaoAvatar">—</div>
+                    <div class="cartao-nome" id="cartaoNome">—</div>
+                    <div class="cartao-clube" id="cartaoClube">—</div>
+                    <div class="cartao-stats">
+                        <div class="cartao-stat">
+                            <div class="cartao-stat-num" id="cartaoJogos">0</div>
+                            <div class="cartao-stat-label">Jogos</div>
+                        </div>
+                        <div class="cartao-stat">
+                            <div class="cartao-stat-num" id="cartaoVit">0</div>
+                            <div class="cartao-stat-label">Vitórias</div>
+                        </div>
+                        <div class="cartao-stat">
+                            <div class="cartao-stat-num" id="cartaoApr">—</div>
+                            <div class="cartao-stat-label">Aprov.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="cartao-footer">
+                    <span id="cartaoNum">Nº 0001</span>
+                    <span id="cartaoDesde">Sócio desde —</span>
+                </div>
+            </div>
+            <div class="modal-actions" style="margin-top:1.25rem;">
+                <button class="btn-secondary" id="cartFechar">Fechar</button>
+                <button class="btn-primary" id="cartCompartilhar">
+                    <span class="material-icons" style="font-size:1.05rem;vertical-align:middle;margin-right:0.3rem;">share</span>
+                    Compartilhar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Editor de nota -->
+    <div class="modal-overlay" id="notaModal">
+        <div class="modal modal-lg">
+            <h2 id="notaModalTitle">Nova nota</h2>
+            <div class="meta">Conte a história desse jogo. Pode ser longo.</div>
+
+            <label>Atrelar a um ingresso (opcional)</label>
+            <select id="notaAttendance">
+                <option value="">— Sem ingresso —</option>
+            </select>
+
+            <label>Título</label>
+            <input type="text" id="notaTitle" maxlength="140" placeholder="Ex: A noite que eu chorei na arquibancada">
+
+            <label>História</label>
+            <textarea class="note-body" id="notaBody" rows="8" placeholder="Comece pelo cheiro do estádio, ou pelo gol que mudou tudo. Escreve solto."></textarea>
+
+            <div class="error" id="notaErr" style="margin-top:1rem;padding:0.7rem 0.9rem;background:rgba(107,31,42,0.1);border-left:3px solid var(--vinho);color:var(--vinho);font-size:0.85rem;display:none;"></div>
+
+            <div class="modal-actions">
+                <button class="btn-secondary" id="notaCancel">Cancelar</button>
+                <button class="btn-danger" id="notaDelete" style="display:none;">Remover</button>
+                <button class="btn-primary" id="notaSave">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Share image -->
+    <div class="modal-overlay" id="shareModal">
+        <div class="modal modal-lg">
+            <h2>Pronto pra postar.</h2>
+            <div class="meta">Imagem 1080x1080 — formato post Instagram.</div>
+            <div class="share-canvas-wrap">
+                <canvas id="shareCanvas" width="1080" height="1080"></canvas>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="shareClose">Fechar</button>
+                <button class="btn-primary" id="shareDownload">
+                    <span class="material-icons" style="font-size:1.05rem;vertical-align:middle;margin-right:0.3rem;">download</span>
+                    Baixar imagem
+                </button>
             </div>
         </div>
     </div>
@@ -1046,6 +1457,22 @@ main {
             <p id="heroSubtitle">Marque os jogos que você foi, registre valor pago e setor.</p>
         </section>
 
+        <!-- Carteirinha de sócio (compacta) -->
+        <section class="carteirinha-bar" id="cartBar" style="display:none;">
+            <div class="cart-avatar" id="cartAvatar">—</div>
+            <div class="cart-info">
+                <div class="cart-num" id="cartNum">SÓCIO Nº —</div>
+                <div class="cart-name" id="cartName">—</div>
+                <div class="cart-club" id="cartClub">—</div>
+            </div>
+            <div class="cart-actions">
+                <button class="btn-ghost" id="btnVerCart">
+                    <span class="material-icons">badge</span>
+                    Carteirinha
+                </button>
+            </div>
+        </section>
+
         <section class="kpis" id="kpis" style="display:none;">
             <div class="kpi"><div class="kpi-label">Jogos</div><div class="kpi-value" id="kpiJogos">0</div></div>
             <div class="kpi"><div class="kpi-label">Vitórias</div><div class="kpi-value v" id="kpiV">0</div></div>
@@ -1058,6 +1485,7 @@ main {
         <div class="tabs">
             <button class="tab active" data-tab="catalog">Catálogo de jogos</button>
             <button class="tab" data-tab="mine">Meus ingressos</button>
+            <button class="tab" data-tab="notas">Notas</button>
         </div>
 
         <div class="tab-panel active" id="tabCatalog">
@@ -1071,6 +1499,19 @@ main {
 
         <div class="tab-panel" id="tabMine">
             <div id="mineList" class="galeria"><div class="loading">Carregando seus ingressos...</div></div>
+        </div>
+
+        <div class="tab-panel" id="tabNotas">
+            <div class="notas-toolbar">
+                <div style="font-family:'Oswald',sans-serif;font-weight:500;font-size:0.85rem;color:var(--ink-mute);letter-spacing:0.04em;">
+                    Conte a história de cada jogo. Compartilhe como card de Instagram.
+                </div>
+                <button class="btn-primary" id="btnNovaNota" style="padding:0.7rem 1.2rem;font-family:'Oswald',sans-serif;font-weight:600;font-size:0.78rem;letter-spacing:0.18em;text-transform:uppercase;border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;display:inline-flex;align-items:center;gap:0.4rem;">
+                    <span class="material-icons" style="font-size:1.05rem;">edit_note</span>
+                    Nova nota
+                </button>
+            </div>
+            <div id="notasList" class="notas-grid"><div class="loading">Carregando notas...</div></div>
         </div>
     </main>
 
@@ -1274,6 +1715,7 @@ main {
             renderCatalog();
             renderMine();
             populateYears();
+            renderCarteirinha();
         } catch (err) {
             console.error(err);
             document.getElementById('catalogList').innerHTML =
@@ -1811,14 +2253,7 @@ main {
     // ===============================================
     // Tabs + filtros
     // ===============================================
-    document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-            tab.classList.add('active');
-            document.getElementById(tab.dataset.tab === 'catalog' ? 'tabCatalog' : 'tabMine').classList.add('active');
-        });
-    });
+    // (tab handler unificado mais embaixo, junto com o de Notas)
 
     document.getElementById('search').addEventListener('input', renderCatalog);
     document.getElementById('filterYear').addEventListener('change', renderCatalog);
@@ -1881,6 +2316,480 @@ main {
             btn.disabled = false;
             btn.textContent = 'Salvar';
         }
+    });
+
+    // ===============================================
+    // CARTEIRINHA DE SÓCIO
+    // ===============================================
+    function getInitials(name, email) {
+        const src = (name || email || 'TC').trim();
+        const parts = src.split(/\s+/);
+        if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        return src.substring(0, 2).toUpperCase();
+    }
+
+    function fmtMonthYear(iso) {
+        if (!iso) return '—';
+        const d = new Date(iso);
+        const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+        return `${meses[d.getMonth()]}/${d.getFullYear()}`;
+    }
+
+    function renderCarteirinha() {
+        const initials = getInitials(user.display_name, user.email);
+        const num = `Nº ${String(user.id).padStart(4, '0')}`;
+        const name = (user.display_name || user.email?.split('@')[0] || 'Torcedor').toUpperCase();
+        const club = user.club_name ? user.club_name.toUpperCase() : 'SEM CLUBE';
+
+        document.getElementById('cartBar').style.display = '';
+        document.getElementById('cartAvatar').textContent = initials;
+        document.getElementById('cartNum').textContent = `SÓCIO ${num}`;
+        document.getElementById('cartName').textContent = name;
+        document.getElementById('cartClub').textContent = club;
+
+        // Modal cheia
+        document.getElementById('cartaoAvatar').textContent = initials;
+        document.getElementById('cartaoNome').textContent = name;
+        document.getElementById('cartaoClube').textContent = club;
+        document.getElementById('cartaoNum').textContent = num;
+        document.getElementById('cartaoDesde').textContent = `Sócio desde ${fmtMonthYear(user.created_at || new Date().toISOString())}`;
+
+        const g = snapshot?.geral || {};
+        document.getElementById('cartaoJogos').textContent = g.jogos || 0;
+        document.getElementById('cartaoVit').textContent = g.vitorias || 0;
+        document.getElementById('cartaoApr').textContent = g.aproveitamento_pct != null ? `${g.aproveitamento_pct}%` : '—';
+    }
+
+    document.getElementById('btnVerCart').addEventListener('click', () => {
+        renderCarteirinha();
+        document.getElementById('cartModal').classList.add('show');
+    });
+    document.getElementById('cartFechar').addEventListener('click', () => {
+        document.getElementById('cartModal').classList.remove('show');
+    });
+    document.getElementById('cartModal').addEventListener('click', (e) => {
+        if (e.target.id === 'cartModal') document.getElementById('cartModal').classList.remove('show');
+    });
+    document.getElementById('cartCompartilhar').addEventListener('click', () => {
+        renderShareCarteirinha();
+        document.getElementById('shareModal').classList.add('show');
+    });
+
+    // ===============================================
+    // CANVAS — geração de imagem 1080x1080 pra IG
+    // ===============================================
+    function getAccentColor() {
+        return getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#6b1f2a';
+    }
+
+    function drawTexturedBackground(ctx) {
+        // Background paper
+        ctx.fillStyle = '#ece4d2';
+        ctx.fillRect(0, 0, 1080, 1080);
+        // Sutil grain
+        ctx.fillStyle = 'rgba(107,82,40,0.03)';
+        for (let y = 0; y < 1080; y += 3) {
+            ctx.fillRect(0, y, 1080, 1);
+        }
+    }
+
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+        const words = text.split(/\s+/);
+        let line = '';
+        let cy = y;
+        for (const w of words) {
+            const test = line + w + ' ';
+            if (ctx.measureText(test).width > maxWidth && line) {
+                ctx.fillText(line.trim(), x, cy);
+                line = w + ' ';
+                cy += lineHeight;
+            } else {
+                line = test;
+            }
+        }
+        if (line) ctx.fillText(line.trim(), x, cy);
+        return cy;
+    }
+
+    function renderShareCarteirinha() {
+        const canvas = document.getElementById('shareCanvas');
+        const ctx = canvas.getContext('2d');
+        const accent = getAccentColor();
+        drawTexturedBackground(ctx);
+
+        // Header
+        ctx.fillStyle = accent;
+        ctx.fillRect(60, 60, 960, 100);
+        ctx.fillStyle = '#ece4d2';
+        ctx.font = 'bold 32px Oswald, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('ARQUIBANCADA · SÓCIO OFICIAL', 540, 110);
+
+        // Card body bg
+        ctx.fillStyle = '#f3ecda';
+        ctx.fillRect(60, 160, 960, 720);
+        ctx.strokeStyle = '#c9bfa8';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(60, 160, 960, 720);
+
+        // Avatar circle
+        const initials = getInitials(user.display_name, user.email);
+        ctx.fillStyle = '#141414';
+        ctx.beginPath();
+        ctx.arc(540, 320, 110, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = accent;
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        ctx.arc(540, 320, 110, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = '#f5f0e4';
+        ctx.font = 'bold 90px Oswald, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(initials, 540, 325);
+
+        // Name
+        ctx.fillStyle = '#141414';
+        ctx.font = 'bold 56px Oswald, sans-serif';
+        const name = (user.display_name || user.email?.split('@')[0] || 'Torcedor').toUpperCase();
+        ctx.fillText(name, 540, 510);
+
+        // Club
+        ctx.fillStyle = accent;
+        ctx.font = '500 32px Oswald, sans-serif';
+        ctx.fillText((user.club_name || 'SEM CLUBE').toUpperCase(), 540, 565);
+
+        // Stats row
+        const g = snapshot?.geral || {};
+        const stats = [
+            { num: g.jogos || 0, label: 'JOGOS' },
+            { num: g.vitorias || 0, label: 'VITÓRIAS' },
+            { num: g.aproveitamento_pct != null ? `${g.aproveitamento_pct}%` : '—', label: 'APROV.' },
+        ];
+
+        ctx.strokeStyle = '#c9bfa8';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(140, 640);
+        ctx.lineTo(940, 640);
+        ctx.stroke();
+
+        const colWidth = 800 / stats.length;
+        stats.forEach((s, i) => {
+            const cx = 140 + colWidth * i + colWidth / 2;
+            ctx.fillStyle = '#141414';
+            ctx.font = 'bold 80px Oswald, sans-serif';
+            ctx.fillText(s.num, cx, 720);
+            ctx.fillStyle = '#6a625a';
+            ctx.font = '500 22px Oswald, sans-serif';
+            ctx.fillText(s.label, cx, 790);
+        });
+
+        // Bottom strip (footer card)
+        ctx.fillStyle = '#141414';
+        ctx.fillRect(60, 880, 960, 100);
+        ctx.fillStyle = '#ece4d2';
+        ctx.font = '500 28px Oswald, sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(`Nº ${String(user.id).padStart(4, '0')}`, 100, 930);
+        ctx.textAlign = 'right';
+        ctx.fillText(`SÓCIO DESDE ${fmtMonthYear(user.created_at || new Date().toISOString()).toUpperCase()}`, 980, 930);
+
+        // Bottom brand
+        ctx.fillStyle = '#6a625a';
+        ctx.font = '500 24px Oswald, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('arquibancada · diário do torcedor', 540, 1040);
+    }
+
+    function renderShareNota(note) {
+        const canvas = document.getElementById('shareCanvas');
+        const ctx = canvas.getContext('2d');
+        const accent = getAccentColor();
+        drawTexturedBackground(ctx);
+
+        // Header strip
+        ctx.fillStyle = accent;
+        ctx.fillRect(0, 0, 1080, 90);
+        ctx.fillStyle = '#ece4d2';
+        ctx.font = 'bold 26px Oswald, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('ARQUIBANCADA · DIÁRIO DO TORCEDOR', 540, 47);
+
+        // Game info section (if has game)
+        let topY = 130;
+        if (note.game_id && note.time_casa) {
+            // Date + competition
+            const d = new Date(note.game_data);
+            const dateStr = d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }).toUpperCase();
+            const comp = (note.campeonato || 'AMISTOSO').toUpperCase() + (note.fase ? ' · ' + note.fase.toUpperCase() : '');
+
+            ctx.fillStyle = '#6a625a';
+            ctx.font = '500 22px Oswald, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(comp, 540, topY);
+            topY += 30;
+            ctx.fillStyle = '#3a3531';
+            ctx.font = '400 24px Oswald, sans-serif';
+            ctx.fillText(dateStr, 540, topY);
+            topY += 50;
+
+            // Teams + score
+            ctx.fillStyle = '#141414';
+            ctx.font = 'bold 52px Oswald, sans-serif';
+            const hasScore = note.gols_casa != null && note.gols_visitante != null;
+            const placar = hasScore ? `${note.gols_casa}  ×  ${note.gols_visitante}` : '×';
+            ctx.fillText(placar, 540, topY + 30);
+            topY += 80;
+            ctx.font = '500 32px Oswald, sans-serif';
+            ctx.fillStyle = '#3a3531';
+            ctx.fillText(`${note.time_casa.toUpperCase()}  vs  ${note.time_visitante.toUpperCase()}`, 540, topY);
+            topY += 50;
+
+            // Stadium
+            if (note.estadio) {
+                ctx.fillStyle = '#6a625a';
+                ctx.font = '400 20px Oswald, sans-serif';
+                ctx.fillText(note.estadio.toUpperCase(), 540, topY);
+                topY += 40;
+            }
+
+            // Divider
+            ctx.strokeStyle = '#c9bfa8';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(140, topY + 10);
+            ctx.lineTo(940, topY + 10);
+            ctx.stroke();
+            topY += 60;
+        } else {
+            topY = 180;
+        }
+
+        // Title
+        if (note.title) {
+            ctx.fillStyle = accent;
+            ctx.font = 'bold 38px Oswald, sans-serif';
+            ctx.textAlign = 'center';
+            const titleEnd = wrapText(ctx, note.title.toUpperCase(), 540, topY, 880, 48);
+            topY = titleEnd + 50;
+        }
+
+        // Body
+        ctx.fillStyle = '#141414';
+        ctx.font = '400 28px Oswald, sans-serif';
+        ctx.textAlign = 'center';
+        const bodyTrunc = note.body.length > 600 ? note.body.substring(0, 600) + '...' : note.body;
+        wrapText(ctx, bodyTrunc, 540, topY, 880, 42);
+
+        // Footer
+        const footerY = 1000;
+        ctx.fillStyle = '#6a625a';
+        ctx.font = '500 22px Oswald, sans-serif';
+        ctx.textAlign = 'center';
+        const author = (user.display_name || user.email?.split('@')[0] || 'TORCEDOR').toUpperCase();
+        ctx.fillText(`— ${author}`, 540, footerY);
+        ctx.font = '400 18px Oswald, sans-serif';
+        ctx.fillText('arquibancada.app', 540, footerY + 35);
+    }
+
+    document.getElementById('shareClose').addEventListener('click', () => {
+        document.getElementById('shareModal').classList.remove('show');
+    });
+    document.getElementById('shareModal').addEventListener('click', (e) => {
+        if (e.target.id === 'shareModal') document.getElementById('shareModal').classList.remove('show');
+    });
+
+    document.getElementById('shareDownload').addEventListener('click', () => {
+        const canvas = document.getElementById('shareCanvas');
+        const link = document.createElement('a');
+        link.download = `arquibancada-${Date.now()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
+
+    // ===============================================
+    // NOTAS — CRUD
+    // ===============================================
+    let notas = [];
+    let editingNota = null;
+
+    async function loadNotas() {
+        const container = document.getElementById('notasList');
+        container.innerHTML = '<div class="loading">Carregando notas...</div>';
+        try {
+            const data = await api('/notes');
+            notas = data.notes;
+            renderNotas();
+        } catch (err) {
+            container.innerHTML = `<div class="empty">Erro: ${err.message}</div>`;
+        }
+    }
+
+    function renderNotas() {
+        const container = document.getElementById('notasList');
+        if (!notas.length) {
+            container.innerHTML = `
+                <div class="empty" style="grid-column:1/-1;">
+                    Você ainda não escreveu nenhuma nota.<br><br>
+                    Marque um jogo, conte a história, e compartilhe no Instagram.
+                </div>`;
+            return;
+        }
+        container.innerHTML = notas.map(n => {
+            const gameLabel = n.time_casa
+                ? `${escapeHtml(n.time_casa)} × ${escapeHtml(n.time_visitante)}${n.gols_casa != null ? ` · ${n.gols_casa}-${n.gols_visitante}` : ''}`
+                : 'Nota livre';
+            const created = new Date(n.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+            return `
+                <article class="nota-card" data-id="${n.id}">
+                    <div class="nota-game">${gameLabel}</div>
+                    ${n.title ? `<div class="nota-title">${escapeHtml(n.title)}</div>` : ''}
+                    <div class="nota-body">${escapeHtml(n.body)}</div>
+                    <div class="nota-footer">
+                        <span>${created}</span>
+                        <div class="nota-actions">
+                            <button class="nota-action share" data-share="${n.id}" title="Compartilhar"><span class="material-icons">share</span></button>
+                            <button class="nota-action" data-edit="${n.id}" title="Editar"><span class="material-icons">edit</span></button>
+                            <button class="nota-action del" data-del="${n.id}" title="Remover"><span class="material-icons">delete</span></button>
+                        </div>
+                    </div>
+                </article>
+            `;
+        }).join('');
+
+        container.querySelectorAll('[data-edit]').forEach(b => {
+            b.addEventListener('click', () => openNotaEdit(parseInt(b.dataset.edit)));
+        });
+        container.querySelectorAll('[data-del]').forEach(b => {
+            b.addEventListener('click', async () => {
+                if (!confirm('Remover essa nota?')) return;
+                try {
+                    await api(`/notes/${b.dataset.del}`, { method: 'DELETE' });
+                    await loadNotas();
+                } catch (e) { alert('Erro: ' + e.message); }
+            });
+        });
+        container.querySelectorAll('[data-share]').forEach(b => {
+            b.addEventListener('click', () => {
+                const note = notas.find(x => x.id === parseInt(b.dataset.share));
+                if (note) {
+                    renderShareNota(note);
+                    document.getElementById('shareModal').classList.add('show');
+                }
+            });
+        });
+    }
+
+    function populateAttendanceSelect() {
+        const sel = document.getElementById('notaAttendance');
+        sel.innerHTML = '<option value="">— Sem ingresso —</option>';
+        const mine = (allGames || []).filter(g => g.attendance_id);
+        for (const g of mine) {
+            const d = new Date(g.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+            const opt = document.createElement('option');
+            opt.value = g.attendance_id;
+            opt.textContent = `${d} — ${g.time_casa} × ${g.time_visitante}`;
+            sel.appendChild(opt);
+        }
+    }
+
+    function openNotaNew() {
+        editingNota = null;
+        populateAttendanceSelect();
+        document.getElementById('notaModalTitle').textContent = 'Nova nota';
+        document.getElementById('notaAttendance').value = '';
+        document.getElementById('notaTitle').value = '';
+        document.getElementById('notaBody').value = '';
+        document.getElementById('notaDelete').style.display = 'none';
+        document.getElementById('notaErr').classList.remove('show');
+        document.getElementById('notaModal').classList.add('show');
+    }
+
+    function openNotaEdit(id) {
+        const n = notas.find(x => x.id === id);
+        if (!n) return;
+        editingNota = n;
+        populateAttendanceSelect();
+        document.getElementById('notaModalTitle').textContent = 'Editar nota';
+        document.getElementById('notaAttendance').value = n.attendance_id || '';
+        document.getElementById('notaTitle').value = n.title || '';
+        document.getElementById('notaBody').value = n.body;
+        document.getElementById('notaDelete').style.display = '';
+        document.getElementById('notaErr').classList.remove('show');
+        document.getElementById('notaModal').classList.add('show');
+    }
+
+    document.getElementById('btnNovaNota').addEventListener('click', openNotaNew);
+    document.getElementById('notaCancel').addEventListener('click', () => {
+        document.getElementById('notaModal').classList.remove('show');
+    });
+    document.getElementById('notaModal').addEventListener('click', (e) => {
+        if (e.target.id === 'notaModal') document.getElementById('notaModal').classList.remove('show');
+    });
+
+    document.getElementById('notaDelete').addEventListener('click', async () => {
+        if (!editingNota) return;
+        if (!confirm('Remover essa nota?')) return;
+        try {
+            await api(`/notes/${editingNota.id}`, { method: 'DELETE' });
+            document.getElementById('notaModal').classList.remove('show');
+            await loadNotas();
+        } catch (e) { alert('Erro: ' + e.message); }
+    });
+
+    document.getElementById('notaSave').addEventListener('click', async () => {
+        const errBox = document.getElementById('notaErr');
+        errBox.classList.remove('show');
+        const btn = document.getElementById('notaSave');
+        btn.disabled = true;
+        btn.textContent = 'Salvando...';
+        try {
+            const body = {
+                title: document.getElementById('notaTitle').value.trim() || null,
+                body: document.getElementById('notaBody').value.trim(),
+                attendance_id: document.getElementById('notaAttendance').value
+                    ? parseInt(document.getElementById('notaAttendance').value)
+                    : null,
+            };
+            if (!body.body) {
+                errBox.textContent = 'A história não pode ficar vazia.';
+                errBox.classList.add('show');
+                return;
+            }
+            if (editingNota) {
+                await api(`/notes/${editingNota.id}`, { method: 'PATCH', body: JSON.stringify(body) });
+            } else {
+                await api('/notes', { method: 'POST', body: JSON.stringify(body) });
+            }
+            document.getElementById('notaModal').classList.remove('show');
+            await loadNotas();
+        } catch (e) {
+            errBox.textContent = e.message;
+            errBox.classList.add('show');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Salvar';
+        }
+    });
+
+    // Tabs unificadas
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.dataset.tab;
+            const panelId = target === 'catalog' ? 'tabCatalog'
+                          : target === 'mine' ? 'tabMine'
+                          : 'tabNotas';
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(panelId).classList.add('active');
+            if (target === 'notas') loadNotas();
+        });
     });
 
     loadAll();
