@@ -17,7 +17,9 @@
       "Bash(node --check src/routes/admin.js)",
       "Bash(node --check src/middleware/authUser.js)",
       "Bash(node --check src/routes/notes.js)",
-      "Bash(node --check src/routes/social.js)"
+      "Bash(node --check src/routes/social.js)",
+      "Bash(awk 'NR==204,NR==210; NR==314,NR==320; NR==866,NR==875; NR==900,NR==910; NR==1308,NR==1316; NR==1340,NR==1360; NR==1510,NR==1520; NR==1540,NR==1548; NR==1836,NR==1846' \"/c/Users/guilh/OneDrive/Área de Trabalho/corinthians-agent-backend/public/app.html\")",
+      "Bash(awk 'NR==864,NR==872; NR==898,NR==906; NR==1305,NR==1316; NR==1838,NR==1844' \"/c/Users/guilh/OneDrive/Área de Trabalho/corinthians-agent-backend/public/app.html\")"
     ]
   }
 }

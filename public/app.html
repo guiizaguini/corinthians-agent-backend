@@ -21,6 +21,9 @@
     --ink-mute: #7a7468;
     --line: #2c2a26;
     --line-soft: #1d1b18;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+    --shadow-md: 0 8px 22px rgba(0,0,0,0.45);
+    --shadow-lg: 0 16px 40px rgba(0,0,0,0.55);
     --vinho: #8a3441;
 
     /* Accent dinâmico — sobrescrito por JS conforme clube. Default = vinho. */
@@ -61,6 +64,23 @@
     --ink-line: var(--line);
 }
 
+/* TEMA LIGHT — clubes com identidade clara (Palmeiras, SPFC, Inter, Grêmio, etc) */
+body.light-theme {
+    --bg-base: #f1ede2;
+    --bg-card: #ffffff;
+    --bg-card-2: #f7f3e7;
+    --bg-elevated: #ffffff;
+    --ink: #141414;
+    --ink-soft: #3a3531;
+    --ink-mute: #7a7468;
+    --line: #d8d2c1;
+    --line-soft: #ebe5d4;
+    --shadow-sm: 0 2px 8px rgba(20,15,10,0.08);
+    --shadow-md: 0 8px 22px rgba(20,15,10,0.12);
+    --shadow-lg: 0 16px 40px rgba(20,15,10,0.18);
+    --cinza-medio: #948e83;
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
@@ -71,16 +91,15 @@ body {
     position: relative;
 }
 
-/* Textura sport — gradiente da cor do clube no canto + grain sutil */
+/* Mesh gradient suave — sem pixel grain (parecia velho) */
 body::before {
     content: '';
     position: fixed;
     inset: 0;
     background-image:
-        radial-gradient(ellipse 80% 50% at 80% 0%, var(--accent-soft) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 0% 100%, var(--accent-soft) 0%, transparent 60%),
-        radial-gradient(circle at 1px 1px, rgba(255,255,255,0.025) 1px, transparent 1.5px);
-    background-size: 100% 100%, 100% 100%, 3px 3px;
+        radial-gradient(ellipse 70% 50% at 85% -10%, var(--accent-soft) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 35% at -5% 110%, var(--accent-soft) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 30% at 50% 50%, rgba(255,255,255,0.012) 0%, transparent 70%);
     pointer-events: none;
     z-index: 0;
 }
@@ -101,9 +120,8 @@ header::after {
     content: '';
     position: absolute;
     left: 0; right: 0; bottom: -1px;
-    height: 3px;
+    height: 2px;
     background: var(--accent);
-    box-shadow: 0 0 20px var(--accent-glow);
 }
 
 .brand-wrap { display: flex; flex-direction: column; gap: 0.15rem; }
@@ -159,6 +177,7 @@ header::after {
     text-transform: uppercase;
     cursor: pointer;
     transition: all 150ms;
+    border-radius: 999px;
 }
 .btn-ghost:hover { border-color: var(--ink); color: var(--ink); background: var(--paper-soft); }
 
@@ -175,6 +194,7 @@ header::after {
     align-items: center;
     justify-content: center;
     transition: all 150ms;
+    border-radius: 50%;
 }
 .bell-btn:hover { border-color: var(--accent); color: var(--accent); }
 .bell-btn .material-icons { font-size: 1.15rem; }
@@ -183,7 +203,7 @@ header::after {
     top: -6px;
     right: -6px;
     background: var(--accent);
-    color: var(--paper);
+    color: var(--accent-text);
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
     font-size: 0.65rem;
@@ -259,10 +279,9 @@ main {
         linear-gradient(95deg, var(--accent-soft) 0%, transparent 50%),
         linear-gradient(180deg, var(--bg-card) 0%, var(--bg-card-2) 100%);
     border: 1px solid var(--line);
+    border-radius: 16px;
     margin-bottom: 1.5rem;
-    box-shadow:
-        0 0 30px var(--accent-glow),
-        0 4px 16px rgba(0,0,0,0.4);
+    box-shadow: var(--shadow-md);
     position: relative;
     overflow: hidden;
 }
@@ -273,7 +292,6 @@ main {
     left: 0;
     width: 6px;
     background: var(--accent);
-    box-shadow: 0 0 12px var(--accent-glow);
 }
 .carteirinha-bar::after {
     content: '';
@@ -293,7 +311,7 @@ main {
     height: 56px;
     border-radius: 50%;
     background: var(--accent);
-    color: var(--paper);
+    color: var(--accent-text);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -567,9 +585,11 @@ main {
     gap: 1px;
     background: var(--line);
     border: 1px solid var(--line);
+    border-radius: 16px;
     margin-bottom: 2rem;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    box-shadow: var(--shadow-md);
     position: relative;
+    overflow: hidden;
 }
 .kpis::before {
     content: '';
@@ -577,7 +597,6 @@ main {
     left: 0; right: 0; top: 0;
     height: 3px;
     background: var(--accent);
-    box-shadow: 0 0 12px var(--accent-glow);
     z-index: 1;
 }
 .kpi {
@@ -641,7 +660,6 @@ main {
     color: var(--accent);
     border-bottom-color: var(--accent);
     font-weight: 700;
-    box-shadow: 0 4px 12px var(--accent-glow);
 }
 
 .tab-panel { display: none; }
@@ -659,10 +677,11 @@ main {
     background: var(--paper-soft);
     border: 1.5px solid var(--ink-line);
     color: var(--ink);
-    padding: 0.6rem 0.85rem;
+    padding: 0.6rem 0.95rem;
     font-family: 'Oswald', sans-serif;
     font-size: 0.82rem;
     outline: none;
+    border-radius: 999px;
 }
 .filter-bar input:focus, .filter-bar select:focus { border-color: var(--accent); }
 
@@ -688,14 +707,16 @@ main {
     position: relative;
     background: var(--bg-card);
     border: 1px solid var(--line);
+    border-radius: 14px;
     padding: 1.1rem 1.1rem 1rem;
     cursor: pointer;
-    transition: all 180ms ease;
+    transition: all 200ms ease;
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
     min-height: 200px;
     overflow: hidden;
+    box-shadow: var(--shadow-sm);
 }
 .game-card::before {
     content: '';
@@ -711,7 +732,7 @@ main {
     background: var(--bg-card-2);
     border-color: var(--accent);
     transform: translateY(-3px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 0 1px var(--accent-glow);
+    box-shadow: var(--shadow-md), 0 0 0 1px var(--accent-glow);
 }
 .game-card:hover::before {
     background: var(--accent);
@@ -846,7 +867,7 @@ main {
 .gc-classico {
     padding: 0.22rem 0.55rem;
     background: var(--vinho);
-    color: var(--paper);
+    color: #f5f0e4;
     font-family: 'Oswald', sans-serif;
     font-size: 0.58rem;
     letter-spacing: 0.22em;
@@ -1181,12 +1202,13 @@ main {
 .modal {
     background: var(--paper-soft);
     border: 1px solid var(--ink-line);
+    border-radius: 18px;
     max-width: 500px;
     width: 100%;
     max-height: 90vh;
     overflow-y: auto;
     padding: 2.25rem 1.85rem;
-    box-shadow: 0 24px 60px rgba(20,15,10,0.35);
+    box-shadow: var(--shadow-lg);
 }
 .modal h2 {
     font-family: 'Oswald', sans-serif;
@@ -1224,6 +1246,7 @@ main {
     font-size: 0.95rem;
     outline: none;
     resize: vertical;
+    border-radius: 10px;
 }
 .modal input:focus, .modal select:focus, .modal textarea:focus { border-color: var(--accent); }
 
@@ -1235,7 +1258,7 @@ main {
     margin-top: 0.4rem;
 }
 .status-btn {
-    background: var(--paper);
+    background: var(--paper-soft);
     border: 1.5px solid var(--ink-line);
     color: var(--ink-mute);
     padding: 0.9rem 0.5rem;
@@ -1250,6 +1273,7 @@ main {
     justify-content: center;
     gap: 0.5rem;
     transition: all 150ms ease;
+    border-radius: 12px;
 }
 .status-btn:hover { border-color: var(--ink); color: var(--ink); }
 .status-btn .material-icons { font-size: 1.3rem; }
@@ -1289,7 +1313,7 @@ main {
 .setor-pill.active {
     background: var(--accent);
     border-color: var(--accent);
-    color: var(--paper);
+    color: var(--accent-text);
 }
 .setor-pill.outro {
     border-style: dashed;
@@ -1309,15 +1333,16 @@ main {
 }
 .modal-actions button {
     flex: 1;
-    padding: 0.75rem;
-    font-family: inherit;
+    padding: 0.85rem;
+    font-family: 'Oswald', sans-serif;
     font-size: 0.78rem;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
     font-weight: 700;
     cursor: pointer;
-    border: none;
-    transition: all 120ms;
+    border: 1.5px solid transparent;
+    transition: all 150ms;
+    border-radius: 999px;
 }
 .btn-primary {
     background: var(--ink);
@@ -1336,7 +1361,7 @@ main {
     border: 1.5px solid var(--vinho) !important;
     color: var(--vinho);
 }
-.btn-danger:hover { background: var(--vinho); color: var(--paper); }
+.btn-danger:hover { background: var(--vinho); color: #f5f0e4; }
 
 .loading { text-align: center; padding: 3rem 1rem; color: var(--cinza-claro); font-size: 0.85rem; }
 .empty { text-align: center; padding: 2.5rem 1rem; color: var(--cinza-medio); font-size: 0.9rem; }
@@ -1362,11 +1387,12 @@ main {
 .nota-card {
     background: var(--paper-soft);
     border: 1px solid var(--ink-line);
+    border-radius: 14px;
     padding: 1.1rem 1.2rem 1rem;
     display: flex;
     flex-direction: column;
     gap: 0.7rem;
-    box-shadow: 0 1px 0 rgba(0,0,0,0.03);
+    box-shadow: var(--shadow-sm);
     position: relative;
     min-height: 180px;
 }
@@ -1424,13 +1450,14 @@ main {
     background: transparent;
     border: 1.5px solid var(--ink-line);
     color: var(--ink-mute);
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     transition: all 150ms;
+    border-radius: 50%;
 }
 .nota-action:hover { border-color: var(--accent); color: var(--accent); }
 .nota-action.del:hover { border-color: var(--vinho); color: var(--vinho); }
@@ -1490,7 +1517,7 @@ main {
 }
 .rede-section h3 .badge {
     background: var(--accent);
-    color: var(--paper);
+    color: var(--accent-text);
     padding: 0.1rem 0.5rem;
     font-size: 0.72rem;
     border-radius: 8px;
@@ -1506,11 +1533,13 @@ main {
 .user-card {
     background: var(--bg-card);
     border: 1px solid var(--line);
+    border-radius: 14px;
     padding: 0.9rem 1rem;
     display: flex;
     align-items: flex-start;
     gap: 0.85rem;
     transition: all 150ms;
+    box-shadow: var(--shadow-sm);
 }
 .user-card .user-actions-sm {
     align-self: center;
@@ -1521,7 +1550,7 @@ main {
     height: 42px;
     border-radius: 50%;
     background: var(--accent);
-    color: var(--paper);
+    color: var(--accent-text);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1569,14 +1598,15 @@ main {
     background: transparent;
     border: 1.5px solid var(--line);
     color: var(--ink-soft);
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     transition: all 150ms;
     flex-shrink: 0;
+    border-radius: 50%;
 }
 .user-action:hover { border-color: var(--accent); color: var(--accent); }
 .user-action.accept:hover { border-color: #4ec96d; color: #4ec96d; }
@@ -1720,6 +1750,7 @@ main {
 .feed-item {
     background: var(--bg-card);
     border: 1px solid var(--line);
+    border-radius: 14px;
     padding: 0.95rem 1.1rem;
     display: grid;
     grid-template-columns: 42px 1fr auto;
@@ -1727,6 +1758,7 @@ main {
     align-items: center;
     transition: all 150ms;
     cursor: pointer;
+    box-shadow: var(--shadow-sm);
 }
 .feed-item:hover { border-color: var(--accent); transform: translateY(-1px); }
 .feed-item .feed-text {
@@ -1818,10 +1850,10 @@ main {
 .companion-chip.active {
     background: var(--accent);
     border-color: var(--accent);
-    color: var(--paper);
+    color: var(--accent-text);
     box-shadow: 0 0 14px var(--accent-glow);
 }
-.companion-chip.active .material-icons { color: var(--paper); }
+.companion-chip.active .material-icons { color: var(--accent-text); }
 .companion-chip-name {
     font-family: 'Oswald', sans-serif;
     font-weight: 600;
@@ -2109,11 +2141,6 @@ main {
     </div>
 
     <main>
-        <section class="hero">
-            <h1 id="heroTitle">Seu diário começa aqui</h1>
-            <p id="heroSubtitle">Marque os jogos que você foi, registre valor pago e setor.</p>
-        </section>
-
         <!-- Carteirinha de sócio (compacta) -->
         <section class="carteirinha-bar" id="cartBar" style="display:none;">
             <div class="cart-avatar" id="cartAvatar">—</div>
@@ -2208,21 +2235,94 @@ main {
 <script>
     const MESES_ABREV = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
 
-    // Logos dos clubes (Wikimedia Commons SVGs)
-    const CLUB_LOGOS = {
-        'corinthians':    'https://upload.wikimedia.org/wikipedia/commons/b/b4/Sport_Club_Corinthians_Paulista_brasao.svg',
-        'palmeiras':      'https://upload.wikimedia.org/wikipedia/commons/1/10/Palmeiras_logo.svg',
-        'sao-paulo':      'https://upload.wikimedia.org/wikipedia/commons/6/6f/Brasao_do_Sao_Paulo_Futebol_Clube.svg',
-        'santos':         'https://upload.wikimedia.org/wikipedia/commons/1/10/Santos_logo.svg',
-        'flamengo':       'https://upload.wikimedia.org/wikipedia/commons/2/2e/Flamengo_braz_logo.svg',
-        'vasco':          'https://upload.wikimedia.org/wikipedia/commons/a/ae/CR_Vasco_da_Gama_logo.svg',
-        'fluminense':     'https://upload.wikimedia.org/wikipedia/commons/a/ad/Fluminense_FC_escudo.svg',
-        'botafogo':       'https://upload.wikimedia.org/wikipedia/commons/5/52/Botafogo_de_Futebol_e_Regatas_logo.svg',
-        'gremio':         'https://upload.wikimedia.org/wikipedia/commons/0/0e/Gremio.svg',
-        'internacional':  'https://upload.wikimedia.org/wikipedia/commons/f/f1/Escudo_do_Sport_Club_Internacional.svg',
-        'atletico-mg':    'https://upload.wikimedia.org/wikipedia/commons/5/50/Clube_Atl%C3%A9tico_Mineiro_crest.svg',
-        'cruzeiro':       'https://upload.wikimedia.org/wikipedia/commons/9/90/Cruzeiro_Esporte_Clube_%28logo%29.svg',
+    // Tema (light/dark) por clube. Default = dark (sport vibe).
+    // Clubes com identidade visual mais clara ganham tema light.
+    const CLUB_THEMES = {
+        'corinthians':    'dark',   // preto + dourado
+        'palmeiras':      'light',  // verde sobre branco
+        'sao-paulo':      'light',  // tricolor sobre branco
+        'santos':         'light',  // branco/preto
+        'flamengo':       'dark',   // preto/vermelho
+        'vasco':          'dark',   // preto/branco
+        'fluminense':     'light',  // grená/verde sobre branco
+        'botafogo':       'dark',   // preto/branco
+        'gremio':         'light',  // azul claro/branco
+        'internacional':  'dark',   // vermelho dominante (fica mais punch dark)
+        'atletico-mg':    'dark',   // preto/branco
+        'cruzeiro':       'light',  // azul/branco
     };
+
+    // Logos dos clubes — listas de URLs candidatas. O JS tenta em ordem
+    // até alguma carregar (PNG primeiro, mais confiável que SVG no Wikimedia).
+    function wikimediaPng(svgPath) {
+        // Gera URL de thumbnail PNG do Wikimedia (sempre renderiza com CORS limpo)
+        // input: 'b/b4/Sport_Club_Corinthians_Paulista_brasao.svg'
+        const filename = svgPath.substring(svgPath.lastIndexOf('/') + 1);
+        return `https://upload.wikimedia.org/wikipedia/commons/thumb/${svgPath}/240px-${filename}.png`;
+    }
+    const CLUB_LOGOS = {
+        'corinthians': [
+            wikimediaPng('b/b4/Sport_Club_Corinthians_Paulista_brasao.svg'),
+            'https://commons.wikimedia.org/wiki/Special:FilePath/Sport_Club_Corinthians_Paulista_brasao.svg',
+            'https://upload.wikimedia.org/wikipedia/commons/b/b4/Sport_Club_Corinthians_Paulista_brasao.svg',
+        ],
+        'palmeiras': [
+            wikimediaPng('1/10/Palmeiras_logo.svg'),
+            'https://upload.wikimedia.org/wikipedia/commons/1/10/Palmeiras_logo.svg',
+        ],
+        'sao-paulo': [
+            wikimediaPng('6/6f/Brasao_do_Sao_Paulo_Futebol_Clube.svg'),
+            'https://upload.wikimedia.org/wikipedia/commons/6/6f/Brasao_do_Sao_Paulo_Futebol_Clube.svg',
+        ],
+        'santos': [
+            wikimediaPng('1/10/Santos_logo.svg'),
+            'https://upload.wikimedia.org/wikipedia/commons/1/10/Santos_logo.svg',
+        ],
+        'flamengo': [
+            wikimediaPng('2/2e/Flamengo_braz_logo.svg'),
+            'https://upload.wikimedia.org/wikipedia/commons/2/2e/Flamengo_braz_logo.svg',
+        ],
+        'vasco': [
+            wikimediaPng('a/ae/CR_Vasco_da_Gama_logo.svg'),
+            'https://upload.wikimedia.org/wikipedia/commons/a/ae/CR_Vasco_da_Gama_logo.svg',
+        ],
+        'fluminense': [
+            wikimediaPng('a/ad/Fluminense_FC_escudo.svg'),
+            'https://upload.wikimedia.org/wikipedia/commons/a/ad/Fluminense_FC_escudo.svg',
+        ],
+        'botafogo': [
+            wikimediaPng('5/52/Botafogo_de_Futebol_e_Regatas_logo.svg'),
+            'https://upload.wikimedia.org/wikipedia/commons/5/52/Botafogo_de_Futebol_e_Regatas_logo.svg',
+        ],
+        'gremio': [
+            wikimediaPng('0/0e/Gremio.svg'),
+            'https://upload.wikimedia.org/wikipedia/commons/0/0e/Gremio.svg',
+        ],
+        'internacional': [
+            wikimediaPng('f/f1/Escudo_do_Sport_Club_Internacional.svg'),
+            'https://upload.wikimedia.org/wikipedia/commons/f/f1/Escudo_do_Sport_Club_Internacional.svg',
+        ],
+        'atletico-mg': [
+            wikimediaPng('5/50/Clube_Atl%C3%A9tico_Mineiro_crest.svg'),
+            'https://upload.wikimedia.org/wikipedia/commons/5/50/Clube_Atl%C3%A9tico_Mineiro_crest.svg',
+        ],
+        'cruzeiro': [
+            wikimediaPng('9/90/Cruzeiro_Esporte_Clube_%28logo%29.svg'),
+            'https://upload.wikimedia.org/wikipedia/commons/9/90/Cruzeiro_Esporte_Clube_%28logo%29.svg',
+        ],
+    };
+
+    // Tenta carregar a primeira URL da lista; se falhar, tenta a próxima.
+    function tryLoadLogo(urls, imgEl, fbEl, idx = 0) {
+        if (!urls || idx >= urls.length) {
+            imgEl.style.display = 'none';
+            if (fbEl) fbEl.style.display = '';
+            return;
+        }
+        imgEl.onerror = () => tryLoadLogo(urls, imgEl, fbEl, idx + 1);
+        imgEl.onload = () => { imgEl.style.display = ''; if (fbEl) fbEl.style.display = 'none'; };
+        imgEl.src = urls[idx];
+    }
 
     // Setores conhecidos por estádio. Match é fuzzy (lowercase + sem acento + includes).
     const STADIUM_SECTORS = {
@@ -2289,7 +2389,11 @@ main {
         const root = document.documentElement;
         const badge = document.getElementById('clubBadge');
 
-        // Corinthians: dourado escuro tradicional (combina com fundo papel)
+        // Light vs dark por clube
+        const themeMode = (club && CLUB_THEMES[club.slug]) || 'dark';
+        document.body.classList.toggle('light-theme', themeMode === 'light');
+
+        // Corinthians: dourado escuro tradicional
         if (club && club.slug === 'corinthians') {
             setAccentPalette(root, '#7a6638');
         } else if (club && club.primary_color) {
@@ -2328,13 +2432,18 @@ main {
         let rgb = hexToRgb(baseHex);
         if (!rgb) return;
 
-        // Se a cor primária do clube é clara demais (Santos/Vasco/Botafogo/Atlético-MG
-        // têm branco como cor identitária), usamos o ink preto como accent — senão
-        // sumiria contra o fundo papel.
+        // Se a cor primária do clube é clara demais (Santos/Vasco/Botafogo/Atl-MG têm branco):
+        // - tema dark → accent vira preto sólido pra contrastar com fundo escuro
+        // - tema light → accent vira preto também, faz contraste com fundo claro
+        // De qualquer forma cai pra preto.
         if (relativeLuminance(rgb) > 0.62) {
-            baseHex = '#1a1a1a';
-            rgb = { r: 26, g: 26, b: 26 };
+            baseHex = '#111111';
+            rgb = { r: 17, g: 17, b: 17 };
         }
+
+        // Texto sobre accent: branco se accent escuro, preto se accent claro
+        const accentText = relativeLuminance(rgb) > 0.55 ? '#0d0d0d' : '#f5f0e4';
+        root.style.setProperty('--accent-text', accentText);
 
         // hover = ~25% mais claro (pra cor escura) ou ~15% mais escuro (pra cor já clara)
         const h = relativeLuminance(rgb) < 0.4 ? {
@@ -2434,9 +2543,6 @@ main {
     }
 
     function renderNoClub() {
-        document.getElementById('heroTitle').textContent = 'Escolhe seu time pra começar';
-        document.getElementById('heroSubtitle').textContent =
-            'Sem time selecionado, não tem catálogo de jogos. Clica em "Perfil" no topo pra escolher.';
         document.getElementById('kpis').style.display = 'none';
         document.getElementById('catalogList').innerHTML =
             '<div class="empty">Escolhe seu time no Perfil pra ver o catálogo de jogos.</div>';
@@ -3115,25 +3221,17 @@ main {
         document.getElementById('cartaoNum').textContent = num;
         document.getElementById('cartaoDesde').textContent = `Sócio desde ${fmtMonthYear(user.created_at || new Date().toISOString())}`;
 
-        // Logo do clube com fallback circle-text se imagem falhar
+        // Logo do clube com fallback circle-text se nenhuma URL carregar
         const logoEl = document.getElementById('cartaoLogo');
         const fbEl = document.getElementById('cartaoLogoFb');
-        const logoUrl = CLUB_LOGOS[user.club_slug];
+        const urls = CLUB_LOGOS[user.club_slug];
         const sigla = (user.club_short || (user.club_name || '').substring(0, 3)).toUpperCase();
         fbEl.textContent = sigla;
-        if (logoUrl) {
-            logoEl.onerror = () => { logoEl.style.display = 'none'; fbEl.style.display = ''; };
-            logoEl.onload = () => { logoEl.style.display = ''; fbEl.style.display = 'none'; };
-            // mostra fallback enquanto carrega
-            logoEl.style.display = 'none';
-            fbEl.style.display = '';
-            logoEl.src = logoUrl;
-            if (logoEl.complete && logoEl.naturalWidth) {
-                logoEl.style.display = ''; fbEl.style.display = 'none';
-            }
-        } else {
-            logoEl.style.display = 'none';
-            fbEl.style.display = sigla ? '' : 'none';
+        // mostra fallback enquanto tenta carregar
+        logoEl.style.display = 'none';
+        fbEl.style.display = sigla ? '' : 'none';
+        if (urls && urls.length) {
+            tryLoadLogo(urls, logoEl, fbEl);
         }
 
         const g = snapshot?.geral || {};
@@ -3226,6 +3324,17 @@ main {
             img.onerror = reject;
             img.src = url;
         });
+    }
+
+    // Tenta cada URL da lista até carregar uma com sucesso (pra canvas)
+    async function loadFirstAvailable(urls) {
+        if (!urls || !urls.length) return null;
+        for (const url of urls) {
+            try {
+                return await loadImage(url);
+            } catch (_) { /* tenta próxima */ }
+        }
+        return null;
     }
 
     async function renderShareCarteirinha() {
@@ -3345,19 +3454,17 @@ main {
             statX += Math.max(120, ctx.measureText(numStr).width + 80);
         });
 
-        // Logo do clube (substitui o chip dourado)
-        const logoUrl = CLUB_LOGOS[user.club_slug];
-        if (logoUrl) {
-            try {
-                const logoImg = await loadImage(logoUrl);
-                const targetH = 80;
-                const ratio = logoImg.width / logoImg.height;
-                const dh = targetH;
-                const dw = targetH * ratio;
-                const lx = cx0 + 40;
-                const ly = cy0 + ch - dh - 30;
-                ctx.drawImage(logoImg, lx, ly, dw, dh);
-            } catch (_) { /* CORS bloqueou; sem logo no share */ }
+        // Logo do clube — tenta cada URL da chain até achar uma que carregue
+        const urls = CLUB_LOGOS[user.club_slug];
+        const logoImg = await loadFirstAvailable(urls);
+        if (logoImg) {
+            const targetH = 80;
+            const ratio = logoImg.width / logoImg.height;
+            const dh = targetH;
+            const dw = targetH * ratio;
+            const lx = cx0 + 40;
+            const ly = cy0 + ch - dh - 30;
+            ctx.drawImage(logoImg, lx, ly, dw, dh);
         }
 
         // Footer info (direita)
