@@ -6,7 +6,7 @@
 <title>Arquibancada — Diário do Torcedor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,700&family=Archivo:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,800;1,6..72,400;1,6..72,600;1,6..72,800&family=Space+Mono:wght@400;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
 :root {
@@ -34,10 +34,19 @@ html { scroll-behavior: smooth; }
 body {
     background: var(--paper);
     color: var(--ink);
-    font-family: 'Archivo', sans-serif;
+    font-family: 'Manrope', 'Archivo', sans-serif;
     font-size: 16px;
     line-height: 1.5;
     overflow-x: hidden;
+}
+
+/* Itálico de personalidade — Instrument Serif só nas ênfases dos headlines.
+   Tem só 1 peso (400) mas a fonte tem caráter editorial forte. */
+h1 em, h2 em, h3 em,
+.hero p em, .how-head aside em, .final-cta .lede em {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-weight: 400;
 }
 
 /* Textura de papel (grain) */
@@ -75,7 +84,7 @@ nav {
     color: var(--ink);
 }
 .brand-mark {
-    font-family: 'DM Mono', monospace;
+    font-family: 'Space Mono', monospace;
     font-size: 0.7rem;
     letter-spacing: 0.3em;
     text-transform: uppercase;
@@ -131,7 +140,7 @@ nav {
 }
 
 .hero-eyebrow {
-    font-family: 'DM Mono', monospace;
+    font-family: 'Space Mono', monospace;
     font-size: 0.8rem;
     letter-spacing: 0.28em;
     text-transform: uppercase;
@@ -149,8 +158,8 @@ nav {
 }
 
 .hero h1 {
-    font-family: 'Fraunces', serif;
-    font-weight: 900;
+    font-family: 'Newsreader', serif;
+    font-weight: 800;
     font-size: clamp(2.75rem, 6.5vw, 5.5rem);
     line-height: 0.98;
     letter-spacing: -0.025em;
@@ -178,7 +187,7 @@ nav {
 }
 
 .hero p.lede {
-    font-family: 'Fraunces', serif;
+    font-family: 'Newsreader', serif;
     font-style: italic;
     font-size: clamp(1.05rem, 1.6vw, 1.3rem);
     color: var(--ink-soft);
@@ -196,7 +205,7 @@ nav {
     display: flex;
     gap: 2rem;
     flex-wrap: wrap;
-    font-family: 'DM Mono', monospace;
+    font-family: 'Space Mono', monospace;
     font-size: 0.72rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
@@ -253,7 +262,7 @@ nav {
 }
 .mock-ticket .mt-dia { font-family: 'Anton', sans-serif; font-size: 2.75rem; line-height: 1; }
 .mock-ticket .mt-mes { font-family: 'Anton', sans-serif; font-size: 1.05rem; letter-spacing: 0.2em; }
-.mock-ticket .mt-ano { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.22em; opacity: 0.75; }
+.mock-ticket .mt-ano { font-family: 'Space Mono', monospace; font-size: 0.62rem; letter-spacing: 0.22em; opacity: 0.75; }
 .mock-ticket .mt-selo {
     font-family: 'Anton', sans-serif;
     font-size: 1rem;
@@ -294,7 +303,7 @@ nav {
     z-index: 1;
 }
 .mt-comp {
-    font-family: 'DM Mono', monospace;
+    font-family: 'Space Mono', monospace;
     font-size: 0.58rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -324,7 +333,7 @@ nav {
     align-self: flex-start;
 }
 .mt-footer {
-    font-family: 'DM Mono', monospace;
+    font-family: 'Space Mono', monospace;
     font-size: 0.58rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
@@ -394,8 +403,8 @@ nav {
     gap: 0.25rem;
 }
 .stat-value {
-    font-family: 'Fraunces', serif;
-    font-weight: 900;
+    font-family: 'Newsreader', serif;
+    font-weight: 800;
     font-size: clamp(2.5rem, 4.5vw, 3.75rem);
     line-height: 1;
     color: var(--ink);
@@ -407,7 +416,7 @@ nav {
     color: var(--vinho);
 }
 .stat-label {
-    font-family: 'DM Mono', monospace;
+    font-family: 'Space Mono', monospace;
     font-size: 0.72rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -430,7 +439,7 @@ nav {
     flex-wrap: wrap;
 }
 .section-eyebrow {
-    font-family: 'DM Mono', monospace;
+    font-family: 'Space Mono', monospace;
     font-size: 0.78rem;
     letter-spacing: 0.28em;
     text-transform: uppercase;
@@ -447,8 +456,8 @@ nav {
     background: var(--vinho);
 }
 .how h2 {
-    font-family: 'Fraunces', serif;
-    font-weight: 900;
+    font-family: 'Newsreader', serif;
+    font-weight: 800;
     font-size: clamp(2rem, 4.5vw, 3.5rem);
     line-height: 1.05;
     letter-spacing: -0.02em;
@@ -456,7 +465,7 @@ nav {
 }
 .how h2 em { font-style: italic; color: var(--vinho); font-weight: 700; }
 .how-head aside {
-    font-family: 'Fraunces', serif;
+    font-family: 'Newsreader', serif;
     font-style: italic;
     font-size: 1.05rem;
     color: var(--ink-mute);
@@ -482,8 +491,8 @@ nav {
 }
 
 .step-num {
-    font-family: 'Fraunces', serif;
-    font-weight: 900;
+    font-family: 'Newsreader', serif;
+    font-weight: 800;
     font-style: italic;
     font-size: 7rem;
     line-height: 0.8;
@@ -506,8 +515,8 @@ nav {
 }
 
 .step-item h3 {
-    font-family: 'Fraunces', serif;
-    font-weight: 900;
+    font-family: 'Newsreader', serif;
+    font-weight: 800;
     font-size: 1.5rem;
     line-height: 1.1;
     letter-spacing: -0.01em;
@@ -562,8 +571,8 @@ nav {
     .dark-section-inner { grid-template-columns: 0.9fr 1.1fr; align-items: center; }
 }
 .dark-section h2 {
-    font-family: 'Fraunces', serif;
-    font-weight: 900;
+    font-family: 'Newsreader', serif;
+    font-weight: 800;
     font-size: clamp(2rem, 4vw, 3.25rem);
     line-height: 1.05;
     letter-spacing: -0.02em;
@@ -572,7 +581,7 @@ nav {
 }
 .dark-section h2 em { font-style: italic; color: #c8a760; font-weight: 700; }
 .dark-section p {
-    font-family: 'Fraunces', serif;
+    font-family: 'Newsreader', serif;
     font-style: italic;
     font-size: 1.05rem;
     color: #b8aea0;
@@ -617,7 +626,7 @@ nav {
 .mini-ticket.d { border-left-color: var(--vinho); }
 .mini-ticket.e { border-left-color: #5c5a54; }
 .mini-ticket .mini-date {
-    font-family: 'DM Mono', monospace;
+    font-family: 'Space Mono', monospace;
     font-size: 0.65rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -653,14 +662,14 @@ nav {
     text-align: center;
 }
 .clubs h2 {
-    font-family: 'Fraunces', serif;
-    font-weight: 900;
+    font-family: 'Newsreader', serif;
+    font-weight: 800;
     font-size: clamp(1.75rem, 3.5vw, 2.75rem);
     line-height: 1.1;
     margin-bottom: 0.5rem;
 }
 .clubs p {
-    font-family: 'Fraunces', serif;
+    font-family: 'Newsreader', serif;
     font-style: italic;
     color: var(--ink-mute);
     margin-bottom: 2.5rem;
@@ -719,8 +728,8 @@ nav {
     border-top: 1px solid var(--ink-line);
 }
 .final-cta h2 {
-    font-family: 'Fraunces', serif;
-    font-weight: 900;
+    font-family: 'Newsreader', serif;
+    font-weight: 800;
     font-size: clamp(2rem, 5vw, 3.75rem);
     line-height: 1.02;
     letter-spacing: -0.025em;
@@ -728,7 +737,7 @@ nav {
 }
 .final-cta h2 em { font-style: italic; color: var(--vinho); font-weight: 700; }
 .final-cta .lede {
-    font-family: 'Fraunces', serif;
+    font-family: 'Newsreader', serif;
     font-style: italic;
     font-size: 1.15rem;
     color: var(--ink-soft);
@@ -745,7 +754,7 @@ footer {
     border-top: 1px solid var(--ink-line);
     padding: 2rem;
     text-align: center;
-    font-family: 'DM Mono', monospace;
+    font-family: 'Space Mono', monospace;
     font-size: 0.72rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
