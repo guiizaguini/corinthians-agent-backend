@@ -249,4 +249,108 @@ router.get('/compare/:user_id', async (req, res, next) => {
     } catch (err) { next(err); }
 });
 
+// =============================================================
+// GET /social/feed — atividades recentes dos amigos
+// Mostra os ingressos mais recentes que os amigos registraram
+// =============================================================
+router.get('/feed', async (req, res, next) => {
+    try {
+        const limit = Math.min(parseInt(req.query.limit) || 30, 100);
+        const { rows } = await query(
+            `SELECT
+                a.id AS attendance_id, a.created_at, a.setor, a.status,
+                u.id AS user_id, u.username, u.display_name,
+                c.name AS club_name, c.short_name AS club_short, c.primary_color,
+                g.id AS game_id, g.data, g.time_casa, g.time_visitante,
+                g.gols_casa, g.gols_visitante, g.resultado, g.campeonato, g.estadio
+             FROM attendances a
+             JOIN users u ON u.id = a.user_id
+             LEFT JOIN clubs c ON c.id = u.club_id
+             JOIN games g ON g.id = a.game_id
+             WHERE a.user_id IN (
+                SELECT CASE WHEN requester_id = $1 THEN recipient_id ELSE requester_id END
+                FROM friendships
+                WHERE status = 'ACCEPTED' AND (requester_id = $1 OR recipient_id = $1)
+             )
+             AND a.status = 'PRESENTE'
+             ORDER BY a.created_at DESC
+             LIMIT $2`,
+            [req.user.id, limit]
+        );
+        res.json({ count: rows.length, feed: rows });
+    } catch (err) { next(err); }
+});
+
+// =============================================================
+// GET /social/users/:user_id/attendances — coleção do amigo
+// Requer amizade ACEITA
+// =============================================================
+router.get('/users/:user_id/attendances', async (req, res, next) => {
+    try {
+        const otherId = parseInt(req.params.user_id);
+
+        const { rows: f } = await query(
+            `SELECT 1 FROM friendships
+             WHERE status = 'ACCEPTED'
+               AND ((requester_id = $1 AND recipient_id = $2)
+                 OR (requester_id = $2 AND recipient_id = $1))`,
+            [req.user.id, otherId]
+        );
+        if (!f.length && otherId !== req.user.id) {
+            return res.status(403).json({ error: 'not_friends' });
+        }
+
+        const { rows: userRows } = await query(
+            `SELECT u.id, u.username, u.display_name, u.created_at,
+                    c.id AS club_id, c.slug AS club_slug, c.name AS club_name,
+                    c.short_name AS club_short, c.primary_color, c.secondary_color
+             FROM users u LEFT JOIN clubs c ON c.id = u.club_id
+             WHERE u.id = $1`,
+            [otherId]
+        );
+        if (!userRows.length) return res.status(404).json({ error: 'user_not_found' });
+
+        const { rows: games } = await query(
+            `SELECT
+                a.id AS attendance_id, a.status AS status_presenca,
+                a.setor, a.assento, a.valor_pago, a.observacoes,
+                g.id, g.data, g.dia_semana, g.time_casa, g.time_visitante,
+                g.mando, g.campeonato, g.genero, g.estadio,
+                g.gols_casa, g.gols_visitante, g.resultado,
+                g.foi_classico, g.teve_penal, g.fase, g.titulo_conquistado,
+                g.autores_gols, g.gols_texto, g.publico_total
+             FROM attendances a
+             JOIN games g ON g.id = a.game_id
+             WHERE a.user_id = $1
+             ORDER BY g.data DESC`,
+            [otherId]
+        );
+
+        // Stats agregados (mesma fórmula do compare)
+        const { rows: stats } = await query(
+            `SELECT
+                COUNT(*) FILTER (WHERE a.status='PRESENTE' AND g.resultado IS NOT NULL)::int AS jogos,
+                SUM(CASE WHEN a.status='PRESENTE' AND g.resultado='V' THEN 1 ELSE 0 END)::int AS vitorias,
+                SUM(CASE WHEN a.status='PRESENTE' AND g.resultado='E' THEN 1 ELSE 0 END)::int AS empates,
+                SUM(CASE WHEN a.status='PRESENTE' AND g.resultado='D' THEN 1 ELSE 0 END)::int AS derrotas,
+                ROUND(
+                    (SUM(CASE WHEN a.status='PRESENTE' AND g.resultado='V' THEN 3 ELSE 0 END)
+                     + SUM(CASE WHEN a.status='PRESENTE' AND g.resultado='E' THEN 1 ELSE 0 END))::numeric
+                    / NULLIF(COUNT(*) FILTER (WHERE a.status='PRESENTE' AND g.resultado IS NOT NULL)*3, 0) * 100,
+                    2
+                ) AS aproveitamento_pct
+             FROM attendances a JOIN games g ON g.id = a.game_id
+             WHERE a.user_id = $1`,
+            [otherId]
+        );
+
+        res.json({
+            user: userRows[0],
+            stats: stats[0],
+            count: games.length,
+            games,
+        });
+    } catch (err) { next(err); }
+});
+
 export default router;

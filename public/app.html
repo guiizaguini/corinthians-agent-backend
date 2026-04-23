@@ -332,23 +332,16 @@ main {
         radial-gradient(ellipse at 30% 100%, rgba(255,255,255,0.08) 0%, transparent 40%);
     pointer-events: none;
 }
-/* "Chip" decorativo */
-.cartao::after {
-    content: '';
+/* Logo do clube — substitui o chip de cartão de crédito */
+.cartao-logo {
     position: absolute;
-    bottom: 1.1rem;
+    bottom: 1rem;
     left: 1.3rem;
-    width: 38px;
-    height: 28px;
-    background:
-        linear-gradient(135deg, #d4b86a 0%, #8a6e30 100%);
-    border-radius: 4px;
-    box-shadow:
-        inset 0 0 0 1px rgba(0,0,0,0.3),
-        inset 0 1px 0 rgba(255,255,255,0.3);
-    background-image:
-        linear-gradient(135deg, #d4b86a 0%, #8a6e30 100%),
-        linear-gradient(0deg, transparent 33%, rgba(0,0,0,0.4) 33%, rgba(0,0,0,0.4) 66%, transparent 66%);
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    z-index: 2;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.45));
 }
 
 .cartao-header {
@@ -1441,9 +1434,12 @@ main {
     border: 1px solid var(--line);
     padding: 0.9rem 1rem;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 0.85rem;
     transition: all 150ms;
+}
+.user-card .user-actions-sm {
+    align-self: center;
 }
 .user-card:hover { border-color: var(--accent); }
 .user-avatar-sm {
@@ -1468,19 +1464,25 @@ main {
     font-size: 0.95rem;
     color: var(--ink);
     line-height: 1.2;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
     text-transform: uppercase;
     letter-spacing: 0.02em;
+    word-break: break-word;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 .user-meta-sm {
     font-family: 'SN Pro','Oswald',sans-serif;
     font-size: 0.78rem;
     color: var(--ink-mute);
+    line-height: 1.3;
+    word-break: break-word;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    margin-top: 0.15rem;
 }
 .user-meta-sm .at { color: var(--accent); font-weight: 600; }
 .user-actions-sm {
@@ -1633,51 +1635,132 @@ main {
     letter-spacing: 0.04em;
 }
 
-/* Companions no modal de attendance */
+/* Feed de atividades dos amigos */
+.feed-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+.feed-item {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    padding: 0.95rem 1.1rem;
+    display: grid;
+    grid-template-columns: 42px 1fr auto;
+    gap: 0.85rem;
+    align-items: center;
+    transition: all 150ms;
+    cursor: pointer;
+}
+.feed-item:hover { border-color: var(--accent); transform: translateY(-1px); }
+.feed-item .feed-text {
+    font-family: 'SN Pro','Oswald',sans-serif;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+    line-height: 1.4;
+}
+.feed-item .feed-text strong {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+.feed-item .feed-text .feed-game {
+    color: var(--accent);
+    font-weight: 600;
+}
+.feed-item .feed-time {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    text-align: right;
+    white-space: nowrap;
+}
+.feed-result {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    padding: 0.15rem 0.45rem;
+    letter-spacing: 0.1em;
+    margin-left: 0.4rem;
+    display: inline-block;
+}
+.feed-result.v { background: var(--accent-soft); color: var(--accent); }
+.feed-result.e { background: rgba(255,255,255,0.06); color: var(--ink-mute); }
+.feed-result.d { background: rgba(92,31,42,0.4); color: #c07086; }
+
+/* Companions no modal de attendance — chips redondos */
 .companions-picker {
     margin-top: 0.4rem;
-    padding: 0.85rem;
-    background: var(--bg-base);
-    border: 1.5px solid var(--line);
-    max-height: 180px;
-    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0;
+    background: transparent;
+    border: none;
+    max-height: none;
 }
 .companions-picker .empty-friends {
     font-family: 'SN Pro','Oswald',sans-serif;
     color: var(--ink-mute);
     font-size: 0.85rem;
+    padding: 0.85rem;
+    background: var(--bg-base);
+    border: 1.5px dashed var(--line);
+    border-radius: 12px;
+    width: 100%;
     text-align: center;
-    padding: 0.5rem;
+    font-style: normal;
 }
-.companion-row {
-    display: flex;
+.companion-chip {
+    display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
-    padding: 0.4rem 0.2rem;
+    gap: 0.45rem;
+    padding: 0.5rem 1rem 0.5rem 0.8rem;
+    background: var(--bg-card);
+    border: 1.5px solid var(--line);
+    border-radius: 999px;
     cursor: pointer;
+    transition: all 150ms ease;
     user-select: none;
+    color: var(--ink-soft);
 }
-.companion-row:hover { color: var(--accent); }
-.companion-row input { accent-color: var(--accent); }
-.companion-row .companion-name {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 500;
-    font-size: 0.9rem;
+.companion-chip:hover {
+    border-color: var(--accent);
     color: var(--ink);
+    transform: translateY(-1px);
 }
-.companion-row .companion-handle {
-    font-family: 'SN Pro','Oswald',sans-serif;
+.companion-chip .material-icons {
+    font-size: 1.2rem;
     color: var(--ink-mute);
-    font-size: 0.78rem;
-    margin-left: auto;
+    transition: color 150ms;
+}
+.companion-chip.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--paper);
+    box-shadow: 0 0 14px var(--accent-glow);
+}
+.companion-chip.active .material-icons { color: var(--paper); }
+.companion-chip-name {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .companions-summary {
-    margin-top: 0.5rem;
+    margin-top: 0.6rem;
     font-family: 'Oswald', sans-serif;
-    font-size: 0.75rem;
+    font-weight: 600;
+    font-size: 0.72rem;
     color: var(--accent);
-    letter-spacing: 0.05em;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
 }
 .modal textarea.note-body {
@@ -1738,6 +1821,7 @@ main {
     <div class="modal-overlay" id="cartModal">
         <div class="modal" style="max-width:520px;background:transparent;border:none;box-shadow:none;padding:0;">
             <div class="cartao" id="cartao">
+                <img class="cartao-logo" id="cartaoLogo" alt="" style="display:none;">
                 <div class="cartao-header">
                     <strong>Arquibancada</strong>
                     <span>Sócio Oficial</span>
@@ -2004,6 +2088,22 @@ main {
 <script>
     const MESES_ABREV = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
 
+    // Logos dos clubes (Wikimedia Commons SVGs)
+    const CLUB_LOGOS = {
+        'corinthians':    'https://upload.wikimedia.org/wikipedia/commons/b/b4/Sport_Club_Corinthians_Paulista_brasao.svg',
+        'palmeiras':      'https://upload.wikimedia.org/wikipedia/commons/1/10/Palmeiras_logo.svg',
+        'sao-paulo':      'https://upload.wikimedia.org/wikipedia/commons/6/6f/Brasao_do_Sao_Paulo_Futebol_Clube.svg',
+        'santos':         'https://upload.wikimedia.org/wikipedia/commons/1/10/Santos_logo.svg',
+        'flamengo':       'https://upload.wikimedia.org/wikipedia/commons/2/2e/Flamengo_braz_logo.svg',
+        'vasco':          'https://upload.wikimedia.org/wikipedia/commons/a/ae/CR_Vasco_da_Gama_logo.svg',
+        'fluminense':     'https://upload.wikimedia.org/wikipedia/commons/a/ad/Fluminense_FC_escudo.svg',
+        'botafogo':       'https://upload.wikimedia.org/wikipedia/commons/5/52/Botafogo_de_Futebol_e_Regatas_logo.svg',
+        'gremio':         'https://upload.wikimedia.org/wikipedia/commons/0/0e/Gremio.svg',
+        'internacional':  'https://upload.wikimedia.org/wikipedia/commons/f/f1/Escudo_do_Sport_Club_Internacional.svg',
+        'atletico-mg':    'https://upload.wikimedia.org/wikipedia/commons/5/50/Clube_Atl%C3%A9tico_Mineiro_crest.svg',
+        'cruzeiro':       'https://upload.wikimedia.org/wikipedia/commons/9/90/Cruzeiro_Esporte_Clube_%28logo%29.svg',
+    };
+
     // Setores conhecidos por estádio. Match é fuzzy (lowercase + sem acento + includes).
     const STADIUM_SECTORS = {
         'neo quimica arena': ['Norte', 'Sul', 'Leste Inferior', 'Leste Superior', 'Oeste Inferior', 'Oeste Superior'],
@@ -2134,7 +2234,8 @@ main {
         };
         root.style.setProperty('--accent', baseHex);
         root.style.setProperty('--accent-hover', `rgb(${h.r},${h.g},${h.b})`);
-        root.style.setProperty('--accent-soft', `rgba(${rgb.r},${rgb.g},${rgb.b},0.15)`);
+        root.style.setProperty('--accent-soft', `rgba(${rgb.r},${rgb.g},${rgb.b},0.18)`);
+        root.style.setProperty('--accent-glow', `rgba(${rgb.r},${rgb.g},${rgb.b},0.35)`);
         root.style.setProperty('--accent-dark', `rgb(${d.r},${d.g},${d.b})`);
     }
 
@@ -2703,31 +2804,37 @@ main {
         }
         const currentIds = new Set(currentCompanions.map(c => c.user_id));
         container.innerHTML = friends.map(f => {
-            const checked = currentIds.has(f.user_id) ? 'checked' : '';
+            const isActive = currentIds.has(f.user_id);
+            const icon = isActive ? 'check_circle' : 'radio_button_unchecked';
+            const cls = isActive ? 'companion-chip active' : 'companion-chip';
             return `
-                <label class="companion-row">
-                    <input type="checkbox" value="${f.user_id}" ${checked}>
-                    <span class="companion-name">${escapeHtml(f.display_name || f.username || '—')}</span>
-                    <span class="companion-handle">${f.username ? '@' + escapeHtml(f.username) : ''}</span>
-                </label>
+                <button type="button" class="${cls}" data-uid="${f.user_id}">
+                    <span class="material-icons">${icon}</span>
+                    <span class="companion-chip-name">${escapeHtml(f.display_name || f.username || '—')}</span>
+                </button>
             `;
         }).join('');
-        container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-            cb.addEventListener('change', updateCompanionsSummary);
+        container.querySelectorAll('.companion-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                chip.classList.toggle('active');
+                const icon = chip.querySelector('.material-icons');
+                icon.textContent = chip.classList.contains('active') ? 'check_circle' : 'radio_button_unchecked';
+                updateCompanionsSummary();
+            });
         });
         updateCompanionsSummary();
     }
 
     function updateCompanionsSummary() {
-        const checked = document.querySelectorAll('#fCompanions input[type="checkbox"]:checked');
+        const active = document.querySelectorAll('#fCompanions .companion-chip.active');
         const sum = document.getElementById('fCompanionsSummary');
-        if (!checked.length) { sum.textContent = ''; return; }
-        sum.textContent = `Foi com ${checked.length} ${checked.length === 1 ? 'amigo' : 'amigos'}`;
+        if (!active.length) { sum.textContent = ''; return; }
+        sum.textContent = `Foi com ${active.length} ${active.length === 1 ? 'amigo' : 'amigos'}`;
     }
 
     function getSelectedCompanions() {
-        return Array.from(document.querySelectorAll('#fCompanions input[type="checkbox"]:checked'))
-            .map(cb => parseInt(cb.value));
+        return Array.from(document.querySelectorAll('#fCompanions .companion-chip.active'))
+            .map(c => parseInt(c.dataset.uid));
     }
 
     function closeModal() {
@@ -2887,6 +2994,16 @@ main {
         document.getElementById('cartaoNum').textContent = num;
         document.getElementById('cartaoDesde').textContent = `Sócio desde ${fmtMonthYear(user.created_at || new Date().toISOString())}`;
 
+        // Logo do clube no cartão
+        const logoEl = document.getElementById('cartaoLogo');
+        const logoUrl = CLUB_LOGOS[user.club_slug];
+        if (logoUrl) {
+            logoEl.src = logoUrl;
+            logoEl.style.display = '';
+        } else {
+            logoEl.style.display = 'none';
+        }
+
         const g = snapshot?.geral || {};
         document.getElementById('cartaoJogos').textContent = g.jogos || 0;
         document.getElementById('cartaoVit').textContent = g.vitorias || 0;
@@ -2903,9 +3020,9 @@ main {
     document.getElementById('cartModal').addEventListener('click', (e) => {
         if (e.target.id === 'cartModal') document.getElementById('cartModal').classList.remove('show');
     });
-    document.getElementById('cartCompartilhar').addEventListener('click', () => {
-        renderShareCarteirinha();
+    document.getElementById('cartCompartilhar').addEventListener('click', async () => {
         document.getElementById('shareModal').classList.add('show');
+        await renderShareCarteirinha();
     });
 
     // ===============================================
@@ -2944,7 +3061,17 @@ main {
         return cy;
     }
 
-    function renderShareCarteirinha() {
+    function loadImage(url) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = url;
+        });
+    }
+
+    async function renderShareCarteirinha() {
         const canvas = document.getElementById('shareCanvas');
         const ctx = canvas.getContext('2d');
         const accent = getAccentColor();
@@ -3061,21 +3188,20 @@ main {
             statX += Math.max(120, ctx.measureText(numStr).width + 80);
         });
 
-        // Chip dourado (parte de baixo esquerda)
-        const chipX = cx0 + 40, chipY = cy0 + ch - 70;
-        const chipGrd = ctx.createLinearGradient(chipX, chipY, chipX + 60, chipY + 42);
-        chipGrd.addColorStop(0, '#d4b86a');
-        chipGrd.addColorStop(1, '#8a6e30');
-        ctx.fillStyle = chipGrd;
-        roundRect(ctx, chipX, chipY, 60, 42, 6);
-        ctx.fill();
-        // chip linhas
-        ctx.strokeStyle = 'rgba(0,0,0,0.4)';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.moveTo(chipX + 8, chipY + 14); ctx.lineTo(chipX + 52, chipY + 14);
-        ctx.moveTo(chipX + 8, chipY + 28); ctx.lineTo(chipX + 52, chipY + 28);
-        ctx.stroke();
+        // Logo do clube (substitui o chip dourado)
+        const logoUrl = CLUB_LOGOS[user.club_slug];
+        if (logoUrl) {
+            try {
+                const logoImg = await loadImage(logoUrl);
+                const targetH = 80;
+                const ratio = logoImg.width / logoImg.height;
+                const dh = targetH;
+                const dw = targetH * ratio;
+                const lx = cx0 + 40;
+                const ly = cy0 + ch - dh - 30;
+                ctx.drawImage(logoImg, lx, ly, dw, dh);
+            } catch (_) { /* CORS bloqueou; sem logo no share */ }
+        }
 
         // Footer info (direita)
         ctx.textAlign = 'right';
