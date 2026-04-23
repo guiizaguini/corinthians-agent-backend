@@ -343,6 +343,30 @@ main {
     z-index: 2;
     filter: drop-shadow(0 2px 6px rgba(0,0,0,0.45));
 }
+.cartao-logo-fb {
+    position: absolute;
+    bottom: 1rem;
+    left: 1.3rem;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.45);
+    border: 2px solid rgba(245,240,228,0.85);
+    color: #f5f0e4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    z-index: 2;
+    text-align: center;
+    line-height: 1;
+    padding: 0.4rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.45);
+    letter-spacing: 0.05em;
+}
 
 .cartao-header {
     display: flex;
@@ -1822,6 +1846,7 @@ main {
         <div class="modal" style="max-width:520px;background:transparent;border:none;box-shadow:none;padding:0;">
             <div class="cartao" id="cartao">
                 <img class="cartao-logo" id="cartaoLogo" alt="" style="display:none;">
+                <div class="cartao-logo-fb" id="cartaoLogoFb" style="display:none;"></div>
                 <div class="cartao-header">
                     <strong>Arquibancada</strong>
                     <span>Sócio Oficial</span>
@@ -1904,6 +1929,23 @@ main {
                     <span class="material-icons" style="font-size:1.05rem;vertical-align:middle;margin-right:0.3rem;">download</span>
                     Baixar imagem
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Coleção de ingressos do amigo -->
+    <div class="modal-overlay" id="friendCollectionModal">
+        <div class="modal modal-xl" style="max-width:95vw;max-height:90vh;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:0.4rem;">
+                <div>
+                    <h2 id="friendCollectionTitle">—</h2>
+                    <div class="meta" id="friendCollectionMeta">—</div>
+                </div>
+                <div id="friendCollectionStats" style="display:flex;gap:1.2rem;"></div>
+            </div>
+            <div id="friendCollectionContent" class="galeria" style="margin-top:1rem;"><div class="loading">Carregando coleção...</div></div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="friendCollectionClose">Fechar</button>
             </div>
         </div>
     </div>
@@ -2065,9 +2107,14 @@ main {
                 <div class="user-list" id="outgoingList"></div>
             </div>
 
-            <div class="rede-section">
+<div class="rede-section">
                 <h3>Meus amigos <span id="friendsCount" style="color:var(--ink-mute);font-weight:400;font-size:0.85em;">(0)</span></h3>
                 <div class="user-list" id="friendsList"><div class="loading">Carregando...</div></div>
+            </div>
+
+            <div class="rede-section">
+                <h3>Atividade dos amigos</h3>
+                <div class="feed-list" id="feedList"><div class="loading">Carregando feed...</div></div>
             </div>
         </div>
 
@@ -2994,14 +3041,25 @@ main {
         document.getElementById('cartaoNum').textContent = num;
         document.getElementById('cartaoDesde').textContent = `Sócio desde ${fmtMonthYear(user.created_at || new Date().toISOString())}`;
 
-        // Logo do clube no cartão
+        // Logo do clube com fallback circle-text se imagem falhar
         const logoEl = document.getElementById('cartaoLogo');
+        const fbEl = document.getElementById('cartaoLogoFb');
         const logoUrl = CLUB_LOGOS[user.club_slug];
+        const sigla = (user.club_short || (user.club_name || '').substring(0, 3)).toUpperCase();
+        fbEl.textContent = sigla;
         if (logoUrl) {
+            logoEl.onerror = () => { logoEl.style.display = 'none'; fbEl.style.display = ''; };
+            logoEl.onload = () => { logoEl.style.display = ''; fbEl.style.display = 'none'; };
+            // mostra fallback enquanto carrega
+            logoEl.style.display = 'none';
+            fbEl.style.display = '';
             logoEl.src = logoUrl;
-            logoEl.style.display = '';
+            if (logoEl.complete && logoEl.naturalWidth) {
+                logoEl.style.display = ''; fbEl.style.display = 'none';
+            }
         } else {
             logoEl.style.display = 'none';
+            fbEl.style.display = sigla ? '' : 'none';
         }
 
         const g = snapshot?.geral || {};
@@ -3554,6 +3612,7 @@ main {
         let actions = '';
         if (mode === 'friend') {
             actions = `
+                <button class="user-action" title="Ver coleção" data-collection="${u.user_id}"><span class="material-icons">collections_bookmark</span></button>
                 <button class="user-action" title="Comparar" data-compare="${u.user_id}"><span class="material-icons">compare_arrows</span></button>
                 <button class="user-action del" title="Remover" data-unfriend="${u.friendship_id}"><span class="material-icons">person_remove</span></button>
             `;
@@ -3597,6 +3656,9 @@ main {
         container.querySelectorAll('[data-compare]').forEach(b => {
             b.addEventListener('click', () => openCompare(parseInt(b.dataset.compare)));
         });
+        container.querySelectorAll('[data-collection]').forEach(b => {
+            b.addEventListener('click', () => openFriendCollection(parseInt(b.dataset.collection)));
+        });
         container.querySelectorAll('[data-unfriend]').forEach(b => {
             b.addEventListener('click', async () => {
                 if (!confirm('Remover amizade?')) return;
@@ -3639,10 +3701,110 @@ main {
         });
     }
 
+    async function loadFeed() {
+        const list = document.getElementById('feedList');
+        try {
+            const { feed } = await api('/social/feed?limit=30');
+            if (!feed.length) {
+                list.innerHTML = '<div class="empty">Nenhuma atividade ainda. Quando seus amigos marcarem jogos, aparece aqui.</div>';
+                return;
+            }
+            list.innerHTML = feed.map(item => {
+                const initials = avatarInitials(item.display_name || item.username);
+                const handle = item.display_name || item.username || 'Amigo';
+                const dt = new Date(item.created_at);
+                const now = Date.now();
+                const diffH = (now - dt.getTime()) / 36e5;
+                const when = diffH < 1 ? 'agora há pouco'
+                           : diffH < 24 ? `${Math.floor(diffH)}h atrás`
+                           : diffH < 168 ? `${Math.floor(diffH/24)}d atrás`
+                           : dt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+                const placar = (item.gols_casa != null) ? `${item.gols_casa} × ${item.gols_visitante}` : '';
+                const resCls = item.resultado === 'V' ? 'v' : item.resultado === 'D' ? 'd' : item.resultado === 'E' ? 'e' : '';
+                const resTag = item.resultado ? `<span class="feed-result ${resCls}">${item.resultado}</span>` : '';
+                return `
+                    <div class="feed-item" data-friend-id="${item.user_id}">
+                        <div class="user-avatar-sm">${initials}</div>
+                        <div class="feed-text">
+                            <strong>${escapeHtml(handle)}</strong> marcou presença em
+                            <span class="feed-game">${escapeHtml(item.time_casa)} × ${escapeHtml(item.time_visitante)}</span>
+                            ${placar ? '· ' + placar : ''}
+                            ${resTag}
+                        </div>
+                        <div class="feed-time">${when}</div>
+                    </div>
+                `;
+            }).join('');
+            list.querySelectorAll('.feed-item').forEach(el => {
+                el.addEventListener('click', () => openFriendCollection(parseInt(el.dataset.friendId)));
+            });
+        } catch (err) {
+            list.innerHTML = `<div class="empty">Erro: ${err.message}</div>`;
+        }
+    }
+
+    async function openFriendCollection(userId) {
+        const modal = document.getElementById('friendCollectionModal');
+        modal.classList.add('show');
+        document.getElementById('friendCollectionTitle').textContent = 'Carregando...';
+        document.getElementById('friendCollectionMeta').textContent = '';
+        document.getElementById('friendCollectionStats').innerHTML = '';
+        document.getElementById('friendCollectionContent').innerHTML = '<div class="loading">Carregando coleção...</div>';
+        try {
+            const data = await api(`/social/users/${userId}/attendances`);
+            const u = data.user;
+            const s = data.stats;
+            document.getElementById('friendCollectionTitle').textContent = (u.display_name || u.username || 'Amigo').toUpperCase();
+            const handle = u.username ? `@${u.username}` : '';
+            document.getElementById('friendCollectionMeta').textContent =
+                `${handle}${u.club_name ? ' · ' + u.club_name.toUpperCase() : ''} · ${data.count} ingressos`;
+
+            // Stats inline
+            const statsEl = document.getElementById('friendCollectionStats');
+            statsEl.innerHTML = `
+                <div style="text-align:center;">
+                    <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:1.4rem;color:var(--accent);">${s.jogos || 0}</div>
+                    <div style="font-family:'Oswald',sans-serif;font-size:0.6rem;letter-spacing:0.18em;color:var(--ink-mute);text-transform:uppercase;">Jogos</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:1.4rem;color:var(--ink);">${s.vitorias || 0}V · ${s.empates || 0}E · ${s.derrotas || 0}D</div>
+                    <div style="font-family:'Oswald',sans-serif;font-size:0.6rem;letter-spacing:0.18em;color:var(--ink-mute);text-transform:uppercase;">Resultado</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:1.4rem;color:var(--ink);">${s.aproveitamento_pct != null ? s.aproveitamento_pct + '%' : '—'}</div>
+                    <div style="font-family:'Oswald',sans-serif;font-size:0.6rem;letter-spacing:0.18em;color:var(--ink-mute);text-transform:uppercase;">Aproveit.</div>
+                </div>
+            `;
+
+            const container = document.getElementById('friendCollectionContent');
+            if (!data.games.length) {
+                container.innerHTML = '<div class="empty">Esse amigo ainda não registrou nenhum ingresso.</div>';
+                return;
+            }
+            container.innerHTML = data.games.map(renderIngresso).join('');
+            // Read-only: ingressos não tem ações de editar/remover
+            container.querySelectorAll('.ingresso-actions').forEach(el => el.remove());
+            container.querySelectorAll('.ingresso').forEach(el => {
+                el.style.cursor = 'default';
+            });
+        } catch (e) {
+            document.getElementById('friendCollectionContent').innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
+        }
+    }
+
+    document.getElementById('friendCollectionClose').addEventListener('click', () => {
+        document.getElementById('friendCollectionModal').classList.remove('show');
+    });
+    document.getElementById('friendCollectionModal').addEventListener('click', (e) => {
+        if (e.target.id === 'friendCollectionModal') document.getElementById('friendCollectionModal').classList.remove('show');
+    });
+
     async function loadFriends() {
         try {
             const data = await api('/social/friends');
             friendsState = data;
+            // carrega feed em paralelo (silencioso)
+            loadFeed();
 
             // Friends
             document.getElementById('friendsCount').textContent = `(${data.friends.length})`;
