@@ -2552,13 +2552,8 @@ main {
 
     function renderKpis() {
         const g = snapshot.geral || {};
-        const hero = document.getElementById('heroTitle');
-        const sub = document.getElementById('heroSubtitle');
         if (!g.jogos) {
-            // Zero: reseta o hero pro estado inicial
             document.getElementById('kpis').style.display = 'none';
-            hero.textContent = 'Seu diário começa aqui';
-            sub.textContent = 'Marque os jogos que você foi, registre valor pago e setor.';
             return;
         }
         document.getElementById('kpis').style.display = '';
@@ -2569,10 +2564,6 @@ main {
         document.getElementById('kpiApr').textContent = g.aproveitamento_pct != null ? `${g.aproveitamento_pct}%` : '—';
         const gasto = snapshot.gastos?.total?.gasto_total || 0;
         document.getElementById('kpiGasto').textContent = `R$ ${Number(gasto).toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:0})}`;
-        const clubeNome = user.club_short || user.club_name || 'seu time';
-        const jogosLabel = g.jogos === 1 ? 'jogo' : 'jogos';
-        hero.textContent = `${g.jogos} ${jogosLabel} com o ${clubeNome}`;
-        sub.textContent = `${g.vitorias}V · ${g.empates}E · ${g.derrotas}D · ${g.aproveitamento_pct || 0}% de aproveitamento`;
     }
 
     function populateYears() {
