@@ -8,7 +8,8 @@
       "Bash(node --check src/routes/auth.js)",
       "Bash(node --check src/routes/games.js)",
       "Bash(node --check src/routes/attendances.js)",
-      "Bash(node --check src/routes/me.js)"
+      "Bash(node --check src/routes/me.js)",
+      "Bash(node --check src/routes/clubs.js)"
     ]
   }
 }

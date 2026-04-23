@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fiel — Meu Diário</title>
+<title>Arquibancada — Meu Diário</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900&family=Archivo:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -18,10 +18,11 @@
     --cinza-medio: #6c6a62;
     --cinza-linha: #2a2824;
     --cinza-divisa: #1e1c18;
-    --ouro: #9c8a52;
-    --ouro-claro: #b8a66a;
-    --ouro-suave: rgba(156, 138, 82, 0.18);
-    --vitoria: #a89050;
+    /* --accent* é sobrescrito via JS baseado no clube do user. Default = neutro. */
+    --accent: #b8a66a;
+    --accent-hover: #d0bf84;
+    --accent-soft: rgba(184, 166, 106, 0.18);
+    --vitoria: var(--accent);
     --empate: #5c5a54;
     --derrota: #5c1f2a;
 }
@@ -64,7 +65,7 @@ header {
     font-family: 'Anton', sans-serif;
     font-size: 1.75rem;
     letter-spacing: 0.12em;
-    color: var(--ouro);
+    color: var(--accent);
     text-transform: uppercase;
 }
 
@@ -90,7 +91,7 @@ header {
     cursor: pointer;
     transition: all 120ms;
 }
-.btn-logout:hover { border-color: var(--ouro); color: var(--ouro); }
+.btn-logout:hover { border-color: var(--accent); color: var(--accent); }
 
 main {
     position: relative;
@@ -140,7 +141,7 @@ main {
 .kpi-value {
     font-family: 'Anton', sans-serif;
     font-size: 2rem;
-    color: var(--ouro);
+    color: var(--accent);
     line-height: 1;
 }
 .kpi-value.v { color: var(--vitoria); }
@@ -170,8 +171,8 @@ main {
 }
 .tab:hover { color: var(--branco); }
 .tab.active {
-    color: var(--ouro);
-    border-bottom-color: var(--ouro);
+    color: var(--accent);
+    border-bottom-color: var(--accent);
 }
 
 .tab-panel { display: none; }
@@ -196,7 +197,7 @@ main {
     outline: none;
 }
 .filter-bar input:focus,
-.filter-bar select:focus { border-color: var(--ouro); }
+.filter-bar select:focus { border-color: var(--accent); }
 
 .checkbox-wrap {
     display: flex;
@@ -227,7 +228,7 @@ main {
     transition: background 120ms;
 }
 .game-row:hover { background: var(--preto-card-2); }
-.game-row.attended { border-left: 3px solid var(--ouro); padding-left: calc(1.25rem - 3px); }
+.game-row.attended { border-left: 3px solid var(--accent); padding-left: calc(1.25rem - 3px); }
 
 .game-date {
     font-family: 'JetBrains Mono', monospace;
@@ -276,7 +277,7 @@ main {
     text-transform: uppercase;
     font-weight: 700;
 }
-.game-badge.presente { background: var(--ouro-suave); color: var(--ouro-claro); }
+.game-badge.presente { background: var(--accent-soft); color: var(--accent-hover); }
 .game-badge.marcar { border: 1px solid var(--cinza-linha); color: var(--cinza-medio); }
 
 /* ================= Modal ================= */
@@ -339,7 +340,7 @@ main {
 }
 .modal input:focus,
 .modal select:focus,
-.modal textarea:focus { border-color: var(--ouro); }
+.modal textarea:focus { border-color: var(--accent); }
 
 .modal-actions {
     display: flex;
@@ -358,14 +359,14 @@ main {
     border: none;
     transition: all 120ms;
 }
-.btn-primary { background: var(--ouro); color: var(--preto); }
-.btn-primary:hover { background: var(--ouro-claro); }
+.btn-primary { background: var(--accent); color: var(--preto); }
+.btn-primary:hover { background: var(--accent-hover); }
 .btn-secondary {
     background: transparent;
     border: 1px solid var(--cinza-linha) !important;
     color: var(--cinza-claro);
 }
-.btn-secondary:hover { border-color: var(--ouro) !important; color: var(--ouro); }
+.btn-secondary:hover { border-color: var(--accent) !important; color: var(--accent); }
 .btn-danger {
     background: transparent;
     border: 1px solid var(--derrota) !important;
@@ -398,13 +399,29 @@ main {
 </head>
 <body>
     <header>
-        <div class="brand">Fiel</div>
+        <div class="brand">Arquibancada</div>
         <div class="user-info">
+            <span id="clubBadge" style="display:none;padding:0.3rem 0.7rem;border:1px solid var(--cinza-linha);font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);"></span>
             <span>Olá, <strong id="userName">—</strong></span>
-            <a href="/dashboard" style="color:var(--cinza-claro);font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;text-decoration:none;">Museu legado</a>
+            <button class="btn-logout" id="btnSettings" title="Trocar de time">Time</button>
             <button class="btn-logout" id="btnLogout">Sair</button>
         </div>
     </header>
+
+    <div class="modal-overlay" id="clubModal">
+        <div class="modal">
+            <h2>Seu time</h2>
+            <div class="meta">Escolhe o time pra ajustar o tema e ver o catálogo de jogos.</div>
+            <label>Time</label>
+            <select id="clubSelect" style="width:100%;background:var(--preto-card-2);border:1px solid var(--cinza-linha);color:var(--branco);padding:0.65rem 0.8rem;font-family:'Archivo',sans-serif;font-size:0.9rem;">
+                <option value="">— Prefiro não escolher —</option>
+            </select>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="clubCancel">Cancelar</button>
+                <button class="btn-primary" id="clubSave">Salvar</button>
+            </div>
+        </div>
+    </div>
 
     <main>
         <section class="hero">
@@ -475,7 +492,7 @@ main {
     const token = localStorage.getItem('fiel_token');
     if (!token) window.location.replace('/login');
 
-    const user = JSON.parse(localStorage.getItem('fiel_user') || '{}');
+    let user = JSON.parse(localStorage.getItem('fiel_user') || '{}');
     document.getElementById('userName').textContent = user.display_name || user.email?.split('@')[0] || 'torcedor';
 
     document.getElementById('btnLogout').addEventListener('click', () => {
@@ -483,6 +500,30 @@ main {
         localStorage.removeItem('fiel_user');
         window.location.replace('/login');
     });
+
+    function applyClubTheme(club) {
+        const root = document.documentElement;
+        if (club && club.primary_color) {
+            root.style.setProperty('--accent', club.primary_color);
+            const rgb = hexToRgb(club.primary_color);
+            if (rgb) root.style.setProperty('--accent-soft', `rgba(${rgb.r},${rgb.g},${rgb.b},0.18)`);
+        } else {
+            root.style.setProperty('--accent', '#b8a66a');
+            root.style.setProperty('--accent-soft', 'rgba(184,166,106,0.18)');
+        }
+        const badge = document.getElementById('clubBadge');
+        if (club && club.name) {
+            badge.textContent = club.name;
+            badge.style.display = '';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    function hexToRgb(hex) {
+        const m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex);
+        return m ? { r: parseInt(m[1], 16), g: parseInt(m[2], 16), b: parseInt(m[3], 16) } : null;
+    }
 
     // ========================================================
     // API helpers
@@ -520,6 +561,21 @@ main {
     // ========================================================
     async function loadAll() {
         try {
+            // Pega o perfil atualizado (pra saber o clube)
+            const me = await api('/auth/me');
+            user = me.user;
+            localStorage.setItem('fiel_user', JSON.stringify(user));
+            applyClubTheme(user.club_id ? {
+                name: user.club_name,
+                primary_color: user.primary_color,
+                secondary_color: user.secondary_color,
+            } : null);
+
+            if (!user.club_id) {
+                renderNoClub();
+                return;
+            }
+
             const [gamesRes, snap] = await Promise.all([
                 api('/games?limit=1000'),
                 api('/me/snapshot'),
@@ -537,6 +593,17 @@ main {
         }
     }
 
+    function renderNoClub() {
+        document.getElementById('heroTitle').textContent = 'Escolhe seu time pra começar';
+        document.getElementById('heroSubtitle').textContent =
+            'Sem time selecionado, não tem catálogo de jogos. Clica em "Time" no topo pra escolher.';
+        document.getElementById('kpis').style.display = 'none';
+        document.getElementById('catalogList').innerHTML =
+            '<div class="empty">Escolhe seu time no topo pra ver o catálogo de jogos.</div>';
+        document.getElementById('mineList').innerHTML =
+            '<div class="empty">Seus ingressos aparecem aqui depois que você escolher um time.</div>';
+    }
+
     function renderKpis() {
         const g = snapshot.geral || {};
         if (!g.jogos) return;
@@ -549,7 +616,8 @@ main {
         const gasto = snapshot.gastos?.total?.gasto_total || 0;
         document.getElementById('kpiGasto').textContent = `R$ ${Number(gasto).toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:0})}`;
         if (g.jogos > 0) {
-            document.getElementById('heroTitle').textContent = `${g.jogos} jogos presenciais`;
+            const clubeNome = user.club_short || user.club_name || 'seu time';
+            document.getElementById('heroTitle').textContent = `${g.jogos} jogos com o ${clubeNome}`;
             document.getElementById('heroSubtitle').textContent = `${g.vitorias}V · ${g.empates}E · ${g.derrotas}D · ${g.aproveitamento_pct}% de aproveitamento`;
         }
     }
@@ -728,6 +796,56 @@ main {
     document.getElementById('search').addEventListener('input', renderCatalog);
     document.getElementById('filterYear').addEventListener('change', renderCatalog);
     document.getElementById('onlyMine').addEventListener('change', renderCatalog);
+
+    // ========================================================
+    // Modal de troca de clube
+    // ========================================================
+    const clubModal = document.getElementById('clubModal');
+    const clubSelect = document.getElementById('clubSelect');
+
+    document.getElementById('btnSettings').addEventListener('click', async () => {
+        // Popula se ainda não populou
+        if (clubSelect.options.length <= 1) {
+            try {
+                const { clubs } = await (await fetch('/clubs')).json();
+                for (const c of clubs) {
+                    const opt = document.createElement('option');
+                    opt.value = c.slug;
+                    opt.textContent = c.name;
+                    clubSelect.appendChild(opt);
+                }
+            } catch (_) {}
+        }
+        // Seleciona o atual (ou vazio)
+        clubSelect.value = user.club_slug || '';
+        clubModal.classList.add('show');
+    });
+
+    document.getElementById('clubCancel').addEventListener('click', () => {
+        clubModal.classList.remove('show');
+    });
+    clubModal.addEventListener('click', (e) => {
+        if (e.target.id === 'clubModal') clubModal.classList.remove('show');
+    });
+
+    document.getElementById('clubSave').addEventListener('click', async () => {
+        const btn = document.getElementById('clubSave');
+        btn.disabled = true;
+        btn.textContent = 'Salvando...';
+        try {
+            await api('/auth/me', {
+                method: 'PATCH',
+                body: JSON.stringify({ club_slug: clubSelect.value || null }),
+            });
+            clubModal.classList.remove('show');
+            await loadAll();
+        } catch (err) {
+            alert('Erro: ' + err.message);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Salvar';
+        }
+    });
 
     loadAll();
 </script>

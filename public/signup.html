@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Criar conta — Fiel</title>
+<title>Criar conta — Arquibancada</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;0,700&family=Archivo:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -11,7 +11,7 @@
 </head>
 <body>
     <form class="card" id="signupForm" autocomplete="on">
-        <div class="logo">Fiel</div>
+        <div class="logo">Arquibancada</div>
         <div class="tagline">Diário do Torcedor</div>
         <h1>Criar conta</h1>
 
@@ -23,6 +23,12 @@
 
         <label for="password">Senha (mínimo 8 caracteres)</label>
         <input id="password" name="password" type="password" minlength="8" autocomplete="new-password" required>
+
+        <label for="club">Pra qual time você torce?</label>
+        <select id="club" name="club">
+            <option value="">— Prefiro não escolher agora —</option>
+        </select>
+        <div class="hint">Dá pra trocar depois. Seu time define o tema visual e o catálogo de jogos.</div>
 
         <div class="error" id="err"></div>
 
@@ -41,6 +47,33 @@
     const form = document.getElementById('signupForm');
     const errBox = document.getElementById('err');
     const btn = document.getElementById('btn');
+    const clubSelect = document.getElementById('club');
+
+    // Carrega a lista de clubes
+    (async () => {
+        try {
+            const res = await fetch('/clubs');
+            const data = await res.json();
+            for (const c of data.clubs) {
+                const opt = document.createElement('option');
+                opt.value = c.slug;
+                opt.textContent = c.name;
+                opt.dataset.primary = c.primary_color || '';
+                clubSelect.appendChild(opt);
+            }
+        } catch (_) { /* falha silenciosa — dá pra criar conta sem time */ }
+    })();
+
+    // Preview ao vivo do tema conforme seleciona o clube
+    clubSelect.addEventListener('change', () => {
+        const selected = clubSelect.options[clubSelect.selectedIndex];
+        const primary = selected.dataset.primary;
+        if (primary) {
+            document.documentElement.style.setProperty('--accent', primary);
+        } else {
+            document.documentElement.style.setProperty('--accent', '#b8a66a');
+        }
+    });
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -56,6 +89,7 @@
                     display_name: form.display_name.value.trim() || undefined,
                     email: form.email.value.trim(),
                     password: form.password.value,
+                    club_slug: clubSelect.value || null,
                 }),
             });
             const data = await res.json();
@@ -63,6 +97,7 @@
                 const msg = {
                     email_already_registered: 'Esse email já tem conta',
                     validation_failed: 'Confere os campos — senha precisa ter 8+ caracteres',
+                    club_not_found: 'Clube inválido',
                 }[data.error] || data.error || 'Erro ao criar conta';
                 throw new Error(msg);
             }

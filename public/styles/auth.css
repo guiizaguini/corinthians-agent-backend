@@ -7,10 +7,10 @@
     --cinza-claro: #a8a49a;
     --cinza-medio: #6c6a62;
     --cinza-linha: #2a2824;
-    --ouro: #9c8a52;
-    --ouro-claro: #b8a66a;
-    --ouro-escuro: #6e6038;
-    --ouro-suave: rgba(156, 138, 82, 0.18);
+    /* Accent default = neutro (sem clube). Paginas podem sobrescrever via inline style. */
+    --accent: #b8a66a;
+    --accent-hover: #d0bf84;
+    --accent-soft: rgba(184, 166, 106, 0.18);
     --vinho: #5c1f2a;
 }
 
@@ -47,24 +47,24 @@ body::before {
     border: 1px solid var(--cinza-linha);
     padding: 2.5rem 2rem;
     width: 100%;
-    max-width: 420px;
+    max-width: 460px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.6);
 }
 
 .logo {
     font-family: 'Anton', sans-serif;
-    font-size: 2.25rem;
-    letter-spacing: 0.12em;
+    font-size: 2rem;
+    letter-spacing: 0.16em;
     text-align: center;
-    color: var(--ouro);
+    color: var(--accent);
     margin-bottom: 0.35rem;
     text-transform: uppercase;
 }
 
 .tagline {
     text-align: center;
-    font-size: 0.75rem;
-    letter-spacing: 0.25em;
+    font-size: 0.72rem;
+    letter-spacing: 0.28em;
     text-transform: uppercase;
     color: var(--cinza-medio);
     margin-bottom: 2rem;
@@ -88,7 +88,7 @@ label {
     margin-top: 1rem;
 }
 
-input {
+input, select {
     width: 100%;
     background: var(--preto-card-2);
     border: 1px solid var(--cinza-linha);
@@ -98,14 +98,29 @@ input {
     font-size: 0.95rem;
     outline: none;
     transition: border-color 120ms ease;
+    appearance: none;
 }
 
-input:focus { border-color: var(--ouro); }
+select {
+    font-family: 'Archivo', sans-serif;
+    cursor: pointer;
+    background-image:
+        linear-gradient(45deg, transparent 50%, var(--cinza-claro) 50%),
+        linear-gradient(135deg, var(--cinza-claro) 50%, transparent 50%);
+    background-position:
+        calc(100% - 20px) 50%,
+        calc(100% - 14px) 50%;
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    padding-right: 2rem;
+}
 
-button {
+input:focus, select:focus { border-color: var(--accent); }
+
+button[type="submit"], .btn-primary {
     margin-top: 1.75rem;
     width: 100%;
-    background: var(--ouro);
+    background: var(--accent);
     color: var(--preto);
     border: none;
     padding: 0.85rem;
@@ -118,8 +133,8 @@ button {
     transition: background 120ms ease;
 }
 
-button:hover { background: var(--ouro-claro); }
-button:disabled { background: var(--cinza-medio); cursor: not-allowed; }
+button[type="submit"]:hover, .btn-primary:hover { background: var(--accent-hover); }
+button:disabled { background: var(--cinza-medio) !important; cursor: not-allowed; }
 
 .link {
     margin-top: 1.25rem;
@@ -129,12 +144,12 @@ button:disabled { background: var(--cinza-medio); cursor: not-allowed; }
 }
 
 .link a {
-    color: var(--ouro);
+    color: var(--accent);
     text-decoration: none;
     font-weight: 700;
 }
 
-.link a:hover { color: var(--ouro-claro); }
+.link a:hover { color: var(--accent-hover); }
 
 .error {
     margin-top: 1rem;
@@ -147,3 +162,10 @@ button:disabled { background: var(--cinza-medio); cursor: not-allowed; }
 }
 
 .error.show { display: block; }
+
+.hint {
+    font-size: 0.72rem;
+    color: var(--cinza-medio);
+    margin-top: 0.35rem;
+    font-style: italic;
+}

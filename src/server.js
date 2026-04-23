@@ -10,6 +10,7 @@ import { pool } from './db/pool.js';
 
 // Rotas novas (v2 — SaaS)
 import authRouter from './routes/auth.js';
+import clubsRouter from './routes/clubs.js';
 import gamesRouter from './routes/games.js';
 import attendancesRouter from './routes/attendances.js';
 import meRouter from './routes/me.js';
@@ -43,6 +44,7 @@ app.get('/health', async (req, res) => {
 // API v2 — SaaS (auth JWT)
 // =============================================================
 app.use('/auth', authRouter);
+app.use('/clubs', clubsRouter);
 app.use('/games', requireUser, gamesRouter);
 app.use('/attendances', requireUser, attendancesRouter);
 app.use('/me', requireUser, meRouter);

@@ -27,9 +27,25 @@ CREATE TABLE IF NOT EXISTS clubs (
     created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-INSERT INTO clubs (slug, name, short_name, primary_color, secondary_color)
-VALUES ('corinthians', 'Corinthians', 'Timão', '#000000', '#ffffff')
-ON CONFLICT (slug) DO NOTHING;
+-- Seed de clubes (cores pensadas pra funcionar como accent em UI dark)
+INSERT INTO clubs (slug, name, short_name, primary_color, secondary_color) VALUES
+    ('corinthians',   'Corinthians',       'Timão',       '#9c8a52', '#ffffff'),
+    ('palmeiras',     'Palmeiras',         'Verdão',      '#3fa966', '#ffffff'),
+    ('sao-paulo',     'São Paulo',         'Tricolor',    '#e53e3e', '#000000'),
+    ('santos',        'Santos',            'Peixe',       '#f5f5f5', '#000000'),
+    ('flamengo',      'Flamengo',          'Mengão',      '#e53e3e', '#000000'),
+    ('vasco',         'Vasco',             'Gigante',     '#f5f5f5', '#000000'),
+    ('fluminense',    'Fluminense',        'Flu',         '#8b1e3f', '#2d7a4f'),
+    ('botafogo',      'Botafogo',          'Fogão',       '#f5f5f5', '#000000'),
+    ('gremio',        'Grêmio',            'Imortal',     '#3b82f6', '#000000'),
+    ('internacional', 'Internacional',     'Colorado',    '#e53e3e', '#ffffff'),
+    ('atletico-mg',   'Atlético Mineiro',  'Galo',        '#f5f5f5', '#000000'),
+    ('cruzeiro',      'Cruzeiro',          'Raposa',      '#3b82f6', '#ffffff')
+ON CONFLICT (slug) DO UPDATE SET
+    name = EXCLUDED.name,
+    short_name = EXCLUDED.short_name,
+    primary_color = EXCLUDED.primary_color,
+    secondary_color = EXCLUDED.secondary_color;
 
 -- =============================================================
 -- USERS
