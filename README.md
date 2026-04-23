@@ -1,209 +1,117 @@
-# Corinthians Agent — Backend
+# Fiel — Diário do Torcedor (SaaS)
 
-API REST para alimentar um agente de IA (MCP Agent na Botmaker) que funciona como um especialista pessoal nos seus jogos do Corinthians.
+Plataforma multi-tenant onde torcedores criam conta e registram os jogos que foram, com valor pago, setor, observações — e acompanham estatísticas pessoais de retrospecto, gastos e presença.
 
-## O que está aqui
+Arquitetura white-label: hoje só Corinthians tem catálogo, mas a estrutura já suporta múltiplos clubes (Palmeiras, Flamengo, etc).
 
-- **Banco**: PostgreSQL com uma tabela `jogos` + views de retrospecto/estatísticas
-- **API**: Node.js + Express com autenticação por API key
-- **Seed**: 128 jogos já importados da sua planilha
+## Duas APIs convivem
 
-## Endpoints
+- **v2 (SaaS, novo)** — auth JWT, tabelas `clubs` / `users` / `games` / `attendances`. Rotas sob `/auth`, `/games`, `/attendances`, `/me`.
+- **v1 (legado)** — rotas antigas `/jogos` e `/estatisticas` (protegidas por `x-api-key`) e `/public/snapshot`. Continuam funcionando em paralelo durante a transição, servem o dashboard antigo (`/dashboard`, `/museu`) e o MCP Agent da Botmaker.
 
-### Jogos
+## Endpoints v2 (SaaS)
 
-| Método | Rota | Descrição |
-|---|---|---|
-| GET | `/jogos` | Lista com filtros: `ano`, `rival`, `campeonato`, `resultado`, `status_presenca`, `is_corinthians`, `estadio`, `foi_classico`, `limit`, `offset`, `order` |
-| GET | `/jogos/:id` | Um jogo específico |
-| POST | `/jogos` | Adiciona jogo novo (o agente usa isso quando você diz "fui no jogo X") |
-| PATCH | `/jogos/:id` | Atualiza campos de um jogo |
-| DELETE | `/jogos/:id` | Remove um jogo |
-
-### Estatísticas
+### Auth
 
 | Método | Rota | Descrição |
 |---|---|---|
-| GET | `/estatisticas/retrospecto` | Retrospecto geral, filtros: `ano`, `campeonato`, `rival` |
-| GET | `/estatisticas/por-ano` | Breakdown ano a ano |
-| GET | `/estatisticas/por-campeonato` | Breakdown por campeonato |
-| GET | `/estatisticas/por-rival?top=10` | Retrospecto contra cada adversário |
-| GET | `/estatisticas/por-estadio` | Retrospecto por estádio |
-| GET | `/estatisticas/gastos` | Total, ticket médio, gasto por ano |
-| GET | `/estatisticas/resumo` | Tudo em uma chamada só (ótimo pro agente) |
+| POST | `/auth/signup` | `{ email, password (8+), display_name?, club_slug? }` → `{ token, user }` |
+| POST | `/auth/login` | `{ email, password }` → `{ token, user }` |
+| GET  | `/auth/me` | Bearer → `{ user }` |
 
-### Saúde
+### Catálogo de jogos (do clube do user)
 
 | Método | Rota | Descrição |
 |---|---|---|
-| GET | `/health` | Healthcheck (usado pelo Railway) — sem auth |
-| GET | `/` | Lista de endpoints — sem auth |
+| GET | `/games?ano=&rival=&campeonato=&so_presenca=&limit=` | Lista jogos do catálogo (já com o attendance do user via LEFT JOIN) |
+| GET | `/games/:id` | Um jogo + attendance do user |
 
-Todas as rotas exceto `/health` e `/` exigem o header `x-api-key`.
+### Attendances (ingressos do user)
+
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/attendances` | Lista do user |
+| POST | `/attendances` | Cria/upsert: `{ game_id, status?, setor?, assento?, valor_pago?, observacoes? }` |
+| PATCH | `/attendances/:id` | Atualiza campos |
+| DELETE | `/attendances/:id` | Remove |
+
+### Estatísticas do user
+
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/me/snapshot` | Tudo que a dashboard precisa: geral, por_ano, por_campeonato, por_rival, por_estadio, por_setor, gastos, top_goleadas, classicos, jogos |
+
+Todas as rotas protegidas pedem `Authorization: Bearer <token>`.
+
+### Páginas
+
+- `/login`, `/signup` — entrada no app
+- `/app` — dashboard do usuário logado (catálogo + meus ingressos)
+- `/dashboard`, `/museu` — páginas legadas (leem do `/public/snapshot` antigo)
 
 ## Rodando localmente
 
 ```bash
-# 1. Subir um postgres local (ou apontar pro do Railway)
+# 1. Postgres
 docker run -d --name pg-cor -p 5432:5432 \
   -e POSTGRES_PASSWORD=dev \
   -e POSTGRES_DB=corinthians \
   postgres:16
 
-# 2. Configurar env
+# 2. Env
 cp .env.example .env
-# Edite .env com a DATABASE_URL e uma API_KEY
+# Edite: DATABASE_URL, JWT_SECRET (32+ chars), SEED_USER_PASSWORD
 
-# 3. Instalar deps
+# 3. Deps
 npm install
 
-# 4. Criar schema + popular com os 128 jogos
-npm run migrate:seed
+# 4. Rodar migrações v1 (legado) + v2 + popular com jogos da planilha
+npm run migrate:seed                # cria tabela `jogos` legada + popula
+npm run migrate:v2:from-legacy      # cria tabelas v2 + copia jogos pra catálogo
+                                     #  + cria user seed com as attendances
 
-# 5. Subir a API
+# 5. Start
 npm run dev
-```
-
-Testar:
-```bash
-curl http://localhost:3000/health
-
-curl -H "x-api-key: sua-key" http://localhost:3000/estatisticas/resumo | jq
-
-curl -H "x-api-key: sua-key" \
-     "http://localhost:3000/jogos?ano=2024&resultado=V&limit=5" | jq
 ```
 
 ## Deploy no Railway
 
-### Passo 1: Subir o código pro GitHub
+### Primeira vez (v1 → v2)
 
-```bash
-cd backend
-git init && git add . && git commit -m "initial commit"
-gh repo create corinthians-agent-backend --private --source=. --push
-# ou manualmente: criar repo no GitHub e dar push
-```
+Se o projeto já tá rodando v1 no Railway, pra habilitar o SaaS:
 
-### Passo 2: Criar projeto no Railway
-
-1. Entre em [railway.com](https://railway.com) → **New Project** → **Deploy from GitHub repo** → selecione o repo
-2. No mesmo projeto, clique em **+ New** → **Database** → **Add PostgreSQL**
-3. O Railway injeta automaticamente a variável `DATABASE_URL` no seu serviço web, mas **confirme**: na aba do serviço web → **Variables** → deve aparecer `DATABASE_URL` referenciando o Postgres
-4. Adicione manualmente a variável `API_KEY` com uma string longa e aleatória:
+1. **Adicionar variáveis no Railway** (Service → Variables):
+   - `JWT_SECRET` — gere com `node -e "console.log(require('crypto').randomBytes(48).toString('base64'))"`
+   - `SEED_USER_EMAIL` — seu email
+   - `SEED_USER_PASSWORD` — senha pro seed user (mínimo 8 chars)
+   - `SEED_USER_NAME` — seu nome
+2. **Push** do código novo — Railway faz deploy automático.
+3. **Rodar a migração v2** uma única vez:
    ```bash
-   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   railway run npm run migrate:v2:from-legacy
    ```
-5. Aguarde o deploy terminar. O Railway usa `railway.json` para configurar healthcheck em `/health`.
+   Isso cria as tabelas `clubs`, `users`, `games`, `attendances`, copia todos os jogos do `jogos` legado pro catálogo novo e cria sua conta seed com todas as presenças já migradas.
 
-### Passo 3: Rodar as migrações (1ª vez)
+4. Pode remover `SEED_USER_PASSWORD` do Railway depois — ela só é usada no momento do seed.
 
-No Railway você pode rodar one-off commands. A maneira mais fácil:
+### Projeto novo (só v2)
 
-**Opção A — CLI do Railway:**
-```bash
-npm install -g @railway/cli
-railway login
-railway link   # vincula ao projeto
-railway run npm run migrate:seed
+Igual ao antigo, mas com `JWT_SECRET` nas variáveis (e sem precisar rodar a migração `from-legacy`).
+
+## Schema v2
+
+```
+clubs          (id, slug, name, short_name, primary_color, secondary_color)
+users          (id, email, password_hash, display_name, club_id, is_admin)
+games          (id, club_id, data, time_casa, time_visitante, campeonato,
+                gols_casa, gols_visitante, resultado, foi_classico, ...)
+attendances    (id, user_id, game_id, status, setor, assento, valor_pago, observacoes)
 ```
 
-**Opção B — terminal do próprio Railway:** no serviço web, aba **Settings → Deploy → Custom Start Command**, troque temporariamente para `npm run migrate:seed && npm start`, faça redeploy, depois volte pra `npm start`.
+`attendances` tem UNIQUE(`user_id`, `game_id`) — um ingresso por jogo por user.
 
-### Passo 4: Gerar o domínio público
+`games.resultado` é V/E/D do ponto de vista do `clubs.name` dono do jogo (o campo é derivado comparando `time_casa` com o nome do clube).
 
-No serviço web → **Settings** → **Networking** → **Generate Domain**. Você receberá algo tipo `https://corinthians-agent-backend-production.up.railway.app`.
+## Integração com o MCP Agent da Botmaker (v1 legada)
 
-Teste:
-```bash
-curl https://seu-dominio.up.railway.app/health
-```
-
-## Integração com o MCP Agent da Botmaker
-
-Dentro da Botmaker, ao configurar o MCP Agent, registre cada endpoint como uma tool. Sugestão de definições (ajuste conforme o painel da Botmaker):
-
-### Tool: listar_jogos
-- **Método**: GET
-- **URL**: `https://seu-dominio.up.railway.app/jogos`
-- **Headers**: `x-api-key: <sua API_KEY>`
-- **Query params opcionais**: `ano`, `rival`, `campeonato`, `resultado`, `status_presenca`, `limit`
-- **Quando chamar**: usuário pede lista de jogos (ex.: "quais jogos eu fui em 2024?", "me lista as vitórias contra o Palmeiras")
-
-### Tool: adicionar_jogo
-- **Método**: POST
-- **URL**: `https://seu-dominio.up.railway.app/jogos`
-- **Headers**: `x-api-key: <sua API_KEY>`, `Content-Type: application/json`
-- **Body** (JSON):
-  ```json
-  {
-    "data": "2026-05-10",
-    "time_casa": "Corinthians",
-    "time_visitante": "Palmeiras",
-    "campeonato": "Brasileiro",
-    "estadio": "Neo Química Arena",
-    "setor": "Leste Inf Lateral",
-    "assento": "[426] A-47 [N]",
-    "valor_pago": 120.00,
-    "gols_casa": 2,
-    "gols_visitante": 1,
-    "foi_classico": true
-  }
-  ```
-- **Quando chamar**: usuário diz "fui no jogo ontem/tal dia", "acabei de voltar do jogo contra o X"
-- **Observação**: `resultado`, `mando`, `dia_semana` e `is_corinthians` são inferidos automaticamente pelo backend — não precisa mandar
-
-### Tool: retrospecto
-- **Método**: GET
-- **URL**: `https://seu-dominio.up.railway.app/estatisticas/retrospecto`
-- **Headers**: `x-api-key: <sua API_KEY>`
-- **Query params opcionais**: `ano`, `campeonato`, `rival`
-- **Quando chamar**: "qual meu aproveitamento", "como estou contra o São Paulo", "retrospecto de 2023"
-
-### Tool: resumo_completo
-- **Método**: GET
-- **URL**: `https://seu-dominio.up.railway.app/estatisticas/resumo`
-- **Headers**: `x-api-key: <sua API_KEY>`
-- **Quando chamar**: "me dá um panorama geral", "resumão" — retorna tudo que o agente pode precisar numa chamada só
-
-### Tool: gastos
-- **Método**: GET
-- **URL**: `https://seu-dominio.up.railway.app/estatisticas/gastos`
-- **Headers**: `x-api-key: <sua API_KEY>`
-- **Quando chamar**: "quanto já gastei", "ticket médio", "meu gasto em 2024"
-
-### Prompt sugerido pro agente
-
-> Você é um especialista pessoal nos jogos do Corinthians a que o usuário foi. Sempre que ele perguntar sobre estatísticas, retrospectos ou jogos específicos, use as tools para buscar os dados reais — nunca chute. Quando ele falar que foi a um jogo novo, use `adicionar_jogo` confirmando os dados antes. Datas sempre em formato YYYY-MM-DD. Resultados são sempre relativos ao Corinthians (V=vitória, E=empate, D=derrota). Quando o usuário falar de um jogo sem dar todos os detalhes, puxe os que faltam pela data/adversário antes de inserir.
-
-## Estrutura do banco
-
-### Tabela `jogos`
-
-| Campo | Tipo | Notas |
-|---|---|---|
-| `id` | SERIAL PK | |
-| `data` | DATE | |
-| `dia_semana` | VARCHAR | derivado, mas persistido |
-| `time_casa` | VARCHAR | |
-| `time_visitante` | VARCHAR | |
-| `is_corinthians` | BOOL | `true` se Corinthians joga (mesmo como visitante) |
-| `mando` | ENUM | MANDANTE, VISITANTE, NEUTRO |
-| `campeonato` | VARCHAR | Brasileiro, Paulista, Libertadores, etc |
-| `genero` | VARCHAR | M, F, S-20 |
-| `estadio` | VARCHAR | |
-| `status_presenca` | ENUM | PRESENTE, FALTEI, REVENDA, CASHBACK, AGENDADO, AUSENTE |
-| `setor` | VARCHAR | |
-| `assento` | VARCHAR | |
-| `valor_pago` | NUMERIC(10,2) | |
-| `gols_casa` | INT | |
-| `gols_visitante` | INT | |
-| `resultado` | CHAR(1) | V/E/D relativo ao Corinthians |
-| `foi_classico` | BOOL | |
-| `teve_penal` | BOOL | cobrou ou sofreu pênalti |
-| `observacoes` | TEXT | campo livre para notas |
-| `created_at` / `updated_at` | TIMESTAMPTZ | |
-
-### Views
-- `v_jogos_validos` — só jogos do Corinthians com presença confirmada e resultado
-- `v_retrospecto_geral`, `v_retrospecto_por_ano`, `v_retrospecto_por_campeonato`, `v_retrospecto_por_rival`, `v_retrospecto_por_estadio`, `v_gastos_por_ano`
+As tools registradas na Botmaker continuam apontando pras rotas v1 (`/jogos`, `/estatisticas/*`) com o header `x-api-key`. Nada precisa mudar lá. Quando a migração estiver completa, dá pra trocar a integração pras rotas v2 (passando um token específico pra conta do agente, ou mantendo uma API key separada — a definir).

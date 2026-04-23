@@ -5,10 +5,19 @@ import { fileURLToPath } from 'node:url';
 import 'dotenv/config';
 
 import { requireApiKey } from './middleware/auth.js';
+import { requireUser } from './middleware/authUser.js';
+import { pool } from './db/pool.js';
+
+// Rotas novas (v2 — SaaS)
+import authRouter from './routes/auth.js';
+import gamesRouter from './routes/games.js';
+import attendancesRouter from './routes/attendances.js';
+import meRouter from './routes/me.js';
+
+// Rotas legadas (v1 — continuam vivas durante a transição)
 import jogosRouter from './routes/jogos.js';
 import estatisticasRouter from './routes/estatisticas.js';
 import publicRouter from './routes/public.js';
-import { pool } from './db/pool.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -19,7 +28,7 @@ app.use(cors());
 app.use(express.json({ limit: '1mb' }));
 
 // =============================================================
-// Health check (sem auth)
+// Health check
 // =============================================================
 app.get('/health', async (req, res) => {
     try {
@@ -31,62 +40,78 @@ app.get('/health', async (req, res) => {
 });
 
 // =============================================================
-// Rota pública READ-ONLY para dashboards (sem API key)
+// API v2 — SaaS (auth JWT)
 // =============================================================
-app.use('/public', publicRouter);
+app.use('/auth', authRouter);
+app.use('/games', requireUser, gamesRouter);
+app.use('/attendances', requireUser, attendancesRouter);
+app.use('/me', requireUser, meRouter);
 
 // =============================================================
-// Páginas estáticas — qualquer um com o link acessa
+// API v1 legada — continua funcionando pro dashboard antigo
+// e pro MCP Agent
 // =============================================================
+app.use('/public', publicRouter);
+app.use('/jogos', requireApiKey, jogosRouter);
+app.use('/estatisticas', requireApiKey, estatisticasRouter);
+
+// =============================================================
+// Páginas estáticas
+// =============================================================
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'login.html'));
+});
+app.get('/signup', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'signup.html'));
+});
+app.get('/app', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'app.html'));
+});
+
+// Legado (continua servindo o site antigo do Guilherme)
 app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public', 'dashboard.html'));
 });
-
 app.get('/museu', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public', 'museu.html'));
 });
 
-// Serve outros arquivos da pasta public (imagens, etc).
-// Não sobrepõe rotas acima porque elas vêm primeiro.
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.get('/', (req, res) => {
-    // Raiz redireciona pro dashboard
-    res.redirect('/dashboard');
+    // Raiz: manda pro login (novo fluxo SaaS)
+    res.redirect('/login');
 });
 
 app.get('/api', (req, res) => {
     res.json({
         name: 'corinthians-agent-backend',
-        version: '1.8.0',
-        dashboard: '/dashboard',
-        endpoints_publicos: [
-            'GET /health',
-            'GET /public/snapshot',
-            'GET /dashboard',
-        ],
-        endpoints_protegidos: [
-            'GET  /jogos',
-            'GET  /jogos/:id',
-            'POST /jogos',
-            'PATCH /jogos/:id',
-            'DELETE /jogos/:id',
-            'GET  /estatisticas/retrospecto',
-            'GET  /estatisticas/por-ano',
-            'GET  /estatisticas/por-campeonato',
-            'GET  /estatisticas/por-rival?top=10',
-            'GET  /estatisticas/por-estadio',
-            'GET  /estatisticas/gastos',
-            'GET  /estatisticas/resumo',
-        ],
+        version: '2.0.0',
+        endpoints_v2: {
+            auth: [
+                'POST /auth/signup',
+                'POST /auth/login',
+                'GET  /auth/me  (Bearer)',
+            ],
+            games: ['GET /games  (Bearer)', 'GET /games/:id  (Bearer)'],
+            attendances: [
+                'GET    /attendances  (Bearer)',
+                'POST   /attendances  (Bearer)',
+                'PATCH  /attendances/:id  (Bearer)',
+                'DELETE /attendances/:id  (Bearer)',
+            ],
+            me: ['GET /me/snapshot  (Bearer)'],
+            paginas: ['/login', '/signup', '/app'],
+        },
+        endpoints_v1_legado: {
+            publicos: ['GET /public/snapshot', '/dashboard', '/museu'],
+            protegidos_api_key: [
+                'GET/POST/PATCH/DELETE /jogos',
+                'GET /estatisticas/*',
+            ],
+        },
     });
 });
-
-// =============================================================
-// Rotas protegidas por API key (pro MCP Agent)
-// =============================================================
-app.use('/jogos', requireApiKey, jogosRouter);
-app.use('/estatisticas', requireApiKey, estatisticasRouter);
 
 // =============================================================
 // Handler de erros

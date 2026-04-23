@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Criar conta — Fiel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;0,700&family=Archivo:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles/auth.css">
+</head>
+<body>
+    <form class="card" id="signupForm" autocomplete="on">
+        <div class="logo">Fiel</div>
+        <div class="tagline">Diário do Torcedor</div>
+        <h1>Criar conta</h1>
+
+        <label for="display_name">Como te chamamos?</label>
+        <input id="display_name" name="display_name" type="text" maxlength="80" autocomplete="name">
+
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" autocomplete="email" required>
+
+        <label for="password">Senha (mínimo 8 caracteres)</label>
+        <input id="password" name="password" type="password" minlength="8" autocomplete="new-password" required>
+
+        <div class="error" id="err"></div>
+
+        <button type="submit" id="btn">Criar conta</button>
+
+        <div class="link">
+            Já tem conta? <a href="/login">Entrar</a>
+        </div>
+    </form>
+
+<script>
+    if (localStorage.getItem('fiel_token')) {
+        window.location.replace('/app');
+    }
+
+    const form = document.getElementById('signupForm');
+    const errBox = document.getElementById('err');
+    const btn = document.getElementById('btn');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errBox.classList.remove('show');
+        btn.disabled = true;
+        btn.textContent = 'Criando...';
+
+        try {
+            const res = await fetch('/auth/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    display_name: form.display_name.value.trim() || undefined,
+                    email: form.email.value.trim(),
+                    password: form.password.value,
+                }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                const msg = {
+                    email_already_registered: 'Esse email já tem conta',
+                    validation_failed: 'Confere os campos — senha precisa ter 8+ caracteres',
+                }[data.error] || data.error || 'Erro ao criar conta';
+                throw new Error(msg);
+            }
+            localStorage.setItem('fiel_token', data.token);
+            localStorage.setItem('fiel_user', JSON.stringify(data.user));
+            window.location.replace('/app');
+        } catch (err) {
+            errBox.textContent = err.message;
+            errBox.classList.add('show');
+            btn.disabled = false;
+            btn.textContent = 'Criar conta';
+        }
+    });
+</script>
+</body>
+</html>

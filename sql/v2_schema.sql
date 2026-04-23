@@ -1,0 +1,126 @@
+-- =============================================================
+-- SCHEMA v2 — SaaS multi-tenant (white-label ready)
+--
+-- Separação em 4 camadas:
+--   clubs        → catálogo de times (Corinthians, Palmeiras, …)
+--   users        → contas com email/senha
+--   games        → jogos do catálogo (fatos do jogo, placar, etc)
+--   attendances  → "fulano foi no jogo X, pagou Y, setor Z"
+--
+-- Idempotente: pode rodar várias vezes sem quebrar nada existente.
+-- NÃO dropa a tabela `jogos` legada — ela continua viva em paralelo
+-- durante a migração.
+-- =============================================================
+
+CREATE EXTENSION IF NOT EXISTS unaccent;
+
+-- =============================================================
+-- CLUBS (white-label)
+-- =============================================================
+CREATE TABLE IF NOT EXISTS clubs (
+    id               SERIAL PRIMARY KEY,
+    slug             VARCHAR(40) UNIQUE NOT NULL,
+    name             VARCHAR(60) NOT NULL,
+    short_name       VARCHAR(20),
+    primary_color    VARCHAR(20),
+    secondary_color  VARCHAR(20),
+    created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+INSERT INTO clubs (slug, name, short_name, primary_color, secondary_color)
+VALUES ('corinthians', 'Corinthians', 'Timão', '#000000', '#ffffff')
+ON CONFLICT (slug) DO NOTHING;
+
+-- =============================================================
+-- USERS
+-- =============================================================
+CREATE TABLE IF NOT EXISTS users (
+    id              SERIAL PRIMARY KEY,
+    email           VARCHAR(200) UNIQUE NOT NULL,
+    password_hash   VARCHAR(200) NOT NULL,
+    display_name    VARCHAR(80),
+    club_id         INTEGER REFERENCES clubs(id) ON DELETE SET NULL,
+    is_admin        BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_users_club ON users(club_id);
+
+-- =============================================================
+-- GAMES (catálogo — fatos do jogo, sem dados pessoais do torcedor)
+-- Cada jogo pertence a um clube (do ponto de vista da UI do torcedor).
+-- Um Corinthians x Palmeiras existe duas vezes: uma com club_id=Cor,
+-- outra com club_id=Pal. É duplicação proposital pra simplificar.
+-- =============================================================
+CREATE TABLE IF NOT EXISTS games (
+    id                 SERIAL PRIMARY KEY,
+    club_id            INTEGER NOT NULL REFERENCES clubs(id) ON DELETE CASCADE,
+    data               DATE NOT NULL,
+    dia_semana         VARCHAR(10),
+    time_casa          VARCHAR(60) NOT NULL,
+    time_visitante     VARCHAR(60) NOT NULL,
+    mando              VARCHAR(10) NOT NULL CHECK (mando IN ('MANDANTE','VISITANTE','NEUTRO')),
+    campeonato         VARCHAR(40),
+    genero             VARCHAR(10),
+    estadio            VARCHAR(60),
+    gols_casa          INTEGER,
+    gols_visitante     INTEGER,
+    resultado          CHAR(1) CHECK (resultado IN ('V','E','D') OR resultado IS NULL),
+    foi_classico       BOOLEAN NOT NULL DEFAULT FALSE,
+    teve_penal         BOOLEAN NOT NULL DEFAULT FALSE,
+    fase               VARCHAR(40),
+    titulo_conquistado VARCHAR(60),
+    autores_gols       JSONB,
+    gols_texto         TEXT,
+    publico_total      INTEGER,
+    created_at         TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at         TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (club_id, data, time_casa, time_visitante, genero)
+);
+
+CREATE INDEX IF NOT EXISTS idx_games_club_data ON games(club_id, data DESC);
+CREATE INDEX IF NOT EXISTS idx_games_campeonato ON games(campeonato);
+
+-- =============================================================
+-- ATTENDANCES (registro por usuário)
+-- =============================================================
+CREATE TABLE IF NOT EXISTS attendances (
+    id           SERIAL PRIMARY KEY,
+    user_id      INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    game_id      INTEGER NOT NULL REFERENCES games(id) ON DELETE CASCADE,
+    status       VARCHAR(15) NOT NULL DEFAULT 'PRESENTE'
+                 CHECK (status IN ('PRESENTE','AUSENTE')),
+    setor        VARCHAR(60),
+    assento      VARCHAR(40),
+    valor_pago   NUMERIC(10,2),
+    observacoes  TEXT,
+    created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (user_id, game_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_attendances_user ON attendances(user_id);
+CREATE INDEX IF NOT EXISTS idx_attendances_game ON attendances(game_id);
+
+-- =============================================================
+-- Triggers de updated_at (reutiliza função existente se já houver)
+-- =============================================================
+CREATE OR REPLACE FUNCTION trg_touch_updated_at() RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS tr_users_touch ON users;
+CREATE TRIGGER tr_users_touch BEFORE UPDATE ON users
+    FOR EACH ROW EXECUTE FUNCTION trg_touch_updated_at();
+
+DROP TRIGGER IF EXISTS tr_games_touch ON games;
+CREATE TRIGGER tr_games_touch BEFORE UPDATE ON games
+    FOR EACH ROW EXECUTE FUNCTION trg_touch_updated_at();
+
+DROP TRIGGER IF EXISTS tr_attendances_touch ON attendances;
+CREATE TRIGGER tr_attendances_touch BEFORE UPDATE ON attendances
+    FOR EACH ROW EXECUTE FUNCTION trg_touch_updated_at();

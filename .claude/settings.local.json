@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp -r \"/c/Users/guilh/OneDrive/Área de Trabalho/corinthians-agent-backend\" \"/c/Users/guilh/OneDrive/Área de Trabalho/corinthians-agent-backend-v1-backup\")",
+      "Read(//c/Users/guilh/OneDrive/Área de Trabalho//**)",
+      "Bash(npm install *)",
+      "Bash(node --check src/server.js)",
+      "Bash(node --check src/routes/auth.js)",
+      "Bash(node --check src/routes/games.js)",
+      "Bash(node --check src/routes/attendances.js)",
+      "Bash(node --check src/routes/me.js)"
+    ]
+  }
+}
