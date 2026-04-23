@@ -915,8 +915,8 @@ main {
 /* ================= INGRESSO (estilo museu) ================= */
 .galeria {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(440px, 100%), 1fr));
-    gap: 26px;
+    grid-template-columns: repeat(auto-fill, minmax(min(360px, 100%), 1fr));
+    gap: 18px;
     margin-top: 1rem;
 }
 
@@ -928,11 +928,12 @@ main {
     background: #f6eed9;
     color: #1a1a1a;
     display: grid;
-    grid-template-columns: 120px 1fr;
-    min-height: 220px;
+    grid-template-columns: 100px 1fr;
+    min-height: 200px;
+    border-radius: 14px;
     box-shadow:
         0 2px 0 rgba(0,0,0,0.05),
-        0 12px 28px rgba(20,15,10,0.18),
+        0 10px 24px rgba(20,15,10,0.22),
         0 0 0 1px rgba(107,82,40,0.2);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
@@ -967,7 +968,7 @@ main {
 .canhoto {
     background: var(--cor-acento);
     color: #1a1000;
-    padding: 22px 10px;
+    padding: 18px 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -975,31 +976,31 @@ main {
     text-align: center;
     position: relative;
     z-index: 1;
-    gap: 10px;
+    gap: 8px;
 }
-.canhoto-dia { font-family: 'Oswald', sans-serif; font-size: 56px; line-height: 1; letter-spacing: -0.02em; }
-.canhoto-mes { font-family: 'Oswald', sans-serif; font-size: 20px; letter-spacing: 0.2em; margin-top: 4px; }
-.canhoto-ano { font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.22em; opacity: 0.9; margin-top: 6px; }
+.canhoto-dia { font-family: 'Oswald', sans-serif; font-size: 44px; line-height: 1; letter-spacing: -0.02em; }
+.canhoto-mes { font-family: 'Oswald', sans-serif; font-size: 16px; letter-spacing: 0.2em; margin-top: 3px; }
+.canhoto-ano { font-family: 'Oswald', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.22em; opacity: 0.9; margin-top: 5px; }
 .canhoto-selo {
     font-family: 'Oswald', sans-serif;
-    font-size: 24px;
+    font-size: 18px;
     line-height: 1;
     letter-spacing: 0.08em;
-    padding: 6px 10px;
+    padding: 5px 8px;
     border: 2px solid currentColor;
-    margin: 10px 0 4px;
+    margin: 8px 0 4px;
     transform: rotate(-3deg);
 }
-.canhoto-num { font-family: 'Oswald', sans-serif; font-size: 9px; letter-spacing: 0.2em; opacity: 0.7; text-transform: uppercase; }
+.canhoto-num { font-family: 'Oswald', sans-serif; font-size: 8px; letter-spacing: 0.2em; opacity: 0.7; text-transform: uppercase; }
 
 .picotado {
     position: absolute;
     top: 0;
     bottom: 0;
-    left: 120px;
+    left: 100px;
     width: 2px;
     background-image: radial-gradient(circle, var(--preto) 1.2px, transparent 1.3px);
-    background-size: 2px 8px;
+    background-size: 2px 7px;
     background-repeat: repeat-y;
     z-index: 2;
 }
@@ -1008,21 +1009,21 @@ main {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
     background: var(--paper);
     border-radius: 50%;
 }
-.picotado::before { top: -9px; }
-.picotado::after { bottom: -9px; }
+.picotado::before { top: -7px; }
+.picotado::after { bottom: -7px; }
 
 .corpo {
-    padding: 18px 24px 20px;
+    padding: 14px 18px 16px;
     position: relative;
     z-index: 1;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
     container-type: inline-size;
 }
 
@@ -1178,11 +1179,12 @@ main {
 .ingresso-action .material-icons { font-size: 16px; }
 
 @media (max-width: 540px) {
-    .ingresso { grid-template-columns: 92px 1fr; min-height: 200px; }
-    .picotado { left: 92px; }
-    .canhoto-dia { font-size: 44px; }
-    .canhoto-mes { font-size: 16px; }
-    .canhoto-selo { font-size: 18px; padding: 5px 8px; }
+    .galeria { grid-template-columns: 1fr; gap: 14px; }
+    .ingresso { grid-template-columns: 88px 1fr; min-height: 180px; }
+    .picotado { left: 88px; }
+    .canhoto-dia { font-size: 38px; }
+    .canhoto-mes { font-size: 14px; }
+    .canhoto-selo { font-size: 16px; padding: 4px 7px; }
 }
 
 /* ================= Modal (genérico) ================= */
@@ -2432,16 +2434,22 @@ main {
         let rgb = hexToRgb(baseHex);
         if (!rgb) return;
 
-        // Se a cor primária do clube é clara demais (Santos/Vasco/Botafogo/Atl-MG têm branco):
-        // - tema dark → accent vira preto sólido pra contrastar com fundo escuro
-        // - tema light → accent vira preto também, faz contraste com fundo claro
-        // De qualquer forma cai pra preto.
+        const isLight = document.body.classList.contains('light-theme');
+
+        // Cor primária muito clara (Santos/Vasco/Botafogo/Atl-MG têm branco como identidade):
+        // - tema light → accent vira preto sólido (contraste com fundo claro)
+        // - tema dark → accent vira cream/branco (contraste com fundo escuro)
         if (relativeLuminance(rgb) > 0.62) {
-            baseHex = '#111111';
-            rgb = { r: 17, g: 17, b: 17 };
+            if (isLight) {
+                baseHex = '#111111';
+                rgb = { r: 17, g: 17, b: 17 };
+            } else {
+                baseHex = '#e8e2cc';
+                rgb = { r: 232, g: 226, b: 204 };
+            }
         }
 
-        // Texto sobre accent: branco se accent escuro, preto se accent claro
+        // Texto sobre accent: cream se accent é escuro, ink se accent é claro
         const accentText = relativeLuminance(rgb) > 0.55 ? '#0d0d0d' : '#f5f0e4';
         root.style.setProperty('--accent-text', accentText);
 
