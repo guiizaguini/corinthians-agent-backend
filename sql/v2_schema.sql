@@ -143,6 +143,10 @@ CREATE INDEX IF NOT EXISTS idx_notes_user ON notes(user_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_notes_attendance ON notes(attendance_id);
 CREATE INDEX IF NOT EXISTS idx_notes_game ON notes(game_id);
 
+-- Visibilidade pública/privada — públicas vão pro feed dos amigos
+ALTER TABLE notes ADD COLUMN IF NOT EXISTS is_public BOOLEAN NOT NULL DEFAULT FALSE;
+CREATE INDEX IF NOT EXISTS idx_notes_public ON notes(is_public, created_at DESC) WHERE is_public = TRUE;
+
 -- =============================================================
 -- FRIENDSHIPS (rede social)
 -- requester_id manda solicitação pra recipient_id

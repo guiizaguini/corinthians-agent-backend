@@ -391,7 +391,41 @@ td.td-actions .btn { padding: 0.3rem 0.6rem; font-size: 0.65rem; margin-left: 0.
                 </div>
                 <div class="full">
                     <label>Campeonato</label>
-                    <input type="text" id="fCampeonato" maxlength="40" placeholder="Brasileiro, Paulista, Libertadores...">
+                    <select id="fCampeonato">
+                        <option value="">— Selecione —</option>
+                        <optgroup label="Nacional">
+                            <option value="Brasileiro">Brasileiro Série A</option>
+                            <option value="Brasileiro Série B">Brasileiro Série B</option>
+                            <option value="Brasileiro Série C">Brasileiro Série C</option>
+                            <option value="Brasileiro Série D">Brasileiro Série D</option>
+                            <option value="Copa do Brasil">Copa do Brasil</option>
+                            <option value="Supercopa do Brasil">Supercopa do Brasil</option>
+                        </optgroup>
+                        <optgroup label="Internacional">
+                            <option value="Libertadores">Libertadores</option>
+                            <option value="Sul-Americana">Sul-Americana</option>
+                            <option value="Recopa Sul-Americana">Recopa Sul-Americana</option>
+                            <option value="Mundial de Clubes">Mundial de Clubes</option>
+                            <option value="Intercontinental">Intercontinental</option>
+                        </optgroup>
+                        <optgroup label="Estadual">
+                            <option value="Paulista">Paulista</option>
+                            <option value="Carioca">Carioca</option>
+                            <option value="Mineiro">Mineiro</option>
+                            <option value="Gaúcho">Gaúcho</option>
+                            <option value="Paranaense">Paranaense</option>
+                            <option value="Catarinense">Catarinense</option>
+                            <option value="Baiano">Baiano</option>
+                            <option value="Pernambucano">Pernambucano</option>
+                            <option value="Cearense">Cearense</option>
+                            <option value="Goiano">Goiano</option>
+                        </optgroup>
+                        <optgroup label="Outros">
+                            <option value="Copa do Nordeste">Copa do Nordeste</option>
+                            <option value="Copa Verde">Copa Verde</option>
+                            <option value="Amistoso">Amistoso</option>
+                        </optgroup>
+                    </select>
                 </div>
                 <div class="full">
                     <label>Estádio</label>

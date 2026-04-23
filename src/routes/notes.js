@@ -14,6 +14,7 @@ const NoteSchema = z.object({
     body: z.string().min(1).max(8000),
     attendance_id: z.number().int().positive().optional().nullable(),
     game_id: z.number().int().positive().optional().nullable(),
+    is_public: z.boolean().optional().default(false),
 });
 
 const NoteUpdateSchema = NoteSchema.partial();
@@ -25,7 +26,7 @@ router.get('/', async (req, res, next) => {
     try {
         const { rows } = await query(
             `SELECT
-                n.id, n.title, n.body, n.attendance_id, n.game_id,
+                n.id, n.title, n.body, n.attendance_id, n.game_id, n.is_public,
                 n.created_at, n.updated_at,
                 g.data AS game_data, g.time_casa, g.time_visitante,
                 g.gols_casa, g.gols_visitante, g.resultado,
@@ -53,7 +54,7 @@ router.post('/', async (req, res, next) => {
                 detalhes: parsed.error.flatten().fieldErrors,
             });
         }
-        const { title, body, attendance_id, game_id } = parsed.data;
+        const { title, body, attendance_id, game_id, is_public } = parsed.data;
 
         let resolvedGameId = game_id ?? null;
         if (attendance_id) {
@@ -66,10 +67,10 @@ router.post('/', async (req, res, next) => {
         }
 
         const { rows } = await query(
-            `INSERT INTO notes (user_id, attendance_id, game_id, title, body)
-             VALUES ($1, $2, $3, $4, $5)
+            `INSERT INTO notes (user_id, attendance_id, game_id, title, body, is_public)
+             VALUES ($1, $2, $3, $4, $5, $6)
              RETURNING *`,
-            [req.user.id, attendance_id ?? null, resolvedGameId, title ?? null, body]
+            [req.user.id, attendance_id ?? null, resolvedGameId, title ?? null, body, is_public ?? false]
         );
         res.status(201).json({ note: rows[0] });
     } catch (err) { next(err); }
@@ -96,7 +97,7 @@ router.patch('/:id', async (req, res, next) => {
             data.game_id = null;
         }
 
-        const allowed = ['title','body','attendance_id','game_id'];
+        const allowed = ['title','body','attendance_id','game_id','is_public'];
         const fields = [];
         const values = [];
         for (const k of allowed) {

@@ -257,23 +257,45 @@ router.get('/feed', async (req, res, next) => {
     try {
         const limit = Math.min(parseInt(req.query.limit) || 30, 100);
         const { rows } = await query(
-            `SELECT
-                a.id AS attendance_id, a.created_at, a.setor, a.status,
-                u.id AS user_id, u.username, u.display_name,
-                c.name AS club_name, c.short_name AS club_short, c.primary_color,
-                g.id AS game_id, g.data, g.time_casa, g.time_visitante,
-                g.gols_casa, g.gols_visitante, g.resultado, g.campeonato, g.estadio
-             FROM attendances a
-             JOIN users u ON u.id = a.user_id
-             LEFT JOIN clubs c ON c.id = u.club_id
-             JOIN games g ON g.id = a.game_id
-             WHERE a.user_id IN (
-                SELECT CASE WHEN requester_id = $1 THEN recipient_id ELSE requester_id END
+            `WITH friend_ids AS (
+                SELECT CASE WHEN requester_id = $1 THEN recipient_id ELSE requester_id END AS user_id
                 FROM friendships
                 WHERE status = 'ACCEPTED' AND (requester_id = $1 OR recipient_id = $1)
              )
-             AND a.status = 'PRESENTE'
-             ORDER BY a.created_at DESC
+             SELECT * FROM (
+                SELECT
+                    'attendance' AS type,
+                    a.id AS ref_id, a.created_at,
+                    u.id AS user_id, u.username, u.display_name,
+                    c.name AS club_name, c.short_name AS club_short, c.primary_color,
+                    g.id AS game_id, g.data, g.time_casa, g.time_visitante,
+                    g.gols_casa, g.gols_visitante, g.resultado, g.campeonato, g.estadio,
+                    NULL::varchar AS title, NULL::text AS body
+                FROM attendances a
+                JOIN users u ON u.id = a.user_id
+                LEFT JOIN clubs c ON c.id = u.club_id
+                JOIN games g ON g.id = a.game_id
+                WHERE a.user_id IN (SELECT user_id FROM friend_ids)
+                  AND a.status = 'PRESENTE'
+
+                UNION ALL
+
+                SELECT
+                    'note' AS type,
+                    n.id AS ref_id, n.created_at,
+                    u.id AS user_id, u.username, u.display_name,
+                    c.name AS club_name, c.short_name AS club_short, c.primary_color,
+                    g.id AS game_id, g.data, g.time_casa, g.time_visitante,
+                    g.gols_casa, g.gols_visitante, g.resultado, g.campeonato, g.estadio,
+                    n.title, n.body
+                FROM notes n
+                JOIN users u ON u.id = n.user_id
+                LEFT JOIN clubs c ON c.id = u.club_id
+                LEFT JOIN games g ON g.id = n.game_id
+                WHERE n.user_id IN (SELECT user_id FROM friend_ids)
+                  AND n.is_public = TRUE
+             ) sub
+             ORDER BY created_at DESC
              LIMIT $2`,
             [req.user.id, limit]
         );

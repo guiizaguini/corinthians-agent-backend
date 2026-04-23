@@ -162,6 +162,56 @@ header::after {
 }
 .btn-ghost:hover { border-color: var(--ink); color: var(--ink); background: var(--paper-soft); }
 
+/* Sino de notificações */
+.bell-btn {
+    position: relative;
+    background: transparent;
+    border: 1.5px solid var(--line);
+    color: var(--ink-soft);
+    width: 38px;
+    height: 38px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 150ms;
+}
+.bell-btn:hover { border-color: var(--accent); color: var(--accent); }
+.bell-btn .material-icons { font-size: 1.15rem; }
+.bell-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: var(--accent);
+    color: var(--paper);
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.65rem;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    box-shadow: 0 0 8px var(--accent-glow);
+}
+.bell-badge.show { display: inline-flex; }
+.bell-btn.has-pending {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.bell-btn.has-pending .material-icons {
+    animation: bell-pulse 1.6s ease-in-out infinite;
+    transform-origin: top center;
+}
+@keyframes bell-pulse {
+    0%, 60%, 100% { transform: rotate(0); }
+    10%, 30% { transform: rotate(-12deg); }
+    20%, 40% { transform: rotate(12deg); }
+}
+
 main {
     position: relative;
     z-index: 1;
@@ -1450,7 +1500,7 @@ main {
 
 .user-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
     gap: 0.75rem;
 }
 .user-card {
@@ -1490,7 +1540,8 @@ main {
     line-height: 1.2;
     text-transform: uppercase;
     letter-spacing: 0.02em;
-    word-break: break-word;
+    overflow-wrap: break-word;
+    word-break: normal;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -1511,20 +1562,21 @@ main {
 .user-meta-sm .at { color: var(--accent); font-weight: 600; }
 .user-actions-sm {
     display: flex;
-    gap: 0.3rem;
+    gap: 0.25rem;
     flex-shrink: 0;
 }
 .user-action {
     background: transparent;
     border: 1.5px solid var(--line);
     color: var(--ink-soft);
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     transition: all 150ms;
+    flex-shrink: 0;
 }
 .user-action:hover { border-color: var(--accent); color: var(--accent); }
 .user-action.accept:hover { border-color: #4ec96d; color: #4ec96d; }
@@ -1805,6 +1857,10 @@ main {
         <div class="user-info">
             <span class="club-badge" id="clubBadge"></span>
             <span>Olá, <strong id="userName">—</strong></span>
+            <button class="bell-btn" id="bellBtn" title="Notificações">
+                <span class="material-icons">notifications</span>
+                <span class="bell-badge" id="bellBadge">0</span>
+            </button>
             <a href="/admin" class="btn-ghost" id="linkAdmin" style="display:none;text-decoration:none;">Admin</a>
             <button class="btn-ghost" id="btnProfile">Perfil</button>
             <button class="btn-ghost" id="btnLogout">Sair</button>
@@ -1878,11 +1934,15 @@ main {
                     <span class="cartao-num" id="cartaoNum">Nº 0001</span>
                 </div>
             </div>
-            <div class="modal-actions" style="margin-top:1.25rem;">
+            <div class="modal-actions" style="margin-top:1.25rem;flex-wrap:wrap;">
                 <button class="btn-secondary" id="cartFechar">Fechar</button>
+                <button class="btn-secondary" id="cartCompartilharPerfil">
+                    <span class="material-icons" style="font-size:1.05rem;vertical-align:middle;margin-right:0.3rem;">link</span>
+                    Compartilhar perfil
+                </button>
                 <button class="btn-primary" id="cartCompartilhar">
-                    <span class="material-icons" style="font-size:1.05rem;vertical-align:middle;margin-right:0.3rem;">share</span>
-                    Compartilhar
+                    <span class="material-icons" style="font-size:1.05rem;vertical-align:middle;margin-right:0.3rem;">image</span>
+                    Imagem
                 </button>
             </div>
         </div>
@@ -1904,6 +1964,19 @@ main {
 
             <label>História</label>
             <textarea class="note-body" id="notaBody" rows="8" placeholder="Comece pelo cheiro do estádio, ou pelo gol que mudou tudo. Escreve solto."></textarea>
+
+            <label>Visibilidade</label>
+            <div class="status-toggle">
+                <button type="button" class="status-btn presente" data-vis="false">
+                    <span class="material-icons">lock</span> Privada
+                </button>
+                <button type="button" class="status-btn presente" data-vis="true">
+                    <span class="material-icons">public</span> Pública
+                </button>
+            </div>
+            <div style="font-size:0.72rem;color:var(--ink-mute);margin-top:0.4rem;font-family:'SN Pro','Oswald',sans-serif;">
+                Públicas aparecem no feed dos seus amigos.
+            </div>
 
             <div class="error" id="notaErr" style="margin-top:1rem;padding:0.7rem 0.9rem;background:rgba(107,31,42,0.1);border-left:3px solid var(--vinho);color:var(--vinho);font-size:0.85rem;display:none;"></div>
 
@@ -2347,6 +2420,7 @@ main {
             allGames = gamesRes.games;
             snapshot = snap;
             friendsState = friendsRes;
+            updateBell();
             renderKpis();
             renderCatalog();
             renderMine();
@@ -3083,6 +3157,31 @@ main {
         await renderShareCarteirinha();
     });
 
+    document.getElementById('cartCompartilharPerfil').addEventListener('click', async () => {
+        if (!user.username) {
+            alert('Você precisa definir um @username em "Perfil" antes de compartilhar.');
+            document.getElementById('cartModal').classList.remove('show');
+            document.getElementById('btnProfile').click();
+            return;
+        }
+        const url = `${window.location.origin}/?add=${encodeURIComponent(user.username)}`;
+        const text = `Me adiciona como amigo no Arquibancada: @${user.username}\n${url}`;
+
+        // Tenta Web Share API (mobile), senão clipboard
+        if (navigator.share) {
+            try {
+                await navigator.share({ title: 'Arquibancada', text, url });
+                return;
+            } catch (_) { /* usuário cancelou ou não suportado, cai pro clipboard */ }
+        }
+        try {
+            await navigator.clipboard.writeText(url);
+            alert(`Link copiado!\n\n${url}\n\nMande pros amigos.`);
+        } catch (_) {
+            prompt('Copia e manda esse link:', url);
+        }
+    });
+
     // ===============================================
     // CANVAS — geração de imagem 1080x1080 pra IG
     // ===============================================
@@ -3443,9 +3542,18 @@ main {
                 ? `${escapeHtml(n.time_casa)} × ${escapeHtml(n.time_visitante)}${n.gols_casa != null ? ` · ${n.gols_casa}-${n.gols_visitante}` : ''}`
                 : 'Nota livre';
             const created = new Date(n.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+            const visIcon = n.is_public ? 'public' : 'lock';
+            const visLabel = n.is_public ? 'Pública' : 'Privada';
+            const visColor = n.is_public ? 'var(--accent)' : 'var(--ink-mute)';
             return `
                 <article class="nota-card" data-id="${n.id}">
-                    <div class="nota-game">${gameLabel}</div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;">
+                        <div class="nota-game" style="border:none;padding:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${gameLabel}</div>
+                        <span title="${visLabel}" style="display:inline-flex;align-items:center;gap:0.25rem;color:${visColor};font-family:'Oswald',sans-serif;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;font-weight:600;">
+                            <span class="material-icons" style="font-size:0.95rem;">${visIcon}</span>
+                            ${visLabel}
+                        </span>
+                    </div>
                     ${n.title ? `<div class="nota-title">${escapeHtml(n.title)}</div>` : ''}
                     <div class="nota-body">${escapeHtml(n.body)}</div>
                     <div class="nota-footer">
@@ -3496,6 +3604,18 @@ main {
         }
     }
 
+    let notaIsPublic = false;
+
+    function setNotaVisibility(isPublic) {
+        notaIsPublic = !!isPublic;
+        document.querySelectorAll('#notaModal .status-btn[data-vis]').forEach(b => {
+            b.classList.toggle('active', (b.dataset.vis === 'true') === notaIsPublic);
+        });
+    }
+    document.querySelectorAll('#notaModal .status-btn[data-vis]').forEach(b => {
+        b.addEventListener('click', () => setNotaVisibility(b.dataset.vis === 'true'));
+    });
+
     function openNotaNew() {
         editingNota = null;
         populateAttendanceSelect();
@@ -3503,6 +3623,7 @@ main {
         document.getElementById('notaAttendance').value = '';
         document.getElementById('notaTitle').value = '';
         document.getElementById('notaBody').value = '';
+        setNotaVisibility(false);
         document.getElementById('notaDelete').style.display = 'none';
         document.getElementById('notaErr').classList.remove('show');
         document.getElementById('notaModal').classList.add('show');
@@ -3517,6 +3638,7 @@ main {
         document.getElementById('notaAttendance').value = n.attendance_id || '';
         document.getElementById('notaTitle').value = n.title || '';
         document.getElementById('notaBody').value = n.body;
+        setNotaVisibility(!!n.is_public);
         document.getElementById('notaDelete').style.display = '';
         document.getElementById('notaErr').classList.remove('show');
         document.getElementById('notaModal').classList.add('show');
@@ -3553,6 +3675,7 @@ main {
                 attendance_id: document.getElementById('notaAttendance').value
                     ? parseInt(document.getElementById('notaAttendance').value)
                     : null,
+                is_public: notaIsPublic,
             };
             if (!body.body) {
                 errBox.textContent = 'A história não pode ficar vazia.';
@@ -3719,18 +3842,35 @@ main {
                            : diffH < 24 ? `${Math.floor(diffH)}h atrás`
                            : diffH < 168 ? `${Math.floor(diffH/24)}d atrás`
                            : dt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
-                const placar = (item.gols_casa != null) ? `${item.gols_casa} × ${item.gols_visitante}` : '';
+
+                const gameLabel = item.time_casa
+                    ? `<span class="feed-game">${escapeHtml(item.time_casa)} × ${escapeHtml(item.time_visitante)}</span>`
+                    : '';
+                const placar = (item.gols_casa != null) ? ` · ${item.gols_casa} × ${item.gols_visitante}` : '';
                 const resCls = item.resultado === 'V' ? 'v' : item.resultado === 'D' ? 'd' : item.resultado === 'E' ? 'e' : '';
                 const resTag = item.resultado ? `<span class="feed-result ${resCls}">${item.resultado}</span>` : '';
+
+                let textHtml;
+                if (item.type === 'note') {
+                    const titlePart = item.title ? ` <em style="color:var(--accent);font-style:normal;font-weight:600;">"${escapeHtml(item.title)}"</em>` : '';
+                    const bodyPreview = item.body ? `<div style="margin-top:0.4rem;font-size:0.86rem;color:var(--ink-mute);font-family:'SN Pro','Oswald',sans-serif;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">"${escapeHtml(item.body)}"</div>` : '';
+                    textHtml = `
+                        <strong>${escapeHtml(handle)}</strong>
+                        <span class="material-icons" style="font-size:0.95rem;vertical-align:middle;color:var(--accent);">edit_note</span>
+                        publicou uma nota${item.time_casa ? ' sobre ' + gameLabel.toString() : ''}${titlePart}
+                        ${bodyPreview}
+                    `;
+                } else {
+                    textHtml = `
+                        <strong>${escapeHtml(handle)}</strong> marcou presença em
+                        ${gameLabel}${placar} ${resTag}
+                    `;
+                }
+
                 return `
-                    <div class="feed-item" data-friend-id="${item.user_id}">
+                    <div class="feed-item" data-friend-id="${item.user_id}" data-type="${item.type}">
                         <div class="user-avatar-sm">${initials}</div>
-                        <div class="feed-text">
-                            <strong>${escapeHtml(handle)}</strong> marcou presença em
-                            <span class="feed-game">${escapeHtml(item.time_casa)} × ${escapeHtml(item.time_visitante)}</span>
-                            ${placar ? '· ' + placar : ''}
-                            ${resTag}
-                        </div>
+                        <div class="feed-text">${textHtml}</div>
                         <div class="feed-time">${when}</div>
                     </div>
                 `;
@@ -3799,10 +3939,38 @@ main {
         if (e.target.id === 'friendCollectionModal') document.getElementById('friendCollectionModal').classList.remove('show');
     });
 
+    function updateBell() {
+        const count = friendsState.incoming?.length || 0;
+        const bell = document.getElementById('bellBtn');
+        const badge = document.getElementById('bellBadge');
+        if (count > 0) {
+            badge.textContent = count > 9 ? '9+' : count;
+            badge.classList.add('show');
+            bell.classList.add('has-pending');
+            bell.title = `${count} ${count === 1 ? 'pedido pendente' : 'pedidos pendentes'}`;
+        } else {
+            badge.classList.remove('show');
+            bell.classList.remove('has-pending');
+            bell.title = 'Sem notificações';
+        }
+    }
+
+    document.getElementById('bellBtn').addEventListener('click', () => {
+        // Vai pra Rede social e foca em Solicitações recebidas
+        document.querySelector('.tab[data-tab="rede"]').click();
+        setTimeout(() => {
+            const target = document.getElementById('incomingSection');
+            if (target && target.style.display !== 'none') {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 100);
+    });
+
     async function loadFriends() {
         try {
             const data = await api('/social/friends');
             friendsState = data;
+            updateBell();
             // carrega feed em paralelo (silencioso)
             loadFeed();
 
@@ -3950,7 +4118,23 @@ main {
         if (e.target.id === 'compareModal') document.getElementById('compareModal').classList.remove('show');
     });
 
-    loadAll();
+    // Se chegou via link de compartilhamento (?add=USERNAME), abre a Rede com o user já buscado
+    function checkAddFriendParam() {
+        const params = new URLSearchParams(window.location.search);
+        const add = params.get('add');
+        if (!add) return;
+        // Limpa da URL
+        window.history.replaceState({}, '', window.location.pathname);
+        // Espera o app carregar
+        setTimeout(() => {
+            document.querySelector('.tab[data-tab="rede"]').click();
+            const input = document.getElementById('redeSearch');
+            input.value = add;
+            input.dispatchEvent(new Event('input'));
+        }, 600);
+    }
+
+    loadAll().then(checkAddFriendParam);
 </script>
 </body>
 </html>
