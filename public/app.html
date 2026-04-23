@@ -78,7 +78,23 @@ body.light-theme {
     --shadow-sm: 0 2px 8px rgba(20,15,10,0.08);
     --shadow-md: 0 8px 22px rgba(20,15,10,0.12);
     --shadow-lg: 0 16px 40px rgba(20,15,10,0.18);
+
+    /* Aliases REDEFINIDOS pro tema light. Sem isso, código que usa
+       --paper-soft/--branco/etc fica com cores invertidas (preto-no-preto).
+       --preto NÃO é redefinido — ele é usado pra picotado dos ingressos
+       que precisa ficar SEMPRE escuro (visível no papel cream). */
+    --paper: #f1ede2;
+    --paper-soft: #ffffff;
+    --paper-deep: #f7f3e7;
+    --preto-card: #ffffff;
+    --preto-card-2: #f7f3e7;
+    --branco: #141414;
+    --branco-suave: #3a3531;
+    --cinza-claro: #7a7468;
     --cinza-medio: #948e83;
+    --cinza-linha: #d8d2c1;
+    --cinza-divisa: #ebe5d4;
+    --ink-line: #d8d2c1;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -89,7 +105,9 @@ body {
     font-family: 'Oswald', sans-serif;
     min-height: 100vh;
     position: relative;
+    color-scheme: dark;
 }
+body.light-theme { color-scheme: light; }
 
 /* Mesh gradient suave — sem pixel grain (parecia velho) */
 body::before {
