@@ -2650,13 +2650,48 @@ main {
 }
 .feed-item:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: var(--shadow-md); }
 
-/* Cabeçalho do post: avatar + nome + ação + tempo */
+/* Cabeçalho do post: avatar + nome + ação + tempo (+ delete opcional) */
 .feed-head {
     display: grid;
-    grid-template-columns: 42px 1fr auto;
+    grid-template-columns: 42px 1fr auto auto;
     gap: 0.75rem;
     align-items: center;
 }
+.feed-mine-tag {
+    display: inline-block;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 0.05rem 0.4rem;
+    margin-left: 0.35rem;
+    vertical-align: middle;
+    border-radius: 999px;
+    line-height: 1.2;
+}
+.feed-delete {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--ink-mute);
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 150ms;
+    flex-shrink: 0;
+}
+.feed-delete:hover {
+    border-color: var(--vinho);
+    color: var(--vinho);
+    background: rgba(107,31,42,0.08);
+}
+.feed-delete .material-icons { font-size: 1rem; }
 .feed-author {
     display: flex;
     flex-direction: column;
@@ -5275,22 +5310,44 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                     `;
                 }
 
+                const isMine = item.user_id === user.id;
+                const canDelete = isMine && item.type === 'note';
+                const deleteBtn = canDelete
+                    ? `<button class="feed-delete" data-delete-note="${item.ref_id}" title="Remover essa nota"><span class="material-icons">delete_outline</span></button>`
+                    : '';
+
                 return `
-                    <div class="feed-item" data-friend-id="${item.user_id}" data-type="${item.type}" data-ref-id="${item.ref_id}">
+                    <div class="feed-item${isMine ? ' is-mine' : ''}" data-friend-id="${item.user_id}" data-type="${item.type}" data-ref-id="${item.ref_id}">
                         <div class="feed-head">
                             <div class="user-avatar-sm">${initials}</div>
                             <div class="feed-author">
-                                <div class="feed-author-name">${escapeHtml(handle)}</div>
+                                <div class="feed-author-name">${escapeHtml(handle)}${isMine ? ' <span class="feed-mine-tag">você</span>' : ''}</div>
                                 <div class="feed-action">${actionLine}</div>
                             </div>
                             <div class="feed-time">${when}</div>
+                            ${deleteBtn}
                         </div>
                         ${contentBlock}
                     </div>
                 `;
             }).join('');
+
+            // Handler do delete — stopPropagation pra não abrir o modal de view
+            list.querySelectorAll('[data-delete-note]').forEach(b => {
+                b.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    if (!confirm('Remover essa nota? Essa ação não pode ser desfeita.')) return;
+                    try {
+                        await api(`/notes/${b.dataset.deleteNote}`, { method: 'DELETE' });
+                        await loadFeed();
+                    } catch (err) { alert('Erro: ' + err.message); }
+                });
+            });
+
             list.querySelectorAll('.feed-item').forEach(el => {
-                el.addEventListener('click', () => {
+                el.addEventListener('click', (e) => {
+                    // Se clicou no botão de delete, ignora
+                    if (e.target.closest('[data-delete-note]')) return;
                     const type = el.dataset.type;
                     const friendId = parseInt(el.dataset.friendId);
                     const refId = parseInt(el.dataset.refId);
