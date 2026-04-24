@@ -1476,13 +1476,13 @@ main {
     pointer-events: none;
 }
 .wc-header img {
-    width: 84px;
-    height: 84px;
+    width: 72px;
+    height: 72px;
     object-fit: contain;
     position: relative; z-index: 1;
-    background: rgba(255,255,255,0.94);
-    border-radius: 14px;
-    padding: 0.4rem;
+    background: rgba(255,255,255,0.96);
+    border-radius: 12px;
+    padding: 0.3rem;
     flex-shrink: 0;
 }
 .wc-header-text {
@@ -1531,10 +1531,11 @@ main {
     --wc-ink-mute: #6a625a;
     --wc-line: #e0d6bf;
     background: var(--wc-bg);
-    margin: 0 -1.5rem;
-    padding: 1.5rem;
+    padding: 1.25rem 1.5rem 1.75rem;
     border-radius: 16px;
+    border: 1px solid var(--wc-line);
 }
+#tabCopa .wc-header { margin-top: 0; }
 
 /* Título de seção (Grupo A, Oitavas, etc) */
 .wc-section-title {
@@ -2905,7 +2906,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                     <p class="wc-subtitle">Canadá · México · Estados Unidos. Marque seus jogos com "EU VOU" antes, e confirme presença depois que a bola rolar.</p>
                 </div>
             </section>
-            <div id="copaList" class="wc-grid"><div class="loading">Carregando jogos...</div></div>
+            <div id="copaList"><div class="loading">Carregando jogos...</div></div>
         </div>
 
         <div class="tab-panel" id="tabNotas">
