@@ -3522,170 +3522,214 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     text-transform: uppercase;
 }
 
-/* Card de jogo com palpite */
-.bolao-jogo {
+/* Card de jogo do bolão — estilo wc-ticket da Copa */
+#bolaoJogosList { display: flex; flex-direction: column; gap: 0.85rem; }
+
+.bolao-ticket {
+    cursor: default;
+    min-height: auto;
+}
+.bolao-ticket:hover {
+    transform: none;
+    box-shadow:
+        0 1px 0 rgba(255,255,255,0.8) inset,
+        0 4px 14px rgba(20,15,10,0.08);
+    border-color: var(--wc-line);
+}
+.bolao-ticket.is-final:hover { border-color: #d4a520; }
+.bolao-ticket.is-knockout:hover { border-color: #c9b8dc; }
+.bolao-ticket.palpitado { border-color: #4ec96d; }
+.bolao-ticket.palpitado:hover { border-color: #4ec96d; }
+.bolao-ticket.finalizado { background: linear-gradient(155deg, #fffbe8 0%, #ffffff 100%); }
+
+/* Status badge (check/lock/trophy) no header "wc-ticket-fase" */
+.bolao-ticket .wc-ticket-fase {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.bolao-status-badge {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
     background: var(--wc-card);
     border: 1.5px solid var(--wc-line);
-    border-radius: 12px;
-    padding: 0.85rem 1rem;
-    margin-bottom: 0.65rem;
-    transition: all 150ms;
-    position: relative;
-}
-.bolao-jogo.palpitado { border-color: #4ec96d; }
-.bolao-jogo.travado { opacity: 0.75; background: #f0ebe0; }
-.bolao-jogo.finalizado { border-color: #d4a520; background: #fff8e8; }
-
-.bolao-jogo-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.6rem;
-    font-family: 'Oswald', sans-serif;
-    font-size: 0.62rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--wc-ink-mute);
-}
-.bolao-jogo-head .bolao-check {
-    color: #4ec96d;
-    font-size: 1.1rem;
-}
-.bolao-jogo-head .bolao-lock {
-    color: var(--wc-ink-mute);
-    font-size: 1rem;
-}
-.bolao-jogo-teams {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    gap: 0.75rem;
-}
-.bolao-jogo-team {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: 'Oswald', sans-serif;
-    font-weight: 700;
-    font-size: 0.92rem;
-    color: var(--wc-ink);
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-    min-width: 0;
-}
-.bolao-jogo-team.home { justify-content: flex-end; text-align: right; }
-.bolao-jogo-team .bolao-flag {
-    width: 24px; height: 18px;
-    object-fit: cover;
-    border-radius: 3px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
     flex-shrink: 0;
 }
-.bolao-jogo-team .bolao-flag.tbd {
-    background: repeating-linear-gradient(45deg, #e5dfd0 0 4px, #c9bfa8 4px 8px);
-}
-.bolao-jogo-team-name {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-.bolao-jogo-center {
+.bolao-status-badge .material-icons { font-size: 1rem; }
+.bolao-status-badge.palpitado { background: rgba(78,201,109,0.15); border-color: #4ec96d; color: #2a7a3d; }
+.bolao-status-badge.finalizado { background: #fff8e0; border-color: #d4a520; color: #a8791b; }
+.bolao-status-badge.travado { background: #f0ebe0; color: var(--wc-ink-mute); }
+
+/* Bloco do palpite (inputs grandes) */
+.bolao-palpite-block {
+    margin-top: 0.5rem;
+    padding: 0.75rem 0.85rem;
+    background: linear-gradient(135deg, #fafafa 0%, #fff8e8 100%);
+    border: 1.5px dashed #d4a520;
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.4rem;
+    transition: all 150ms;
 }
-.bolao-jogo-inputs {
+.bolao-palpite-block.locked {
+    background: #f5f0e4;
+    border-style: solid;
+    border-color: var(--wc-line);
+    opacity: 0.85;
+}
+.bolao-palpite-label {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.6rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: #a8791b;
+}
+.bolao-palpite-block.locked .bolao-palpite-label { color: var(--wc-ink-mute); }
+.bolao-palpite-inputs {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.5rem;
 }
-.bolao-jogo-input {
-    width: 48px;
-    height: 48px;
+.bolao-palpite-input {
+    width: 56px;
+    height: 56px;
     background: #fff;
-    border: 1.5px solid var(--wc-line);
+    border: 2px solid var(--wc-line);
     color: var(--wc-ink);
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     text-align: center;
     outline: none;
-    border-radius: 10px;
+    border-radius: 12px;
     transition: all 150ms;
     padding: 0;
     -moz-appearance: textfield;
+    box-shadow: 0 2px 6px rgba(212,165,32,0.08);
 }
-.bolao-jogo-input::-webkit-outer-spin-button,
-.bolao-jogo-input::-webkit-inner-spin-button {
+.bolao-palpite-input::-webkit-outer-spin-button,
+.bolao-palpite-input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
-.bolao-jogo-input:focus { border-color: #d4a520; box-shadow: 0 0 0 3px rgba(212,165,32,0.2); }
-.bolao-jogo-input:disabled {
-    background: #f0ebe0;
+.bolao-palpite-input::placeholder { color: #c9bfa8; font-weight: 500; }
+.bolao-palpite-input:focus {
+    border-color: #d4a520;
+    box-shadow: 0 0 0 4px rgba(212,165,32,0.2);
+    transform: translateY(-1px);
+}
+.bolao-palpite-input:disabled {
+    background: #faf5e8;
     cursor: not-allowed;
     color: var(--wc-ink-mute);
+    box-shadow: none;
 }
-.bolao-jogo-x {
+.bolao-palpite-x {
     font-family: 'Oswald', sans-serif;
     font-weight: 500;
-    font-size: 1rem;
+    font-size: 1.2rem;
     color: var(--wc-ink-mute);
     letter-spacing: 0.05em;
 }
-.bolao-jogo-foot {
+
+/* Bloco de resultado real (quando finalizado) */
+.bolao-real-block {
+    margin-top: 0.5rem;
+    padding: 0.6rem 0.85rem;
+    background: linear-gradient(135deg, #2a1a0a 0%, #1a1000 100%);
+    border-radius: 10px;
+    color: #f5e6a8;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.7rem;
-    padding-top: 0.55rem;
-    border-top: 1px dashed var(--wc-line);
-    font-family: 'Oswald', sans-serif;
-    font-size: 0.65rem;
-    letter-spacing: 0.12em;
-    color: var(--wc-ink-mute);
-    text-transform: uppercase;
+    justify-content: space-between;
+    gap: 0.75rem;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
 }
+.bolao-real-score {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+.bolao-real-label {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.58rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(212,165,32,0.9);
+}
+.bolao-real-value {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.35rem;
+    color: #fff;
+    letter-spacing: 0.04em;
+    line-height: 1;
+}
+.bolao-real-x { color: rgba(255,255,255,0.35); margin: 0 0.3em; font-size: 0.75em; }
+.bolao-earned-pill {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    flex-shrink: 0;
+}
+.bolao-earned-pill.v {
+    background: #4ec96d;
+    color: #0a2a15;
+    box-shadow: 0 0 14px rgba(78,201,109,0.4);
+}
+.bolao-earned-pill.z {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.6);
+    border: 1px solid rgba(255,255,255,0.15);
+}
+
+/* Save button no footer */
 .bolao-jogo-save {
     background: #1a1a1a;
     color: #fff;
     border: 1.5px solid #1a1a1a;
-    padding: 0.4rem 0.85rem;
+    padding: 0.5rem 1.1rem;
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 0.65rem;
-    letter-spacing: 0.18em;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
     cursor: pointer;
     border-radius: 999px;
     transition: all 150ms;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
 }
-.bolao-jogo-save:hover:not(:disabled) { background: #d4a520; border-color: #d4a520; color: #1a1000; }
+.bolao-jogo-save:hover:not(:disabled) { background: #d4a520; border-color: #d4a520; color: #1a1000; transform: translateY(-1px); }
 .bolao-jogo-save:disabled { opacity: 0.35; cursor: not-allowed; }
 .bolao-jogo-save.saved { background: #4ec96d; border-color: #4ec96d; }
-.bolao-jogo-realscore {
+
+.bolao-foot-msg {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
     font-family: 'Oswald', sans-serif;
-    font-weight: 700;
-    font-size: 0.72rem;
-    color: #a8791b;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-}
-.bolao-jogo-realscore b { color: #1a1000; font-size: 0.9rem; }
-.bolao-jogo-earned {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 700;
-    font-size: 0.72rem;
+    font-weight: 600;
+    font-size: 0.68rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    padding: 0.25rem 0.55rem;
-    border-radius: 999px;
+    color: var(--wc-ink-mute);
 }
-.bolao-jogo-earned.v { background: rgba(78,201,109,0.2); color: #2a7a3d; }
-.bolao-jogo-earned.z { background: rgba(107,31,42,0.1); color: var(--vinho); }
+.bolao-foot-msg .material-icons { font-size: 0.9rem; }
 
 /* ===== Ranking ===== */
 .bolao-ranking {
@@ -3903,14 +3947,14 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     .bolao-join-row { flex-direction: column; gap: 0.5rem; }
     .bolao-join-row input { font-size: 16px; /* evita zoom */ }
     .bolao-join-row .btn-primary { width: 100%; padding: 0.8rem; }
-    .bolao-jogo { padding: 0.75rem 0.85rem; border-radius: 10px; }
-    .bolao-jogo-team { font-size: 0.82rem; gap: 0.35rem; }
-    .bolao-jogo-team .bolao-flag { width: 20px; height: 14px; }
-    .bolao-jogo-input { width: 44px; height: 44px; font-size: 1.3rem; }
+    .bolao-palpite-input { width: 50px; height: 50px; font-size: 1.5rem; }
+    .bolao-palpite-block { padding: 0.6rem 0.75rem; }
+    .bolao-real-value { font-size: 1.15rem; }
+    .bolao-earned-pill { font-size: 0.7rem; padding: 0.25rem 0.6rem; }
 }
 @media (max-width: 420px) {
-    .bolao-jogo-teams { grid-template-columns: 1fr auto 1fr; gap: 0.4rem; }
-    .bolao-jogo-team { font-size: 0.75rem; }
+    .bolao-palpite-input { width: 46px; height: 46px; font-size: 1.35rem; }
+    .bolao-real-block { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
 }
 
 /* ===============================================================
@@ -7405,12 +7449,12 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             list.innerHTML = games.map(g => bolaoRenderJogo(g)).join('');
 
             // Wire up save buttons e inputs
-            list.querySelectorAll('.bolao-jogo').forEach(el => {
+            list.querySelectorAll('.bolao-ticket').forEach(el => {
                 const gameId = parseInt(el.dataset.gameId);
-                const inpHome = el.querySelector('.bolao-jogo-input.home');
-                const inpAway = el.querySelector('.bolao-jogo-input.away');
+                const inpHome = el.querySelector('.bolao-palpite-input.home');
+                const inpAway = el.querySelector('.bolao-palpite-input.away');
                 const saveBtn = el.querySelector('.bolao-jogo-save');
-                if (!saveBtn) return;
+                if (!saveBtn || !inpHome || !inpAway) return;
 
                 const onChange = () => {
                     const h = parseInt(inpHome.value);
@@ -7437,12 +7481,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                         saveBtn.textContent = 'Salvo ✓';
                         saveBtn.classList.add('saved');
                         el.classList.add('palpitado');
-                        const checkIcon = el.querySelector('.bolao-jogo-head .bolao-check');
-                        if (!checkIcon) {
-                            const head = el.querySelector('.bolao-jogo-head-right');
-                            if (head) head.innerHTML = '<span class="material-icons bolao-check" title="Palpite salvo">check_circle</span>';
-                        }
-                        // Atualiza stats
+                        // Recarrega tudo pra refletir o novo estado
                         await bolaoLoadJogos(id);
                         await bolaoLoadRanking(id);
                     } catch (err) {
@@ -7464,79 +7503,118 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const fCasa = flagFor(g.time_casa);
         const fVis = flagFor(g.time_visitante);
         const flagHtml = (url) => url
-            ? `<img class="bolao-flag" src="${url}" alt="" loading="lazy">`
-            : `<span class="bolao-flag tbd"></span>`;
+            ? `<img class="wc-flag" src="${url}" alt="" loading="lazy">`
+            : `<span class="wc-flag tbd-flag"></span>`;
 
         const temResultado = g.gols_casa_real != null && g.gols_visitante_real != null;
         const jaPalpitou = g.palpite_casa != null;
-        const cardCls = temResultado ? 'finalizado' : (g.travado ? 'travado' : (jaPalpitou ? 'palpitado' : ''));
+        const travarInputs = g.travado || temResultado;
 
         const dt = new Date(g.data);
-        const dia = dt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
-        const hora = g.horario || '—';
+        const dia = String(dt.getUTCDate()).padStart(2, '0');
+        const mes = MESES_ABREV[dt.getUTCMonth()];
+        const ano = dt.getUTCFullYear();
+        const weekday = dt.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.','').toUpperCase();
 
-        let statusIcon = '';
+        const fase = (g.fase || g.campeonato || 'Jogo').toUpperCase();
+        const isFinal = fase.trim() === 'FINAL';
+        const isKnockout = /OITAVAS|QUARTAS|SEMIFINAL|DISPUTA|FINAL|ROUND/i.test(fase);
+
+        const teamCasaTbd = /definir/i.test(g.time_casa);
+        const teamVisTbd = /definir/i.test(g.time_visitante);
+
+        // Classes do card (mesmas da Copa + variantes bolão)
+        const ticketClasses = ['wc-ticket', 'bolao-ticket'];
+        if (isFinal) ticketClasses.push('is-final');
+        else if (isKnockout) ticketClasses.push('is-knockout');
+        if (jaPalpitou && !temResultado) ticketClasses.push('palpitado');
+        if (temResultado) ticketClasses.push('finalizado');
+        if (g.travado && !temResultado) ticketClasses.push('travado');
+
+        // Status badge no topo direito
+        let statusBadge = '';
         if (temResultado) {
-            statusIcon = '<span class="material-icons" style="color:#d4a520;font-size:1.1rem;" title="Jogo finalizado">sports_score</span>';
+            statusBadge = '<span class="bolao-status-badge finalizado" title="Jogo finalizado"><span class="material-icons">sports_score</span></span>';
         } else if (g.travado) {
-            statusIcon = '<span class="material-icons bolao-lock" title="Palpites fechados">lock</span>';
+            statusBadge = '<span class="bolao-status-badge travado" title="Palpites fechados"><span class="material-icons">lock</span></span>';
         } else if (jaPalpitou) {
-            statusIcon = '<span class="material-icons bolao-check" title="Palpite salvo">check_circle</span>';
+            statusBadge = '<span class="bolao-status-badge palpitado" title="Palpite salvo"><span class="material-icons">check_circle</span></span>';
         }
 
-        // Pontos ganhos (se tem resultado)
-        let earnedHtml = '';
-        if (temResultado && jaPalpitou) {
-            const pts = calcularPontosPalpite(
+        // Placar do palpite (inputs grandes estilo wc-score)
+        const valH = g.palpite_casa != null ? g.palpite_casa : '';
+        const valA = g.palpite_visitante != null ? g.palpite_visitante : '';
+        const palpiteBlock = `
+            <div class="bolao-palpite-block ${travarInputs ? 'locked' : ''}">
+                <div class="bolao-palpite-label">Seu palpite</div>
+                <div class="bolao-palpite-inputs">
+                    <input type="number" min="0" max="20" class="bolao-palpite-input home" value="${valH}" ${travarInputs ? 'disabled' : ''} inputmode="numeric" placeholder="—">
+                    <span class="bolao-palpite-x">×</span>
+                    <input type="number" min="0" max="20" class="bolao-palpite-input away" value="${valA}" ${travarInputs ? 'disabled' : ''} inputmode="numeric" placeholder="—">
+                </div>
+            </div>
+        `;
+
+        // Bloco de resultado real (quando finalizado)
+        let realBlock = '';
+        if (temResultado) {
+            const pts = jaPalpitou ? calcularPontosPalpite(
                 g.palpite_casa, g.palpite_visitante,
                 g.gols_casa_real, g.gols_visitante_real,
                 bolaoState.pontos
-            );
-            earnedHtml = `<span class="bolao-jogo-earned ${pts > 0 ? 'v' : 'z'}">${pts > 0 ? '+' + pts : '0'} pts</span>`;
-        } else if (temResultado && !jaPalpitou) {
-            earnedHtml = `<span class="bolao-jogo-earned z">0 pts</span>`;
+            ) : 0;
+            const earnedCls = pts > 0 ? 'v' : 'z';
+            realBlock = `
+                <div class="bolao-real-block">
+                    <div class="bolao-real-score">
+                        <span class="bolao-real-label">Resultado</span>
+                        <div class="bolao-real-value">${g.gols_casa_real}<span class="bolao-real-x">×</span>${g.gols_visitante_real}</div>
+                    </div>
+                    <span class="bolao-earned-pill ${earnedCls}">${pts > 0 ? '+' + pts : '0'} pts</span>
+                </div>
+            `;
         }
 
-        // Inputs
-        const travarInputs = g.travado || temResultado;
-        const valH = g.palpite_casa != null ? g.palpite_casa : '';
-        const valA = g.palpite_visitante != null ? g.palpite_visitante : '';
-
-        const realPlacarHtml = temResultado
-            ? `<span class="bolao-jogo-realscore">Real: <b>${g.gols_casa_real}×${g.gols_visitante_real}</b></span>`
-            : '';
+        // Footer: data + save ou mensagem de travado
+        let footerRight = '';
+        if (temResultado) {
+            // Nada — o realBlock acima já mostra pontos
+            footerRight = '';
+        } else if (g.travado) {
+            footerRight = `<span class="bolao-foot-msg"><span class="material-icons">lock</span>Palpites fechados</span>`;
+        } else {
+            footerRight = `<button class="bolao-jogo-save" type="button" disabled>Salvar</button>`;
+        }
 
         return `
-            <div class="bolao-jogo ${cardCls}" data-game-id="${g.id}">
-                <div class="bolao-jogo-head">
-                    <span>${escapeHtml(g.fase || '')} · ${dia} · ${hora}</span>
-                    <span class="bolao-jogo-head-right">${statusIcon}</span>
-                </div>
-                <div class="bolao-jogo-teams">
-                    <div class="bolao-jogo-team home">
-                        <span class="bolao-jogo-team-name">${escapeHtml(g.time_casa)}</span>
-                        ${flagHtml(fCasa)}
+            <article class="${ticketClasses.join(' ')}" data-game-id="${g.id}">
+                <div class="wc-stripes"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                <div class="wc-ticket-body">
+                    <div class="wc-ticket-fase">
+                        <span>${escapeHtml(fase)}</span>
+                        ${isFinal ? '<span class="wc-final-badge">★ FINAL</span>' : ''}
+                        ${statusBadge}
                     </div>
-                    <div class="bolao-jogo-center">
-                        <div class="bolao-jogo-inputs">
-                            <input type="number" min="0" max="20" class="bolao-jogo-input home" value="${valH}" ${travarInputs ? 'disabled' : ''} inputmode="numeric">
-                            <span class="bolao-jogo-x">×</span>
-                            <input type="number" min="0" max="20" class="bolao-jogo-input away" value="${valA}" ${travarInputs ? 'disabled' : ''} inputmode="numeric">
+                    <div class="wc-teams">
+                        <span class="wc-team ${teamCasaTbd ? 'tbd' : ''}">${flagHtml(fCasa)}${escapeHtml(g.time_casa)}</span>
+                        <span class="wc-vs">vs</span>
+                        <span class="wc-team ${teamVisTbd ? 'tbd' : ''}">${flagHtml(fVis)}${escapeHtml(g.time_visitante)}</span>
+                    </div>
+
+                    ${palpiteBlock}
+                    ${realBlock}
+
+                    ${g.estadio ? `<div class="wc-meta"><span class="material-icons">stadium</span>${escapeHtml(g.estadio)}</div>` : ''}
+
+                    <div class="wc-footer">
+                        <div class="wc-date">
+                            <span class="wc-date-weekday">${escapeHtml(weekday)}</span>
+                            ${dia} ${mes} ${ano}${g.horario ? ` <span class="wc-time">${escapeHtml(g.horario)}</span>` : ''}
                         </div>
-                    </div>
-                    <div class="bolao-jogo-team away">
-                        ${flagHtml(fVis)}
-                        <span class="bolao-jogo-team-name">${escapeHtml(g.time_visitante)}</span>
+                        ${footerRight}
                     </div>
                 </div>
-                <div class="bolao-jogo-foot">
-                    <span>${g.estadio ? escapeHtml(g.estadio) : ''}</span>
-                    ${travarInputs
-                        ? (temResultado ? `<span>${realPlacarHtml} ${earnedHtml}</span>` : '<span style="color:var(--wc-ink-mute);">Palpites fechados</span>')
-                        : `<button class="bolao-jogo-save" type="button" ${jaPalpitou ? '' : 'disabled'}>${jaPalpitou ? 'Salvo ✓' : 'Salvar'}</button>`
-                    }
-                </div>
-            </div>
+            </article>
         `;
     }
 
