@@ -10,6 +10,7 @@
     "migrate:v2": "node scripts/migrate_v2.js",
     "migrate:v2:from-legacy": "node scripts/migrate_v2.js from-legacy",
     "seed:examples": "node scripts/run_fix_sql.js sql/seed_examples.sql",
+    "dump:games": "node scripts/dump_games.mjs",
     "migrate": "node scripts/migrate.js",
     "migrate:seed": "node scripts/migrate.js seed",
     "fix-gols": "node scripts/run_fix_sql.js sql/fix_gols_ogol.sql"

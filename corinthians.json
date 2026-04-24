@@ -1,0 +1,1246 @@
+
+> corinthians-agent-backend@2.0.0 dump:games
+> node scripts/dump_games.mjs --club=corinthians
+
+[
+  {
+    "data": "2013-08-11",
+    "casa": "Corinthians",
+    "visitante": "Vitória",
+    "placar": "2x0",
+    "gols_casa": 2,
+    "gols_visitante": 0,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2015-12-06",
+    "casa": "Corinthians",
+    "visitante": "Avaí",
+    "placar": "1x1",
+    "gols_casa": 1,
+    "gols_visitante": 1,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2016-04-16",
+    "casa": "Corinthians",
+    "visitante": "RB Brasil",
+    "placar": "4x0",
+    "gols_casa": 4,
+    "gols_visitante": 0,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2016-07-03",
+    "casa": "Corinthians",
+    "visitante": "Flamengo",
+    "placar": "4x0",
+    "gols_casa": 4,
+    "gols_visitante": 0,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2017-05-13",
+    "casa": "Corinthians",
+    "visitante": "Chapecoense",
+    "placar": "1x1",
+    "gols_casa": 1,
+    "gols_visitante": 1,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2017-08-05",
+    "casa": "Corinthians",
+    "visitante": "Sport",
+    "placar": "3x1",
+    "gols_casa": 3,
+    "gols_visitante": 1,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2017-11-15",
+    "casa": "Corinthians",
+    "visitante": "Fluminense",
+    "placar": "3x1",
+    "gols_casa": 3,
+    "gols_visitante": 1,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2018-01-17",
+    "casa": "Corinthians",
+    "visitante": "Ponte Preta",
+    "placar": "0x1",
+    "gols_casa": 0,
+    "gols_visitante": 1,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2018-01-24",
+    "casa": "Corinthians",
+    "visitante": "Ferroviária",
+    "placar": "2x1",
+    "gols_casa": 2,
+    "gols_visitante": 1,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2018-03-18",
+    "casa": "Corinthians",
+    "visitante": "Bragantino",
+    "placar": "2x3",
+    "gols_casa": 2,
+    "gols_visitante": 3,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2018-03-28",
+    "casa": "Corinthians",
+    "visitante": "São Paulo",
+    "placar": "1x0",
+    "gols_casa": 1,
+    "gols_visitante": 0,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2019-01-13",
+    "casa": "Corinthians",
+    "visitante": "Santos",
+    "placar": "1x1",
+    "gols_casa": 1,
+    "gols_visitante": 1,
+    "campeonato": "Amistoso",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2019-02-17",
+    "casa": "Corinthians",
+    "visitante": "São Paulo",
+    "placar": "2x1",
+    "gols_casa": 2,
+    "gols_visitante": 1,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2019-02-17",
+    "casa": "Corinthians",
+    "visitante": "Oeste",
+    "placar": "1x0",
+    "gols_casa": 1,
+    "gols_visitante": 0,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2019-03-10",
+    "casa": "Corinthians",
+    "visitante": "Santos",
+    "placar": "0x0",
+    "gols_casa": 0,
+    "gols_visitante": 0,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2019-03-31",
+    "casa": "Corinthians",
+    "visitante": "Santos",
+    "placar": "2x1",
+    "gols_casa": 2,
+    "gols_visitante": 1,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2019-04-21",
+    "casa": "Corinthians",
+    "visitante": "São Paulo",
+    "placar": "2x1",
+    "gols_casa": 2,
+    "gols_visitante": 1,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2019-05-01",
+    "casa": "Corinthians",
+    "visitante": "Chapecoense",
+    "placar": "2x0",
+    "gols_casa": 2,
+    "gols_visitante": 0,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2019-05-11",
+    "casa": "Corinthians",
+    "visitante": "Grêmio",
+    "placar": "0x0",
+    "gols_casa": 0,
+    "gols_visitante": 0,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2019-05-25",
+    "casa": "Corinthians",
+    "visitante": "São Paulo",
+    "placar": "1x0",
+    "gols_casa": 1,
+    "gols_visitante": 0,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2019-07-14",
+    "casa": "Corinthians",
+    "visitante": "CSA",
+    "placar": "1x0",
+    "gols_casa": 1,
+    "gols_visitante": 0,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2019-09-08",
+    "casa": "Corinthians",
+    "visitante": "Ceará",
+    "placar": "2x2",
+    "gols_casa": 2,
+    "gols_visitante": 2,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2019-11-16",
+    "casa": "Corinthians",
+    "visitante": "São Paulo",
+    "placar": "3x0",
+    "gols_casa": 3,
+    "gols_visitante": 0,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2020-02-02",
+    "casa": "Corinthians",
+    "visitante": "Santos",
+    "placar": "2x0",
+    "gols_casa": 2,
+    "gols_visitante": 0,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2020-02-12",
+    "casa": "Corinthians",
+    "visitante": "Guarani (PAR)",
+    "placar": "2x1",
+    "gols_casa": 2,
+    "gols_visitante": 1,
+    "campeonato": "Libertadores",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2021-10-05",
+    "casa": "Corinthians",
+    "visitante": "Bahia",
+    "placar": "3x1",
+    "gols_casa": 3,
+    "gols_visitante": 1,
+    "campeonato": null,
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2021-10-13",
+    "casa": "Corinthians",
+    "visitante": "Fluminense",
+    "placar": "1x0",
+    "gols_casa": 1,
+    "gols_visitante": 0,
+    "campeonato": null,
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2021-11-01",
+    "casa": "Corinthians",
+    "visitante": "Chapecoense",
+    "placar": "1x0",
+    "gols_casa": 1,
+    "gols_visitante": 0,
+    "campeonato": null,
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2021-11-06",
+    "casa": "Corinthians",
+    "visitante": "Fortaleza",
+    "placar": "1x0",
+    "gols_casa": 1,
+    "gols_visitante": 0,
+    "campeonato": null,
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2021-11-13",
+    "casa": "Corinthians",
+    "visitante": "Cuiabá",
+    "placar": "3x2",
+    "gols_casa": 3,
+    "gols_visitante": 2,
+    "campeonato": null,
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2021-11-21",
+    "casa": "Corinthians",
+    "visitante": "Santos",
+    "placar": "2x0",
+    "gols_casa": 2,
+    "gols_visitante": 0,
+    "campeonato": null,
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-01-25",
+    "casa": "Corinthians",
+    "visitante": "Ferroviária",
+    "placar": "0x0",
+    "gols_casa": 0,
+    "gols_visitante": 0,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-01-30",
+    "casa": "Santo André",
+    "visitante": "Corinthians",
+    "placar": "1x0",
+    "gols_casa": 1,
+    "gols_visitante": 0,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-02-02",
+    "casa": "Corinthians",
+    "visitante": "Santos",
+    "placar": "1x2",
+    "gols_casa": 1,
+    "gols_visitante": 2,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-02-06",
+    "casa": "Corinthians",
+    "visitante": "Palmeiras",
+    "placar": "3x0",
+    "gols_casa": 3,
+    "gols_visitante": 0,
+    "campeonato": null,
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-02-10",
+    "casa": "Corinthians",
+    "visitante": "Mirassol",
+    "placar": "3x0",
+    "gols_casa": 3,
+    "gols_visitante": 0,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-02-27",
+    "casa": "Corinthians",
+    "visitante": "Bragantino",
+    "placar": "1x0",
+    "gols_casa": 1,
+    "gols_visitante": 0,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-03-24",
+    "casa": "Corinthians",
+    "visitante": "Guarani",
+    "placar": "1x1",
+    "gols_casa": 1,
+    "gols_visitante": 1,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-04-13",
+    "casa": "Corinthians",
+    "visitante": "Deportivo Cali",
+    "placar": "1x0",
+    "gols_casa": 1,
+    "gols_visitante": 0,
+    "campeonato": "Libertadores",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-04-26",
+    "casa": "Corinthians",
+    "visitante": "Boca Juniors",
+    "placar": "2x0",
+    "gols_casa": 2,
+    "gols_visitante": 0,
+    "campeonato": "Libertadores",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-05-01",
+    "casa": "Corinthians",
+    "visitante": "Fortaleza",
+    "placar": "1x0",
+    "gols_casa": 1,
+    "gols_visitante": 0,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-05-11",
+    "casa": "Corinthians",
+    "visitante": "Portuguesa-RJ",
+    "placar": "2x0",
+    "gols_casa": 2,
+    "gols_visitante": 0,
+    "campeonato": "Copa do Brasil",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-05-22",
+    "casa": "Corinthians",
+    "visitante": "São Paulo",
+    "placar": "1x1",
+    "gols_casa": 1,
+    "gols_visitante": 1,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-05-29",
+    "casa": "Corinthians",
+    "visitante": "América-MG",
+    "placar": "1x1",
+    "gols_casa": 1,
+    "gols_visitante": 1,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-06-22",
+    "casa": "Corinthians",
+    "visitante": "Santos",
+    "placar": "4x0",
+    "gols_casa": 4,
+    "gols_visitante": 0,
+    "campeonato": "Copa do Brasil",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-06-28",
+    "casa": "Corinthians",
+    "visitante": "Boca Juniors",
+    "placar": "0x0",
+    "gols_casa": 0,
+    "gols_visitante": 0,
+    "campeonato": "Libertadores",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-07-10",
+    "casa": "Corinthians",
+    "visitante": "Flamengo",
+    "placar": "1x0",
+    "gols_casa": 1,
+    "gols_visitante": 0,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-07-20",
+    "casa": "Corinthians",
+    "visitante": "Coritiba",
+    "placar": "3x1",
+    "gols_casa": 3,
+    "gols_visitante": 1,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-07-30",
+    "casa": "Corinthians",
+    "visitante": "Botafogo",
+    "placar": "1x0",
+    "gols_casa": 1,
+    "gols_visitante": 0,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-08-02",
+    "casa": "Corinthians",
+    "visitante": "Flamengo",
+    "placar": "0x2",
+    "gols_casa": 0,
+    "gols_visitante": 2,
+    "campeonato": "Libertadores",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-08-13",
+    "casa": "Corinthians",
+    "visitante": "Palmeiras",
+    "placar": "0x1",
+    "gols_casa": 0,
+    "gols_visitante": 1,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-08-17",
+    "casa": "Corinthians",
+    "visitante": "Atlético-GO",
+    "placar": "4x1",
+    "gols_casa": 4,
+    "gols_visitante": 1,
+    "campeonato": "Copa do Brasil",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-08-29",
+    "casa": "Corinthians",
+    "visitante": "Bragantino",
+    "placar": null,
+    "gols_casa": null,
+    "gols_visitante": null,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-09-04",
+    "casa": "Corinthians",
+    "visitante": "Internacional",
+    "placar": null,
+    "gols_casa": null,
+    "gols_visitante": null,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-09-11",
+    "casa": "Corinthians",
+    "visitante": "São Paulo",
+    "placar": "1x1",
+    "gols_casa": 1,
+    "gols_visitante": 1,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-09-15",
+    "casa": "Corinthians",
+    "visitante": "Fluminense",
+    "placar": "3x0",
+    "gols_casa": 3,
+    "gols_visitante": 0,
+    "campeonato": "Copa do Brasil",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-09-24",
+    "casa": "Corinthians",
+    "visitante": "Internacional",
+    "placar": "4x1",
+    "gols_casa": 4,
+    "gols_visitante": 1,
+    "campeonato": null,
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-10-08",
+    "casa": "Corinthians",
+    "visitante": "Atlético-PR",
+    "placar": null,
+    "gols_casa": null,
+    "gols_visitante": null,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-10-12",
+    "casa": "Corinthians",
+    "visitante": "Flamengo",
+    "placar": "0x0",
+    "gols_casa": 0,
+    "gols_visitante": 0,
+    "campeonato": "Copa do Brasil",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-10-19",
+    "casa": "Flamengo",
+    "visitante": "Corinthians",
+    "placar": "1x1",
+    "gols_casa": 1,
+    "gols_visitante": 1,
+    "campeonato": "Copa do Brasil",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-10-26",
+    "casa": "Corinthians",
+    "visitante": "Fluminense",
+    "placar": "0x2",
+    "gols_casa": 0,
+    "gols_visitante": 2,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2022-11-13",
+    "casa": "Corinthians",
+    "visitante": "Atlético-MG",
+    "placar": null,
+    "gols_casa": null,
+    "gols_visitante": null,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2023-01-18",
+    "casa": "Corinthians",
+    "visitante": "Água Santa",
+    "placar": "3x0",
+    "gols_casa": 3,
+    "gols_visitante": 0,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2023-01-24",
+    "casa": "Corinthians",
+    "visitante": "Guarani",
+    "placar": "2x1",
+    "gols_casa": 2,
+    "gols_visitante": 1,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2023-02-05",
+    "casa": "Corinthians",
+    "visitante": "Botafogo-SP",
+    "placar": null,
+    "gols_casa": null,
+    "gols_visitante": null,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2023-02-16",
+    "casa": "Corinthians",
+    "visitante": "Palmeiras",
+    "placar": "2x2",
+    "gols_casa": 2,
+    "gols_visitante": 2,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2023-03-12",
+    "casa": "Corinthians",
+    "visitante": "Ituano",
+    "placar": "1x1",
+    "gols_casa": 1,
+    "gols_visitante": 1,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2023-04-17",
+    "casa": "Corinthians",
+    "visitante": "Palmeiras",
+    "placar": "3x2",
+    "gols_casa": 3,
+    "gols_visitante": 2,
+    "campeonato": null,
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2023-05-02",
+    "casa": "Corinthians",
+    "visitante": "Ind. Del Valle",
+    "placar": "0x2",
+    "gols_casa": 0,
+    "gols_visitante": 2,
+    "campeonato": "Libertadores",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2023-05-02",
+    "casa": "Corinthians",
+    "visitante": "Remo",
+    "placar": "2x0",
+    "gols_casa": 2,
+    "gols_visitante": 0,
+    "campeonato": "Copa do Brasil",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2023-05-31",
+    "casa": "Corinthians",
+    "visitante": "Atlético-MG",
+    "placar": "2x0",
+    "gols_casa": 2,
+    "gols_visitante": 0,
+    "campeonato": "Copa do Brasil",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2023-06-28",
+    "casa": "Corinthians",
+    "visitante": "Liverpool URU",
+    "placar": "3x0",
+    "gols_casa": 3,
+    "gols_visitante": 0,
+    "campeonato": "Libertadores",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2023-07-11",
+    "casa": "Corinthians",
+    "visitante": "Universitário",
+    "placar": "1x0",
+    "gols_casa": 1,
+    "gols_visitante": 0,
+    "campeonato": "Sulamericana",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2023-07-15",
+    "casa": "Corinthians",
+    "visitante": "América-MG",
+    "placar": "3x2",
+    "gols_casa": 3,
+    "gols_visitante": 2,
+    "campeonato": "Copa do Brasil",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2023-09-26",
+    "casa": "Corinthians",
+    "visitante": "Fortaleza",
+    "placar": "1x1",
+    "gols_casa": 1,
+    "gols_visitante": 1,
+    "campeonato": "Sulamericana",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2023-10-07",
+    "casa": "Corinthians",
+    "visitante": "Flamengo",
+    "placar": "1x1",
+    "gols_casa": 1,
+    "gols_visitante": 1,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2023-10-29",
+    "casa": "Corinthians",
+    "visitante": "Santos",
+    "placar": "1x1",
+    "gols_casa": 1,
+    "gols_visitante": 1,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2024-01-21",
+    "casa": "Corinthians",
+    "visitante": "Guarani",
+    "placar": "1x0",
+    "gols_casa": 1,
+    "gols_visitante": 0,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2024-01-25",
+    "casa": "Corinthians",
+    "visitante": "Cruzeiro",
+    "placar": "1x0",
+    "gols_casa": 1,
+    "gols_visitante": 0,
+    "campeonato": "Copinha",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2024-01-30",
+    "casa": "Corinthians",
+    "visitante": "São Paulo",
+    "placar": "2x1",
+    "gols_casa": 2,
+    "gols_visitante": 1,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2024-02-04",
+    "casa": "Corinthians",
+    "visitante": "Novorizontino",
+    "placar": "1x3",
+    "gols_casa": 1,
+    "gols_visitante": 3,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2024-04-09",
+    "casa": "Corinthians",
+    "visitante": "Nacional URU",
+    "placar": "4x0",
+    "gols_casa": 4,
+    "gols_visitante": 0,
+    "campeonato": "Sulamericana",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2024-04-14",
+    "casa": "Corinthians",
+    "visitante": "Atlético-MG",
+    "placar": "0x0",
+    "gols_casa": 0,
+    "gols_visitante": 0,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2024-05-04",
+    "casa": "Corinthians",
+    "visitante": "Fortaleza",
+    "placar": "0x0",
+    "gols_casa": 0,
+    "gols_visitante": 0,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2024-06-26",
+    "casa": "Corinthians",
+    "visitante": "Cuiabá",
+    "placar": "1x1",
+    "gols_casa": 1,
+    "gols_visitante": 1,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2024-07-04",
+    "casa": "Corinthians",
+    "visitante": "Vitória",
+    "placar": "3x2",
+    "gols_casa": 3,
+    "gols_visitante": 2,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2024-07-16",
+    "casa": "Corinthians",
+    "visitante": "Criciúma",
+    "placar": "2x1",
+    "gols_casa": 2,
+    "gols_visitante": 1,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2024-07-31",
+    "casa": "Corinthians",
+    "visitante": "Grêmio",
+    "placar": "0x0",
+    "gols_casa": 0,
+    "gols_visitante": 0,
+    "campeonato": "Copa do Brasil",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2024-08-04",
+    "casa": "Corinthians",
+    "visitante": "Juventude",
+    "placar": "1x1",
+    "gols_casa": 1,
+    "gols_visitante": 1,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2024-09-21",
+    "casa": "Corinthians",
+    "visitante": "Atlético-GO",
+    "placar": "3x0",
+    "gols_casa": 3,
+    "gols_visitante": 0,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2024-10-20",
+    "casa": "Corinthians",
+    "visitante": "Flamengo",
+    "placar": "0x0",
+    "gols_casa": 0,
+    "gols_visitante": 0,
+    "campeonato": "Copa do Brasil",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2024-10-24",
+    "casa": "Corinthians",
+    "visitante": "Racing",
+    "placar": "2x2",
+    "gols_casa": 2,
+    "gols_visitante": 2,
+    "campeonato": "Sulamericana",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2024-11-24",
+    "casa": "Corinthians",
+    "visitante": "Vasco",
+    "placar": "3x1",
+    "gols_casa": 3,
+    "gols_visitante": 1,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2024-12-03",
+    "casa": "Corinthians",
+    "visitante": "Bahia",
+    "placar": "3x0",
+    "gols_casa": 3,
+    "gols_visitante": 0,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2025-01-19",
+    "casa": "Corinthians",
+    "visitante": "Velo Clube",
+    "placar": "2x1",
+    "gols_casa": 2,
+    "gols_visitante": 1,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2025-01-22",
+    "casa": "Corinthians",
+    "visitante": "Água Santa",
+    "placar": null,
+    "gols_casa": null,
+    "gols_visitante": null,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2025-02-09",
+    "casa": "Corinthians",
+    "visitante": "São Bernardo",
+    "placar": "2x0",
+    "gols_casa": 2,
+    "gols_visitante": 0,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2025-02-12",
+    "casa": "Corinthians",
+    "visitante": "Santos",
+    "placar": "2x1",
+    "gols_casa": 2,
+    "gols_visitante": 1,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2025-02-26",
+    "casa": "Corinthians",
+    "visitante": "U. Central [VEN]",
+    "placar": "3x2",
+    "gols_casa": 3,
+    "gols_visitante": 2,
+    "campeonato": "Libertadores",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2025-03-02",
+    "casa": "Corinthians",
+    "visitante": "Mirassol",
+    "placar": null,
+    "gols_casa": null,
+    "gols_visitante": null,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2025-03-09",
+    "casa": "Corinthians",
+    "visitante": "Santos",
+    "placar": "2x1",
+    "gols_casa": 2,
+    "gols_visitante": 1,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2025-03-12",
+    "casa": "Corinthians",
+    "visitante": "Barcelona SC",
+    "placar": "2x0",
+    "gols_casa": 2,
+    "gols_visitante": 0,
+    "campeonato": "Libertadores",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2025-03-27",
+    "casa": "Corinthians",
+    "visitante": "Palmeiras",
+    "placar": "0x0",
+    "gols_casa": 0,
+    "gols_visitante": 0,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2025-04-05",
+    "casa": "Corinthians",
+    "visitante": "Vasco",
+    "placar": "3x0",
+    "gols_casa": 3,
+    "gols_visitante": 0,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2025-04-16",
+    "casa": "Corinthians",
+    "visitante": "Fluminense",
+    "placar": null,
+    "gols_casa": null,
+    "gols_visitante": null,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2025-04-19",
+    "casa": "Corinthians",
+    "visitante": "Sport",
+    "placar": null,
+    "gols_casa": null,
+    "gols_visitante": null,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2025-05-03",
+    "casa": "Corinthians",
+    "visitante": "Internacional",
+    "placar": "4x2",
+    "gols_casa": 4,
+    "gols_visitante": 2,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2025-07-13",
+    "casa": "Corinthians",
+    "visitante": "Bragantino",
+    "placar": "1x2",
+    "gols_casa": 1,
+    "gols_visitante": 2,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2025-07-23",
+    "casa": "Corinthians",
+    "visitante": "Cruzeiro",
+    "placar": "0x0",
+    "gols_casa": 0,
+    "gols_visitante": 0,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2025-07-30",
+    "casa": "Corinthians",
+    "visitante": "Palmeiras",
+    "placar": "1x0",
+    "gols_casa": 1,
+    "gols_visitante": 0,
+    "campeonato": "Copa do Brasil",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2025-08-03",
+    "casa": "Corinthians",
+    "visitante": "Fortaleza",
+    "placar": "1x1",
+    "gols_casa": 1,
+    "gols_visitante": 1,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2025-08-16",
+    "casa": "Corinthians",
+    "visitante": "Bahia",
+    "placar": "1x2",
+    "gols_casa": 1,
+    "gols_visitante": 2,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2025-10-18",
+    "casa": "Corinthians",
+    "visitante": "Atlético-MG",
+    "placar": "1x0",
+    "gols_casa": 1,
+    "gols_visitante": 0,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2025-11-20",
+    "casa": "Corinthians",
+    "visitante": "São Paulo",
+    "placar": "3x1",
+    "gols_casa": 3,
+    "gols_visitante": 1,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2025-12-14",
+    "casa": "Corinthians",
+    "visitante": "Cruzeiro",
+    "placar": "1x2",
+    "gols_casa": 1,
+    "gols_visitante": 2,
+    "campeonato": "Copa do Brasil",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2025-12-17",
+    "casa": "Corinthians",
+    "visitante": "Vasco",
+    "placar": "0x0",
+    "gols_casa": 0,
+    "gols_visitante": 0,
+    "campeonato": "Copa do Brasil",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2025-12-21",
+    "casa": "Vasco",
+    "visitante": "Corinthians",
+    "placar": "2x1",
+    "gols_casa": 2,
+    "gols_visitante": 1,
+    "campeonato": "Copa do Brasil",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2026-01-11",
+    "casa": "Corinthians",
+    "visitante": "Ponte Preta",
+    "placar": "3x0",
+    "gols_casa": 3,
+    "gols_visitante": 0,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2026-01-18",
+    "casa": "Corinthians",
+    "visitante": "São Paulo",
+    "placar": "1x1",
+    "gols_casa": 1,
+    "gols_visitante": 1,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2026-01-28",
+    "casa": "Corinthians",
+    "visitante": "Bahia",
+    "placar": "1x2",
+    "gols_casa": 1,
+    "gols_visitante": 2,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2026-02-05",
+    "casa": "Corinthians",
+    "visitante": "Capivariano",
+    "placar": "3x0",
+    "gols_casa": 3,
+    "gols_visitante": 0,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2026-02-08",
+    "casa": "Corinthians",
+    "visitante": "Palmeiras",
+    "placar": "0x1",
+    "gols_casa": 0,
+    "gols_visitante": 1,
+    "campeonato": "Paulista",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2026-02-12",
+    "casa": "Corinthians",
+    "visitante": "Bragantino",
+    "placar": "2x0",
+    "gols_casa": 2,
+    "gols_visitante": 0,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  },
+  {
+    "data": "2026-03-11",
+    "casa": "Corinthians",
+    "visitante": "Coritiba",
+    "placar": "0x2",
+    "gols_casa": 0,
+    "gols_visitante": 2,
+    "campeonato": "Brasileiro",
+    "clube_catalogo": "corinthians"
+  }
+]
