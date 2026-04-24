@@ -1162,6 +1162,77 @@ main {
 .ingresso.ausente { opacity: 0.72; filter: saturate(0.4); }
 .ingresso.ausente .canhoto-selo { background: rgba(0,0,0,0.1); }
 
+/* ======= Variante: INGRESSO DA COPA DO MUNDO ======= */
+.ingresso.copa {
+    background: #faf2dc;
+    box-shadow:
+        0 2px 0 rgba(0,0,0,0.05),
+        0 10px 24px rgba(20,15,10,0.22),
+        0 0 0 1px rgba(212,165,32,0.3);
+}
+/* Faixa colorida da Copa no topo — sobre o canhoto todo */
+.ingresso.copa::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: linear-gradient(90deg,
+        var(--wc-red) 0%, var(--wc-red) 16.66%,
+        var(--wc-orange) 16.66%, var(--wc-orange) 33.33%,
+        var(--wc-yellow) 33.33%, var(--wc-yellow) 50%,
+        var(--wc-green) 50%, var(--wc-green) 66.66%,
+        var(--wc-blue) 66.66%, var(--wc-blue) 83.33%,
+        var(--wc-purple) 83.33%, var(--wc-purple) 100%);
+    z-index: 3;
+}
+
+/* Canhoto com tom dourado (independente de V/E/D — Copa tem identidade própria) */
+.ingresso.copa .canhoto {
+    --cor-acento: linear-gradient(180deg, #d4b86a 0%, #a8791b 100%);
+    background: linear-gradient(180deg, #d4b86a 0%, #a8791b 100%);
+    color: #1a1000;
+}
+.ingresso.copa .canhoto-selo {
+    border-color: #1a1000;
+    background: rgba(0,0,0,0.08);
+}
+
+/* Título "Ingresso" vira "FIFA World Cup 2026" */
+.ingresso.copa .corpo-topo {
+    color: #a8791b;
+    border-bottom-color: rgba(168,121,27,0.3);
+}
+
+/* Times com flag */
+.ingresso.copa .confronto-google .time-stack {
+    gap: 6px;
+}
+.ingresso.copa .ingresso-flag {
+    width: 32px;
+    height: 22px;
+    object-fit: cover;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+    display: block;
+    margin: 0 auto 4px;
+}
+.ingresso.copa .ingresso-flag.tbd {
+    background: repeating-linear-gradient(45deg, #e5dfd0 0 5px, #c9bfa8 5px 10px);
+    display: block;
+}
+
+/* Badge FIFA no corpo topo */
+.ingresso.copa .corpo-topo .wc-fifa-badge {
+    background: #1a1000;
+    color: #d4b86a;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 8px;
+    letter-spacing: 0.18em;
+    padding: 2px 7px;
+    border-radius: 3px;
+}
+
 /* Ações no ingresso (lápis + lixeira) */
 .ingresso-actions {
     position: absolute;
@@ -3483,10 +3554,13 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const mes = MESES_ABREV[dt.getUTCMonth()];
         const ano = dt.getUTCFullYear();
         const isPres = g.status_presenca === 'PRESENTE';
+        const isCopa = /Copa do Mundo/i.test(g.campeonato || '');
         const resClass = isPres && g.resultado ? g.resultado.toLowerCase() : '';
+        const hoje = new Date(); hoje.setHours(0,0,0,0);
+        const isFuture = dt >= hoje && !g.resultado;
         const selo = isPres && g.resultado
             ? (g.resultado === 'V' ? 'VITÓRIA' : g.resultado === 'E' ? 'EMPATE' : 'DERROTA')
-            : (g.status_presenca || '—');
+            : (isCopa && isFuture ? 'EU VOU' : (g.status_presenca || '—'));
         const resultadoPt = g.resultado === 'V' ? 'VITÓRIA' : g.resultado === 'E' ? 'EMPATE' : g.resultado === 'D' ? 'DERROTA' : '—';
 
         const mando = g.mando === 'MANDANTE' ? 'CASA' : g.mando === 'VISITANTE' ? 'FORA' : 'NEUTRO';
@@ -3494,11 +3568,20 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             'ingresso',
             resClass,
             isPres ? '' : 'ausente',
+            isCopa ? 'copa' : '',
         ].filter(Boolean).join(' ');
 
         const placarCasa = g.gols_casa != null ? g.gols_casa : '';
         const placarVis = g.gols_visitante != null ? g.gols_visitante : '';
         const hasPlacar = g.gols_casa != null && g.gols_visitante != null;
+
+        // Pra Copa: bandeira em cima do nome do time
+        const flagCasa = isCopa ? `<img class="ingresso-flag" src="${flagFor(g.time_casa) || ''}" alt="" onerror="this.classList.add('tbd');this.removeAttribute('src')">` : '';
+        const flagVis = isCopa ? `<img class="ingresso-flag" src="${flagFor(g.time_visitante) || ''}" alt="" onerror="this.classList.add('tbd');this.removeAttribute('src')">` : '';
+
+        const corpoTopoConteudo = isCopa
+            ? `<span>FIFA WORLD CUP 2026${g.fase ? ' · ' + escapeHtml(g.fase) : ''}</span><span class="wc-fifa-badge">FIFA</span>`
+            : `<span>INGRESSO · ${escapeHtml(g.campeonato || 'AMISTOSO')}${g.fase ? ' · ' + escapeHtml(g.fase) : ''}</span>${g.foi_classico ? '<span class="classico-tag">CLÁSSICO</span>' : ''}`;
 
         return `
             <article class="${classes}" data-id="${g.id}" title="Clique pra ver detalhes">
@@ -3522,11 +3605,11 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 <div class="picotado"></div>
                 <div class="corpo">
                     <div class="corpo-topo">
-                        <span>INGRESSO · ${escapeHtml(g.campeonato || 'AMISTOSO')}${g.fase ? ' · ' + escapeHtml(g.fase) : ''}</span>
-                        ${g.foi_classico ? '<span class="classico-tag">CLÁSSICO</span>' : ''}
+                        ${corpoTopoConteudo}
                     </div>
                     <div class="confronto-google">
                         <div class="time-stack">
+                            ${flagCasa}
                             <span class="nome-clube">${escapeHtml(g.time_casa)}</span>
                         </div>
                         <div class="placar-area" style="display:${hasPlacar ? 'flex' : 'none'}; align-items:center; gap:6px;">
@@ -3536,6 +3619,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                         </div>
                         ${!hasPlacar ? '<span class="placar-separador">×</span>' : ''}
                         <div class="time-stack">
+                            ${flagVis}
                             <span class="nome-clube">${escapeHtml(g.time_visitante)}</span>
                         </div>
                     </div>
@@ -3553,8 +3637,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                             <span class="det-valor">${escapeHtml(g.setor || '—')}</span>
                         </div>
                         <div class="det-linha">
-                            <span class="det-label">Mando</span>
-                            <span class="det-valor">${mando}</span>
+                            <span class="det-label">${isCopa ? 'Fase' : 'Mando'}</span>
+                            <span class="det-valor">${escapeHtml(isCopa ? (g.fase || 'Grupo') : mando)}</span>
                         </div>
                         <div class="det-linha">
                             <span class="det-label">Valor</span>
