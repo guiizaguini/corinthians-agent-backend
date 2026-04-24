@@ -153,6 +153,31 @@ router.delete('/:id/leave', async (req, res, next) => {
 });
 
 // =============================================================
+// DELETE /bolao/:id — exclui bolão inteiro (criador ou admin)
+// CASCADE apaga membros, palpites e extras automaticamente.
+// =============================================================
+router.delete('/:id', async (req, res, next) => {
+    try {
+        const bolaoId = parseInt(req.params.id);
+        const { rows } = await query(
+            'SELECT id, created_by, name FROM boloes WHERE id = $1',
+            [bolaoId]
+        );
+        if (!rows.length) return res.status(404).json({ error: 'bolao_not_found' });
+
+        const b = rows[0];
+        const isCreator = b.created_by === req.user.id;
+        const isAdmin = !!req.user.is_admin;
+        if (!isCreator && !isAdmin) {
+            return res.status(403).json({ error: 'only_creator_or_admin' });
+        }
+
+        await query('DELETE FROM boloes WHERE id = $1', [bolaoId]);
+        res.json({ deleted: true, bolao_id: bolaoId, name: b.name });
+    } catch (err) { next(err); }
+});
+
+// =============================================================
 // GET /bolao/:id — detalhes do bolão + membros
 // =============================================================
 router.get('/:id', async (req, res, next) => {

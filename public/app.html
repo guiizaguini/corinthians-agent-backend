@@ -3424,7 +3424,13 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     gap: 0.55rem;
     flex-shrink: 0;
 }
-.bolao-leave-btn {
+.bolao-detail-actions {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+.bolao-leave-btn, .bolao-delete-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
@@ -3446,7 +3452,19 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     color: var(--vinho);
     background: rgba(107,31,42,0.06);
 }
-.bolao-leave-btn .material-icons { font-size: 0.9rem; }
+.bolao-delete-btn {
+    border-color: rgba(107,31,42,0.4);
+    color: var(--vinho);
+    background: rgba(107,31,42,0.06);
+}
+.bolao-delete-btn:hover:not(:disabled) {
+    border-color: var(--vinho);
+    background: var(--vinho);
+    color: #fff;
+}
+.bolao-delete-btn:disabled { opacity: 0.5; cursor: wait; }
+.bolao-leave-btn .material-icons,
+.bolao-delete-btn .material-icons { font-size: 0.9rem; }
 
 .bolao-detail-mypoints {
     text-align: center;
@@ -4716,10 +4734,16 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                                 <div class="bolao-mp-label">Meus pontos</div>
                                 <div class="bolao-mp-value" id="bolaoMyPoints">0</div>
                             </div>
-                            <button class="bolao-leave-btn" id="bolaoLeaveBtn" type="button" title="Sair desse bolão">
-                                <span class="material-icons">logout</span>
-                                Sair do bolão
-                            </button>
+                            <div class="bolao-detail-actions">
+                                <button class="bolao-leave-btn" id="bolaoLeaveBtn" type="button" title="Sair desse bolão">
+                                    <span class="material-icons">logout</span>
+                                    Sair do bolão
+                                </button>
+                                <button class="bolao-delete-btn" id="bolaoDeleteBtn" type="button" title="Excluir esse bolão permanentemente" style="display:none;">
+                                    <span class="material-icons">delete_forever</span>
+                                    Excluir bolão
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -7350,6 +7374,12 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             document.getElementById('bolaoDetailDesc').style.display = data.bolao.description ? '' : 'none';
             document.getElementById('bolaoDetailCode').textContent = data.bolao.invite_code;
             document.getElementById('bolaoDetailMembers').textContent = data.members.length;
+
+            // Guarda o criador pra decidir se mostra botão de excluir
+            bolaoState.createdBy = data.bolao.created_by;
+            const canDelete = (data.bolao.created_by === user.id) || !!user.is_admin;
+            const delBtn = document.getElementById('bolaoDeleteBtn');
+            if (delBtn) delBtn.style.display = canDelete ? '' : 'none';
             document.getElementById('ptsExato').textContent = bolaoState.pontos.PLACAR_EXATO;
             document.getElementById('ptsSaldo').textContent = bolaoState.pontos.VENCEDOR_E_SALDO;
             document.getElementById('ptsVencedor').textContent = bolaoState.pontos.VENCEDOR;
@@ -7771,6 +7801,46 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             bolaoLoadMeus();
         } catch (e) {
             alert('Erro ao sair: ' + e.message);
+            btn.disabled = false;
+            btn.innerHTML = old;
+        }
+    });
+
+    // Excluir bolão (criador ou admin) — ação DESTRUTIVA, double confirm
+    document.getElementById('bolaoDeleteBtn').addEventListener('click', async () => {
+        if (!bolaoState.bolaoId) return;
+        const title = document.getElementById('bolaoDetailTitle').textContent;
+        const members = document.getElementById('bolaoDetailMembers').textContent;
+        const step1 = confirm(
+            `Excluir o bolão "${title}"?\n\n` +
+            `⚠️ Essa ação é IRREVERSÍVEL.\n` +
+            `Todos os ${members} membros serão removidos e todos os palpites apagados.\n\n` +
+            `Tem certeza?`
+        );
+        if (!step1) return;
+
+        const typed = prompt(
+            `Pra confirmar, digite EXCLUIR (em maiúsculas):`
+        );
+        if (typed !== 'EXCLUIR') {
+            if (typed !== null) alert('Cancelado. Você precisa digitar EXCLUIR exatamente.');
+            return;
+        }
+
+        const btn = document.getElementById('bolaoDeleteBtn');
+        btn.disabled = true;
+        const old = btn.innerHTML;
+        btn.innerHTML = '<span class="material-icons">hourglass_empty</span> Excluindo...';
+        try {
+            await api(`/bolao/${bolaoState.bolaoId}`, { method: 'DELETE' });
+            bolaoState.bolaoId = null;
+            bolaoShowView('meus');
+            bolaoLoadMeus();
+        } catch (e) {
+            const msg = e.message === 'only_creator_or_admin'
+                ? 'Apenas o criador do bolão ou um admin pode excluir.'
+                : 'Erro: ' + e.message;
+            alert(msg);
             btn.disabled = false;
             btn.innerHTML = old;
         }
