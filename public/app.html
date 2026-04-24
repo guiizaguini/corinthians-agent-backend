@@ -3277,14 +3277,16 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 return;
             }
 
-            const [gamesRes, snap, friendsRes] = await Promise.all([
+            const [gamesRes, snap, friendsRes, copaRes] = await Promise.all([
                 api('/games?limit=1000'),
                 api('/me/snapshot'),
                 api('/social/friends').catch(() => ({ friends: [], incoming: [], outgoing: [] })),
+                api('/tournaments/copa-do-mundo-2026/games').catch(() => ({ games: [] })),
             ]);
             allGames = gamesRes.games;
             snapshot = snap;
             friendsState = friendsRes;
+            copaGames = copaRes.games || [];
             updateBell();
             renderKpis();
             renderCatalog();
@@ -3515,7 +3517,12 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     }
 
     function renderMine() {
-        const mine = allGames.filter(g => g.attendance_id);
+        // Combina jogos do clube + da Copa com attendance
+        const porId = new Map();
+        for (const g of allGames) if (g.attendance_id) porId.set(g.id, g);
+        for (const g of (copaGames || [])) if (g.attendance_id) porId.set(g.id, g);
+        // Ordena por data desc (mais recente primeiro)
+        const mine = [...porId.values()].sort((a, b) => new Date(b.data) - new Date(a.data));
         const container = document.getElementById('mineList');
         if (!mine.length) {
             container.innerHTML = '<div class="empty">Você ainda não marcou nenhum ingresso. Vai no catálogo e marque os jogos que você foi!</div>';
@@ -4453,7 +4460,10 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     function populateAttendanceSelect() {
         const sel = document.getElementById('notaAttendance');
         sel.innerHTML = '<option value="">— Sem ingresso —</option>';
-        const mine = (allGames || []).filter(g => g.attendance_id);
+        const porId = new Map();
+        for (const g of (allGames || [])) if (g.attendance_id) porId.set(g.id, g);
+        for (const g of (copaGames || [])) if (g.attendance_id) porId.set(g.id, g);
+        const mine = [...porId.values()].sort((a, b) => new Date(b.data) - new Date(a.data));
         for (const g of mine) {
             const d = new Date(g.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
             const opt = document.createElement('option');
