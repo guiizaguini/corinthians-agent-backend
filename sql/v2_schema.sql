@@ -84,6 +84,9 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS username VARCHAR(30);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username_lower
     ON users(LOWER(username)) WHERE username IS NOT NULL;
 
+-- Tracking de último login/acesso (pra indicador online na rede social)
+ALTER TABLE users ADD COLUMN IF NOT EXISTS last_seen_at TIMESTAMPTZ;
+
 -- =============================================================
 -- GAMES (catálogo — fatos do jogo, sem dados pessoais do torcedor)
 -- Cada jogo pertence a um clube (do ponto de vista da UI do torcedor).

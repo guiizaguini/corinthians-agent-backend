@@ -164,7 +164,8 @@ router.get('/snapshot', async (req, res, next) => {
                     MAX(a.valor_pago) AS mais_caro
                 FROM attendances a
                 JOIN games g ON g.id = a.game_id
-                WHERE a.user_id = $1 AND g.club_id = $2
+                JOIN clubs c ON c.id = g.club_id
+                WHERE a.user_id = $1 AND g.club_id = $2 AND c.is_tournament = FALSE
             `, [uid, cid]),
 
             query(`

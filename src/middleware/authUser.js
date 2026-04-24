@@ -27,6 +27,15 @@ export async function requireUser(req, res, next) {
         if (!rows.length) return res.status(401).json({ error: 'user_not_found' });
 
         req.user = rows[0];
+
+        // Atualiza last_seen_at do user (fire-and-forget, throttle 1min)
+        query(
+            `UPDATE users SET last_seen_at = NOW()
+             WHERE id = $1
+               AND (last_seen_at IS NULL OR last_seen_at < NOW() - INTERVAL '1 minute')`,
+            [rows[0].id]
+        ).catch(() => {});
+
         next();
     } catch (err) {
         next(err);

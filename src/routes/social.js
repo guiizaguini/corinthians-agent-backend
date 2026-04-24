@@ -66,7 +66,7 @@ router.get('/friends', async (req, res, next) => {
             `SELECT
                 f.id, f.status, f.requester_id, f.recipient_id, f.created_at,
                 CASE WHEN f.requester_id = $1 THEN f.recipient_id ELSE f.requester_id END AS other_id,
-                u.username, u.display_name,
+                u.username, u.display_name, u.last_seen_at,
                 c.name AS club_name, c.short_name AS club_short, c.primary_color
              FROM friendships f
              JOIN users u ON u.id = (CASE WHEN f.requester_id = $1 THEN f.recipient_id ELSE f.requester_id END)
@@ -83,6 +83,7 @@ router.get('/friends', async (req, res, next) => {
                 user_id: r.other_id,
                 username: r.username,
                 display_name: r.display_name,
+                last_seen_at: r.last_seen_at,
                 club_name: r.club_name,
                 club_short: r.club_short,
                 primary_color: r.primary_color,
@@ -261,6 +262,7 @@ router.get('/feed', async (req, res, next) => {
                 SELECT CASE WHEN requester_id = $1 THEN recipient_id ELSE requester_id END AS user_id
                 FROM friendships
                 WHERE status = 'ACCEPTED' AND (requester_id = $1 OR recipient_id = $1)
+                UNION SELECT $1  -- inclui o próprio user no feed (estilo Twitter)
              )
              SELECT * FROM (
                 SELECT
@@ -270,7 +272,8 @@ router.get('/feed', async (req, res, next) => {
                     c.name AS club_name, c.short_name AS club_short, c.primary_color,
                     g.id AS game_id, g.data, g.time_casa, g.time_visitante,
                     g.gols_casa, g.gols_visitante, g.resultado, g.campeonato, g.estadio,
-                    NULL::varchar AS title, NULL::text AS body
+                    NULL::varchar AS title, NULL::text AS body,
+                    NULL::boolean AS is_public
                 FROM attendances a
                 JOIN users u ON u.id = a.user_id
                 LEFT JOIN clubs c ON c.id = u.club_id
@@ -287,13 +290,17 @@ router.get('/feed', async (req, res, next) => {
                     c.name AS club_name, c.short_name AS club_short, c.primary_color,
                     g.id AS game_id, g.data, g.time_casa, g.time_visitante,
                     g.gols_casa, g.gols_visitante, g.resultado, g.campeonato, g.estadio,
-                    n.title, n.body
+                    n.title, n.body, n.is_public
                 FROM notes n
                 JOIN users u ON u.id = n.user_id
                 LEFT JOIN clubs c ON c.id = u.club_id
                 LEFT JOIN games g ON g.id = n.game_id
-                WHERE n.user_id IN (SELECT user_id FROM friend_ids)
-                  AND n.is_public = TRUE
+                WHERE (
+                    -- Notas públicas dos amigos
+                    (n.user_id IN (SELECT user_id FROM friend_ids WHERE user_id <> $1) AND n.is_public = TRUE)
+                    -- OR qualquer nota própria (públicas e privadas)
+                    OR n.user_id = $1
+                )
              ) sub
              ORDER BY created_at DESC
              LIMIT $2`,

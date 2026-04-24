@@ -2171,10 +2171,187 @@ main {
 .modal.modal-xl { max-width: 760px; }
 
 /* ================= Rede Social ================= */
+.rede-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+@media (max-width: 900px) {
+    .rede-layout { grid-template-columns: 1fr; }
+}
+.rede-sidebar {
+    position: sticky;
+    top: 1rem;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    padding-right: 0.4rem;
+    scrollbar-width: thin;
+}
+.rede-sidebar::-webkit-scrollbar { width: 6px; }
+.rede-sidebar::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+@media (max-width: 900px) {
+    .rede-sidebar { position: static; max-height: none; }
+}
+.rede-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Composer — card de criar post no topo do feed */
+.composer-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1rem 1.15rem;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+.composer-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+}
+.composer-row textarea {
+    flex: 1;
+    background: transparent;
+    border: none;
+    resize: vertical;
+    min-height: 2.4rem;
+    font-family: 'SN Pro','Oswald',sans-serif;
+    font-size: 1rem;
+    color: var(--ink);
+    outline: none;
+    line-height: 1.4;
+    padding: 0.5rem 0.1rem;
+}
+.composer-row textarea::placeholder { color: var(--ink-mute); }
+.composer-extras {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--line-soft);
+}
+.composer-extras input,
+.composer-extras select {
+    flex: 1;
+    min-width: 160px;
+    background: var(--bg-base);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    padding: 0.55rem 0.7rem;
+    font-family: 'SN Pro','Oswald',sans-serif;
+    font-size: 0.85rem;
+    outline: none;
+    border-radius: 8px;
+}
+.composer-extras input:focus,
+.composer-extras select:focus { border-color: var(--accent); }
+.composer-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--line-soft);
+    flex-wrap: wrap;
+}
+.composer-vis {
+    display: inline-flex;
+    gap: 0.35rem;
+}
+.composer-vis-btn {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink-mute);
+    padding: 0.35rem 0.7rem;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    border-radius: 999px;
+    transition: all 150ms;
+}
+.composer-vis-btn .material-icons { font-size: 0.95rem; }
+.composer-vis-btn:hover { border-color: var(--ink); color: var(--ink); }
+.composer-vis-btn.active {
+    background: var(--accent);
+    color: var(--accent-text);
+    border-color: var(--accent);
+}
+.composer-actions {
+    display: inline-flex;
+    gap: 0.4rem;
+    align-items: center;
+}
+.composer-toggle {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink-mute);
+    width: 32px; height: 32px;
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 150ms;
+}
+.composer-toggle:hover { border-color: var(--ink); color: var(--ink); }
+.composer-toggle .material-icons { font-size: 1rem; }
+.composer-post {
+    padding: 0.55rem 1.1rem;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    background: var(--ink);
+    color: var(--paper);
+    border: 1.5px solid var(--ink);
+    cursor: pointer;
+    border-radius: 999px;
+    transition: all 150ms;
+}
+.composer-post:hover:not(:disabled) { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+.composer-post:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* Presença online/offline */
+.user-avatar-wrap {
+    position: relative;
+    flex-shrink: 0;
+}
+.avatar-presence-dot {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 11px;
+    height: 11px;
+    background: #4ec96d;
+    border: 2px solid var(--bg-card);
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(78,201,109,0.6);
+}
+.user-presence {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-top: 0.25rem;
+}
+
 .rede-search-bar {
     display: flex;
     gap: 0.5rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
     align-items: center;
 }
 .rede-search-bar input {
@@ -2182,10 +2359,11 @@ main {
     background: var(--bg-card);
     border: 1.5px solid var(--line);
     color: var(--ink);
-    padding: 0.7rem 0.95rem;
+    padding: 0.6rem 0.85rem;
     font-family: 'SN Pro','Oswald',sans-serif;
-    font-size: 0.95rem;
+    font-size: 0.88rem;
     outline: none;
+    border-radius: 8px;
 }
 .rede-search-bar input:focus { border-color: var(--accent); }
 
@@ -2219,6 +2397,28 @@ main {
     grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
     gap: 0.75rem;
 }
+.user-list.compact {
+    grid-template-columns: 1fr;
+    gap: 0.45rem;
+}
+.user-list.compact .user-card {
+    padding: 0.55rem 0.7rem;
+    gap: 0.6rem;
+    border-radius: 12px;
+}
+.user-list.compact .user-avatar-sm {
+    width: 36px;
+    height: 36px;
+    font-size: 0.82rem;
+}
+.user-list.compact .user-name-sm { font-size: 0.85rem; }
+.user-list.compact .user-meta-sm { font-size: 0.7rem; }
+.user-list.compact .user-action {
+    width: 28px;
+    height: 28px;
+}
+.user-list.compact .user-action .material-icons { font-size: 0.9rem; }
+.user-list.compact .user-action.add-text { padding: 0 0.6rem; font-size: 0.65rem; }
 .user-card {
     background: var(--bg-card);
     border: 1px solid var(--line);
@@ -2839,46 +3039,6 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         </div>
     </div>
 
-    <!-- Modal: Editor de nota -->
-    <div class="modal-overlay" id="notaModal">
-        <div class="modal modal-lg">
-            <h2 id="notaModalTitle">Nova nota</h2>
-            <div class="meta">Conte a história desse jogo. Pode ser longo.</div>
-
-            <label>Atrelar a um ingresso (opcional)</label>
-            <select id="notaAttendance">
-                <option value="">— Sem ingresso —</option>
-            </select>
-
-            <label>Título</label>
-            <input type="text" id="notaTitle" maxlength="140" placeholder="Ex: A noite que eu chorei na arquibancada">
-
-            <label>História</label>
-            <textarea class="note-body" id="notaBody" rows="8" placeholder="Comece pelo cheiro do estádio, ou pelo gol que mudou tudo. Escreve solto."></textarea>
-
-            <label>Visibilidade</label>
-            <div class="status-toggle">
-                <button type="button" class="status-btn presente" data-vis="false">
-                    <span class="material-icons">lock</span> Privada
-                </button>
-                <button type="button" class="status-btn presente" data-vis="true">
-                    <span class="material-icons">public</span> Pública
-                </button>
-            </div>
-            <div style="font-size:0.72rem;color:var(--ink-mute);margin-top:0.4rem;font-family:'SN Pro','Oswald',sans-serif;">
-                Públicas aparecem no feed dos seus amigos.
-            </div>
-
-            <div class="error" id="notaErr" style="margin-top:1rem;padding:0.7rem 0.9rem;background:rgba(107,31,42,0.1);border-left:3px solid var(--vinho);color:var(--vinho);font-size:0.85rem;display:none;"></div>
-
-            <div class="modal-actions">
-                <button class="btn-secondary" id="notaCancel">Cancelar</button>
-                <button class="btn-danger" id="notaDelete" style="display:none;">Remover</button>
-                <button class="btn-primary" id="notaSave">Salvar</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Modal: Share image -->
     <div class="modal-overlay" id="shareModal">
         <div class="modal modal-lg">
@@ -3039,7 +3199,6 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         <div class="tabs">
             <button class="tab active" data-tab="catalog">Catálogo</button>
             <button class="tab" data-tab="mine">Meus ingressos</button>
-            <button class="tab" data-tab="notas">Notas</button>
             <button class="tab" data-tab="rede">Rede social</button>
             <button class="tab" data-tab="copa">Copa do Mundo</button>
         </div>
@@ -3058,34 +3217,72 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         </div>
 
         <div class="tab-panel" id="tabRede">
-            <div class="rede-search-bar">
-                <input type="search" id="redeSearch" placeholder="Buscar amigo por @username ou nome...">
-                <button class="btn-ghost" id="redeRefresh" title="Atualizar"><span class="material-icons">refresh</span></button>
-            </div>
+            <div class="rede-layout">
+                <!-- LEFT sidebar: amigos + solicitações + busca -->
+                <aside class="rede-sidebar">
+                    <div class="rede-search-bar">
+                        <input type="search" id="redeSearch" placeholder="Buscar @username ou nome...">
+                        <button class="btn-ghost" id="redeRefresh" title="Atualizar"><span class="material-icons">refresh</span></button>
+                    </div>
 
-            <div class="rede-section" id="searchResultsSection" style="display:none;">
-                <h3>Resultados da busca</h3>
-                <div class="user-list" id="searchResults"></div>
-            </div>
+                    <div class="rede-section" id="searchResultsSection" style="display:none;">
+                        <h3>Resultados</h3>
+                        <div class="user-list compact" id="searchResults"></div>
+                    </div>
 
-            <div class="rede-section" id="incomingSection" style="display:none;">
-                <h3>Solicitações recebidas <span class="badge" id="incomingBadge">0</span></h3>
-                <div class="user-list" id="incomingList"></div>
-            </div>
+                    <div class="rede-section" id="incomingSection" style="display:none;">
+                        <h3>Recebidas <span class="badge" id="incomingBadge">0</span></h3>
+                        <div class="user-list compact" id="incomingList"></div>
+                    </div>
 
-            <div class="rede-section" id="outgoingSection" style="display:none;">
-                <h3>Solicitações enviadas</h3>
-                <div class="user-list" id="outgoingList"></div>
-            </div>
+                    <div class="rede-section" id="outgoingSection" style="display:none;">
+                        <h3>Enviadas</h3>
+                        <div class="user-list compact" id="outgoingList"></div>
+                    </div>
 
-<div class="rede-section">
-                <h3>Meus amigos <span id="friendsCount" style="color:var(--ink-mute);font-weight:400;font-size:0.85em;">(0)</span></h3>
-                <div class="user-list" id="friendsList"><div class="loading">Carregando...</div></div>
-            </div>
+                    <div class="rede-section">
+                        <h3>Amigos <span id="friendsCount" style="color:var(--ink-mute);font-weight:400;font-size:0.85em;">(0)</span></h3>
+                        <div class="user-list compact" id="friendsList"><div class="loading">Carregando...</div></div>
+                    </div>
+                </aside>
 
-            <div class="rede-section">
-                <h3>Atividade dos amigos</h3>
-                <div class="feed-list" id="feedList"><div class="loading">Carregando feed...</div></div>
+                <!-- CENTER: composer + feed -->
+                <section class="rede-main">
+                    <!-- Composer de nota inline -->
+                    <div class="composer-card">
+                        <div class="composer-row">
+                            <div class="user-avatar-sm" id="composerAvatar">—</div>
+                            <textarea id="composerBody" rows="2" placeholder="Conta a história do jogo. Um detalhe, um gol, um cheiro do estádio..."></textarea>
+                        </div>
+                        <div class="composer-extras" id="composerExtras" style="display:none;">
+                            <input type="text" id="composerTitle" maxlength="140" placeholder="Título (opcional)">
+                            <select id="composerAttendance">
+                                <option value="">— Sem ingresso —</option>
+                            </select>
+                        </div>
+                        <div class="composer-footer">
+                            <div class="composer-vis">
+                                <button type="button" class="composer-vis-btn active" data-vis="false">
+                                    <span class="material-icons">lock</span>
+                                    Privada
+                                </button>
+                                <button type="button" class="composer-vis-btn" data-vis="true">
+                                    <span class="material-icons">public</span>
+                                    Pública
+                                </button>
+                            </div>
+                            <div class="composer-actions">
+                                <button class="btn-ghost composer-toggle" id="composerToggleExtras" title="Mais opções">
+                                    <span class="material-icons">tune</span>
+                                </button>
+                                <button class="btn-primary composer-post" id="composerPost" disabled>Postar</button>
+                            </div>
+                        </div>
+                        <div class="error" id="composerErr" style="display:none;margin-top:0.6rem;padding:0.55rem 0.75rem;background:rgba(107,31,42,0.1);border-left:3px solid var(--vinho);color:var(--vinho);font-size:0.82rem;"></div>
+                    </div>
+
+                    <div class="feed-list" id="feedList"><div class="loading">Carregando feed...</div></div>
+                </section>
             </div>
         </div>
 
@@ -3101,18 +3298,6 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             <div id="copaList"><div class="loading">Carregando jogos...</div></div>
         </div>
 
-        <div class="tab-panel" id="tabNotas">
-            <div class="notas-toolbar">
-                <div style="font-family:'Oswald',sans-serif;font-weight:500;font-size:0.85rem;color:var(--ink-mute);letter-spacing:0.04em;">
-                    Conte a história de cada jogo. Compartilhe como card de Instagram.
-                </div>
-                <button class="btn-primary" id="btnNovaNota" style="padding:0.7rem 1.2rem;font-family:'Oswald',sans-serif;font-weight:600;font-size:0.78rem;letter-spacing:0.18em;text-transform:uppercase;border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer;display:inline-flex;align-items:center;gap:0.4rem;">
-                    <span class="material-icons" style="font-size:1.05rem;">edit_note</span>
-                    Nova nota
-                </button>
-            </div>
-            <div id="notasList" class="notas-grid"><div class="loading">Carregando notas...</div></div>
-        </div>
     </main>
 
 <script>
@@ -4616,89 +4801,13 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     });
 
     // ===============================================
-    // NOTAS — CRUD
+    // COMPOSER — cria nota direto no feed
     // ===============================================
-    let notas = [];
-    let editingNota = null;
+    let composerIsPublic = false;
 
-    async function loadNotas() {
-        const container = document.getElementById('notasList');
-        container.innerHTML = '<div class="loading">Carregando notas...</div>';
-        try {
-            const data = await api('/notes');
-            notas = data.notes;
-            renderNotas();
-        } catch (err) {
-            container.innerHTML = `<div class="empty">Erro: ${err.message}</div>`;
-        }
-    }
-
-    function renderNotas() {
-        const container = document.getElementById('notasList');
-        if (!notas.length) {
-            container.innerHTML = `
-                <div class="empty" style="grid-column:1/-1;">
-                    Você ainda não escreveu nenhuma nota.<br><br>
-                    Marque um jogo, conte a história, e compartilhe no Instagram.
-                </div>`;
-            return;
-        }
-        container.innerHTML = notas.map(n => {
-            const gameLabel = n.time_casa
-                ? `${escapeHtml(n.time_casa)} × ${escapeHtml(n.time_visitante)}${n.gols_casa != null ? ` · ${n.gols_casa}-${n.gols_visitante}` : ''}`
-                : 'Nota livre';
-            const created = new Date(n.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
-            const visIcon = n.is_public ? 'public' : 'lock';
-            const visLabel = n.is_public ? 'Pública' : 'Privada';
-            const visColor = n.is_public ? 'var(--accent)' : 'var(--ink-mute)';
-            return `
-                <article class="nota-card" data-id="${n.id}">
-                    <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;">
-                        <div class="nota-game" style="border:none;padding:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${gameLabel}</div>
-                        <span title="${visLabel}" style="display:inline-flex;align-items:center;gap:0.25rem;color:${visColor};font-family:'Oswald',sans-serif;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;font-weight:600;">
-                            <span class="material-icons" style="font-size:0.95rem;">${visIcon}</span>
-                            ${visLabel}
-                        </span>
-                    </div>
-                    ${n.title ? `<div class="nota-title">${escapeHtml(n.title)}</div>` : ''}
-                    <div class="nota-body">${escapeHtml(n.body)}</div>
-                    <div class="nota-footer">
-                        <span>${created}</span>
-                        <div class="nota-actions">
-                            <button class="nota-action share" data-share="${n.id}" title="Compartilhar"><span class="material-icons">share</span></button>
-                            <button class="nota-action" data-edit="${n.id}" title="Editar"><span class="material-icons">edit</span></button>
-                            <button class="nota-action del" data-del="${n.id}" title="Remover"><span class="material-icons">delete</span></button>
-                        </div>
-                    </div>
-                </article>
-            `;
-        }).join('');
-
-        container.querySelectorAll('[data-edit]').forEach(b => {
-            b.addEventListener('click', () => openNotaEdit(parseInt(b.dataset.edit)));
-        });
-        container.querySelectorAll('[data-del]').forEach(b => {
-            b.addEventListener('click', async () => {
-                if (!confirm('Remover essa nota?')) return;
-                try {
-                    await api(`/notes/${b.dataset.del}`, { method: 'DELETE' });
-                    await loadNotas();
-                } catch (e) { alert('Erro: ' + e.message); }
-            });
-        });
-        container.querySelectorAll('[data-share]').forEach(b => {
-            b.addEventListener('click', () => {
-                const note = notas.find(x => x.id === parseInt(b.dataset.share));
-                if (note) {
-                    renderShareNota(note);
-                    document.getElementById('shareModal').classList.add('show');
-                }
-            });
-        });
-    }
-
-    function populateAttendanceSelect() {
-        const sel = document.getElementById('notaAttendance');
+    function populateComposerAttendance() {
+        const sel = document.getElementById('composerAttendance');
+        if (!sel) return;
         sel.innerHTML = '<option value="">— Sem ingresso —</option>';
         const porId = new Map();
         for (const g of (allGames || [])) if (g.attendance_id) porId.set(g.id, g);
@@ -4713,111 +4822,93 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         }
     }
 
-    let notaIsPublic = false;
-
-    function setNotaVisibility(isPublic) {
-        notaIsPublic = !!isPublic;
-        document.querySelectorAll('#notaModal .status-btn[data-vis]').forEach(b => {
-            b.classList.toggle('active', (b.dataset.vis === 'true') === notaIsPublic);
+    function setComposerVisibility(isPublic) {
+        composerIsPublic = !!isPublic;
+        document.querySelectorAll('#tabRede .composer-vis-btn').forEach(b => {
+            b.classList.toggle('active', (b.dataset.vis === 'true') === composerIsPublic);
         });
     }
-    document.querySelectorAll('#notaModal .status-btn[data-vis]').forEach(b => {
-        b.addEventListener('click', () => setNotaVisibility(b.dataset.vis === 'true'));
-    });
 
-    function openNotaNew() {
-        editingNota = null;
-        populateAttendanceSelect();
-        document.getElementById('notaModalTitle').textContent = 'Nova nota';
-        document.getElementById('notaAttendance').value = '';
-        document.getElementById('notaTitle').value = '';
-        document.getElementById('notaBody').value = '';
-        setNotaVisibility(false);
-        document.getElementById('notaDelete').style.display = 'none';
-        document.getElementById('notaErr').classList.remove('show');
-        document.getElementById('notaModal').classList.add('show');
+    function resetComposer() {
+        document.getElementById('composerBody').value = '';
+        document.getElementById('composerTitle').value = '';
+        document.getElementById('composerAttendance').value = '';
+        document.getElementById('composerExtras').style.display = 'none';
+        document.getElementById('composerErr').style.display = 'none';
+        document.getElementById('composerPost').disabled = true;
+        setComposerVisibility(false);
     }
 
-    function openNotaEdit(id) {
-        const n = notas.find(x => x.id === id);
-        if (!n) return;
-        editingNota = n;
-        populateAttendanceSelect();
-        document.getElementById('notaModalTitle').textContent = 'Editar nota';
-        document.getElementById('notaAttendance').value = n.attendance_id || '';
-        document.getElementById('notaTitle').value = n.title || '';
-        document.getElementById('notaBody').value = n.body;
-        setNotaVisibility(!!n.is_public);
-        document.getElementById('notaDelete').style.display = '';
-        document.getElementById('notaErr').classList.remove('show');
-        document.getElementById('notaModal').classList.add('show');
+    function initComposer() {
+        const avatarEl = document.getElementById('composerAvatar');
+        if (avatarEl) {
+            avatarEl.textContent = avatarInitials(user?.display_name || user?.email || 'Eu');
+        }
+        populateComposerAttendance();
+        setComposerVisibility(false);
+
+        const bodyInput = document.getElementById('composerBody');
+        const postBtn = document.getElementById('composerPost');
+        bodyInput.addEventListener('input', () => {
+            postBtn.disabled = !bodyInput.value.trim();
+        });
+        document.querySelectorAll('#tabRede .composer-vis-btn').forEach(b => {
+            b.addEventListener('click', () => setComposerVisibility(b.dataset.vis === 'true'));
+        });
+        document.getElementById('composerToggleExtras').addEventListener('click', () => {
+            const ex = document.getElementById('composerExtras');
+            ex.style.display = ex.style.display === 'none' ? 'flex' : 'none';
+        });
+        postBtn.addEventListener('click', postFromComposer);
     }
 
-    document.getElementById('btnNovaNota').addEventListener('click', openNotaNew);
-    document.getElementById('notaCancel').addEventListener('click', () => {
-        document.getElementById('notaModal').classList.remove('show');
-    });
-    document.getElementById('notaModal').addEventListener('click', (e) => {
-        if (e.target.id === 'notaModal') document.getElementById('notaModal').classList.remove('show');
-    });
-
-    document.getElementById('notaDelete').addEventListener('click', async () => {
-        if (!editingNota) return;
-        if (!confirm('Remover essa nota?')) return;
-        try {
-            await api(`/notes/${editingNota.id}`, { method: 'DELETE' });
-            document.getElementById('notaModal').classList.remove('show');
-            await loadNotas();
-        } catch (e) { alert('Erro: ' + e.message); }
-    });
-
-    document.getElementById('notaSave').addEventListener('click', async () => {
-        const errBox = document.getElementById('notaErr');
-        errBox.classList.remove('show');
-        const btn = document.getElementById('notaSave');
+    async function postFromComposer() {
+        const errBox = document.getElementById('composerErr');
+        errBox.style.display = 'none';
+        const btn = document.getElementById('composerPost');
+        const body = document.getElementById('composerBody').value.trim();
+        if (!body) return;
         btn.disabled = true;
-        btn.textContent = 'Salvando...';
+        btn.textContent = 'Postando...';
         try {
-            const body = {
-                title: document.getElementById('notaTitle').value.trim() || null,
-                body: document.getElementById('notaBody').value.trim(),
-                attendance_id: document.getElementById('notaAttendance').value
-                    ? parseInt(document.getElementById('notaAttendance').value)
+            const payload = {
+                title: document.getElementById('composerTitle').value.trim() || null,
+                body,
+                attendance_id: document.getElementById('composerAttendance').value
+                    ? parseInt(document.getElementById('composerAttendance').value)
                     : null,
-                is_public: notaIsPublic,
+                is_public: composerIsPublic,
             };
-            if (!body.body) {
-                errBox.textContent = 'A história não pode ficar vazia.';
-                errBox.classList.add('show');
-                return;
-            }
-            if (editingNota) {
-                await api(`/notes/${editingNota.id}`, { method: 'PATCH', body: JSON.stringify(body) });
-            } else {
-                await api('/notes', { method: 'POST', body: JSON.stringify(body) });
-            }
-            document.getElementById('notaModal').classList.remove('show');
-            await loadNotas();
+            await api('/notes', { method: 'POST', body: JSON.stringify(payload) });
+            resetComposer();
+            await loadFeed();
         } catch (e) {
             errBox.textContent = e.message;
-            errBox.classList.add('show');
+            errBox.style.display = '';
         } finally {
             btn.disabled = false;
-            btn.textContent = 'Salvar';
+            btn.textContent = 'Postar';
         }
-    });
+    }
 
     // Tabs unificadas
     document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', () => {
             const target = tab.dataset.tab;
-            const panelMap = { catalog: 'tabCatalog', mine: 'tabMine', notas: 'tabNotas', rede: 'tabRede', copa: 'tabCopa' };
+            const panelMap = { catalog: 'tabCatalog', mine: 'tabMine', rede: 'tabRede', copa: 'tabCopa' };
             const panelId = panelMap[target] || 'tabCatalog';
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
             tab.classList.add('active');
             document.getElementById(panelId).classList.add('active');
-            if (target === 'notas') loadNotas();
+
+            // Carteirinha + KPIs só aparecem no catálogo e meus ingressos
+            const showRetrospecto = (target === 'catalog' || target === 'mine');
+            const cartBar = document.getElementById('cartBar');
+            const kpis = document.getElementById('kpis');
+            if (cartBar) cartBar.style.display = showRetrospecto ? '' : 'none';
+            if (kpis) kpis.style.display = showRetrospecto ? '' : 'none';
+
             if (target === 'rede') loadFriends();
             if (target === 'copa') loadCopa();
         });
@@ -4979,12 +5070,34 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         return src.substring(0, 2).toUpperCase();
     }
 
+    // Formata "última vez visto" em texto relativo curto. Retorna null se online agora.
+    function formatLastSeen(lastSeenAt) {
+        if (!lastSeenAt) return 'há muito tempo';
+        const dt = new Date(lastSeenAt).getTime();
+        const diffMin = (Date.now() - dt) / 60000;
+        if (diffMin < 5) return null; // online
+        if (diffMin < 60) return `há ${Math.floor(diffMin)}min`;
+        const diffH = diffMin / 60;
+        if (diffH < 24) return `há ${Math.floor(diffH)}h`;
+        const diffD = diffH / 24;
+        if (diffD < 30) return `há ${Math.floor(diffD)}d`;
+        return 'há meses';
+    }
+
     function renderUserCard(u, mode) {
         // mode: 'friend' | 'incoming' | 'outgoing' | 'search'
         const handle = u.username ? `<span class="at">@${escapeHtml(u.username)}</span>` : '';
         const club = u.club_name ? ` · ${escapeHtml(u.club_name)}` : '';
         const name = (u.display_name || u.username || 'Sem nome').toUpperCase();
         const initials = avatarInitials(u.display_name || u.username);
+
+        // Indicador online/offline (só pra amigos). isOnline = dot verde; senão texto "há Xh".
+        const isFriend = mode === 'friend';
+        const lastSeenStr = isFriend ? formatLastSeen(u.last_seen_at) : undefined;
+        const isOnline = isFriend && lastSeenStr === null;
+        const presenceTextHtml = (isFriend && !isOnline)
+            ? `<div class="user-presence">${lastSeenStr}</div>`
+            : '';
 
         let actions = '';
         if (mode === 'friend') {
@@ -5019,10 +5132,14 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const userId = u.user_id || u.id;
         return `
             <div class="user-card">
-                <div class="user-avatar-sm">${initials}</div>
+                <div class="user-avatar-wrap">
+                    <div class="user-avatar-sm">${initials}</div>
+                    ${isOnline ? '<span class="avatar-presence-dot" title="Online agora"></span>' : ''}
+                </div>
                 <div class="user-info-sm">
                     <div class="user-name-sm">${escapeHtml(name)}</div>
                     <div class="user-meta-sm">${handle}${club}</div>
+                    ${presenceTextHtml}
                 </div>
                 <div class="user-actions-sm">${actions}</div>
             </div>
@@ -5335,8 +5452,15 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         }, 100);
     });
 
+    let composerReady = false;
     async function loadFriends() {
         try {
+            if (!composerReady) {
+                initComposer();
+                composerReady = true;
+            } else {
+                populateComposerAttendance();
+            }
             const data = await api('/social/friends');
             friendsState = data;
             updateBell();

@@ -26,7 +26,11 @@
       "Bash(node --check src/routes/tournaments.js)",
       "Bash(node --check scripts/seed_copa_2026_full.mjs)",
       "Bash(node --check scripts/seed_copa_2026_real.mjs)",
-      "Bash(node --check scripts/seed_copa_xlsx.mjs)"
+      "Bash(node --check scripts/seed_copa_xlsx.mjs)",
+      "Bash(node -e \"const fs=require\\('fs'\\); const s=fs.readFileSync\\(String.raw\\\\`C:\\\\Users\\\\guilh\\\\OneDrive\\\\Área de Trabalho\\\\corinthians-agent-backend\\\\public\\\\app.html\\\\`,'utf8'\\); const m=s.match\\(/<div class=\\\\\"tab-panel/g\\); const n=s.match\\(/data-tab=/g\\); const o=s.match\\(/composerAvatar|composerBody|composerAttendance|composerPost/g\\); console.log\\('tab-panel divs:', m?.length\\); console.log\\('data-tab:', n?.length\\); console.log\\('composer refs:', o?.length\\);\")",
+      "Bash(node --check \"C:\\\\Users\\\\guilh\\\\OneDrive\\\\Área de Trabalho\\\\corinthians-agent-backend\\\\src\\\\routes\\\\social.js\")",
+      "Bash(node --check \"C:\\\\Users\\\\guilh\\\\OneDrive\\\\Área de Trabalho\\\\corinthians-agent-backend\\\\src\\\\routes\\\\me.js\")",
+      "Bash(node --check \"C:\\\\Users\\\\guilh\\\\OneDrive\\\\Área de Trabalho\\\\corinthians-agent-backend\\\\src\\\\middleware\\\\authUser.js\")"
     ]
   }
 }
