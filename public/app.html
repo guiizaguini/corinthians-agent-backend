@@ -3036,6 +3036,772 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 }
 
 /* ===============================================================
+   BOLÃO DA COPA
+   =============================================================== */
+
+/* Botão de entrada pro bolão (topo da aba Copa) */
+.bolao-entry-btn {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    padding: 1rem 1.25rem;
+    margin: 0 0 1.5rem;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a1a0a 100%);
+    border: 1.5px solid #d4a520;
+    border-radius: 14px;
+    cursor: pointer;
+    color: #fff;
+    text-align: left;
+    font-family: 'Oswald', sans-serif;
+    transition: all 180ms;
+    box-shadow: 0 6px 18px rgba(212,165,32,0.18), 0 0 0 0 rgba(212,165,32,0);
+    position: relative;
+    overflow: hidden;
+}
+.bolao-entry-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(135deg, transparent 0 22px, rgba(255,215,128,0.05) 22px 24px);
+    pointer-events: none;
+}
+.bolao-entry-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 26px rgba(212,165,32,0.3), 0 0 0 3px rgba(212,165,32,0.18);
+}
+.bolao-entry-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #d4a520 0%, #f0c040 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #1a1000;
+    box-shadow: 0 4px 12px rgba(212,165,32,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+.bolao-entry-icon .material-icons { font-size: 1.7rem; }
+.bolao-entry-text { flex: 1; min-width: 0; }
+.bolao-entry-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: #f5e6a8;
+}
+.bolao-entry-sub {
+    font-family: 'SN Pro','Oswald',sans-serif;
+    font-size: 0.82rem;
+    color: rgba(245,230,168,0.65);
+    margin-top: 0.15rem;
+}
+.bolao-entry-chevron {
+    color: #d4a520 !important;
+    font-size: 1.8rem !important;
+    flex-shrink: 0;
+}
+
+/* Copa view está em tema light, bolão também */
+#copaViewBolao { color: var(--wc-ink); }
+
+.bolao-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: transparent;
+    border: 1.5px solid var(--wc-line);
+    color: var(--wc-ink-mute);
+    padding: 0.5rem 0.95rem;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 999px;
+    margin-bottom: 1.25rem;
+    transition: all 150ms;
+}
+.bolao-back:hover { border-color: var(--wc-ink); color: var(--wc-ink); }
+.bolao-back .material-icons { font-size: 1rem; }
+
+.bolao-hero {
+    background: linear-gradient(135deg, #fff8e0 0%, #fdefc2 100%);
+    border: 2px solid #d4a520;
+    border-radius: 16px;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 24px rgba(212,165,32,0.15);
+}
+.bolao-hero-eyebrow {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.28em;
+    color: #a8791b;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.4rem;
+}
+.bolao-hero-eyebrow .material-icons { font-size: 1rem; color: #d4a520; }
+.bolao-hero-title {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: #1a1000;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    margin: 0;
+}
+.bolao-hero-sub {
+    font-family: 'SN Pro','Oswald',sans-serif;
+    font-size: 0.95rem;
+    color: #6a5530;
+    margin-top: 0.35rem;
+}
+
+.bolao-join-card {
+    background: var(--wc-card);
+    border: 1px solid var(--wc-line);
+    border-radius: 14px;
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(20,15,10,0.06);
+}
+.bolao-join-card label {
+    display: block;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--wc-ink-mute);
+    margin-bottom: 0.4rem;
+}
+.bolao-join-row {
+    display: flex;
+    gap: 0.5rem;
+}
+.bolao-join-row input {
+    flex: 1;
+    background: #fff;
+    border: 1.5px solid var(--wc-line);
+    color: var(--wc-ink);
+    padding: 0.7rem 0.95rem;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    outline: none;
+    border-radius: 10px;
+}
+.bolao-join-row input:focus { border-color: #d4a520; }
+.bolao-join-row .btn-primary {
+    background: #1a1a1a;
+    border: 1.5px solid #1a1a1a;
+    color: #fff;
+    padding: 0.7rem 1.3rem;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all 150ms;
+}
+.bolao-join-row .btn-primary:hover { background: #d4a520; border-color: #d4a520; color: #1a1000; }
+.bolao-join-err {
+    margin-top: 0.6rem;
+    font-family: 'SN Pro', 'Oswald', sans-serif;
+    font-size: 0.85rem;
+    color: var(--vinho);
+    display: none;
+}
+.bolao-join-err.show { display: block; }
+
+.bolao-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    margin-bottom: 0.85rem;
+    flex-wrap: wrap;
+}
+.bolao-section-head h3 {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--wc-ink);
+    margin: 0;
+}
+.bolao-create-btn {
+    background: transparent;
+    border: 1.5px solid var(--wc-line);
+    color: var(--wc-ink-mute);
+    padding: 0.55rem 0.95rem;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+.bolao-create-btn .material-icons { font-size: 1rem; }
+
+.bolao-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.85rem;
+}
+.bolao-card {
+    background: var(--wc-card);
+    border: 1px solid var(--wc-line);
+    border-radius: 14px;
+    padding: 1rem 1.15rem 1.05rem;
+    cursor: pointer;
+    transition: all 180ms;
+    box-shadow: 0 4px 12px rgba(20,15,10,0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+.bolao-card:hover {
+    border-color: #d4a520;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(212,165,32,0.15);
+}
+.bolao-card-name {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--wc-ink);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+}
+.bolao-card-desc {
+    font-family: 'SN Pro', 'Oswald', sans-serif;
+    font-size: 0.82rem;
+    color: var(--wc-ink-mute);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.bolao-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: auto;
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--wc-line);
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    color: var(--wc-ink-mute);
+    text-transform: uppercase;
+}
+.bolao-card-meta .material-icons { font-size: 0.9rem; color: #d4a520; }
+
+/* ===== Detalhe ===== */
+.bolao-detail-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.25rem;
+    background: var(--wc-card);
+    border: 1px solid var(--wc-line);
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 4px 14px rgba(20,15,10,0.06);
+    flex-wrap: wrap;
+}
+.bolao-detail-info { flex: 1; min-width: 0; }
+.bolao-detail-eyebrow {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.68rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--wc-ink-mute);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.3rem;
+}
+.bolao-detail-eyebrow .material-icons { font-size: 0.95rem; color: #d4a520; }
+.bolao-detail-title {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--wc-ink);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin: 0;
+}
+.bolao-detail-desc {
+    font-family: 'SN Pro', 'Oswald', sans-serif;
+    font-size: 0.88rem;
+    color: var(--wc-ink-mute);
+    margin-top: 0.35rem;
+    line-height: 1.4;
+}
+.bolao-detail-code {
+    margin-top: 0.6rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: #fff8e0;
+    border: 1px dashed #d4a520;
+    padding: 0.35rem 0.55rem 0.35rem 0.75rem;
+    border-radius: 999px;
+}
+.bolao-code-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: #a8791b;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+.bolao-detail-code code {
+    font-family: 'Oswald', monospace;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    color: #1a1000;
+    background: transparent;
+}
+.bolao-code-copy {
+    background: transparent;
+    border: none;
+    color: #a8791b;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.2rem;
+    border-radius: 4px;
+    transition: color 150ms;
+}
+.bolao-code-copy:hover { color: #1a1000; }
+.bolao-code-copy .material-icons { font-size: 1rem; }
+
+.bolao-detail-mypoints {
+    text-align: center;
+    padding: 0.75rem 1.25rem;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a1a0a 100%);
+    color: #fff;
+    border-radius: 14px;
+    min-width: 120px;
+}
+.bolao-mp-label {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.58rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: #d4a520;
+}
+.bolao-mp-value {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 2.2rem;
+    color: #fff;
+    line-height: 1;
+    margin-top: 0.25rem;
+    letter-spacing: -0.01em;
+}
+
+.bolao-detail-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 1.25rem;
+    align-items: flex-start;
+}
+.bolao-jogos { min-width: 0; }
+.bolao-jogos-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+.bolao-jogos-head h3 {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--wc-ink);
+    margin: 0;
+}
+.bolao-jogos-stats {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    color: var(--wc-ink-mute);
+    text-transform: uppercase;
+}
+
+/* Card de jogo com palpite */
+.bolao-jogo {
+    background: var(--wc-card);
+    border: 1.5px solid var(--wc-line);
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 0.65rem;
+    transition: all 150ms;
+    position: relative;
+}
+.bolao-jogo.palpitado { border-color: #4ec96d; }
+.bolao-jogo.travado { opacity: 0.75; background: #f0ebe0; }
+.bolao-jogo.finalizado { border-color: #d4a520; background: #fff8e8; }
+
+.bolao-jogo-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.6rem;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--wc-ink-mute);
+}
+.bolao-jogo-head .bolao-check {
+    color: #4ec96d;
+    font-size: 1.1rem;
+}
+.bolao-jogo-head .bolao-lock {
+    color: var(--wc-ink-mute);
+    font-size: 1rem;
+}
+.bolao-jogo-teams {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 0.75rem;
+}
+.bolao-jogo-team {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--wc-ink);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    min-width: 0;
+}
+.bolao-jogo-team.home { justify-content: flex-end; text-align: right; }
+.bolao-jogo-team .bolao-flag {
+    width: 24px; height: 18px;
+    object-fit: cover;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    flex-shrink: 0;
+}
+.bolao-jogo-team .bolao-flag.tbd {
+    background: repeating-linear-gradient(45deg, #e5dfd0 0 4px, #c9bfa8 4px 8px);
+}
+.bolao-jogo-team-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.bolao-jogo-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+.bolao-jogo-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+.bolao-jogo-input {
+    width: 48px;
+    height: 48px;
+    background: #fff;
+    border: 1.5px solid var(--wc-line);
+    color: var(--wc-ink);
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    text-align: center;
+    outline: none;
+    border-radius: 10px;
+    transition: all 150ms;
+    padding: 0;
+    -moz-appearance: textfield;
+}
+.bolao-jogo-input::-webkit-outer-spin-button,
+.bolao-jogo-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.bolao-jogo-input:focus { border-color: #d4a520; box-shadow: 0 0 0 3px rgba(212,165,32,0.2); }
+.bolao-jogo-input:disabled {
+    background: #f0ebe0;
+    cursor: not-allowed;
+    color: var(--wc-ink-mute);
+}
+.bolao-jogo-x {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 1rem;
+    color: var(--wc-ink-mute);
+    letter-spacing: 0.05em;
+}
+.bolao-jogo-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.7rem;
+    padding-top: 0.55rem;
+    border-top: 1px dashed var(--wc-line);
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    color: var(--wc-ink-mute);
+    text-transform: uppercase;
+}
+.bolao-jogo-save {
+    background: #1a1a1a;
+    color: #fff;
+    border: 1.5px solid #1a1a1a;
+    padding: 0.4rem 0.85rem;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 999px;
+    transition: all 150ms;
+}
+.bolao-jogo-save:hover:not(:disabled) { background: #d4a520; border-color: #d4a520; color: #1a1000; }
+.bolao-jogo-save:disabled { opacity: 0.35; cursor: not-allowed; }
+.bolao-jogo-save.saved { background: #4ec96d; border-color: #4ec96d; }
+.bolao-jogo-realscore {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    color: #a8791b;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+.bolao-jogo-realscore b { color: #1a1000; font-size: 0.9rem; }
+.bolao-jogo-earned {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.55rem;
+    border-radius: 999px;
+}
+.bolao-jogo-earned.v { background: rgba(78,201,109,0.2); color: #2a7a3d; }
+.bolao-jogo-earned.z { background: rgba(107,31,42,0.1); color: var(--vinho); }
+
+/* ===== Ranking ===== */
+.bolao-ranking {
+    background: var(--wc-card);
+    border: 1px solid var(--wc-line);
+    border-radius: 14px;
+    padding: 1.1rem 1.2rem;
+    box-shadow: 0 4px 12px rgba(20,15,10,0.06);
+    position: sticky;
+    top: 1rem;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+}
+.bolao-ranking h3 {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--wc-ink);
+    margin: 0 0 0.8rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--wc-line);
+}
+.bolao-ranking-row {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid #efe8d6;
+    font-family: 'Oswald', sans-serif;
+}
+.bolao-ranking-row:last-child { border-bottom: none; }
+.bolao-ranking-row.me { background: rgba(212,165,32,0.08); margin: 0 -0.5rem; padding: 0.55rem 0.5rem; border-radius: 8px; }
+.bolao-rank-pos {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--wc-ink-mute);
+    text-align: center;
+}
+.bolao-ranking-row:nth-child(2) .bolao-rank-pos { color: #d4a520; }
+.bolao-ranking-row:nth-child(3) .bolao-rank-pos { color: #a0a0a0; }
+.bolao-ranking-row:nth-child(4) .bolao-rank-pos { color: #cd7f32; }
+.bolao-rank-name {
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: var(--wc-ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+.bolao-rank-pts {
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #1a1000;
+    background: #fff8e0;
+    border: 1px solid #d4a520;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+}
+.bolao-regras {
+    margin-top: 1rem;
+    padding-top: 0.85rem;
+    border-top: 1px dashed var(--wc-line);
+}
+.bolao-regras h4 {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.65rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--wc-ink-mute);
+    margin: 0 0 0.5rem;
+}
+.bolao-regras ul { list-style: none; padding: 0; margin: 0; }
+.bolao-regras li {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.75rem;
+    color: var(--wc-ink);
+    padding: 0.2rem 0;
+    display: flex;
+    justify-content: space-between;
+    letter-spacing: 0.04em;
+}
+.bolao-regras li b { font-weight: 600; }
+
+/* Toggle mobile do ranking */
+.bolao-ranking-toggle {
+    display: none;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.75rem;
+    background: var(--wc-card);
+    border: 1px solid var(--wc-line);
+    color: var(--wc-ink);
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    align-items: center;
+    gap: 0.5rem;
+}
+.bolao-ranking-toggle .material-icons { font-size: 1.05rem; color: #d4a520; }
+.bolao-ranking-toggle .bolao-rank-chevron {
+    font-size: 1.2rem !important;
+    color: var(--wc-ink-mute) !important;
+    margin-left: 0.35rem;
+    transition: transform 200ms;
+}
+.bolao-ranking-toggle.open .bolao-rank-chevron { transform: rotate(180deg); }
+.bolao-rank-toggle-count {
+    margin-left: auto;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--wc-ink-mute);
+    padding: 0.1rem 0.5rem;
+    border: 1px solid var(--wc-line);
+    border-radius: 999px;
+}
+
+/* Mobile layout bolão */
+@media (max-width: 900px) {
+    .bolao-detail-layout { grid-template-columns: 1fr; }
+    .bolao-ranking {
+        position: static;
+        display: none;
+        max-height: none;
+    }
+    .bolao-ranking.open { display: block; }
+    .bolao-ranking-toggle { display: inline-flex; }
+}
+@media (max-width: 680px) {
+    .bolao-entry-btn { padding: 0.85rem 1rem; border-radius: 12px; }
+    .bolao-entry-icon { width: 44px; height: 44px; }
+    .bolao-entry-icon .material-icons { font-size: 1.4rem; }
+    .bolao-entry-title { font-size: 0.95rem; }
+    .bolao-entry-sub { font-size: 0.75rem; }
+    .bolao-hero { padding: 1.1rem 1.15rem; border-radius: 14px; }
+    .bolao-hero-title { font-size: 1.3rem; }
+    .bolao-hero-sub { font-size: 0.82rem; }
+    .bolao-detail-head {
+        padding: 1rem 1.15rem;
+        border-radius: 14px;
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: stretch;
+    }
+    .bolao-detail-title { font-size: 1.2rem; }
+    .bolao-detail-mypoints {
+        padding: 0.65rem 1rem;
+        min-width: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .bolao-mp-label { text-align: left; }
+    .bolao-mp-value { font-size: 1.8rem; margin-top: 0; }
+    .bolao-list { grid-template-columns: 1fr; gap: 0.65rem; }
+    .bolao-join-row { flex-direction: column; gap: 0.5rem; }
+    .bolao-join-row input { font-size: 16px; /* evita zoom */ }
+    .bolao-join-row .btn-primary { width: 100%; padding: 0.8rem; }
+    .bolao-jogo { padding: 0.75rem 0.85rem; border-radius: 10px; }
+    .bolao-jogo-team { font-size: 0.82rem; gap: 0.35rem; }
+    .bolao-jogo-team .bolao-flag { width: 20px; height: 14px; }
+    .bolao-jogo-input { width: 44px; height: 44px; font-size: 1.3rem; }
+}
+@media (max-width: 420px) {
+    .bolao-jogo-teams { grid-template-columns: 1fr auto 1fr; gap: 0.4rem; }
+    .bolao-jogo-team { font-size: 0.75rem; }
+}
+
+/* ===============================================================
    Modal de resumo (openSummary) — classes reutilizáveis
    =============================================================== */
 .summary-eyebrow {
@@ -3742,15 +4508,117 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         </div>
 
         <div class="tab-panel" id="tabCopa">
-            <section class="wc-header">
-                <img src="/logos/fifa-2026.png" alt="Copa do Mundo 2026">
-                <div class="wc-header-text">
-                    <div class="wc-eyebrow">FIFA World Cup · 16 sedes</div>
-                    <h2 class="wc-title">Copa do Mundo 2026</h2>
-                    <p class="wc-subtitle">Canadá · México · Estados Unidos. Marque seus jogos com "EU VOU" antes, e confirme presença depois que a bola rolar.</p>
+            <!-- VIEW: default (jogos da Copa) -->
+            <div id="copaViewDefault">
+                <section class="wc-header">
+                    <img src="/logos/fifa-2026.png" alt="Copa do Mundo 2026">
+                    <div class="wc-header-text">
+                        <div class="wc-eyebrow">FIFA World Cup · 16 sedes</div>
+                        <h2 class="wc-title">Copa do Mundo 2026</h2>
+                        <p class="wc-subtitle">Canadá · México · Estados Unidos. Marque seus jogos com "EU VOU" antes, e confirme presença depois que a bola rolar.</p>
+                    </div>
+                </section>
+
+                <button class="bolao-entry-btn" id="btnBolaoEnter" type="button">
+                    <div class="bolao-entry-icon"><span class="material-icons">emoji_events</span></div>
+                    <div class="bolao-entry-text">
+                        <div class="bolao-entry-title">Bolão da Copa</div>
+                        <div class="bolao-entry-sub">Palpite os jogos · dispute o ranking · ganhe pontos por acerto</div>
+                    </div>
+                    <span class="material-icons bolao-entry-chevron">chevron_right</span>
+                </button>
+
+                <div id="copaList"><div class="loading">Carregando jogos...</div></div>
+            </div>
+
+            <!-- VIEW: bolão (Meus Bolões ou detalhe) -->
+            <div id="copaViewBolao" style="display:none;">
+                <button class="bolao-back" id="btnBolaoBack" type="button">
+                    <span class="material-icons">arrow_back</span>Voltar à Copa
+                </button>
+
+                <!-- Sub-view: Meus Bolões (lista + entrar por código) -->
+                <div id="bolaoViewMeus">
+                    <section class="bolao-hero">
+                        <div class="bolao-hero-eyebrow"><span class="material-icons">emoji_events</span>BOLÃO DA COPA</div>
+                        <h2 class="bolao-hero-title">Palpite. Pontue. Vença.</h2>
+                        <p class="bolao-hero-sub">Entre em um bolão pelo código do convite e comece a palpitar os jogos.</p>
+                    </section>
+
+                    <section class="bolao-join-card">
+                        <label for="bolaoInviteInput">Código do convite</label>
+                        <div class="bolao-join-row">
+                            <input id="bolaoInviteInput" type="text" maxlength="24" placeholder="Ex: A3F7B9C2E1" autocomplete="off" autocapitalize="characters">
+                            <button class="btn-primary" id="bolaoJoinBtn">Entrar</button>
+                        </div>
+                        <div class="bolao-join-err" id="bolaoJoinErr"></div>
+                    </section>
+
+                    <div class="bolao-section-head">
+                        <h3>Meus bolões</h3>
+                        <button class="bolao-create-btn" id="bolaoCreateBtn" disabled title="Em breve">
+                            <span class="material-icons">lock</span>
+                            Criar bolão
+                        </button>
+                    </div>
+
+                    <div id="bolaoList" class="bolao-list"><div class="loading">Carregando bolões...</div></div>
                 </div>
-            </section>
-            <div id="copaList"><div class="loading">Carregando jogos...</div></div>
+
+                <!-- Sub-view: Detalhe do bolão (jogos + ranking) -->
+                <div id="bolaoViewDetail" style="display:none;">
+                    <div class="bolao-detail-head">
+                        <div class="bolao-detail-info">
+                            <div class="bolao-detail-eyebrow"><span class="material-icons">groups</span><span id="bolaoDetailMembers">0</span> membros</div>
+                            <h2 class="bolao-detail-title" id="bolaoDetailTitle">—</h2>
+                            <p class="bolao-detail-desc" id="bolaoDetailDesc"></p>
+                            <div class="bolao-detail-code">
+                                <span class="bolao-code-label">Código</span>
+                                <code id="bolaoDetailCode">—</code>
+                                <button class="bolao-code-copy" id="bolaoDetailCopy" title="Copiar"><span class="material-icons">content_copy</span></button>
+                            </div>
+                        </div>
+                        <div class="bolao-detail-mypoints">
+                            <div class="bolao-mp-label">Meus pontos</div>
+                            <div class="bolao-mp-value" id="bolaoMyPoints">0</div>
+                        </div>
+                    </div>
+
+                    <!-- Toggle mobile: abre ranking -->
+                    <button class="bolao-ranking-toggle" id="bolaoRankingToggle" type="button">
+                        <span class="material-icons">leaderboard</span>
+                        <span>Ranking</span>
+                        <span class="bolao-rank-toggle-count" id="bolaoRankToggleCount">—</span>
+                        <span class="material-icons bolao-rank-chevron">expand_more</span>
+                    </button>
+
+                    <div class="bolao-detail-layout">
+                        <!-- Jogos -->
+                        <section class="bolao-jogos">
+                            <div class="bolao-jogos-head">
+                                <h3>Jogos da Copa</h3>
+                                <div class="bolao-jogos-stats" id="bolaoJogosStats">— palpites</div>
+                            </div>
+                            <div id="bolaoJogosList"><div class="loading">Carregando jogos...</div></div>
+                        </section>
+
+                        <!-- Ranking -->
+                        <aside class="bolao-ranking" id="bolaoRanking">
+                            <h3>Ranking</h3>
+                            <div id="bolaoRankingList"><div class="loading">Carregando...</div></div>
+                            <div class="bolao-regras">
+                                <h4>Como pontua</h4>
+                                <ul>
+                                    <li><b>Placar exato</b> · <span id="ptsExato">15</span> pts</li>
+                                    <li><b>Vencedor + saldo</b> · <span id="ptsSaldo">10</span> pts</li>
+                                    <li><b>Só vencedor</b> · <span id="ptsVencedor">7</span> pts</li>
+                                    <li><b>Empate correto</b> · <span id="ptsEmpate">5</span> pts</li>
+                                </ul>
+                            </div>
+                        </aside>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </main>
@@ -6264,6 +7132,346 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     document.getElementById('compareModal').addEventListener('click', (e) => {
         if (e.target.id === 'compareModal') document.getElementById('compareModal').classList.remove('show');
     });
+
+    // ===============================================
+    // BOLÃO DA COPA
+    // ===============================================
+    const bolaoState = {
+        view: 'default',  // 'default' | 'meus' | 'detail'
+        bolaoId: null,
+        pontos: { PLACAR_EXATO: 15, VENCEDOR_E_SALDO: 10, VENCEDOR: 7, EMPATE_CORRETO: 5 },
+        travarMin: 1,
+        minhaId: null,
+    };
+
+    function bolaoShowView(view) {
+        bolaoState.view = view;
+        document.getElementById('copaViewDefault').style.display = (view === 'default') ? '' : 'none';
+        document.getElementById('copaViewBolao').style.display = (view === 'default') ? 'none' : '';
+        document.getElementById('bolaoViewMeus').style.display = (view === 'meus') ? '' : 'none';
+        document.getElementById('bolaoViewDetail').style.display = (view === 'detail') ? '' : 'none';
+    }
+
+    async function bolaoLoadMeus() {
+        const list = document.getElementById('bolaoList');
+        list.innerHTML = '<div class="loading">Carregando bolões...</div>';
+        try {
+            const data = await api('/bolao/meus');
+            bolaoState.pontos = data.pontos || bolaoState.pontos;
+            if (!data.boloes.length) {
+                list.innerHTML = `<div class="empty" style="grid-column:1/-1;color:var(--wc-ink-mute);">
+                    Você ainda não está em nenhum bolão. Cole o código de convite acima pra entrar.
+                </div>`;
+                return;
+            }
+            list.innerHTML = data.boloes.map(b => `
+                <article class="bolao-card" data-bolao-id="${b.id}">
+                    <div class="bolao-card-name">${escapeHtml(b.name)}</div>
+                    ${b.description ? `<div class="bolao-card-desc">${escapeHtml(b.description)}</div>` : ''}
+                    <div class="bolao-card-meta">
+                        <span class="material-icons">groups</span>
+                        <span>${b.member_count} membro${b.member_count !== 1 ? 's' : ''}</span>
+                        <span style="margin-left:auto;">${escapeHtml(b.invite_code)}</span>
+                    </div>
+                </article>
+            `).join('');
+            list.querySelectorAll('.bolao-card').forEach(el => {
+                el.addEventListener('click', () => bolaoOpenDetail(parseInt(el.dataset.bolaoId)));
+            });
+        } catch (err) {
+            list.innerHTML = `<div class="empty">Erro: ${err.message}</div>`;
+        }
+    }
+
+    async function bolaoOpenDetail(id) {
+        bolaoState.bolaoId = id;
+        bolaoShowView('detail');
+        try {
+            const data = await api(`/bolao/${id}`);
+            bolaoState.pontos = data.pontos || bolaoState.pontos;
+            bolaoState.travarMin = data.minutos_travar_antes || 1;
+            document.getElementById('bolaoDetailTitle').textContent = data.bolao.name;
+            document.getElementById('bolaoDetailDesc').textContent = data.bolao.description || '';
+            document.getElementById('bolaoDetailDesc').style.display = data.bolao.description ? '' : 'none';
+            document.getElementById('bolaoDetailCode').textContent = data.bolao.invite_code;
+            document.getElementById('bolaoDetailMembers').textContent = data.members.length;
+            document.getElementById('ptsExato').textContent = bolaoState.pontos.PLACAR_EXATO;
+            document.getElementById('ptsSaldo').textContent = bolaoState.pontos.VENCEDOR_E_SALDO;
+            document.getElementById('ptsVencedor').textContent = bolaoState.pontos.VENCEDOR;
+            document.getElementById('ptsEmpate').textContent = bolaoState.pontos.EMPATE_CORRETO;
+
+            // Carrega jogos + ranking em paralelo
+            await Promise.all([bolaoLoadJogos(id), bolaoLoadRanking(id)]);
+        } catch (err) {
+            alert('Erro ao carregar bolão: ' + err.message);
+            bolaoShowView('meus');
+        }
+    }
+
+    async function bolaoLoadJogos(id) {
+        const list = document.getElementById('bolaoJogosList');
+        list.innerHTML = '<div class="loading">Carregando jogos...</div>';
+        try {
+            const { games } = await api(`/bolao/${id}/games`);
+            const palpitados = games.filter(g => g.palpite_casa != null).length;
+            const total = games.length;
+            document.getElementById('bolaoJogosStats').textContent = `${palpitados}/${total} palpites`;
+
+            list.innerHTML = games.map(g => bolaoRenderJogo(g)).join('');
+
+            // Wire up save buttons e inputs
+            list.querySelectorAll('.bolao-jogo').forEach(el => {
+                const gameId = parseInt(el.dataset.gameId);
+                const inpHome = el.querySelector('.bolao-jogo-input.home');
+                const inpAway = el.querySelector('.bolao-jogo-input.away');
+                const saveBtn = el.querySelector('.bolao-jogo-save');
+                if (!saveBtn) return;
+
+                const onChange = () => {
+                    const h = parseInt(inpHome.value);
+                    const a = parseInt(inpAway.value);
+                    const valid = !isNaN(h) && !isNaN(a) && h >= 0 && a >= 0;
+                    saveBtn.disabled = !valid;
+                    saveBtn.classList.remove('saved');
+                    saveBtn.textContent = 'Salvar';
+                };
+                inpHome.addEventListener('input', onChange);
+                inpAway.addEventListener('input', onChange);
+
+                saveBtn.addEventListener('click', async () => {
+                    saveBtn.disabled = true;
+                    saveBtn.textContent = 'Salvando...';
+                    try {
+                        await api(`/bolao/${id}/palpite/${gameId}`, {
+                            method: 'PUT',
+                            body: JSON.stringify({
+                                gols_casa: parseInt(inpHome.value),
+                                gols_visitante: parseInt(inpAway.value),
+                            }),
+                        });
+                        saveBtn.textContent = 'Salvo ✓';
+                        saveBtn.classList.add('saved');
+                        el.classList.add('palpitado');
+                        const checkIcon = el.querySelector('.bolao-jogo-head .bolao-check');
+                        if (!checkIcon) {
+                            const head = el.querySelector('.bolao-jogo-head-right');
+                            if (head) head.innerHTML = '<span class="material-icons bolao-check" title="Palpite salvo">check_circle</span>';
+                        }
+                        // Atualiza stats
+                        await bolaoLoadJogos(id);
+                        await bolaoLoadRanking(id);
+                    } catch (err) {
+                        const msg = err.message === 'palpite_closed'
+                            ? 'Palpites fechados (faltam menos de 1 min pro jogo)'
+                            : 'Erro: ' + err.message;
+                        alert(msg);
+                        saveBtn.disabled = false;
+                        saveBtn.textContent = 'Salvar';
+                    }
+                });
+            });
+        } catch (err) {
+            list.innerHTML = `<div class="empty">Erro: ${err.message}</div>`;
+        }
+    }
+
+    function bolaoRenderJogo(g) {
+        const fCasa = flagFor(g.time_casa);
+        const fVis = flagFor(g.time_visitante);
+        const flagHtml = (url) => url
+            ? `<img class="bolao-flag" src="${url}" alt="" loading="lazy">`
+            : `<span class="bolao-flag tbd"></span>`;
+
+        const temResultado = g.gols_casa_real != null && g.gols_visitante_real != null;
+        const jaPalpitou = g.palpite_casa != null;
+        const cardCls = temResultado ? 'finalizado' : (g.travado ? 'travado' : (jaPalpitou ? 'palpitado' : ''));
+
+        const dt = new Date(g.data);
+        const dia = dt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+        const hora = g.horario || '—';
+
+        let statusIcon = '';
+        if (temResultado) {
+            statusIcon = '<span class="material-icons" style="color:#d4a520;font-size:1.1rem;" title="Jogo finalizado">sports_score</span>';
+        } else if (g.travado) {
+            statusIcon = '<span class="material-icons bolao-lock" title="Palpites fechados">lock</span>';
+        } else if (jaPalpitou) {
+            statusIcon = '<span class="material-icons bolao-check" title="Palpite salvo">check_circle</span>';
+        }
+
+        // Pontos ganhos (se tem resultado)
+        let earnedHtml = '';
+        if (temResultado && jaPalpitou) {
+            const pts = calcularPontosPalpite(
+                g.palpite_casa, g.palpite_visitante,
+                g.gols_casa_real, g.gols_visitante_real,
+                bolaoState.pontos
+            );
+            earnedHtml = `<span class="bolao-jogo-earned ${pts > 0 ? 'v' : 'z'}">${pts > 0 ? '+' + pts : '0'} pts</span>`;
+        } else if (temResultado && !jaPalpitou) {
+            earnedHtml = `<span class="bolao-jogo-earned z">0 pts</span>`;
+        }
+
+        // Inputs
+        const travarInputs = g.travado || temResultado;
+        const valH = g.palpite_casa != null ? g.palpite_casa : '';
+        const valA = g.palpite_visitante != null ? g.palpite_visitante : '';
+
+        const realPlacarHtml = temResultado
+            ? `<span class="bolao-jogo-realscore">Real: <b>${g.gols_casa_real}×${g.gols_visitante_real}</b></span>`
+            : '';
+
+        return `
+            <div class="bolao-jogo ${cardCls}" data-game-id="${g.id}">
+                <div class="bolao-jogo-head">
+                    <span>${escapeHtml(g.fase || '')} · ${dia} · ${hora}</span>
+                    <span class="bolao-jogo-head-right">${statusIcon}</span>
+                </div>
+                <div class="bolao-jogo-teams">
+                    <div class="bolao-jogo-team home">
+                        <span class="bolao-jogo-team-name">${escapeHtml(g.time_casa)}</span>
+                        ${flagHtml(fCasa)}
+                    </div>
+                    <div class="bolao-jogo-center">
+                        <div class="bolao-jogo-inputs">
+                            <input type="number" min="0" max="20" class="bolao-jogo-input home" value="${valH}" ${travarInputs ? 'disabled' : ''} inputmode="numeric">
+                            <span class="bolao-jogo-x">×</span>
+                            <input type="number" min="0" max="20" class="bolao-jogo-input away" value="${valA}" ${travarInputs ? 'disabled' : ''} inputmode="numeric">
+                        </div>
+                    </div>
+                    <div class="bolao-jogo-team away">
+                        ${flagHtml(fVis)}
+                        <span class="bolao-jogo-team-name">${escapeHtml(g.time_visitante)}</span>
+                    </div>
+                </div>
+                <div class="bolao-jogo-foot">
+                    <span>${g.estadio ? escapeHtml(g.estadio) : ''}</span>
+                    ${travarInputs
+                        ? (temResultado ? `<span>${realPlacarHtml} ${earnedHtml}</span>` : '<span style="color:var(--wc-ink-mute);">Palpites fechados</span>')
+                        : `<button class="bolao-jogo-save" type="button" ${jaPalpitou ? '' : 'disabled'}>${jaPalpitou ? 'Salvo ✓' : 'Salvar'}</button>`
+                    }
+                </div>
+            </div>
+        `;
+    }
+
+    function calcularPontosPalpite(pH, pA, rH, rA, pts) {
+        if (pH === rH && pA === rA) return pts.PLACAR_EXATO;
+        if (pH === pA && rH === rA) return pts.EMPATE_CORRETO;
+        const pSaldo = pH - pA;
+        const rSaldo = rH - rA;
+        if (Math.sign(pSaldo) === Math.sign(rSaldo) && pSaldo === rSaldo) return pts.VENCEDOR_E_SALDO;
+        if (Math.sign(pSaldo) === Math.sign(rSaldo)) return pts.VENCEDOR;
+        return 0;
+    }
+
+    async function bolaoLoadRanking(id) {
+        const list = document.getElementById('bolaoRankingList');
+        list.innerHTML = '<div class="loading">Carregando...</div>';
+        try {
+            const { ranking } = await api(`/bolao/${id}/ranking`);
+            if (!ranking.length) {
+                list.innerHTML = '<div class="empty">Sem membros ainda.</div>';
+                return;
+            }
+            const myId = user.id;
+            const myRow = ranking.find(r => r.id === myId);
+            document.getElementById('bolaoMyPoints').textContent = myRow ? myRow.pontos_total : 0;
+            document.getElementById('bolaoRankToggleCount').textContent = myRow
+                ? `Você: ${myRow.pontos_total} pts`
+                : `${ranking.length} membros`;
+
+            list.innerHTML = ranking.map((r, i) => {
+                const pos = i + 1;
+                const isMe = r.id === myId;
+                const name = (r.display_name || r.username || 'Amigo').toUpperCase();
+                return `
+                    <div class="bolao-ranking-row ${isMe ? 'me' : ''}">
+                        <div class="bolao-rank-pos">${pos}</div>
+                        <div class="bolao-rank-name">${escapeHtml(name)}</div>
+                        <div class="bolao-rank-pts">${r.pontos_total}</div>
+                    </div>
+                `;
+            }).join('');
+        } catch (err) {
+            list.innerHTML = `<div class="empty">Erro: ${err.message}</div>`;
+        }
+    }
+
+    // ========= Eventos do bolão =========
+    document.getElementById('btnBolaoEnter').addEventListener('click', () => {
+        bolaoShowView('meus');
+        bolaoLoadMeus();
+    });
+    document.getElementById('btnBolaoBack').addEventListener('click', () => {
+        if (bolaoState.view === 'detail') {
+            bolaoShowView('meus');
+            bolaoLoadMeus();
+        } else {
+            bolaoShowView('default');
+        }
+    });
+    document.getElementById('bolaoJoinBtn').addEventListener('click', async () => {
+        const input = document.getElementById('bolaoInviteInput');
+        const err = document.getElementById('bolaoJoinErr');
+        err.classList.remove('show');
+        const code = input.value.trim().toUpperCase();
+        if (code.length < 4) {
+            err.textContent = 'Digite um código válido.';
+            err.classList.add('show');
+            return;
+        }
+        const btn = document.getElementById('bolaoJoinBtn');
+        btn.disabled = true;
+        btn.textContent = 'Entrando...';
+        try {
+            const res = await api('/bolao/join', { method: 'POST', body: JSON.stringify({ invite_code: code }) });
+            input.value = '';
+            bolaoOpenDetail(res.bolao_id);
+        } catch (e) {
+            const msg = {
+                bolao_not_found: 'Código inválido. Verifique e tente de novo.',
+                already_member: 'Você já está nesse bolão.',
+            }[e.message] || e.message;
+            err.textContent = msg;
+            err.classList.add('show');
+            // Se já é membro, tenta abrir
+            if (e.message === 'already_member') {
+                try {
+                    const meus = await api('/bolao/meus');
+                    const found = meus.boloes.find(b => b.invite_code.toUpperCase() === code);
+                    if (found) { bolaoOpenDetail(found.id); return; }
+                } catch {}
+            }
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Entrar';
+        }
+    });
+    document.getElementById('bolaoInviteInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') document.getElementById('bolaoJoinBtn').click();
+    });
+    document.getElementById('bolaoDetailCopy').addEventListener('click', async () => {
+        const code = document.getElementById('bolaoDetailCode').textContent;
+        try {
+            await navigator.clipboard.writeText(code);
+            const btn = document.getElementById('bolaoDetailCopy');
+            const old = btn.innerHTML;
+            btn.innerHTML = '<span class="material-icons" style="color:#4ec96d;">check</span>';
+            setTimeout(() => btn.innerHTML = old, 1500);
+        } catch {}
+    });
+
+    // Toggle ranking mobile
+    const rankToggle = document.getElementById('bolaoRankingToggle');
+    const rankPanel = document.getElementById('bolaoRanking');
+    if (rankToggle && rankPanel) {
+        rankToggle.addEventListener('click', () => {
+            const open = rankPanel.classList.toggle('open');
+            rankToggle.classList.toggle('open', open);
+            if (open) setTimeout(() => rankPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+        });
+    }
 
     // Se chegou via link de compartilhamento (?add=USERNAME), abre a Rede com o user já buscado
     function checkAddFriendParam() {

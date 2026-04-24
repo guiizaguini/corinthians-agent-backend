@@ -230,3 +230,75 @@ CREATE TRIGGER tr_notes_touch BEFORE UPDATE ON notes
 DROP TRIGGER IF EXISTS tr_friendships_touch ON friendships;
 CREATE TRIGGER tr_friendships_touch BEFORE UPDATE ON friendships
     FOR EACH ROW EXECUTE FUNCTION trg_touch_updated_at();
+
+-- =============================================================
+-- BOLÃO DA COPA 2026
+-- =============================================================
+
+-- Um bolão é um "grupo" de usuários palpitando sobre os jogos de um torneio
+CREATE TABLE IF NOT EXISTS boloes (
+    id                 SERIAL PRIMARY KEY,
+    tournament_club_id INTEGER REFERENCES clubs(id) ON DELETE CASCADE,
+    name               VARCHAR(120) NOT NULL,
+    description        TEXT,
+    invite_code        VARCHAR(24) UNIQUE NOT NULL,
+    created_by         INTEGER REFERENCES users(id),
+    created_at         TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_boloes_invite ON boloes(UPPER(invite_code));
+
+-- Quem participa de qual bolão
+CREATE TABLE IF NOT EXISTS bolao_members (
+    id         SERIAL PRIMARY KEY,
+    bolao_id   INTEGER NOT NULL REFERENCES boloes(id) ON DELETE CASCADE,
+    user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    joined_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE(bolao_id, user_id)
+);
+CREATE INDEX IF NOT EXISTS idx_bolao_members_user ON bolao_members(user_id);
+
+-- Palpite de placar pra cada jogo dentro do bolão
+CREATE TABLE IF NOT EXISTS bolao_palpites (
+    id              SERIAL PRIMARY KEY,
+    bolao_id        INTEGER NOT NULL REFERENCES boloes(id) ON DELETE CASCADE,
+    user_id         INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    game_id         INTEGER NOT NULL REFERENCES games(id) ON DELETE CASCADE,
+    gols_casa       INTEGER NOT NULL CHECK (gols_casa BETWEEN 0 AND 20),
+    gols_visitante  INTEGER NOT NULL CHECK (gols_visitante BETWEEN 0 AND 20),
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE(bolao_id, user_id, game_id)
+);
+CREATE INDEX IF NOT EXISTS idx_palpites_game_real ON bolao_palpites(game_id);
+
+-- Palpites "extras" (campeão, artilheiro, fase do Brasil) — 1 por usuário por bolão
+CREATE TABLE IF NOT EXISTS bolao_palpites_extras (
+    id            SERIAL PRIMARY KEY,
+    bolao_id      INTEGER NOT NULL REFERENCES boloes(id) ON DELETE CASCADE,
+    user_id       INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    campeao       VARCHAR(80),
+    vice          VARCHAR(80),
+    artilheiro    VARCHAR(80),
+    fase_brasil   VARCHAR(20),  -- GRUPOS|OITAVAS_32|OITAVAS|QUARTAS|SEMIS|FINAL|CAMPEAO
+    updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE(bolao_id, user_id)
+);
+
+-- Resultados "extras" oficiais do torneio (o admin preenche quando a Copa acabar)
+CREATE TABLE IF NOT EXISTS bolao_extras_oficiais (
+    bolao_id      INTEGER PRIMARY KEY REFERENCES boloes(id) ON DELETE CASCADE,
+    campeao       VARCHAR(80),
+    vice          VARCHAR(80),
+    artilheiro    VARCHAR(80),
+    fase_brasil   VARCHAR(20),
+    updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Triggers de touch
+DROP TRIGGER IF EXISTS tr_palpites_touch ON bolao_palpites;
+CREATE TRIGGER tr_palpites_touch BEFORE UPDATE ON bolao_palpites
+    FOR EACH ROW EXECUTE FUNCTION trg_touch_updated_at();
+
+DROP TRIGGER IF EXISTS tr_palpites_extras_touch ON bolao_palpites_extras;
+CREATE TRIGGER tr_palpites_extras_touch BEFORE UPDATE ON bolao_palpites_extras
+    FOR EACH ROW EXECUTE FUNCTION trg_touch_updated_at();
