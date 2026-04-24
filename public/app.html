@@ -3403,6 +3403,37 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 .bolao-code-copy:hover { color: #1a1000; }
 .bolao-code-copy .material-icons { font-size: 1rem; }
 
+.bolao-detail-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.55rem;
+    flex-shrink: 0;
+}
+.bolao-leave-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: transparent;
+    border: 1.5px solid var(--wc-line);
+    color: var(--wc-ink-mute);
+    padding: 0.45rem 0.85rem;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.64rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 999px;
+    transition: all 150ms;
+}
+.bolao-leave-btn:hover {
+    border-color: var(--vinho);
+    color: var(--vinho);
+    background: rgba(107,31,42,0.06);
+}
+.bolao-leave-btn .material-icons { font-size: 0.9rem; }
+
 .bolao-detail-mypoints {
     text-align: center;
     padding: 0.75rem 1.25rem;
@@ -3777,6 +3808,12 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         align-items: stretch;
     }
     .bolao-detail-title { font-size: 1.2rem; }
+    .bolao-detail-right {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
     .bolao-detail-mypoints {
         padding: 0.65rem 1rem;
         min-width: 0;
@@ -3784,9 +3821,17 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         justify-content: space-between;
         align-items: center;
         gap: 0.75rem;
+        flex: 1;
     }
     .bolao-mp-label { text-align: left; }
     .bolao-mp-value { font-size: 1.8rem; margin-top: 0; }
+    .bolao-leave-btn {
+        flex-shrink: 0;
+        padding: 0.55rem 0.7rem;
+        font-size: 0.58rem;
+        letter-spacing: 0.1em;
+    }
+    .bolao-leave-btn .material-icons { font-size: 1rem; }
     .bolao-list { grid-template-columns: 1fr; gap: 0.65rem; }
     .bolao-join-row { flex-direction: column; gap: 0.5rem; }
     .bolao-join-row input { font-size: 16px; /* evita zoom */ }
@@ -4578,9 +4623,15 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                                 <button class="bolao-code-copy" id="bolaoDetailCopy" title="Copiar"><span class="material-icons">content_copy</span></button>
                             </div>
                         </div>
-                        <div class="bolao-detail-mypoints">
-                            <div class="bolao-mp-label">Meus pontos</div>
-                            <div class="bolao-mp-value" id="bolaoMyPoints">0</div>
+                        <div class="bolao-detail-right">
+                            <div class="bolao-detail-mypoints">
+                                <div class="bolao-mp-label">Meus pontos</div>
+                                <div class="bolao-mp-value" id="bolaoMyPoints">0</div>
+                            </div>
+                            <button class="bolao-leave-btn" id="bolaoLeaveBtn" type="button" title="Sair desse bolão">
+                                <span class="material-icons">logout</span>
+                                Sair do bolão
+                            </button>
                         </div>
                     </div>
 
@@ -7460,6 +7511,28 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             btn.innerHTML = '<span class="material-icons" style="color:#4ec96d;">check</span>';
             setTimeout(() => btn.innerHTML = old, 1500);
         } catch {}
+    });
+
+    // Sair do bolão (volta pra Meus Bolões)
+    document.getElementById('bolaoLeaveBtn').addEventListener('click', async () => {
+        if (!bolaoState.bolaoId) return;
+        const title = document.getElementById('bolaoDetailTitle').textContent;
+        const ok = confirm(`Sair do bolão "${title}"?\n\nSeus palpites serão removidos. Pra voltar, você precisa do código de convite.`);
+        if (!ok) return;
+        const btn = document.getElementById('bolaoLeaveBtn');
+        btn.disabled = true;
+        const old = btn.innerHTML;
+        btn.innerHTML = '<span class="material-icons">hourglass_empty</span> Saindo...';
+        try {
+            await api(`/bolao/${bolaoState.bolaoId}/leave`, { method: 'DELETE' });
+            bolaoState.bolaoId = null;
+            bolaoShowView('meus');
+            bolaoLoadMeus();
+        } catch (e) {
+            alert('Erro ao sair: ' + e.message);
+            btn.disabled = false;
+            btn.innerHTML = old;
+        }
     });
 
     // Toggle ranking mobile
