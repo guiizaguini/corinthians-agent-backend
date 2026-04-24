@@ -2227,24 +2227,50 @@ main {
     line-height: 1.4;
 }
 
-/* Divider visual entre seções da Rede Social em mobile */
-.rede-section-heading {
+/* Toggle dropdown "Sua rede" (visível só em mobile) */
+.rede-toggle {
     display: none;
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    padding: 0.85rem 1rem;
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 0.7rem;
-    letter-spacing: 0.22em;
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--ink);
-    padding: 0.5rem 0 0.6rem;
-    border-top: 2px solid var(--line);
-    margin-top: 0.5rem;
+    cursor: pointer;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 12px;
+    transition: all 150ms;
+    box-shadow: var(--shadow-sm);
 }
-.rede-section-heading .material-icons {
-    font-size: 0.95rem;
-    vertical-align: middle;
-    color: var(--accent);
-    margin-right: 0.3rem;
+.rede-toggle:hover { border-color: var(--accent); }
+.rede-toggle .material-icons { font-size: 1.05rem; color: var(--accent); }
+.rede-toggle .rede-toggle-count {
+    margin-left: auto;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--ink-mute);
+    padding: 0.1rem 0.5rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+}
+.rede-toggle .rede-chevron {
+    font-size: 1.2rem !important;
+    color: var(--ink-mute) !important;
+    transition: transform 200ms ease;
+    margin-left: 0.35rem;
+}
+.rede-toggle.open .rede-chevron { transform: rotate(180deg); }
+.rede-toggle .rede-toggle-pending {
+    background: var(--accent);
+    color: var(--accent-text);
+    font-weight: 700;
+    border: none;
 }
 .composer-row {
     display: flex;
@@ -3281,13 +3307,21 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     }
 }
 @media (max-width: 900px) {
-    /* Mobile/tablet: reordena pra feed ficar no topo, amigos/solicitações embaixo */
-    .rede-layout { display: flex; flex-direction: column; gap: 0.5rem; }
-    .rede-main { order: 1; }
-    .rede-sidebar { order: 2; display: flex; flex-direction: column; gap: 0.75rem; }
-    .rede-section-heading { display: block; }
-    /* A busca mantém visível no topo da sidebar */
-    .rede-search-bar { margin-bottom: 0.25rem; margin-top: 0.5rem; }
+    /* Mobile/tablet: toggle "Sua rede" no topo, feed como conteúdo principal */
+    .rede-layout { display: flex; flex-direction: column; gap: 0.75rem; }
+    .rede-toggle { display: inline-flex; order: 1; }
+    .rede-sidebar {
+        order: 2;
+        display: none; /* fica escondida até o toggle abrir */
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 0.5rem 0 0.75rem;
+        border-bottom: 1px solid var(--line);
+        margin-bottom: 0.25rem;
+    }
+    .rede-sidebar.open { display: flex; }
+    .rede-main { order: 3; }
+    .rede-search-bar { margin-bottom: 0.25rem; margin-top: 0; }
 }
 @media (max-width: 680px) {
     .rede-section { margin-bottom: 0; }
@@ -3631,11 +3665,16 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
         <div class="tab-panel" id="tabRede">
             <div class="rede-layout">
+                <!-- Toggle mobile: abre/fecha a sidebar -->
+                <button class="rede-toggle" id="redeToggle" type="button">
+                    <span class="material-icons">people</span>
+                    <span>Sua rede</span>
+                    <span class="rede-toggle-count" id="redeToggleCount">0 amigos</span>
+                    <span class="material-icons rede-chevron">expand_more</span>
+                </button>
+
                 <!-- LEFT sidebar: amigos + solicitações + busca -->
-                <aside class="rede-sidebar">
-                    <div class="rede-section-heading">
-                        <span class="material-icons">people</span>Sua rede
-                    </div>
+                <aside class="rede-sidebar" id="redeSidebar">
                     <div class="rede-search-bar">
                         <input type="search" id="redeSearch" placeholder="Buscar @username ou nome...">
                         <button class="btn-ghost" id="redeRefresh" title="Atualizar"><span class="material-icons">refresh</span></button>
@@ -3664,9 +3703,6 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
                 <!-- CENTER: composer + feed -->
                 <section class="rede-main">
-                    <div class="rede-section-heading" style="margin-top:0;border-top:none;padding-top:0;">
-                        <span class="material-icons">dynamic_feed</span>Feed dos amigos
-                    </div>
                     <!-- Composer de nota inline -->
                     <div class="composer-card">
                         <div class="composer-row">
@@ -6030,11 +6066,18 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         // Vai pra Rede social e foca em Solicitações recebidas
         document.querySelector('.tab[data-tab="rede"]').click();
         setTimeout(() => {
+            // Em mobile, abre o dropdown da sidebar pra mostrar as solicitações
+            const sidebar = document.getElementById('redeSidebar');
+            const toggleBtn = document.getElementById('redeToggle');
+            if (sidebar && toggleBtn && window.innerWidth <= 900 && !sidebar.classList.contains('open')) {
+                sidebar.classList.add('open');
+                toggleBtn.classList.add('open');
+            }
             const target = document.getElementById('incomingSection');
             if (target && target.style.display !== 'none') {
                 target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
-        }, 100);
+        }, 150);
     });
 
     let composerReady = false;
@@ -6054,6 +6097,18 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
             // Friends
             document.getElementById('friendsCount').textContent = `(${data.friends.length})`;
+            // Atualiza o texto do toggle mobile "Sua rede"
+            const toggleCountEl = document.getElementById('redeToggleCount');
+            if (toggleCountEl) {
+                const pending = data.incoming.length;
+                if (pending > 0) {
+                    toggleCountEl.textContent = `${pending} pedido${pending > 1 ? 's' : ''}`;
+                    toggleCountEl.classList.add('rede-toggle-pending');
+                } else {
+                    toggleCountEl.textContent = `${data.friends.length} amigo${data.friends.length !== 1 ? 's' : ''}`;
+                    toggleCountEl.classList.remove('rede-toggle-pending');
+                }
+            }
             const fl = document.getElementById('friendsList');
             if (!data.friends.length) {
                 fl.innerHTML = '<div class="empty" style="grid-column:1/-1;">Você ainda não tem amigos. Use a busca acima pra encontrar pelo @username.</div>';
@@ -6118,6 +6173,20 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         searchTimer = setTimeout(searchUsers, 300);
     });
     document.getElementById('redeRefresh').addEventListener('click', loadFriends);
+
+    // Toggle "Sua rede" em mobile (expand/collapse sidebar)
+    const redeToggleBtn = document.getElementById('redeToggle');
+    const redeSidebarEl = document.getElementById('redeSidebar');
+    if (redeToggleBtn && redeSidebarEl) {
+        redeToggleBtn.addEventListener('click', () => {
+            const isOpen = redeSidebarEl.classList.toggle('open');
+            redeToggleBtn.classList.toggle('open', isOpen);
+            if (isOpen) {
+                // scroll suave pro topo da sidebar quando abrir
+                setTimeout(() => redeSidebarEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+            }
+        });
+    }
 
     async function openCompare(userId) {
         document.getElementById('compareModal').classList.add('show');
