@@ -3257,8 +3257,22 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
+    transition: all 150ms;
+}
+.bolao-create-btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+.bolao-create-btn.admin-unlocked {
+    border-color: #d4a520;
+    background: #1a1a1a;
+    color: #d4a520;
+    opacity: 1;
+    cursor: pointer;
+}
+.bolao-create-btn.admin-unlocked:hover {
+    background: #d4a520;
+    color: #1a1000;
 }
 .bolao-create-btn .material-icons { font-size: 1rem; }
 
@@ -3680,13 +3694,48 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 }
 .bolao-ranking-row {
     display: grid;
-    grid-template-columns: 28px 1fr auto;
+    grid-template-columns: 28px 1fr auto auto;
     align-items: center;
-    gap: 0.55rem;
+    gap: 0.5rem;
     padding: 0.55rem 0;
     border-bottom: 1px solid #efe8d6;
     font-family: 'Oswald', sans-serif;
 }
+.bolao-rank-addfriend {
+    background: transparent;
+    border: 1.5px solid var(--wc-line);
+    color: #a8791b;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 150ms;
+    padding: 0;
+    flex-shrink: 0;
+}
+.bolao-rank-addfriend:hover:not(:disabled) {
+    border-color: #d4a520;
+    background: #fff8e0;
+    color: #1a1000;
+    transform: scale(1.08);
+}
+.bolao-rank-addfriend:disabled { opacity: 0.5; cursor: wait; }
+.bolao-rank-addfriend .material-icons { font-size: 0.95rem; }
+.bolao-rank-pending, .bolao-rank-isfriend {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--wc-ink-mute);
+    flex-shrink: 0;
+}
+.bolao-rank-pending { color: #a8791b; }
+.bolao-rank-isfriend { color: #4ec96d; }
+.bolao-rank-pending .material-icons, .bolao-rank-isfriend .material-icons { font-size: 0.95rem; }
 .bolao-ranking-row:last-child { border-bottom: none; }
 .bolao-ranking-row.me { background: rgba(212,165,32,0.08); margin: 0 -0.5rem; padding: 0.55rem 0.5rem; border-radius: 8px; }
 .bolao-rank-pos {
@@ -4371,6 +4420,45 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             <div id="compareContent"><div class="loading">Carregando...</div></div>
             <div class="modal-actions">
                 <button class="btn-secondary" id="compareClose">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Criar bolão (admin) -->
+    <div class="modal-overlay" id="bolaoCreateModal">
+        <div class="modal">
+            <h2>Criar bolão</h2>
+            <div class="meta">Dê um nome e (opcional) uma descrição. O código do convite é gerado automaticamente.</div>
+
+            <label for="bolaoCreateName">Nome do bolão</label>
+            <input id="bolaoCreateName" type="text" maxlength="120" placeholder="Ex: Bolão da Fiel · Copa 2026" autocomplete="off">
+
+            <label for="bolaoCreateDesc">Descrição (opcional)</label>
+            <textarea id="bolaoCreateDesc" rows="3" maxlength="500" placeholder="Regras especiais, prêmio, qualquer coisa..."></textarea>
+
+            <div class="error" id="bolaoCreateErr" style="margin-top:1rem;padding:0.7rem 0.9rem;background:rgba(107,31,42,0.1);border-left:3px solid var(--vinho);color:var(--vinho);font-size:0.85rem;display:none;"></div>
+
+            <div class="modal-actions">
+                <button class="btn-secondary" id="bolaoCreateCancel">Cancelar</button>
+                <button class="btn-primary" id="bolaoCreateSave">Criar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Bolão criado (mostra o código) -->
+    <div class="modal-overlay" id="bolaoCreatedModal">
+        <div class="modal">
+            <h2>Bolão criado!</h2>
+            <div class="meta">Compartilhe o código de convite pra galera entrar:</div>
+
+            <div style="text-align:center;margin:1.5rem 0;padding:1.25rem;background:linear-gradient(135deg,#fff8e0,#fdefc2);border:2px dashed #d4a520;border-radius:12px;">
+                <div style="font-family:'Oswald',sans-serif;font-size:0.65rem;letter-spacing:0.22em;color:#a8791b;text-transform:uppercase;margin-bottom:0.35rem;">Código de convite</div>
+                <code id="bolaoCreatedCode" style="font-family:'Oswald',monospace;font-weight:700;font-size:1.6rem;letter-spacing:0.18em;color:#1a1000;background:transparent;">—</code>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-secondary" id="bolaoCreatedCopy"><span class="material-icons" style="font-size:1rem;vertical-align:middle;">content_copy</span> Copiar código</button>
+                <button class="btn-primary" id="bolaoCreatedOpen">Abrir bolão</button>
             </div>
         </div>
     </div>
@@ -7204,6 +7292,22 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     }
 
     async function bolaoLoadMeus() {
+        // Libera "Criar bolão" pra admin
+        const createBtn = document.getElementById('bolaoCreateBtn');
+        if (createBtn) {
+            if (user && user.is_admin) {
+                createBtn.disabled = false;
+                createBtn.title = 'Criar um novo bolão';
+                createBtn.innerHTML = '<span class="material-icons">add_circle</span> Criar bolão';
+                createBtn.classList.add('admin-unlocked');
+            } else {
+                createBtn.disabled = true;
+                createBtn.title = 'Em breve';
+                createBtn.innerHTML = '<span class="material-icons">lock</span> Criar bolão';
+                createBtn.classList.remove('admin-unlocked');
+            }
+        }
+
         const list = document.getElementById('bolaoList');
         list.innerHTML = '<div class="loading">Carregando bolões...</div>';
         try {
@@ -7416,10 +7520,30 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         return 0;
     }
 
+    // Retorna o "status" da amizade entre mim e outro user_id:
+    //   'me'       → sou eu
+    //   'friend'   → já é amigo
+    //   'outgoing' → já mandei pedido
+    //   'incoming' → a pessoa me mandou pedido
+    //   'none'     → nenhum relacionamento ainda
+    function friendshipStatusWith(userId) {
+        if (userId === user.id) return 'me';
+        const fs = friendsState || { friends: [], incoming: [], outgoing: [] };
+        if (fs.friends.some(f => f.user_id === userId)) return 'friend';
+        if (fs.outgoing.some(f => f.user_id === userId)) return 'outgoing';
+        if (fs.incoming.some(f => f.user_id === userId)) return 'incoming';
+        return 'none';
+    }
+
     async function bolaoLoadRanking(id) {
         const list = document.getElementById('bolaoRankingList');
         list.innerHTML = '<div class="loading">Carregando...</div>';
         try {
+            // Garante que friendsState está atualizado pra checar relacionamentos
+            if (!friendsState || !friendsState.friends) {
+                try { friendsState = await api('/social/friends'); } catch {}
+            }
+
             const { ranking } = await api(`/bolao/${id}/ranking`);
             if (!ranking.length) {
                 list.innerHTML = '<div class="empty">Sem membros ainda.</div>';
@@ -7436,14 +7560,59 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 const pos = i + 1;
                 const isMe = r.id === myId;
                 const name = (r.display_name || r.username || 'Amigo').toUpperCase();
+                const status = friendshipStatusWith(r.id);
+
+                let actionHtml = '';
+                if (status === 'none' && r.username) {
+                    actionHtml = `<button class="bolao-rank-addfriend" data-add-username="${escapeHtml(r.username)}" data-add-id="${r.id}" title="Adicionar @${escapeHtml(r.username)} como amigo"><span class="material-icons">person_add</span></button>`;
+                } else if (status === 'outgoing') {
+                    actionHtml = `<span class="bolao-rank-pending" title="Pedido enviado"><span class="material-icons">schedule_send</span></span>`;
+                } else if (status === 'incoming') {
+                    actionHtml = `<span class="bolao-rank-pending" title="Essa pessoa te mandou pedido — aceita na Rede Social"><span class="material-icons">mark_email_unread</span></span>`;
+                } else if (status === 'friend') {
+                    actionHtml = `<span class="bolao-rank-isfriend" title="Já é seu amigo"><span class="material-icons">person</span></span>`;
+                }
+
                 return `
                     <div class="bolao-ranking-row ${isMe ? 'me' : ''}">
                         <div class="bolao-rank-pos">${pos}</div>
                         <div class="bolao-rank-name">${escapeHtml(name)}</div>
+                        ${actionHtml}
                         <div class="bolao-rank-pts">${r.pontos_total}</div>
                     </div>
                 `;
             }).join('');
+
+            // Handlers dos botões de adicionar amigo
+            list.querySelectorAll('[data-add-username]').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const username = btn.dataset.addUsername;
+                    const userId = parseInt(btn.dataset.addId);
+                    btn.disabled = true;
+                    const oldHtml = btn.innerHTML;
+                    btn.innerHTML = '<span class="material-icons">hourglass_empty</span>';
+                    try {
+                        await api('/social/friends/request', {
+                            method: 'POST',
+                            body: JSON.stringify(username ? { username } : { user_id: userId }),
+                        });
+                        // Atualiza friendsState pra refletir o novo pedido enviado
+                        friendsState = await api('/social/friends');
+                        // Re-renderiza o ranking (converte o botão em "pending")
+                        bolaoLoadRanking(id);
+                    } catch (err) {
+                        const msg = {
+                            already_friends: 'Vocês já são amigos',
+                            request_already_pending: 'Já existe um pedido pendente',
+                            cannot_friend_self: 'Não dá pra se adicionar',
+                        }[err.message] || ('Erro: ' + err.message);
+                        alert(msg);
+                        btn.disabled = false;
+                        btn.innerHTML = oldHtml;
+                    }
+                });
+            });
         } catch (err) {
             list.innerHTML = `<div class="empty">Erro: ${err.message}</div>`;
         }
@@ -7511,6 +7680,78 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             btn.innerHTML = '<span class="material-icons" style="color:#4ec96d;">check</span>';
             setTimeout(() => btn.innerHTML = old, 1500);
         } catch {}
+    });
+
+    // ========= Criar bolão (admin) =========
+    document.getElementById('bolaoCreateBtn').addEventListener('click', () => {
+        if (!user.is_admin) return;
+        document.getElementById('bolaoCreateName').value = '';
+        document.getElementById('bolaoCreateDesc').value = '';
+        document.getElementById('bolaoCreateErr').style.display = 'none';
+        document.getElementById('bolaoCreateModal').classList.add('show');
+        setTimeout(() => document.getElementById('bolaoCreateName').focus(), 100);
+    });
+    document.getElementById('bolaoCreateCancel').addEventListener('click', () => {
+        document.getElementById('bolaoCreateModal').classList.remove('show');
+    });
+    document.getElementById('bolaoCreateModal').addEventListener('click', (e) => {
+        if (e.target.id === 'bolaoCreateModal') document.getElementById('bolaoCreateModal').classList.remove('show');
+    });
+    document.getElementById('bolaoCreateSave').addEventListener('click', async () => {
+        const err = document.getElementById('bolaoCreateErr');
+        err.style.display = 'none';
+        const name = document.getElementById('bolaoCreateName').value.trim();
+        const desc = document.getElementById('bolaoCreateDesc').value.trim();
+        if (name.length < 3) {
+            err.textContent = 'Nome precisa ter pelo menos 3 caracteres.';
+            err.style.display = '';
+            return;
+        }
+        const btn = document.getElementById('bolaoCreateSave');
+        btn.disabled = true;
+        btn.textContent = 'Criando...';
+        try {
+            const res = await api('/bolao', {
+                method: 'POST',
+                body: JSON.stringify({ name, description: desc || undefined }),
+            });
+            document.getElementById('bolaoCreateModal').classList.remove('show');
+            // Mostra modal de sucesso com o código
+            document.getElementById('bolaoCreatedCode').textContent = res.bolao.invite_code;
+            document.getElementById('bolaoCreatedModal').classList.add('show');
+            // Wire temporário: "Abrir bolão" leva direto pra ele
+            const openBtn = document.getElementById('bolaoCreatedOpen');
+            const openHandler = () => {
+                document.getElementById('bolaoCreatedModal').classList.remove('show');
+                bolaoOpenDetail(res.bolao.id);
+                openBtn.removeEventListener('click', openHandler);
+            };
+            openBtn.addEventListener('click', openHandler);
+            // Atualiza a lista
+            bolaoLoadMeus();
+        } catch (e) {
+            const msg = e.message === 'admin_required'
+                ? 'Só admins podem criar bolões.'
+                : ('Erro: ' + e.message);
+            err.textContent = msg;
+            err.style.display = '';
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Criar';
+        }
+    });
+    document.getElementById('bolaoCreatedCopy').addEventListener('click', async () => {
+        const code = document.getElementById('bolaoCreatedCode').textContent;
+        try {
+            await navigator.clipboard.writeText(code);
+            const btn = document.getElementById('bolaoCreatedCopy');
+            const old = btn.innerHTML;
+            btn.innerHTML = '<span class="material-icons" style="font-size:1rem;vertical-align:middle;color:#4ec96d;">check</span> Copiado!';
+            setTimeout(() => btn.innerHTML = old, 1500);
+        } catch {}
+    });
+    document.getElementById('bolaoCreatedModal').addEventListener('click', (e) => {
+        if (e.target.id === 'bolaoCreatedModal') document.getElementById('bolaoCreatedModal').classList.remove('show');
     });
 
     // Sair do bolão (volta pra Meus Bolões)
