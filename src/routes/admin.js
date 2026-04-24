@@ -65,6 +65,19 @@ async function getClubById(clubId) {
 }
 
 // =============================================================
+// GET /admin/clubs — lista TODOS os clubes (inclui tournaments hidden)
+// =============================================================
+router.get('/clubs', async (req, res, next) => {
+    try {
+        const { rows } = await query(
+            `SELECT id, slug, name, short_name, primary_color, secondary_color, is_tournament, logo_url
+             FROM clubs ORDER BY is_tournament ASC, name ASC`
+        );
+        res.json({ clubs: rows });
+    } catch (err) { next(err); }
+});
+
+// =============================================================
 // GET /admin/games — lista com filtros (paginado)
 // =============================================================
 router.get('/games', async (req, res, next) => {

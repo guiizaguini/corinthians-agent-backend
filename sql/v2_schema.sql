@@ -27,6 +27,11 @@ CREATE TABLE IF NOT EXISTS clubs (
     created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Flag pra "clubes" que na verdade são torneios (Copa do Mundo, etc).
+-- Eles NÃO aparecem no dropdown de signup mas têm um catálogo próprio de jogos.
+ALTER TABLE clubs ADD COLUMN IF NOT EXISTS is_tournament BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE clubs ADD COLUMN IF NOT EXISTS logo_url VARCHAR(300);
+
 -- Seed de clubes (cores pensadas pra funcionar como accent em UI dark)
 INSERT INTO clubs (slug, name, short_name, primary_color, secondary_color) VALUES
     ('corinthians',   'Corinthians',       'Timão',       '#9c8a52', '#ffffff'),
@@ -46,6 +51,17 @@ ON CONFLICT (slug) DO UPDATE SET
     short_name = EXCLUDED.short_name,
     primary_color = EXCLUDED.primary_color,
     secondary_color = EXCLUDED.secondary_color;
+
+-- Torneios (hidden clubs — aparecem em aba própria, não no dropdown de signup)
+INSERT INTO clubs (slug, name, short_name, primary_color, secondary_color, is_tournament, logo_url) VALUES
+    ('copa-do-mundo-2026', 'Copa do Mundo 2026', 'WC26', '#e63946', '#ffc93a', TRUE, '/logos/fifa-2026.svg')
+ON CONFLICT (slug) DO UPDATE SET
+    name = EXCLUDED.name,
+    short_name = EXCLUDED.short_name,
+    primary_color = EXCLUDED.primary_color,
+    secondary_color = EXCLUDED.secondary_color,
+    is_tournament = TRUE,
+    logo_url = EXCLUDED.logo_url;
 
 -- =============================================================
 -- USERS

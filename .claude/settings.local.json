@@ -22,7 +22,8 @@
       "Bash(awk 'NR==864,NR==872; NR==898,NR==906; NR==1305,NR==1316; NR==1838,NR==1844' \"/c/Users/guilh/OneDrive/Área de Trabalho/corinthians-agent-backend/public/app.html\")",
       "Bash(node --check scripts/dump_games.mjs)",
       "Bash(node --check scripts/apply_corrections.mjs)",
-      "Bash(node --check scripts/inspect_games.mjs)"
+      "Bash(node --check scripts/inspect_games.mjs)",
+      "Bash(node --check src/routes/tournaments.js)"
     ]
   }
 }

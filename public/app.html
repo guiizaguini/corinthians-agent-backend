@@ -1205,6 +1205,253 @@ main {
     .canhoto-selo { font-size: 16px; padding: 4px 7px; }
 }
 
+/* ================= COPA DO MUNDO 2026 ================= */
+:root {
+    --wc-red: #e63946;
+    --wc-green: #06a957;
+    --wc-yellow: #ffc93a;
+    --wc-blue: #4361ee;
+    --wc-purple: #7b2cbf;
+    --wc-orange: #ff7a00;
+}
+
+.wc-header {
+    background:
+        linear-gradient(135deg, var(--wc-red) 0%, var(--wc-orange) 25%, var(--wc-yellow) 50%, var(--wc-green) 75%, var(--wc-blue) 100%);
+    border-radius: 18px;
+    padding: 1.5rem 1.75rem;
+    color: #fff;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+    position: relative;
+    overflow: hidden;
+}
+.wc-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+        135deg, transparent 0 18px, rgba(255,255,255,0.08) 18px 20px
+    );
+    pointer-events: none;
+}
+.wc-header img {
+    width: 84px;
+    height: 84px;
+    object-fit: contain;
+    position: relative; z-index: 1;
+    background: rgba(255,255,255,0.94);
+    border-radius: 14px;
+    padding: 0.4rem;
+    flex-shrink: 0;
+}
+.wc-header-text {
+    position: relative; z-index: 1;
+}
+.wc-eyebrow {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    opacity: 0.92;
+    margin-bottom: 0.35rem;
+    color: #fff;
+}
+.wc-title {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+.wc-subtitle {
+    font-family: 'SN Pro', 'Oswald', sans-serif;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.95);
+    margin-top: 0.4rem;
+    max-width: 500px;
+}
+
+/* Grid dos ingressos WC */
+.wc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
+    gap: 1rem;
+}
+
+/* Ingresso Copa do Mundo — estética vibrante */
+.wc-ticket {
+    position: relative;
+    background: #0d0d0d;
+    border-radius: 16px;
+    overflow: hidden;
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.35);
+    display: flex;
+    flex-direction: column;
+}
+.wc-ticket:hover { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(0,0,0,0.5); }
+
+/* Listras coloridas no topo */
+.wc-stripes {
+    display: flex;
+    height: 8px;
+}
+.wc-stripes > * { flex: 1; }
+.wc-stripes > :nth-child(1) { background: var(--wc-red); }
+.wc-stripes > :nth-child(2) { background: var(--wc-orange); }
+.wc-stripes > :nth-child(3) { background: var(--wc-yellow); }
+.wc-stripes > :nth-child(4) { background: var(--wc-green); }
+.wc-stripes > :nth-child(5) { background: var(--wc-blue); }
+.wc-stripes > :nth-child(6) { background: var(--wc-purple); }
+
+.wc-ticket-body {
+    padding: 1.25rem 1.35rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    flex: 1;
+}
+
+.wc-ticket-fase {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--wc-yellow);
+}
+.wc-ticket-fase .wc-final-badge {
+    background: var(--wc-yellow);
+    color: #0d0d0d;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+}
+
+.wc-teams {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin-top: 0.2rem;
+}
+.wc-team {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.35rem;
+    text-transform: uppercase;
+    line-height: 1.1;
+    color: #fff;
+}
+.wc-team.tbd { color: rgba(255,255,255,0.45); font-weight: 500; font-style: italic; letter-spacing: 0.04em; }
+.wc-vs {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    color: var(--wc-red);
+    text-transform: uppercase;
+}
+
+.wc-score {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 2rem;
+    color: #fff;
+}
+.wc-score .wc-x {
+    color: rgba(255,255,255,0.4);
+    font-size: 0.7em;
+    margin: 0 0.3em;
+}
+
+.wc-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'SN Pro', 'Oswald', sans-serif;
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.75);
+}
+.wc-meta .material-icons { font-size: 1rem; color: rgba(255,255,255,0.7); }
+
+.wc-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.85rem;
+    border-top: 1px dashed rgba(255,255,255,0.2);
+    margin-top: auto;
+}
+.wc-date {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #fff;
+}
+.wc-date .wc-date-weekday {
+    display: block;
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 0.22em;
+    margin-bottom: 0.15rem;
+}
+
+.wc-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 0.5rem 0.95rem;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    transition: all 150ms;
+}
+.wc-cta.eu-vou {
+    background: var(--wc-red);
+    color: #fff;
+    box-shadow: 0 3px 0 #a81a2e, 0 4px 10px rgba(230,57,70,0.35);
+}
+.wc-cta.eu-vou:hover { background: #f04b5a; transform: translateY(-1px); }
+.wc-cta.marcar {
+    background: var(--wc-yellow);
+    color: #0d0d0d;
+    box-shadow: 0 3px 0 #c29818, 0 4px 10px rgba(255,201,58,0.3);
+}
+.wc-cta.marcar:hover { background: #ffd660; transform: translateY(-1px); }
+.wc-cta.presente {
+    background: var(--wc-green);
+    color: #fff;
+    box-shadow: 0 3px 0 #037a3f;
+}
+.wc-cta .material-icons { font-size: 0.95rem; }
+
+/* Ticket com presença marcada */
+.wc-ticket.attended {
+    outline: 2px solid var(--wc-green);
+    outline-offset: -2px;
+}
+
 /* ================= Modal (genérico) ================= */
 .modal-overlay {
     position: fixed;
@@ -2302,6 +2549,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             <button class="tab" data-tab="mine">Meus ingressos</button>
             <button class="tab" data-tab="notas">Notas</button>
             <button class="tab" data-tab="rede">Rede social</button>
+            <button class="tab" data-tab="copa">Copa do Mundo</button>
         </div>
 
         <div class="tab-panel active" id="tabCatalog">
@@ -2347,6 +2595,18 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 <h3>Atividade dos amigos</h3>
                 <div class="feed-list" id="feedList"><div class="loading">Carregando feed...</div></div>
             </div>
+        </div>
+
+        <div class="tab-panel" id="tabCopa">
+            <section class="wc-header">
+                <img src="/logos/fifa-2026.svg" alt="Copa do Mundo 2026">
+                <div class="wc-header-text">
+                    <div class="wc-eyebrow">FIFA World Cup · 16 sedes</div>
+                    <h2 class="wc-title">Copa do Mundo 2026</h2>
+                    <p class="wc-subtitle">Canadá · México · Estados Unidos. Marque seus jogos com "EU VOU" antes, e confirme presença depois que a bola rolar.</p>
+                </div>
+            </section>
+            <div id="copaList" class="wc-grid"><div class="loading">Carregando jogos...</div></div>
         </div>
 
         <div class="tab-panel" id="tabNotas">
@@ -3937,7 +4197,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', () => {
             const target = tab.dataset.tab;
-            const panelMap = { catalog: 'tabCatalog', mine: 'tabMine', notas: 'tabNotas', rede: 'tabRede' };
+            const panelMap = { catalog: 'tabCatalog', mine: 'tabMine', notas: 'tabNotas', rede: 'tabRede', copa: 'tabCopa' };
             const panelId = panelMap[target] || 'tabCatalog';
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -3945,8 +4205,101 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             document.getElementById(panelId).classList.add('active');
             if (target === 'notas') loadNotas();
             if (target === 'rede') loadFriends();
+            if (target === 'copa') loadCopa();
         });
     });
+
+    // ===============================================
+    // COPA DO MUNDO 2026
+    // ===============================================
+    let copaGames = [];
+
+    async function loadCopa() {
+        const container = document.getElementById('copaList');
+        container.innerHTML = '<div class="loading">Carregando jogos...</div>';
+        try {
+            const { games } = await api('/tournaments/copa-do-mundo-2026/games');
+            copaGames = games;
+            renderCopa();
+        } catch (err) {
+            container.innerHTML = `<div class="empty">Erro: ${err.message}</div>`;
+        }
+    }
+
+    function renderCopa() {
+        const container = document.getElementById('copaList');
+        if (!copaGames.length) {
+            container.innerHTML = '<div class="empty">Nenhum jogo cadastrado ainda.</div>';
+            return;
+        }
+        const hoje = new Date(); hoje.setHours(0,0,0,0);
+        container.innerHTML = copaGames.map(g => renderWcTicket(g, hoje)).join('');
+        container.querySelectorAll('.wc-ticket').forEach(el => {
+            const id = parseInt(el.dataset.id);
+            const isAttended = el.classList.contains('attended');
+            // Click no card vai pro resumo read-only (se já marcou) ou pro modal de attendance
+            el.addEventListener('click', (e) => {
+                if (e.target.closest('.wc-cta')) return; // botão já tem handler próprio
+                if (isAttended) openSummary(id);
+                else openModal(id);
+            });
+            const cta = el.querySelector('.wc-cta');
+            if (cta) cta.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openModal(id);
+            });
+        });
+    }
+
+    function renderWcTicket(g, hoje) {
+        const dt = new Date(g.data);
+        const isPast = dt < hoje;
+        const isPres = !!g.attendance_id && g.status_presenca === 'PRESENTE';
+        const dia = String(dt.getUTCDate()).padStart(2,'0');
+        const mes = MESES_ABREV[dt.getUTCMonth()];
+        const ano = dt.getUTCFullYear();
+        const weekday = dt.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.','').toUpperCase();
+        const fase = (g.fase || g.campeonato || 'Jogo').toUpperCase();
+        const isFinal = /FINAL/i.test(fase) && !/SEMI/i.test(fase);
+        const hasScore = g.gols_casa != null && g.gols_visitante != null;
+        const teamCasaTbd = /definir/i.test(g.time_casa);
+        const teamVisTbd = /definir/i.test(g.time_visitante);
+
+        let cta;
+        if (isPres) {
+            cta = `<button class="wc-cta presente"><span class="material-icons">check_circle</span>Você vai</button>`;
+        } else if (isPast) {
+            cta = `<button class="wc-cta marcar"><span class="material-icons">add</span>Marcar</button>`;
+        } else {
+            cta = `<button class="wc-cta eu-vou"><span class="material-icons">sports_soccer</span>Eu vou</button>`;
+        }
+
+        return `
+            <article class="wc-ticket ${isPres ? 'attended' : ''}" data-id="${g.id}">
+                <div class="wc-stripes"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                <div class="wc-ticket-body">
+                    <div class="wc-ticket-fase">
+                        <span>${escapeHtml(fase)}</span>
+                        ${isFinal ? '<span class="wc-final-badge">★ FINAL</span>' : ''}
+                    </div>
+                    <div class="wc-teams">
+                        <span class="wc-team ${teamCasaTbd ? 'tbd' : ''}">${escapeHtml(g.time_casa)}</span>
+                        <span class="wc-vs">vs</span>
+                        <span class="wc-team ${teamVisTbd ? 'tbd' : ''}">${escapeHtml(g.time_visitante)}</span>
+                    </div>
+                    ${hasScore ? `<div class="wc-score">${g.gols_casa}<span class="wc-x">×</span>${g.gols_visitante}</div>` : ''}
+                    ${g.estadio ? `<div class="wc-meta"><span class="material-icons">stadium</span>${escapeHtml(g.estadio)}</div>` : ''}
+                    <div class="wc-footer">
+                        <div class="wc-date">
+                            <span class="wc-date-weekday">${escapeHtml(weekday)}</span>
+                            ${dia} ${mes} ${ano}
+                        </div>
+                        ${cta}
+                    </div>
+                </div>
+            </article>
+        `;
+    }
 
     // ===============================================
     // REDE SOCIAL

@@ -47,10 +47,13 @@ async function syncCompanions(attendanceId, ownerUserId, companionIds) {
     }
 }
 
-async function gameBelongsToUserClub(gameId, clubId) {
+async function canUserAttendGame(gameId, userClubId) {
+    // Permite: game do clube do user OU de qualquer tournament (Copa, etc)
     const { rows } = await query(
-        'SELECT 1 FROM games WHERE id = $1 AND club_id = $2',
-        [gameId, clubId]
+        `SELECT 1 FROM games g
+         JOIN clubs c ON c.id = g.club_id
+         WHERE g.id = $1 AND (c.id = $2 OR c.is_tournament = TRUE)`,
+        [gameId, userClubId]
     );
     return rows.length > 0;
 }
@@ -100,7 +103,7 @@ router.post('/', async (req, res, next) => {
         }
         const body = parsed.data;
 
-        const ok = await gameBelongsToUserClub(body.game_id, req.user.club_id);
+        const ok = await canUserAttendGame(body.game_id, req.user.club_id);
         if (!ok) return res.status(404).json({ error: 'game_not_found' });
 
         const { rows } = await query(

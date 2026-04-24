@@ -10,6 +10,7 @@
     "migrate:v2": "node scripts/migrate_v2.js",
     "migrate:v2:from-legacy": "node scripts/migrate_v2.js from-legacy",
     "seed:examples": "node scripts/run_fix_sql.js sql/seed_examples.sql",
+    "seed:copa2026": "node scripts/run_fix_sql.js sql/seed_copa_2026.sql",
     "dump:games": "node scripts/dump_games.mjs",
     "apply:corrections": "node scripts/apply_corrections.mjs",
     "inspect": "node scripts/inspect_games.mjs",

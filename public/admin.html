@@ -569,8 +569,7 @@ td.td-actions .btn { padding: 0.3rem 0.6rem; font-size: 0.65rem; margin-left: 0.
                 window.location.replace('/app');
                 return;
             }
-            const res = await fetch('/clubs');
-            const data = await res.json();
+            const data = await api('/admin/clubs');
             clubs = data.clubs;
             populateClubSelects();
             await loadGames();
@@ -582,16 +581,27 @@ td.td-actions .btn { padding: 0.3rem 0.6rem; font-size: 0.65rem; margin-left: 0.
     function populateClubSelects() {
         const filter = document.getElementById('filterClub');
         const form = document.getElementById('fClub');
-        filter.innerHTML = '<option value="">Todos os clubes</option>';
+        filter.innerHTML = '<option value="">Todos</option>';
         form.innerHTML = '';
-        for (const c of clubs) {
-            const o1 = document.createElement('option');
-            o1.value = c.id; o1.textContent = c.name;
-            filter.appendChild(o1);
-            const o2 = document.createElement('option');
-            o2.value = c.id; o2.textContent = c.name;
-            form.appendChild(o2);
-        }
+
+        // Agrupa clubes normais e torneios com optgroups
+        const regulares = clubs.filter(c => !c.is_tournament);
+        const torneios = clubs.filter(c => c.is_tournament);
+
+        const appendOptGroup = (el, label, list) => {
+            const grp = document.createElement('optgroup');
+            grp.label = label;
+            for (const c of list) {
+                const opt = document.createElement('option');
+                opt.value = c.id;
+                opt.textContent = c.is_tournament ? `🏆 ${c.name}` : c.name;
+                grp.appendChild(opt);
+            }
+            el.appendChild(grp);
+        };
+
+        if (regulares.length) { appendOptGroup(filter, 'Clubes', regulares); appendOptGroup(form, 'Clubes', regulares); }
+        if (torneios.length)  { appendOptGroup(filter, 'Torneios', torneios); appendOptGroup(form, 'Torneios', torneios); }
     }
 
     async function loadGames() {
