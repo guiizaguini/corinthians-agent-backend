@@ -2202,13 +2202,49 @@ main {
 /* Composer — card de criar post no topo do feed */
 .composer-card {
     background: var(--bg-card);
-    border: 1px solid var(--line);
+    border: 1px solid var(--accent);
     border-radius: 16px;
     padding: 1rem 1.15rem;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 0 0 3px var(--accent-soft), var(--shadow-sm);
     display: flex;
     flex-direction: column;
     gap: 0.65rem;
+    position: relative;
+}
+.composer-card::before {
+    content: 'NOVO POST';
+    position: absolute;
+    top: -0.55rem;
+    left: 1rem;
+    background: var(--accent);
+    color: var(--accent-text);
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.58rem;
+    letter-spacing: 0.25em;
+    padding: 0.15rem 0.55rem;
+    border-radius: 4px;
+    line-height: 1.4;
+}
+
+/* Divider visual entre seções da Rede Social em mobile */
+.rede-section-heading {
+    display: none;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink);
+    padding: 0.5rem 0 0.6rem;
+    border-top: 2px solid var(--line);
+    margin-top: 0.5rem;
+}
+.rede-section-heading .material-icons {
+    font-size: 0.95rem;
+    vertical-align: middle;
+    color: var(--accent);
+    margin-right: 0.3rem;
 }
 .composer-row {
     display: flex;
@@ -3244,18 +3280,30 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         min-width: 0;
     }
 }
+@media (max-width: 900px) {
+    /* Mobile/tablet: reordena pra feed ficar no topo, amigos/solicitações embaixo */
+    .rede-layout { display: flex; flex-direction: column; gap: 0.5rem; }
+    .rede-main { order: 1; }
+    .rede-sidebar { order: 2; display: flex; flex-direction: column; gap: 0.75rem; }
+    .rede-section-heading { display: block; }
+    /* A busca mantém visível no topo da sidebar */
+    .rede-search-bar { margin-bottom: 0.25rem; margin-top: 0.5rem; }
+}
 @media (max-width: 680px) {
-    /* Em mobile, a sidebar vira uma linha de ações acima do feed */
-    .rede-sidebar {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-    }
     .rede-section { margin-bottom: 0; }
-    .rede-search-bar { margin-bottom: 0; }
+    .rede-section h3 { font-size: 0.72rem; letter-spacing: 0.18em; }
     .user-list.compact { gap: 0.35rem; }
     .user-list.compact .user-card {
-        padding: 0.5rem 0.6rem;
+        padding: 0.55rem 0.7rem;
+    }
+    /* Composer um pouco mais compacto mas ainda destacado */
+    .composer-card {
+        margin-top: 0.6rem; /* espaço pro tag "NOVO POST" não colar no header */
+    }
+    .composer-card::before {
+        font-size: 0.54rem;
+        letter-spacing: 0.2em;
+        padding: 0.12rem 0.45rem;
     }
 }
 
@@ -3585,6 +3633,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             <div class="rede-layout">
                 <!-- LEFT sidebar: amigos + solicitações + busca -->
                 <aside class="rede-sidebar">
+                    <div class="rede-section-heading">
+                        <span class="material-icons">people</span>Sua rede
+                    </div>
                     <div class="rede-search-bar">
                         <input type="search" id="redeSearch" placeholder="Buscar @username ou nome...">
                         <button class="btn-ghost" id="redeRefresh" title="Atualizar"><span class="material-icons">refresh</span></button>
@@ -3613,6 +3664,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
                 <!-- CENTER: composer + feed -->
                 <section class="rede-main">
+                    <div class="rede-section-heading" style="margin-top:0;border-top:none;padding-top:0;">
+                        <span class="material-icons">dynamic_feed</span>Feed dos amigos
+                    </div>
                     <!-- Composer de nota inline -->
                     <div class="composer-card">
                         <div class="composer-row">
