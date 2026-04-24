@@ -1519,26 +1519,64 @@ main {
 /* Grid dos ingressos WC */
 .wc-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+    gap: 0.85rem;
 }
 
-/* Ingresso Copa do Mundo — estética vibrante + gradientes */
+/* === Seção Copa do Mundo tem TEMA LIGHT próprio, independente do clube === */
+#tabCopa {
+    --wc-bg: #faf5e8;
+    --wc-card: #ffffff;
+    --wc-ink: #1a1a1a;
+    --wc-ink-mute: #6a625a;
+    --wc-line: #e0d6bf;
+    background: var(--wc-bg);
+    margin: 0 -1.5rem;
+    padding: 1.5rem;
+    border-radius: 16px;
+}
+
+/* Título de seção (Grupo A, Oitavas, etc) */
+.wc-section-title {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--wc-ink);
+    margin: 1.5rem 0 0.85rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--wc-line);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.wc-section-title:first-of-type { margin-top: 0.5rem; }
+.wc-section-title .wc-section-count {
+    margin-left: auto;
+    font-weight: 500;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    color: var(--wc-ink-mute);
+}
+.wc-section-title.final {
+    color: #a8791b;
+    border-bottom-color: var(--wc-yellow);
+}
+
+/* Ingresso Copa do Mundo — tema LIGHT com splash de cor */
 .wc-ticket {
     position: relative;
-    background:
-        radial-gradient(ellipse at top right, rgba(255,201,58,0.08) 0%, transparent 40%),
-        radial-gradient(ellipse at bottom left, rgba(230,57,70,0.08) 0%, transparent 40%),
-        linear-gradient(155deg, #1a1423 0%, #0d0d0d 50%, #0a1422 100%);
-    border: 1.5px solid rgba(255,201,58,0.25);
-    border-radius: 16px;
+    background: var(--wc-card);
+    border: 1.5px solid var(--wc-line);
+    border-radius: 14px;
     overflow: hidden;
-    color: #fff;
+    color: var(--wc-ink);
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
     box-shadow:
-        0 2px 0 rgba(255,255,255,0.04) inset,
-        0 8px 22px rgba(0,0,0,0.5);
+        0 1px 0 rgba(255,255,255,0.8) inset,
+        0 4px 14px rgba(20,15,10,0.08);
     display: flex;
     flex-direction: column;
 }
@@ -1555,34 +1593,24 @@ main {
         var(--wc-green) 60%,
         var(--wc-blue) 80%,
         var(--wc-purple) 100%);
-    opacity: 0.85;
 }
 .wc-ticket:hover {
     transform: translateY(-3px);
-    box-shadow:
-        0 2px 0 rgba(255,255,255,0.04) inset,
-        0 16px 40px rgba(0,0,0,0.6),
-        0 0 0 1px var(--wc-yellow);
-    border-color: var(--wc-yellow);
+    box-shadow: 0 10px 28px rgba(20,15,10,0.15);
+    border-color: #b8a666;
 }
 
-/* Variante especial: jogo FINAL — moldura dourada + gradiente roxo/vermelho */
+/* Variante FINAL — moldura dourada cream */
 .wc-ticket.is-final {
-    background:
-        radial-gradient(ellipse at top right, rgba(255,215,100,0.18) 0%, transparent 50%),
-        linear-gradient(155deg, #2a1530 0%, #1a0d22 50%, #1a0a0a 100%);
-    border: 2px solid var(--wc-yellow);
-    box-shadow:
-        0 2px 0 rgba(255,215,100,0.18) inset,
-        0 10px 28px rgba(180,120,40,0.4),
-        0 0 40px rgba(255,201,58,0.25);
+    background: linear-gradient(155deg, #fff8e0 0%, #ffffff 100%);
+    border: 2px solid #d4a520;
+    box-shadow: 0 10px 28px rgba(180,120,40,0.18), 0 0 24px rgba(212,165,32,0.18);
 }
 
-/* Variante mata-mata (não-final): tonalidade roxo/azul */
+/* Variante mata-mata (não-final): borda azul sutil */
 .wc-ticket.is-knockout {
-    background:
-        radial-gradient(ellipse at top right, rgba(123,44,191,0.12) 0%, transparent 50%),
-        linear-gradient(155deg, #241334 0%, #0d0d0d 60%, #1a0e22 100%);
+    background: linear-gradient(155deg, #f4eff7 0%, #ffffff 100%);
+    border-color: #c9b8dc;
 }
 
 /* Listras coloridas no topo */
@@ -1615,7 +1643,7 @@ main {
     font-size: 0.68rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--wc-yellow);
+    color: var(--wc-red);
 }
 .wc-ticket-fase .wc-final-badge {
     background: var(--wc-yellow);
@@ -1635,12 +1663,12 @@ main {
 .wc-team {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     text-transform: uppercase;
     line-height: 1.1;
-    color: #fff;
+    color: var(--wc-ink);
 }
-.wc-team.tbd { color: rgba(255,255,255,0.45); font-weight: 500; font-style: italic; letter-spacing: 0.04em; }
+.wc-team.tbd { color: rgba(26,26,26,0.35); font-weight: 500; font-style: italic; letter-spacing: 0.04em; font-size: 1rem; }
 .wc-vs {
     font-family: 'Oswald', sans-serif;
     font-weight: 500;
@@ -1654,10 +1682,10 @@ main {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
     font-size: 2rem;
-    color: #fff;
+    color: var(--wc-ink);
 }
 .wc-score .wc-x {
-    color: rgba(255,255,255,0.4);
+    color: rgba(26,26,26,0.35);
     font-size: 0.7em;
     margin: 0 0.3em;
 }
@@ -1668,16 +1696,16 @@ main {
     gap: 0.4rem;
     font-family: 'SN Pro', 'Oswald', sans-serif;
     font-size: 0.82rem;
-    color: rgba(255,255,255,0.75);
+    color: var(--wc-ink-mute);
 }
-.wc-meta .material-icons { font-size: 1rem; color: rgba(255,255,255,0.7); }
+.wc-meta .material-icons { font-size: 1rem; color: var(--wc-ink-mute); }
 
 .wc-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding-top: 0.85rem;
-    border-top: 1px dashed rgba(255,255,255,0.2);
+    border-top: 1px dashed var(--wc-line);
     margin-top: auto;
 }
 .wc-date {
@@ -1686,14 +1714,21 @@ main {
     font-size: 0.78rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: #fff;
+    color: var(--wc-ink);
 }
 .wc-date .wc-date-weekday {
     display: block;
     font-size: 0.6rem;
-    color: rgba(255,255,255,0.6);
+    color: var(--wc-ink-mute);
     letter-spacing: 0.22em;
     margin-bottom: 0.15rem;
+}
+.wc-date .wc-time {
+    display: inline-block;
+    margin-left: 0.4rem;
+    color: var(--wc-red);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
 }
 
 .wc-cta {
@@ -3523,7 +3558,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     // Modal: Resumo da partida (read-only)
     // ===============================================
     function openSummary(gameId) {
-        const g = allGames.find(x => x.id === gameId);
+        const g = allGames.find(x => x.id === gameId)
+              || (copaGames || []).find(x => x.id === gameId);
         if (!g) return;
 
         const d = formatDate(g.data);
@@ -3710,7 +3746,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     });
 
     function openModal(gameId) {
-        const game = allGames.find(g => g.id === gameId);
+        // Procura em allGames (clube do user) OU copaGames (Copa do Mundo)
+        const game = allGames.find(g => g.id === gameId)
+                  || (copaGames || []).find(g => g.id === gameId);
         if (!game) return;
         editingGame = game;
 
@@ -3805,8 +3843,10 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 companion_user_ids: getSelectedCompanions(),
             };
             await api('/attendances', { method: 'POST', body: JSON.stringify(body) });
+            const isCopa = /Copa do Mundo/i.test(editingGame.campeonato || '');
             closeModal();
             await loadAll();
+            if (isCopa) await loadCopa();
         } catch (err) {
             alert('Erro: ' + err.message);
         } finally {
@@ -4556,13 +4596,57 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             return;
         }
         const hoje = new Date(); hoje.setHours(0,0,0,0);
-        container.innerHTML = copaGames.map(g => renderWcTicket(g, hoje)).join('');
+
+        // Agrupa jogos por seção (Grupo A-L + cada fase de mata-mata)
+        const groups = new Map();
+        const addTo = (key, g) => {
+            if (!groups.has(key)) groups.set(key, []);
+            groups.get(key).push(g);
+        };
+        for (const g of copaGames) {
+            const fase = g.fase || '';
+            // Grupo X
+            const grpMatch = fase.match(/Grupo\s+([A-L])/i);
+            if (grpMatch) { addTo(`Grupo ${grpMatch[1].toUpperCase()}`, g); continue; }
+            if (/Oitavas de 32/i.test(fase)) { addTo('Oitavas de 32', g); continue; }
+            if (/Oitavas de Final/i.test(fase)) { addTo('Oitavas de Final', g); continue; }
+            if (/Quartas/i.test(fase)) { addTo('Quartas de Final', g); continue; }
+            if (/Semifinal/i.test(fase)) { addTo('Semifinais', g); continue; }
+            if (/Disputa/i.test(fase)) { addTo('Disputa de 3º Lugar', g); continue; }
+            if (fase.trim().toUpperCase() === 'FINAL') { addTo('Final', g); continue; }
+            addTo('Outros', g);
+        }
+
+        // Ordem das seções
+        const ordem = [
+            'Grupo A','Grupo B','Grupo C','Grupo D','Grupo E','Grupo F',
+            'Grupo G','Grupo H','Grupo I','Grupo J','Grupo K','Grupo L',
+            'Oitavas de 32','Oitavas de Final','Quartas de Final','Semifinais','Disputa de 3º Lugar','Final',
+        ];
+
+        const html = ordem
+            .filter(sec => groups.has(sec))
+            .map(sec => {
+                const list = groups.get(sec);
+                const isFinal = sec === 'Final';
+                return `
+                    <h3 class="wc-section-title ${isFinal ? 'final' : ''}">
+                        ${isFinal ? '🏆 ' : ''}${sec}
+                        <span class="wc-section-count">${list.length} ${list.length === 1 ? 'jogo' : 'jogos'}</span>
+                    </h3>
+                    <div class="wc-grid">
+                        ${list.map(g => renderWcTicket(g, hoje)).join('')}
+                    </div>
+                `;
+            }).join('');
+
+        container.innerHTML = html;
+
         container.querySelectorAll('.wc-ticket').forEach(el => {
             const id = parseInt(el.dataset.id);
             const isAttended = el.classList.contains('attended');
-            // Click no card vai pro resumo read-only (se já marcou) ou pro modal de attendance
             el.addEventListener('click', (e) => {
-                if (e.target.closest('.wc-cta')) return; // botão já tem handler próprio
+                if (e.target.closest('.wc-cta')) return;
                 if (isAttended) openSummary(id);
                 else openModal(id);
             });
@@ -4623,7 +4707,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                     <div class="wc-footer">
                         <div class="wc-date">
                             <span class="wc-date-weekday">${escapeHtml(weekday)}</span>
-                            ${dia} ${mes} ${ano}
+                            ${dia} ${mes} ${ano}${g.horario ? ` <span class="wc-time">${escapeHtml(g.horario)}</span>` : ''}
                         </div>
                         ${cta}
                     </div>

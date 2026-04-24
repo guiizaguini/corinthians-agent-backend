@@ -35,7 +35,7 @@ router.get('/:slug/games', async (req, res, next) => {
 
         const { rows } = await query(
             `SELECT
-                g.id, g.data, g.dia_semana, g.time_casa, g.time_visitante,
+                g.id, g.data, g.dia_semana, g.horario, g.time_casa, g.time_visitante,
                 g.campeonato, g.estadio, g.gols_casa, g.gols_visitante, g.resultado,
                 g.fase, g.autores_gols, g.publico_total,
                 a.id AS attendance_id,
@@ -44,7 +44,7 @@ router.get('/:slug/games', async (req, res, next) => {
              FROM games g
              LEFT JOIN attendances a ON a.game_id = g.id AND a.user_id = $2
              WHERE g.club_id = $1
-             ORDER BY g.data ASC, g.id ASC`,
+             ORDER BY g.data ASC, g.horario ASC NULLS LAST, g.id ASC`,
             [t.id, req.user.id]
         );
         res.json({ tournament: t, count: rows.length, games: rows });

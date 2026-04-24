@@ -119,6 +119,9 @@ CREATE TABLE IF NOT EXISTS games (
 CREATE INDEX IF NOT EXISTS idx_games_club_data ON games(club_id, data DESC);
 CREATE INDEX IF NOT EXISTS idx_games_campeonato ON games(campeonato);
 
+-- Horário do jogo (formato HH:MM) — add idempotente
+ALTER TABLE games ADD COLUMN IF NOT EXISTS horario VARCHAR(5);
+
 -- =============================================================
 -- ATTENDANCES (registro por usuário)
 -- =============================================================
