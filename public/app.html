@@ -1523,26 +1523,67 @@ main {
     gap: 1rem;
 }
 
-/* Ingresso Copa do Mundo — estética vibrante */
+/* Ingresso Copa do Mundo — estética vibrante + gradientes */
 .wc-ticket {
     position: relative;
-    background: #0d0d0d;
-    border: 1.5px solid #2c2a26;
+    background:
+        radial-gradient(ellipse at top right, rgba(255,201,58,0.08) 0%, transparent 40%),
+        radial-gradient(ellipse at bottom left, rgba(230,57,70,0.08) 0%, transparent 40%),
+        linear-gradient(155deg, #1a1423 0%, #0d0d0d 50%, #0a1422 100%);
+    border: 1.5px solid rgba(255,201,58,0.25);
     border-radius: 16px;
     overflow: hidden;
     color: #fff;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-    box-shadow: 0 8px 22px rgba(0,0,0,0.35);
+    box-shadow:
+        0 2px 0 rgba(255,255,255,0.04) inset,
+        0 8px 22px rgba(0,0,0,0.5);
     display: flex;
     flex-direction: column;
 }
+.wc-ticket::before {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 0;
+    width: 4px;
+    background: linear-gradient(180deg,
+        var(--wc-red) 0%,
+        var(--wc-orange) 20%,
+        var(--wc-yellow) 40%,
+        var(--wc-green) 60%,
+        var(--wc-blue) 80%,
+        var(--wc-purple) 100%);
+    opacity: 0.85;
+}
 .wc-ticket:hover {
     transform: translateY(-3px);
-    box-shadow: 0 14px 32px rgba(0,0,0,0.5);
+    box-shadow:
+        0 2px 0 rgba(255,255,255,0.04) inset,
+        0 16px 40px rgba(0,0,0,0.6),
+        0 0 0 1px var(--wc-yellow);
     border-color: var(--wc-yellow);
 }
-body.light-theme .wc-ticket { border-color: rgba(255,255,255,0.08); }
+
+/* Variante especial: jogo FINAL — moldura dourada + gradiente roxo/vermelho */
+.wc-ticket.is-final {
+    background:
+        radial-gradient(ellipse at top right, rgba(255,215,100,0.18) 0%, transparent 50%),
+        linear-gradient(155deg, #2a1530 0%, #1a0d22 50%, #1a0a0a 100%);
+    border: 2px solid var(--wc-yellow);
+    box-shadow:
+        0 2px 0 rgba(255,215,100,0.18) inset,
+        0 10px 28px rgba(180,120,40,0.4),
+        0 0 40px rgba(255,201,58,0.25);
+}
+
+/* Variante mata-mata (não-final): tonalidade roxo/azul */
+.wc-ticket.is-knockout {
+    background:
+        radial-gradient(ellipse at top right, rgba(123,44,191,0.12) 0%, transparent 50%),
+        linear-gradient(155deg, #241334 0%, #0d0d0d 60%, #1a0e22 100%);
+}
 
 /* Listras coloridas no topo */
 .wc-stripes {
@@ -2822,7 +2863,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
         <div class="tab-panel" id="tabCopa">
             <section class="wc-header">
-                <img src="/logos/fifa-2026.svg" alt="Copa do Mundo 2026">
+                <img src="/logos/fifa-2026.png" alt="Copa do Mundo 2026">
                 <div class="wc-header-text">
                     <div class="wc-eyebrow">FIFA World Cup · 16 sedes</div>
                     <h2 class="wc-title">Copa do Mundo 2026</h2>
@@ -4544,6 +4585,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const fase = (g.fase || g.campeonato || 'Jogo').toUpperCase();
         // só a FINAL mesmo — não "oitavas/quartas de final" nem "semifinal"
         const isFinal = fase.trim() === 'FINAL';
+        // qualquer fase de mata-mata (oitavas, quartas, semi, 3º, final) ganha variante roxa
+        const isKnockout = /OITAVAS|QUARTAS|SEMIFINAL|DISPUTA|FINAL|ROUND/i.test(fase);
         const hasScore = g.gols_casa != null && g.gols_visitante != null;
         const teamCasaTbd = /definir/i.test(g.time_casa);
         const teamVisTbd = /definir/i.test(g.time_visitante);
@@ -4557,8 +4600,13 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             cta = `<button class="wc-cta eu-vou"><span class="material-icons">sports_soccer</span>Eu vou</button>`;
         }
 
+        const ticketClasses = ['wc-ticket'];
+        if (isPres) ticketClasses.push('attended');
+        if (isFinal) ticketClasses.push('is-final');
+        else if (isKnockout) ticketClasses.push('is-knockout');
+
         return `
-            <article class="wc-ticket ${isPres ? 'attended' : ''}" data-id="${g.id}">
+            <article class="${ticketClasses.join(' ')}" data-id="${g.id}">
                 <div class="wc-stripes"><i></i><i></i><i></i><i></i><i></i><i></i></div>
                 <div class="wc-ticket-body">
                     <div class="wc-ticket-fase">

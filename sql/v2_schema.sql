@@ -54,7 +54,7 @@ ON CONFLICT (slug) DO UPDATE SET
 
 -- Torneios (hidden clubs — aparecem em aba própria, não no dropdown de signup)
 INSERT INTO clubs (slug, name, short_name, primary_color, secondary_color, is_tournament, logo_url) VALUES
-    ('copa-do-mundo-2026', 'Copa do Mundo 2026', 'WC26', '#e63946', '#ffc93a', TRUE, '/logos/fifa-2026.svg')
+    ('copa-do-mundo-2026', 'Copa do Mundo 2026', 'WC26', '#e63946', '#ffc93a', TRUE, '/logos/fifa-2026.png')
 ON CONFLICT (slug) DO UPDATE SET
     name = EXCLUDED.name,
     short_name = EXCLUDED.short_name,

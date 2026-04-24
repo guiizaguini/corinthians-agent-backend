@@ -12,6 +12,7 @@
     "seed:examples": "node scripts/run_fix_sql.js sql/seed_examples.sql",
     "seed:copa2026": "node scripts/run_fix_sql.js sql/seed_copa_2026.sql",
     "seed:copa2026:full": "node scripts/seed_copa_2026_full.mjs",
+    "seed:copa2026:real": "node scripts/seed_copa_2026_real.mjs",
     "dump:games": "node scripts/dump_games.mjs",
     "apply:corrections": "node scripts/apply_corrections.mjs",
     "inspect": "node scripts/inspect_games.mjs",
