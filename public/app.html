@@ -3800,14 +3800,15 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
 .bolao-ranking-row {
     display: grid;
-    grid-template-columns: 34px 1fr auto;
+    grid-template-columns: 32px 1fr auto;
     align-items: center;
-    gap: 0.65rem;
-    padding: 0.55rem 0.45rem;
+    gap: 0.55rem;
+    padding: 0.65rem 0.6rem;
     border-radius: 10px;
     font-family: 'Oswald', sans-serif;
     transition: all 150ms;
-    margin: 0.15rem 0;
+    margin: 0.2rem 0;
+    min-height: 52px;
 }
 .bolao-ranking-row + .bolao-ranking-row { border-top: 1px solid #efe8d6; }
 
@@ -3867,44 +3868,51 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 }
 
 /* Info (nome + @handle) */
-.bolao-rank-info { min-width: 0; overflow: hidden; }
+.bolao-rank-info { min-width: 0; overflow: hidden; display: flex; flex-direction: column; gap: 0.08rem; }
 .bolao-rank-name {
     font-weight: 700;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     color: var(--wc-ink);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    line-height: 1.2;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-width: 0;
+}
+.bolao-rank-name-text {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    line-height: 1.15;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
+    min-width: 0;
+    flex-shrink: 1;
 }
 .bolao-ranking-row.first .bolao-rank-name { color: #1a1000; }
 .bolao-rank-me-tag {
     font-family: 'Oswald', sans-serif;
-    font-weight: 600;
-    font-size: 0.55rem;
+    font-weight: 700;
+    font-size: 0.52rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--vinho);
-    border: 1px solid var(--vinho);
-    padding: 0.05rem 0.35rem;
+    color: #fff;
+    background: var(--vinho);
+    padding: 0.12rem 0.42rem;
     border-radius: 999px;
-    line-height: 1.4;
+    line-height: 1.3;
+    flex-shrink: 0;
+    letter-spacing: 0.15em;
 }
 .bolao-rank-handle {
     font-family: 'Oswald', sans-serif;
-    font-size: 0.68rem;
+    font-size: 0.66rem;
     color: var(--wc-ink-mute);
     letter-spacing: 0.02em;
     display: block;
-    margin-top: 0.1rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    line-height: 1.25;
 }
 
 /* Lado direito: ação + pontos */
@@ -3957,31 +3965,34 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 .bolao-rank-pts {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: #1a1000;
     background: #fff;
     border: 1.5px solid #d4a520;
-    padding: 0.25rem 0.6rem;
+    padding: 0.3rem 0.7rem;
     border-radius: 999px;
     display: inline-flex;
-    align-items: baseline;
-    gap: 0.2rem;
-    min-width: 44px;
+    align-items: center;
+    gap: 0.25rem;
+    line-height: 1;
     justify-content: center;
     box-shadow: 0 2px 6px rgba(212,165,32,0.15);
+    white-space: nowrap;
 }
 .bolao-rank-pts-label {
-    font-size: 0.5rem;
-    font-weight: 500;
-    letter-spacing: 0.15em;
+    font-size: 0.55rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
     color: var(--wc-ink-mute);
     text-transform: uppercase;
+    line-height: 1;
 }
 .bolao-ranking-row.first .bolao-rank-pts {
     background: linear-gradient(135deg, #d4a520 0%, #f0c040 100%);
     color: #1a1000;
     border-color: #a8791b;
-    font-size: 1.1rem;
+    font-size: 1rem;
+    padding: 0.35rem 0.75rem;
 }
 .bolao-ranking-row.first .bolao-rank-pts-label { color: #7a5a0a; }
 
@@ -7931,7 +7942,10 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                     <div class="${rowCls}">
                         <div class="bolao-rank-pos">${posHtml}</div>
                         <div class="bolao-rank-info">
-                            <div class="bolao-rank-name">${escapeHtml(name)}${isMe ? ' <span class="bolao-rank-me-tag">você</span>' : ''}</div>
+                            <div class="bolao-rank-name">
+                                <span class="bolao-rank-name-text">${escapeHtml(name)}</span>
+                                ${isMe ? '<span class="bolao-rank-me-tag">você</span>' : ''}
+                            </div>
                             ${handleHtml}
                         </div>
                         <div class="bolao-rank-right">
