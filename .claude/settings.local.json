@@ -23,7 +23,8 @@
       "Bash(node --check scripts/dump_games.mjs)",
       "Bash(node --check scripts/apply_corrections.mjs)",
       "Bash(node --check scripts/inspect_games.mjs)",
-      "Bash(node --check src/routes/tournaments.js)"
+      "Bash(node --check src/routes/tournaments.js)",
+      "Bash(node --check scripts/seed_copa_2026_full.mjs)"
     ]
   }
 }

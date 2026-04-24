@@ -1205,6 +1205,243 @@ main {
     .canhoto-selo { font-size: 16px; padding: 4px 7px; }
 }
 
+/* ================= Modal de resumo (estilo museu) ================= */
+.sm-header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1.25rem;
+    align-items: center;
+    padding: 1rem 0.5rem 1.25rem;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid var(--line);
+}
+.sm-team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.55rem;
+    min-width: 0;
+}
+.sm-team.casa { grid-column: 1; }
+.sm-team.visitante { grid-column: 3; }
+.sm-escudo {
+    width: 72px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.sm-escudo img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+.sm-escudo-fallback {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--accent-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    letter-spacing: 0.05em;
+}
+.sm-team-name {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    white-space: nowrap;
+}
+.sm-placar {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 2.8rem;
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 0.25rem;
+}
+.sm-placar .sm-x {
+    color: var(--ink-mute);
+    font-size: 0.5em;
+    font-weight: 500;
+}
+.sm-placar.sem { font-size: 0.85rem; color: var(--ink-mute); text-transform: uppercase; letter-spacing: 0.2em; font-weight: 500; }
+
+.sm-datetag {
+    text-align: center;
+    font-family: 'SN Pro', 'Oswald', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 0.92rem;
+    color: var(--ink-mute);
+    margin-bottom: 1.25rem;
+}
+
+.sm-assento {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.9rem 1.1rem;
+    background: var(--accent-soft);
+    border: 1.5px solid var(--accent);
+    border-radius: 12px;
+    margin-bottom: 1.25rem;
+}
+.sm-assento .material-icons {
+    font-size: 2rem;
+    color: var(--accent);
+}
+.sm-assento-info { display: flex; flex-direction: column; gap: 0.1rem; }
+.sm-assento-label {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.62rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+}
+.sm-assento-valor {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+}
+
+.sm-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem 1.1rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+}
+.sm-item {
+    display: flex;
+    gap: 0.7rem;
+    align-items: center;
+}
+.sm-item .material-icons {
+    font-size: 1.1rem;
+    color: var(--ink-mute);
+    flex-shrink: 0;
+}
+.sm-item-info { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
+.sm-item-label {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 0.58rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+}
+.sm-item-valor {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sm-gols-section {
+    margin-top: 1.25rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+}
+.sm-gols-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.62rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-bottom: 0.75rem;
+}
+.sm-gols-title .material-icons { font-size: 1rem; color: var(--accent); }
+.sm-gol-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px dotted var(--line-soft);
+    font-family: 'Oswald', sans-serif;
+}
+.sm-gol-row:last-child { border-bottom: none; }
+.sm-gol-min {
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+    min-width: 48px;
+}
+.sm-gol-autor {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--ink);
+}
+.sm-gol-time {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.sm-obs {
+    margin-top: 1rem;
+    padding: 0.85rem 1rem;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+}
+.sm-obs-label {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.58rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.35rem;
+}
+.sm-obs-valor {
+    font-family: 'SN Pro', sans-serif;
+    font-size: 0.92rem;
+    color: var(--ink);
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+@media (max-width: 500px) {
+    .sm-grid { grid-template-columns: 1fr; }
+    .sm-escudo { width: 60px; height: 60px; }
+    .sm-placar { font-size: 2.2rem; }
+}
+
 /* ================= COPA DO MUNDO 2026 ================= */
 :root {
     --wc-red: #e63946;
@@ -1290,16 +1527,22 @@ main {
 .wc-ticket {
     position: relative;
     background: #0d0d0d;
+    border: 1.5px solid #2c2a26;
     border-radius: 16px;
     overflow: hidden;
     color: #fff;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
     box-shadow: 0 8px 22px rgba(0,0,0,0.35);
     display: flex;
     flex-direction: column;
 }
-.wc-ticket:hover { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(0,0,0,0.5); }
+.wc-ticket:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 32px rgba(0,0,0,0.5);
+    border-color: var(--wc-yellow);
+}
+body.light-theme .wc-ticket { border-color: rgba(255,255,255,0.08); }
 
 /* Listras coloridas no topo */
 .wc-stripes {
@@ -2445,30 +2688,10 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         </div>
     </div>
 
-    <!-- Modal: Resumo da partida (read-only) -->
+    <!-- Modal: Resumo da partida (read-only, estilo museu) -->
     <div class="modal-overlay" id="summaryModal">
-        <div class="modal" style="max-width:540px;">
-            <div id="summaryHead" style="text-align:center;padding-bottom:1rem;border-bottom:1px solid var(--cinza-linha);margin-bottom:1.2rem;">
-                <div id="summaryComp" style="font-family:'Oswald',sans-serif;font-size:0.7rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem;"></div>
-                <div id="summaryTeams" style="display:flex;align-items:center;justify-content:center;gap:1.2rem;margin:0.5rem 0;flex-wrap:wrap;">
-                    <div style="flex:1;min-width:0;text-align:right;">
-                        <div id="summaryHomeName" style="font-family:'Oswald',sans-serif;font-weight:700;font-size:1.1rem;color:var(--branco);"></div>
-                    </div>
-                    <div id="summaryScore" style="font-family:'Oswald',sans-serif;font-size:2.5rem;color:var(--branco);min-width:5rem;text-align:center;letter-spacing:0.04em;"></div>
-                    <div style="flex:1;min-width:0;text-align:left;">
-                        <div id="summaryAwayName" style="font-family:'Oswald',sans-serif;font-weight:700;font-size:1.1rem;color:var(--branco);"></div>
-                    </div>
-                </div>
-                <div id="summaryDate" style="font-family:'Oswald',sans-serif;font-weight:500;color:var(--cinza-claro);font-size:0.9rem;margin-top:0.5rem;"></div>
-                <div id="summaryResult" style="margin-top:0.7rem;"></div>
-            </div>
-
-            <div id="summaryGols" style="margin-bottom:1.2rem;"></div>
-
-            <div id="summaryDetails" style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;font-size:0.85rem;"></div>
-
-            <div id="summaryObs" style="margin-top:1rem;"></div>
-
+        <div class="modal" style="max-width:640px;">
+            <div id="summaryContent"></div>
             <div class="modal-actions">
                 <button class="btn-secondary" id="summaryClose">Fechar</button>
             </div>
@@ -2625,6 +2848,65 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
 <script>
     const MESES_ABREV = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
+    const MESES_EXT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    const DIAS_SEMANA_EXT = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+
+    // Logos por NOME do time (pra adversários no modal de resumo)
+    const TEAM_LOGOS = {
+        'corinthians':    'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Sport_Club_Corinthians_Paulista_brasao.svg/240px-Sport_Club_Corinthians_Paulista_brasao.svg.png',
+        'palmeiras':      'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Palmeiras_logo.svg/240px-Palmeiras_logo.svg.png',
+        'são paulo':      'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Brasao_do_Sao_Paulo_Futebol_Clube.svg/240px-Brasao_do_Sao_Paulo_Futebol_Clube.svg.png',
+        'santos':         'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Santos_logo.svg/240px-Santos_logo.svg.png',
+        'flamengo':       'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Flamengo_braz_logo.svg/240px-Flamengo_braz_logo.svg.png',
+        'vasco':          'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/CR_Vasco_da_Gama_logo.svg/240px-CR_Vasco_da_Gama_logo.svg.png',
+        'fluminense':     'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Fluminense_FC_escudo.svg/240px-Fluminense_FC_escudo.svg.png',
+        'botafogo':       'https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Botafogo_de_Futebol_e_Regatas_logo.svg/240px-Botafogo_de_Futebol_e_Regatas_logo.svg.png',
+        'cruzeiro':       'https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Cruzeiro_Esporte_Clube_%28logo%29.svg/240px-Cruzeiro_Esporte_Clube_%28logo%29.svg.png',
+        'atlético-mg':    'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Clube_Atl%C3%A9tico_Mineiro_crest.svg/240px-Clube_Atl%C3%A9tico_Mineiro_crest.svg.png',
+        'grêmio':         'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Gremio.svg/240px-Gremio.svg.png',
+        'internacional':  'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Escudo_do_Sport_Club_Internacional.svg/240px-Escudo_do_Sport_Club_Internacional.svg.png',
+        'bahia':          'https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Esporte_Clube_Bahia_logo.svg/240px-Esporte_Clube_Bahia_logo.svg.png',
+        'fortaleza':      'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Fortaleza_EC_2018.svg/240px-Fortaleza_EC_2018.svg.png',
+        'sport':          'https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Sport_Club_do_Recife_%28logo%29.svg/240px-Sport_Club_do_Recife_%28logo%29.svg.png',
+        'vitória':        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Esporte_Clube_Vit%C3%B3ria_logo_3.svg/240px-Esporte_Clube_Vit%C3%B3ria_logo_3.svg.png',
+        'bragantino':     'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Red_Bull_Bragantino_logo_%282020%29.svg/240px-Red_Bull_Bragantino_logo_%282020%29.svg.png',
+        'rb bragantino':  'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Red_Bull_Bragantino_logo_%282020%29.svg/240px-Red_Bull_Bragantino_logo_%282020%29.svg.png',
+        'rb brasil':      'https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Red_Bull_Brasil_logo.svg/240px-Red_Bull_Brasil_logo.svg.png',
+        'athletico-pr':   'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Club_Athletico_Paranaense_%282018%29.svg/240px-Club_Athletico_Paranaense_%282018%29.svg.png',
+        'atlético-pr':    'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Club_Athletico_Paranaense_%282018%29.svg/240px-Club_Athletico_Paranaense_%282018%29.svg.png',
+        'atlético-go':    'https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/AtleticoGoianiense.svg/240px-AtleticoGoianiense.svg.png',
+        'coritiba':       'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Coritiba_Foot_Ball_Club_%282011%29.svg/240px-Coritiba_Foot_Ball_Club_%282011%29.svg.png',
+        'cuiabá':         'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Cuiab%C3%A1_Esporte_Clube_logo.svg/240px-Cuiab%C3%A1_Esporte_Clube_logo.svg.png',
+        'ceará':          'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Cear%C3%A1_Sporting_Club_logo.svg/240px-Cear%C3%A1_Sporting_Club_logo.svg.png',
+        'juventude':      'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Esporte_Clube_Juventude_logo.svg/240px-Esporte_Clube_Juventude_logo.svg.png',
+        'chapecoense':    'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Associa%C3%A7%C3%A3o_Chapecoense_de_Futebol_logo.svg/240px-Associa%C3%A7%C3%A3o_Chapecoense_de_Futebol_logo.svg.png',
+        'américa-mg':     'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Am%C3%A9rica_Futebol_Clube_%28MG%29_-_logo_until_2019.svg/240px-Am%C3%A9rica_Futebol_Clube_%28MG%29_-_logo_until_2019.svg.png',
+        'avaí':           'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Avai_FC.svg/240px-Avai_FC.svg.png',
+        'criciúma':       'https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Cricima_Esporte_Clube_logo.svg/240px-Cricima_Esporte_Clube_logo.svg.png',
+        'ponte preta':    'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Ponte_Preta_logo.svg/240px-Ponte_Preta_logo.svg.png',
+        'guarani':        'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Guarani_FC.svg/240px-Guarani_FC.svg.png',
+        'mirassol':       'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Mirassol_FC_logo.svg/240px-Mirassol_FC_logo.svg.png',
+        'novorizontino':  'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Gr%C3%AAmio_Novorizontino_logo.svg/240px-Gr%C3%AAmio_Novorizontino_logo.svg.png',
+        'santo andré':    'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Esporte_Clube_Santo_Andr%C3%A9_logo.svg/240px-Esporte_Clube_Santo_Andr%C3%A9_logo.svg.png',
+    };
+
+    function resolveTeamLogo(name) {
+        if (!name) return null;
+        const key = name.toLowerCase().trim();
+        // Match direto
+        if (TEAM_LOGOS[key]) return TEAM_LOGOS[key];
+        // Match loose (remove parênteses tipo "Guarani (PAR)")
+        const clean = key.replace(/\s*\([^)]*\)/g, '').trim();
+        if (TEAM_LOGOS[clean]) return TEAM_LOGOS[clean];
+        return null;
+    }
+
+    function teamInitials(name) {
+        const parts = (name || '').trim().split(/\s+/).filter(Boolean);
+        if (!parts.length) return '?';
+        if (parts.length === 1) return parts[0].substring(0, 3).toUpperCase();
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
 
     // Tema (light/dark) por clube. Default = dark (sport vibe).
     // Clubes com identidade visual mais clara ganham tema light.
@@ -4260,7 +4542,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const ano = dt.getUTCFullYear();
         const weekday = dt.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.','').toUpperCase();
         const fase = (g.fase || g.campeonato || 'Jogo').toUpperCase();
-        const isFinal = /FINAL/i.test(fase) && !/SEMI/i.test(fase);
+        // só a FINAL mesmo — não "oitavas/quartas de final" nem "semifinal"
+        const isFinal = fase.trim() === 'FINAL';
         const hasScore = g.gols_casa != null && g.gols_visitante != null;
         const teamCasaTbd = /definir/i.test(g.time_casa);
         const teamVisTbd = /definir/i.test(g.time_visitante);
