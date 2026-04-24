@@ -3542,6 +3542,41 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 .bolao-ticket.palpitado:hover { border-color: #4ec96d; }
 .bolao-ticket.finalizado { background: linear-gradient(155deg, #fffbe8 0%, #ffffff 100%); }
 
+/* Overlay verde quando o palpite foi salvo. Some no hover pra editar. */
+.bolao-saved-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(78,201,109,0.35) 0%, rgba(42,122,61,0.3) 100%);
+    backdrop-filter: blur(1px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 1;
+    transition: opacity 220ms ease;
+    animation: bolaoSavedPop 420ms ease;
+}
+.bolao-saved-overlay .material-icons {
+    font-size: 5.5rem;
+    color: #fff;
+    background: rgba(42,122,61,0.95);
+    border-radius: 50%;
+    padding: 0.35rem;
+    box-shadow: 0 8px 24px rgba(78,201,109,0.5), 0 0 0 4px rgba(255,255,255,0.4);
+    animation: bolaoSavedCheck 520ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.bolao-ticket.palpitado:hover .bolao-saved-overlay { opacity: 0; }
+@keyframes bolaoSavedPop {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes bolaoSavedCheck {
+    from { transform: scale(0.3); opacity: 0; }
+    50%  { transform: scale(1.15); opacity: 1; }
+    to   { transform: scale(1); }
+}
+
 /* Status badge (check/lock/trophy) no header "wc-ticket-fase" */
 .bolao-ticket .wc-ticket-fase {
     display: flex;
@@ -3565,51 +3600,43 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 .bolao-status-badge.finalizado { background: #fff8e0; border-color: #d4a520; color: #a8791b; }
 .bolao-status-badge.travado { background: #f0ebe0; color: var(--wc-ink-mute); }
 
-/* Bloco do palpite (inputs grandes) */
+/* Bloco do palpite — inline, compacto, sem box gigante */
 .bolao-palpite-block {
-    margin-top: 0.5rem;
-    padding: 0.75rem 0.85rem;
-    background: linear-gradient(135deg, #fafafa 0%, #fff8e8 100%);
-    border: 1.5px dashed #d4a520;
-    border-radius: 12px;
+    margin-top: 0.4rem;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 0.4rem;
-    transition: all 150ms;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.3rem 0;
 }
-.bolao-palpite-block.locked {
-    background: #f5f0e4;
-    border-style: solid;
-    border-color: var(--wc-line);
-    opacity: 0.85;
-}
+.bolao-palpite-block.locked { opacity: 0.75; }
 .bolao-palpite-label {
     font-family: 'Oswald', sans-serif;
-    font-weight: 600;
-    font-size: 0.6rem;
-    letter-spacing: 0.24em;
+    font-weight: 700;
+    font-size: 0.58rem;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     color: #a8791b;
+    white-space: nowrap;
 }
 .bolao-palpite-block.locked .bolao-palpite-label { color: var(--wc-ink-mute); }
 .bolao-palpite-inputs {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.45rem;
 }
 .bolao-palpite-input {
-    width: 56px;
-    height: 56px;
+    width: 46px;
+    height: 46px;
     background: #fff;
     border: 2px solid var(--wc-line);
     color: var(--wc-ink);
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 1.8rem;
+    font-size: 1.45rem;
     text-align: center;
     outline: none;
-    border-radius: 12px;
+    border-radius: 10px;
     transition: all 150ms;
     padding: 0;
     -moz-appearance: textfield;
@@ -3733,39 +3760,164 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
 /* ===== Ranking ===== */
 .bolao-ranking {
-    background: var(--wc-card);
+    background: linear-gradient(180deg, #ffffff 0%, #fdfaf0 100%);
     border: 1px solid var(--wc-line);
-    border-radius: 14px;
-    padding: 1.1rem 1.2rem;
-    box-shadow: 0 4px 12px rgba(20,15,10,0.06);
+    border-radius: 16px;
+    padding: 0;
+    box-shadow: 0 6px 18px rgba(20,15,10,0.08);
     position: sticky;
     top: 1rem;
     max-height: calc(100vh - 2rem);
-    overflow-y: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 .bolao-ranking h3 {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
     font-size: 0.78rem;
-    letter-spacing: 0.22em;
+    letter-spacing: 0.24em;
     text-transform: uppercase;
-    color: var(--wc-ink);
-    margin: 0 0 0.8rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid var(--wc-line);
+    color: #1a1000;
+    margin: 0;
+    padding: 1rem 1.2rem 0.85rem;
+    background: linear-gradient(135deg, #fff8e0 0%, #fdefc2 100%);
+    border-bottom: 2px solid #d4a520;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
 }
+.bolao-ranking h3::before {
+    content: 'emoji_events';
+    font-family: 'Material Icons';
+    font-size: 1rem;
+    color: #d4a520;
+}
+#bolaoRankingList {
+    padding: 0.3rem 0.6rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
 .bolao-ranking-row {
     display: grid;
-    grid-template-columns: 28px 1fr auto auto;
+    grid-template-columns: 34px 1fr auto;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.55rem 0;
-    border-bottom: 1px solid #efe8d6;
+    gap: 0.65rem;
+    padding: 0.55rem 0.45rem;
+    border-radius: 10px;
     font-family: 'Oswald', sans-serif;
+    transition: all 150ms;
+    margin: 0.15rem 0;
+}
+.bolao-ranking-row + .bolao-ranking-row { border-top: 1px solid #efe8d6; }
+
+/* Top 1 — background dourado forte */
+.bolao-ranking-row.first {
+    background: linear-gradient(135deg, rgba(212,165,32,0.18) 0%, rgba(240,192,64,0.12) 100%);
+    border: 1.5px solid rgba(212,165,32,0.5);
+    box-shadow: 0 2px 8px rgba(212,165,32,0.2);
+}
+.bolao-ranking-row.first + .bolao-ranking-row { border-top: none; }
+.bolao-ranking-row.second {
+    background: rgba(180,180,180,0.1);
+    border: 1px solid rgba(180,180,180,0.25);
+}
+.bolao-ranking-row.second + .bolao-ranking-row { border-top: none; }
+.bolao-ranking-row.third {
+    background: rgba(205,127,50,0.1);
+    border: 1px solid rgba(205,127,50,0.25);
+}
+.bolao-ranking-row.third + .bolao-ranking-row { border-top: none; }
+
+/* Minha linha — highlight vinho/pergaminho */
+.bolao-ranking-row.me {
+    background: linear-gradient(135deg, rgba(107,31,42,0.06) 0%, rgba(212,165,32,0.08) 100%);
+    border: 1.5px solid rgba(107,31,42,0.3);
+}
+.bolao-ranking-row.me.first {
+    background: linear-gradient(135deg, rgba(212,165,32,0.22) 0%, rgba(107,31,42,0.08) 100%);
+    border-color: rgba(212,165,32,0.6);
+}
+.bolao-ranking-row.me + .bolao-ranking-row { border-top: none; }
+
+/* Posição */
+.bolao-rank-pos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+.bolao-rank-medal {
+    font-size: 1.5rem;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+.bolao-rank-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: #f0ebe0;
+    color: var(--wc-ink-mute);
+    font-size: 0.82rem;
+    font-weight: 700;
+    border-radius: 50%;
+}
+
+/* Info (nome + @handle) */
+.bolao-rank-info { min-width: 0; overflow: hidden; }
+.bolao-rank-name {
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: var(--wc-ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    line-height: 1.15;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.bolao-ranking-row.first .bolao-rank-name { color: #1a1000; }
+.bolao-rank-me-tag {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.55rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--vinho);
+    border: 1px solid var(--vinho);
+    padding: 0.05rem 0.35rem;
+    border-radius: 999px;
+    line-height: 1.4;
+}
+.bolao-rank-handle {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.68rem;
+    color: var(--wc-ink-mute);
+    letter-spacing: 0.02em;
+    display: block;
+    margin-top: 0.1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Lado direito: ação + pontos */
+.bolao-rank-right {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-shrink: 0;
 }
 .bolao-rank-addfriend {
-    background: transparent;
-    border: 1.5px solid var(--wc-line);
+    background: #fff;
+    border: 1.5px solid #d4a520;
     color: #a8791b;
     width: 28px;
     height: 28px;
@@ -3777,82 +3929,125 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     transition: all 150ms;
     padding: 0;
     flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(212,165,32,0.2);
 }
 .bolao-rank-addfriend:hover:not(:disabled) {
-    border-color: #d4a520;
-    background: #fff8e0;
-    color: #1a1000;
-    transform: scale(1.08);
+    background: #d4a520;
+    color: #fff;
+    transform: scale(1.1);
 }
 .bolao-rank-addfriend:disabled { opacity: 0.5; cursor: wait; }
 .bolao-rank-addfriend .material-icons { font-size: 0.95rem; }
+
 .bolao-rank-pending, .bolao-rank-isfriend {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     color: var(--wc-ink-mute);
     flex-shrink: 0;
+    opacity: 0.65;
 }
 .bolao-rank-pending { color: #a8791b; }
+.bolao-rank-pending.incoming { color: #4ec96d; opacity: 1; }
 .bolao-rank-isfriend { color: #4ec96d; }
-.bolao-rank-pending .material-icons, .bolao-rank-isfriend .material-icons { font-size: 0.95rem; }
-.bolao-ranking-row:last-child { border-bottom: none; }
-.bolao-ranking-row.me { background: rgba(212,165,32,0.08); margin: 0 -0.5rem; padding: 0.55rem 0.5rem; border-radius: 8px; }
-.bolao-rank-pos {
-    font-weight: 700;
-    font-size: 0.85rem;
-    color: var(--wc-ink-mute);
-    text-align: center;
-}
-.bolao-ranking-row:nth-child(2) .bolao-rank-pos { color: #d4a520; }
-.bolao-ranking-row:nth-child(3) .bolao-rank-pos { color: #a0a0a0; }
-.bolao-ranking-row:nth-child(4) .bolao-rank-pos { color: #cd7f32; }
-.bolao-rank-name {
-    font-weight: 600;
-    font-size: 0.82rem;
-    color: var(--wc-ink);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-}
+.bolao-rank-pending .material-icons, .bolao-rank-isfriend .material-icons { font-size: 1rem; }
+
+/* Pill de pontos */
 .bolao-rank-pts {
+    font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 0.88rem;
+    font-size: 1rem;
     color: #1a1000;
-    background: #fff8e0;
-    border: 1px solid #d4a520;
-    padding: 0.2rem 0.5rem;
+    background: #fff;
+    border: 1.5px solid #d4a520;
+    padding: 0.25rem 0.6rem;
     border-radius: 999px;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.2rem;
+    min-width: 44px;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(212,165,32,0.15);
 }
+.bolao-rank-pts-label {
+    font-size: 0.5rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    color: var(--wc-ink-mute);
+    text-transform: uppercase;
+}
+.bolao-ranking-row.first .bolao-rank-pts {
+    background: linear-gradient(135deg, #d4a520 0%, #f0c040 100%);
+    color: #1a1000;
+    border-color: #a8791b;
+    font-size: 1.1rem;
+}
+.bolao-ranking-row.first .bolao-rank-pts-label { color: #7a5a0a; }
+
+/* Regras */
 .bolao-regras {
-    margin-top: 1rem;
-    padding-top: 0.85rem;
+    padding: 0.85rem 1.2rem 1rem;
     border-top: 1px dashed var(--wc-line);
+    background: #fdfaf0;
 }
 .bolao-regras h4 {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 0.65rem;
-    letter-spacing: 0.22em;
+    font-size: 0.62rem;
+    letter-spacing: 0.24em;
     text-transform: uppercase;
     color: var(--wc-ink-mute);
     margin: 0 0 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
 }
-.bolao-regras ul { list-style: none; padding: 0; margin: 0; }
+.bolao-regras h4::before {
+    content: 'rule';
+    font-family: 'Material Icons';
+    font-size: 0.85rem;
+    color: #d4a520;
+    letter-spacing: 0;
+}
+.bolao-regras ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.25rem; }
 .bolao-regras li {
     font-family: 'Oswald', sans-serif;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: var(--wc-ink);
-    padding: 0.2rem 0;
-    display: flex;
-    justify-content: space-between;
-    letter-spacing: 0.04em;
+    padding: 0.35rem 0.5rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    letter-spacing: 0.03em;
+    background: #fff;
+    border: 1px solid var(--wc-line);
+    border-radius: 6px;
+    gap: 0.5rem;
 }
-.bolao-regras li b { font-weight: 600; }
+.bolao-regras li b {
+    font-weight: 600;
+    color: var(--wc-ink);
+    text-transform: uppercase;
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+}
+.bolao-regras li span {
+    font-weight: 600;
+    color: var(--wc-ink-mute);
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+.bolao-regras li em {
+    font-style: normal;
+    font-weight: 700;
+    color: #a8791b;
+    font-size: 0.9rem;
+    margin-right: 0.2rem;
+}
 
 /* Toggle mobile do ranking */
 .bolao-ranking-toggle {
@@ -4816,10 +5011,10 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                             <div class="bolao-regras">
                                 <h4>Como pontua</h4>
                                 <ul>
-                                    <li><b>Placar exato</b> · <span id="ptsExato">15</span> pts</li>
-                                    <li><b>Vencedor + saldo</b> · <span id="ptsSaldo">10</span> pts</li>
-                                    <li><b>Só vencedor</b> · <span id="ptsVencedor">7</span> pts</li>
-                                    <li><b>Empate correto</b> · <span id="ptsEmpate">5</span> pts</li>
+                                    <li><b>Placar exato</b><span><em id="ptsExato">15</em> pts</span></li>
+                                    <li><b>Vencedor + saldo</b><span><em id="ptsSaldo">10</em> pts</span></li>
+                                    <li><b>Só vencedor</b><span><em id="ptsVencedor">7</em> pts</span></li>
+                                    <li><b>Empate correto</b><span><em id="ptsEmpate">5</em> pts</span></li>
                                 </ul>
                             </div>
                         </aside>
@@ -7586,9 +7781,15 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             footerRight = `<button class="bolao-jogo-save" type="button" disabled>Salvar</button>`;
         }
 
+        // Overlay verde quando palpitado (e não finalizado ainda)
+        const overlayHtml = (jaPalpitou && !temResultado)
+            ? `<div class="bolao-saved-overlay" title="Palpite salvo · passe o mouse pra editar"><span class="material-icons">check_circle</span></div>`
+            : '';
+
         return `
             <article class="${ticketClasses.join(' ')}" data-game-id="${g.id}">
                 <div class="wc-stripes"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                ${overlayHtml}
                 <div class="wc-ticket-body">
                     <div class="wc-ticket-fase">
                         <span>${escapeHtml(fase)}</span>
@@ -7670,23 +7871,46 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 const name = (r.display_name || r.username || 'Amigo').toUpperCase();
                 const status = friendshipStatusWith(r.id);
 
+                // Posição: top 3 ganha medalha, resto é número
+                let posHtml;
+                if (pos === 1) posHtml = '<span class="bolao-rank-medal gold" title="1º lugar">🥇</span>';
+                else if (pos === 2) posHtml = '<span class="bolao-rank-medal silver" title="2º lugar">🥈</span>';
+                else if (pos === 3) posHtml = '<span class="bolao-rank-medal bronze" title="3º lugar">🥉</span>';
+                else posHtml = `<span class="bolao-rank-num">${pos}</span>`;
+
                 let actionHtml = '';
                 if (status === 'none' && r.username) {
                     actionHtml = `<button class="bolao-rank-addfriend" data-add-username="${escapeHtml(r.username)}" data-add-id="${r.id}" title="Adicionar @${escapeHtml(r.username)} como amigo"><span class="material-icons">person_add</span></button>`;
                 } else if (status === 'outgoing') {
                     actionHtml = `<span class="bolao-rank-pending" title="Pedido enviado"><span class="material-icons">schedule_send</span></span>`;
                 } else if (status === 'incoming') {
-                    actionHtml = `<span class="bolao-rank-pending" title="Essa pessoa te mandou pedido — aceita na Rede Social"><span class="material-icons">mark_email_unread</span></span>`;
+                    actionHtml = `<span class="bolao-rank-pending incoming" title="Essa pessoa te mandou pedido — aceita na Rede Social"><span class="material-icons">mark_email_unread</span></span>`;
                 } else if (status === 'friend') {
                     actionHtml = `<span class="bolao-rank-isfriend" title="Já é seu amigo"><span class="material-icons">person</span></span>`;
                 }
 
+                // Username @ discreto
+                const handleHtml = r.username ? `<span class="bolao-rank-handle">@${escapeHtml(r.username)}</span>` : '';
+
+                const rowCls = [
+                    'bolao-ranking-row',
+                    isMe ? 'me' : '',
+                    pos === 1 ? 'first' : '',
+                    pos === 2 ? 'second' : '',
+                    pos === 3 ? 'third' : '',
+                ].filter(Boolean).join(' ');
+
                 return `
-                    <div class="bolao-ranking-row ${isMe ? 'me' : ''}">
-                        <div class="bolao-rank-pos">${pos}</div>
-                        <div class="bolao-rank-name">${escapeHtml(name)}</div>
-                        ${actionHtml}
-                        <div class="bolao-rank-pts">${r.pontos_total}</div>
+                    <div class="${rowCls}">
+                        <div class="bolao-rank-pos">${posHtml}</div>
+                        <div class="bolao-rank-info">
+                            <div class="bolao-rank-name">${escapeHtml(name)}${isMe ? ' <span class="bolao-rank-me-tag">você</span>' : ''}</div>
+                            ${handleHtml}
+                        </div>
+                        <div class="bolao-rank-right">
+                            ${actionHtml}
+                            <div class="bolao-rank-pts">${r.pontos_total}<span class="bolao-rank-pts-label">pts</span></div>
+                        </div>
                     </div>
                 `;
             }).join('');
