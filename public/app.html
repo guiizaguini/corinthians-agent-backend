@@ -4148,39 +4148,30 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
               || (copaGames || []).find(x => x.id === gameId);
         if (!g) return;
 
-        const d = formatDate(g.data);
         const dateExt = new Date(g.data).toLocaleDateString('pt-BR', {
             weekday: 'long', day: '2-digit', month: 'long', year: 'numeric',
         });
 
         const compParts = [g.campeonato || 'Amistoso'];
         if (g.fase) compParts.push(g.fase);
-        document.getElementById('summaryComp').textContent = compParts.join(' · ');
-
-        document.getElementById('summaryHomeName').textContent = g.time_casa;
-        document.getElementById('summaryAwayName').textContent = g.time_visitante;
+        const compStr = compParts.join(' · ');
 
         const hasScore = g.gols_casa != null && g.gols_visitante != null;
-        document.getElementById('summaryScore').innerHTML = hasScore
-            ? `${g.gols_casa}<span style="color:var(--cinza-medio);margin:0 0.25em;">×</span>${g.gols_visitante}`
-            : `<span style="font-size:0.7rem;letter-spacing:0.2em;color:var(--cinza-medio);font-family:'Oswald',sans-serif;">SEM PLACAR</span>`;
-
-        document.getElementById('summaryDate').textContent = dateExt;
+        const scoreHtml = hasScore
+            ? `${g.gols_casa}<span style="color:var(--ink-mute);margin:0 0.25em;">×</span>${g.gols_visitante}`
+            : `<span style="font-size:0.7rem;letter-spacing:0.2em;color:var(--ink-mute);font-family:'Oswald',sans-serif;">SEM PLACAR</span>`;
 
         // Resultado badge
-        const resBox = document.getElementById('summaryResult');
+        let resultBadge = '';
         if (g.resultado) {
             const map = { V: { txt: 'Vitória', bg: 'rgba(168,144,80,0.25)', fg: '#caa865' },
                           E: { txt: 'Empate',  bg: 'rgba(255,255,255,0.08)', fg: '#a8a49a' },
                           D: { txt: 'Derrota', bg: 'rgba(92,31,42,0.4)',     fg: '#c07086' } };
             const r = map[g.resultado];
-            resBox.innerHTML = `<span style="display:inline-block;padding:0.3rem 0.8rem;background:${r.bg};color:${r.fg};font-family:'Oswald',sans-serif;font-size:0.85rem;letter-spacing:0.2em;text-transform:uppercase;">${r.txt}</span>`;
-        } else {
-            resBox.innerHTML = '';
+            resultBadge = `<span style="display:inline-block;padding:0.3rem 0.8rem;background:${r.bg};color:${r.fg};font-family:'Oswald',sans-serif;font-size:0.85rem;letter-spacing:0.2em;text-transform:uppercase;">${r.txt}</span>`;
         }
 
-        // Autores de gols — 1) tenta JSONB estruturado; 2) fallback pro gols_texto parseado
-        const golsBox = document.getElementById('summaryGols');
+        // Autores de gols — JSONB → fallback gols_texto
         let autores = Array.isArray(g.autores_gols) ? g.autores_gols.slice() : [];
         if (!autores.length && g.gols_texto) {
             autores = parseGolsTexto(g.gols_texto, {
@@ -4191,13 +4182,14 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             });
         }
 
+        let golsHtml = '';
         if (autores.length) {
             const linhas = autores.map(a => {
                 const isHome = a.time === g.time_casa;
                 const minFmt = formatarMinuto(a.minuto);
                 const minChip = minFmt
-                    ? `<span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:0.78rem;color:var(--accent);letter-spacing:0.04em;min-width:3.2rem;display:inline-block;">${escapeHtml(minFmt)}</span>`
-                    : `<span style="font-family:'Oswald',sans-serif;font-size:0.78rem;color:var(--ink-mute);min-width:3.2rem;display:inline-block;">—'</span>`;
+                    ? `<span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:0.78rem;color:var(--accent);letter-spacing:0.04em;min-width:3.4rem;display:inline-block;">${escapeHtml(minFmt)}</span>`
+                    : `<span style="font-family:'Oswald',sans-serif;font-size:0.78rem;color:var(--ink-mute);min-width:3.4rem;display:inline-block;">—'</span>`;
                 return `
                     <div style="display:flex;align-items:center;gap:0.65rem;padding:0.5rem 0.75rem;background:var(--bg-base);border-left:2px solid ${isHome ? 'var(--accent)' : 'var(--line)'};border-radius:4px;">
                         <span class="material-icons" style="font-size:1rem;color:${isHome ? 'var(--accent)' : 'var(--ink-mute)'};">sports_soccer</span>
@@ -4207,19 +4199,19 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                     </div>
                 `;
             }).join('');
-            golsBox.innerHTML = `
-                <div style="font-family:'Oswald',sans-serif;font-size:0.65rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:0.6rem;">
-                    <span class="material-icons" style="font-size:0.95rem;vertical-align:middle;color:var(--accent);">sports_soccer</span>
-                    Gols da partida
+            golsHtml = `
+                <div style="margin-top:1.2rem;">
+                    <div style="font-family:'Oswald',sans-serif;font-size:0.65rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:0.6rem;">
+                        <span class="material-icons" style="font-size:0.95rem;vertical-align:middle;color:var(--accent);">sports_soccer</span>
+                        Gols da partida
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:0.35rem;">${linhas}</div>
                 </div>
-                <div style="display:flex;flex-direction:column;gap:0.35rem;">${linhas}</div>
             `;
         } else if (hasScore && (g.gols_casa > 0 || g.gols_visitante > 0)) {
-            golsBox.innerHTML = `
-                <div style="font-family:'Oswald',sans-serif;font-size:0.65rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:0.6rem;font-weight:500;">Autores dos gols não cadastrados</div>
+            golsHtml = `
+                <div style="margin-top:1.2rem;font-family:'Oswald',sans-serif;font-size:0.65rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--ink-mute);font-weight:500;">Autores dos gols não cadastrados</div>
             `;
-        } else {
-            golsBox.innerHTML = '';
         }
 
         // Detalhes (estádio, mando, classico, público, ingresso do user)
@@ -4238,23 +4230,43 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             detalhes.push({ icon: 'group', label: 'Foi com', value: names });
         }
 
-        document.getElementById('summaryDetails').innerHTML = detalhes.map(d => `
-            <div style="display:flex;gap:0.5rem;align-items:center;padding:0.5rem 0;border-bottom:1px dotted var(--cinza-divisa,#1e1c18);">
-                <span class="material-icons" style="font-size:1.1rem;color:var(--cinza-medio);">${d.icon}</span>
-                <div style="display:flex;flex-direction:column;">
-                    <span style="font-family:'Oswald',sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--cinza-medio);">${d.label}</span>
-                    <span style="font-size:0.85rem;color:var(--branco);">${escapeHtml(d.value)}</span>
+        const detalhesHtml = detalhes.map(d => `
+            <div style="display:flex;gap:0.6rem;align-items:center;padding:0.55rem 0;border-bottom:1px dotted var(--line-soft);">
+                <span class="material-icons" style="font-size:1.1rem;color:var(--ink-mute);">${d.icon}</span>
+                <div style="display:flex;flex-direction:column;min-width:0;flex:1;">
+                    <span style="font-family:'Oswald',sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-mute);">${d.label}</span>
+                    <span style="font-family:'Oswald',sans-serif;font-weight:500;font-size:0.9rem;color:var(--ink);overflow:hidden;text-overflow:ellipsis;">${escapeHtml(d.value)}</span>
                 </div>
             </div>
         `).join('');
 
-        // Observações
-        document.getElementById('summaryObs').innerHTML = g.observacoes ? `
-            <div style="padding:0.8rem 1rem;border-left:3px solid var(--accent);background:var(--accent-soft);">
-                <div style="font-family:'Oswald',sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:0.4rem;">Sua observação</div>
-                <div style="font-family:'Oswald',sans-serif;font-weight:500;color:var(--branco-suave);font-size:0.9rem;">${escapeHtml(g.observacoes)}</div>
+        const obsHtml = g.observacoes ? `
+            <div style="margin-top:1rem;padding:0.85rem 1.05rem;border-left:3px solid var(--accent);background:var(--accent-soft);">
+                <div style="font-family:'Oswald',sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:0.35rem;">Sua observação</div>
+                <div style="font-family:'Oswald',sans-serif;font-weight:500;color:var(--ink);font-size:0.92rem;line-height:1.5;">${escapeHtml(g.observacoes)}</div>
             </div>
         ` : '';
+
+        document.getElementById('summaryContent').innerHTML = `
+            <div style="font-family:'Oswald',sans-serif;font-size:0.7rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent);margin-bottom:0.4rem;">${escapeHtml(compStr)}</div>
+
+            <div style="display:flex;align-items:center;justify-content:center;gap:1.2rem;padding:1rem 0 0.6rem;border-bottom:1px dashed var(--line-soft);">
+                <div style="text-align:right;font-family:'Oswald',sans-serif;font-weight:700;font-size:1.15rem;color:var(--ink);text-transform:uppercase;letter-spacing:0.03em;flex:1;">${escapeHtml(g.time_casa)}</div>
+                <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:2rem;color:var(--ink);letter-spacing:0.04em;min-width:5rem;text-align:center;">${scoreHtml}</div>
+                <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:1.15rem;color:var(--ink);text-transform:uppercase;letter-spacing:0.03em;flex:1;">${escapeHtml(g.time_visitante)}</div>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;margin-top:0.6rem;flex-wrap:wrap;">
+                <span style="font-family:'Oswald',sans-serif;font-style:italic;font-size:0.82rem;color:var(--ink-mute);">${escapeHtml(dateExt)}</span>
+                ${resultBadge}
+            </div>
+
+            ${golsHtml}
+
+            <div style="margin-top:1.2rem;">${detalhesHtml}</div>
+
+            ${obsHtml}
+        `;
 
         document.getElementById('summaryModal').classList.add('show');
     }
