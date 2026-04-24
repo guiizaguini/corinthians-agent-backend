@@ -4023,6 +4023,124 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     }
 
     // ===============================================
+    // Parser de gols_texto (fallback quando autores_gols está vazio)
+    // Portado do /museu pra exibir autores + minutos em jogos legados.
+    // ===============================================
+    const TIME_CODE_MAP = {
+        COR: 'Corinthians', PAL: 'Palmeiras', SAO: 'São Paulo', SAN: 'Santos', FLA: 'Flamengo',
+        VAS: 'Vasco', VASCO: 'Vasco', FLU: 'Fluminense', BOT: 'Botafogo', BAH: 'Bahia',
+        ATL: 'Atlético', CEA: 'Ceará', CUI: 'Cuiabá', CHA: 'Chapecoense', FOR: 'Fortaleza',
+        SPO: 'Sport', VIT: 'Vitória', CRI: 'Criciúma', BRA: 'Bragantino', PON: 'Ponte Preta',
+        FER: 'Ferroviária', INT: 'Internacional', GUA: 'Guarani', MIR: 'Mirassol', GRE: 'Grêmio',
+        OES: 'Oeste', ITU: 'Ituano', REM: 'Remo', IND: 'Ind. Del Valle', LIV: 'Liverpool URU',
+        NAC: 'Nacional URU', UCV: 'U. Central', BAR: 'Barcelona SC', UNI: 'Universitário',
+        RAC: 'Racing', PSG: 'PSG', NIC: 'Nice', DEP: 'Deportivo Cali', BOC: 'Boca Juniors',
+        AVA: 'Avaí', AGU: 'Água Santa', CTB: 'Coritiba',
+    };
+
+    function parseGolsTexto(texto, contexto = {}) {
+        if (!texto || !String(texto).trim()) return [];
+        let tr = texto.trim();
+        if (/^0x0\s*$/i.test(tr)) return [];
+        tr = tr.split(/\s*\|\s*/)[0].trim();
+        tr = tr.replace(/\bp[eê]naltis?\s*:.*$/i, '').trim();
+
+        let globalTime = null;
+        const globalMatch = tr.match(/\((?:todos|todas)[^)]*?([A-Z]{3,4})\)\s*$/i);
+        if (globalMatch) {
+            const code = globalMatch[1].toUpperCase();
+            globalTime = TIME_CODE_MAP[code] || code;
+            tr = tr.slice(0, globalMatch.index).trim().replace(/[;,]\s*$/, '');
+        }
+
+        const entries = tr.split(';').map(e => e.trim()).filter(Boolean);
+        const result = [];
+        let ultimoTime = null;
+        for (const entry of entries) {
+            if (/^(p[eê]naltis|0x0)\b/i.test(entry)) continue;
+            const teamMatch = entry.match(/\(([A-Z]{3,4})(?:\s*,[^)]*)?\)\s*$/);
+            const timeCode = teamMatch ? teamMatch[1] : null;
+            let timeNome = timeCode ? (TIME_CODE_MAP[timeCode] || timeCode) : null;
+            if (!timeNome) timeNome = globalTime || ultimoTime;
+            if (timeCode) ultimoTime = timeNome;
+
+            let rest = entry.slice(0, teamMatch ? teamMatch.index : entry.length).trim();
+            rest = rest.replace(/[.,]\s*$/, '');
+
+            const minRegex = /(\d+(?:\+\d+)?)'(?:\s*(\d?T))?/g;
+            const minMatches = [];
+            let m;
+            while ((m = minRegex.exec(rest)) !== null) {
+                minMatches.push({ min: m[1], tempo: m[2] || '', idx: m.index });
+            }
+            let autor;
+            if (minMatches.length > 0) {
+                autor = rest.slice(0, minMatches[0].idx).trim().replace(/[,\s]+(e|E)?\s*$/, '').trim();
+            } else {
+                autor = rest.trim();
+            }
+            if (!autor && minMatches.length === 0) continue;
+            if (minMatches.length === 0) {
+                result.push({ autor, minuto: null, time: timeNome });
+            } else {
+                for (const mm of minMatches) {
+                    const minFmt = mm.min + `'` + (mm.tempo || '');
+                    result.push({ autor, minuto: minFmt, time: timeNome });
+                }
+            }
+        }
+
+        // Sanity check: se temos placar e sobrou sem time, distribui
+        if (contexto.gols_casa != null && contexto.gols_visitante != null &&
+            contexto.time_casa && contexto.time_visitante) {
+            const semTime = result.filter(g => !g.time);
+            if (semTime.length) {
+                const home = contexto.time_casa, away = contexto.time_visitante;
+                const jaHome = result.filter(g => g.time === home).length;
+                const jaAway = result.filter(g => g.time === away).length;
+                const faltaHome = Math.max(0, contexto.gols_casa - jaHome);
+                const faltaAway = Math.max(0, contexto.gols_visitante - jaAway);
+                if (semTime.length === faltaHome && faltaAway === 0) semTime.forEach(g => g.time = home);
+                else if (semTime.length === faltaAway && faltaHome === 0) semTime.forEach(g => g.time = away);
+                else if (faltaHome + faltaAway === semTime.length) {
+                    let ci = 0;
+                    semTime.forEach(g => {
+                        if (ci < faltaHome) { g.time = home; ci++; }
+                        else g.time = away;
+                    });
+                }
+            }
+        }
+        return result;
+    }
+
+    function formatarMinuto(minuto) {
+        if (minuto === null || minuto === undefined || minuto === '') return null;
+        const s = String(minuto).trim();
+        if (/[12]T/.test(s)) return s;
+        const m = s.match(/^(\d+)(?:\+(\d+))?'?$/);
+        if (m) {
+            const num = parseInt(m[1]);
+            const acr = m[2] ? `+${m[2]}` : '';
+            const tempo = num <= 45 ? '1T' : '2T';
+            if (num > 45 && !acr) return `${num - 45}'${tempo}`;
+            return `${num}${acr}'${tempo}`;
+        }
+        return s.endsWith("'") ? s : s + "'";
+    }
+
+    function limparAutorNome(a) {
+        if (!a) return '—';
+        return a
+            .replace(/\s*\([^)]*\)\s*/g, ' ')
+            .replace(/\s*\d+x\s+no\s+\d?T\s*/gi, ' ')
+            .replace(/\s*\(2x\)\s*/gi, ' ')
+            .replace(/\s*\d?T\s*$/i, ' ')
+            .replace(/\s+/g, ' ')
+            .trim() || '—';
+    }
+
+    // ===============================================
     // Modal: Resumo da partida (read-only)
     // ===============================================
     function openSummary(gameId) {
@@ -4061,30 +4179,44 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             resBox.innerHTML = '';
         }
 
-        // Autores de gols
+        // Autores de gols — 1) tenta JSONB estruturado; 2) fallback pro gols_texto parseado
         const golsBox = document.getElementById('summaryGols');
-        const autores = Array.isArray(g.autores_gols) ? g.autores_gols
-                       : (g.autores_gols && typeof g.autores_gols === 'object') ? g.autores_gols
-                       : [];
-        if (Array.isArray(autores) && autores.length) {
+        let autores = Array.isArray(g.autores_gols) ? g.autores_gols.slice() : [];
+        if (!autores.length && g.gols_texto) {
+            autores = parseGolsTexto(g.gols_texto, {
+                time_casa: g.time_casa,
+                time_visitante: g.time_visitante,
+                gols_casa: Number(g.gols_casa),
+                gols_visitante: Number(g.gols_visitante),
+            });
+        }
+
+        if (autores.length) {
             const linhas = autores.map(a => {
-                const ehCasa = a.time === g.time_casa;
-                const min = a.minuto != null ? `${a.minuto}'` : '';
+                const isHome = a.time === g.time_casa;
+                const minFmt = formatarMinuto(a.minuto);
+                const minChip = minFmt
+                    ? `<span style="font-family:'Oswald',sans-serif;font-weight:700;font-size:0.78rem;color:var(--accent);letter-spacing:0.04em;min-width:3.2rem;display:inline-block;">${escapeHtml(minFmt)}</span>`
+                    : `<span style="font-family:'Oswald',sans-serif;font-size:0.78rem;color:var(--ink-mute);min-width:3.2rem;display:inline-block;">—'</span>`;
                 return `
-                    <div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0.7rem;background:var(--preto-card-2);border-left:2px solid var(--accent);">
-                        <span class="material-icons" style="font-size:1.1rem;color:var(--accent);">sports_soccer</span>
-                        <span style="flex:1;font-size:0.88rem;color:var(--branco-suave);">${escapeHtml(a.autor || '—')}</span>
-                        <span style="font-family:'Oswald',sans-serif;font-size:0.75rem;color:var(--cinza-claro);letter-spacing:0.1em;">${escapeHtml(a.time || '')} · ${min}</span>
+                    <div style="display:flex;align-items:center;gap:0.65rem;padding:0.5rem 0.75rem;background:var(--bg-base);border-left:2px solid ${isHome ? 'var(--accent)' : 'var(--line)'};border-radius:4px;">
+                        <span class="material-icons" style="font-size:1rem;color:${isHome ? 'var(--accent)' : 'var(--ink-mute)'};">sports_soccer</span>
+                        ${minChip}
+                        <span style="flex:1;font-family:'Oswald',sans-serif;font-weight:600;font-size:0.88rem;color:var(--ink);">${escapeHtml(limparAutorNome(a.autor))}</span>
+                        <span style="font-family:'Oswald',sans-serif;font-size:0.65rem;letter-spacing:0.15em;color:var(--ink-mute);text-transform:uppercase;">${escapeHtml((a.time || '').toUpperCase())}</span>
                     </div>
                 `;
             }).join('');
             golsBox.innerHTML = `
-                <div style="font-family:'Oswald',sans-serif;font-size:0.65rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--cinza-claro);margin-bottom:0.6rem;">Gols</div>
-                <div style="display:flex;flex-direction:column;gap:0.3rem;">${linhas}</div>
+                <div style="font-family:'Oswald',sans-serif;font-size:0.65rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:0.6rem;">
+                    <span class="material-icons" style="font-size:0.95rem;vertical-align:middle;color:var(--accent);">sports_soccer</span>
+                    Gols da partida
+                </div>
+                <div style="display:flex;flex-direction:column;gap:0.35rem;">${linhas}</div>
             `;
         } else if (hasScore && (g.gols_casa > 0 || g.gols_visitante > 0)) {
             golsBox.innerHTML = `
-                <div style="font-family:'Oswald',sans-serif;font-size:0.65rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--cinza-medio);margin-bottom:0.6rem;font-weight:500;">Autores dos gols não cadastrados</div>
+                <div style="font-family:'Oswald',sans-serif;font-size:0.65rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:0.6rem;font-weight:500;">Autores dos gols não cadastrados</div>
             `;
         } else {
             golsBox.innerHTML = '';
@@ -4096,7 +4228,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         if (g.estadio) detalhes.push({ icon: 'stadium', label: 'Estádio', value: g.estadio });
         detalhes.push({ icon: 'place', label: 'Mando', value: mandoPt });
         if (g.foi_classico) detalhes.push({ icon: 'local_fire_department', label: 'Clássico', value: 'Sim' });
-        if (g.publico_total) detalhes.push({ icon: 'groups', label: 'Público', value: Number(g.publico_total).toLocaleString('pt-BR') });
+        if (g.publico_total) detalhes.push({ icon: 'groups', label: 'Público no estádio', value: Number(g.publico_total).toLocaleString('pt-BR') + ' torcedores' });
         if (g.titulo_conquistado) detalhes.push({ icon: 'emoji_events', label: 'Título', value: g.titulo_conquistado });
         if (g.setor) detalhes.push({ icon: 'event_seat', label: 'Seu setor', value: g.setor });
         if (g.assento) detalhes.push({ icon: 'chair', label: 'Seu assento', value: g.assento });
