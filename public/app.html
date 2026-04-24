@@ -1668,6 +1668,21 @@ main {
     text-transform: uppercase;
     line-height: 1.1;
     color: var(--wc-ink);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+.wc-flag {
+    width: 28px;
+    height: 20px;
+    object-fit: cover;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    flex-shrink: 0;
+}
+.wc-flag.tbd-flag {
+    background: repeating-linear-gradient(45deg, #e5dfd0 0 6px, #d4cfc0 6px 12px);
+    display: inline-block;
 }
 .wc-team.tbd { color: rgba(26,26,26,0.35); font-weight: 500; font-style: italic; letter-spacing: 0.04em; font-size: 1rem; }
 .wc-vs {
@@ -2976,6 +2991,41 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const clean = key.replace(/\s*\([^)]*\)/g, '').trim();
         if (TEAM_LOGOS[clean]) return TEAM_LOGOS[clean];
         return null;
+    }
+
+    // Bandeiras de seleções da Copa (flagcdn.com)
+    // Mapa PT-BR → ISO 3166-1 alpha-2 (ou gb-sct/gb-eng pra sub-nacionais)
+    const FLAG_ISO = {
+        'méxico': 'mx', 'africa do sul': 'za', 'africa do sul': 'za', 'áfrica do sul': 'za',
+        'coreia do sul': 'kr', 'tchéquia': 'cz', 'canadá': 'ca', 'bósnia e herzegovina': 'ba',
+        'catar': 'qa', 'suíça': 'ch', 'brasil': 'br', 'marrocos': 'ma',
+        'haiti': 'ht', 'escócia': 'gb-sct', 'eua': 'us', 'estados unidos': 'us',
+        'paraguai': 'py', 'austrália': 'au', 'turquia': 'tr', 'alemanha': 'de',
+        'curaçao': 'cw', 'costa do marfim': 'ci', 'equador': 'ec', 'holanda': 'nl',
+        'japão': 'jp', 'suécia': 'se', 'tunísia': 'tn', 'bélgica': 'be',
+        'egito': 'eg', 'irã': 'ir', 'nova zelândia': 'nz', 'espanha': 'es',
+        'cabo verde': 'cv', 'arábia saudita': 'sa', 'uruguai': 'uy', 'frança': 'fr',
+        'senegal': 'sn', 'iraque': 'iq', 'noruega': 'no', 'argentina': 'ar',
+        'argélia': 'dz', 'áustria': 'at', 'jordânia': 'jo', 'portugal': 'pt',
+        'rd congo': 'cd', 'uzbequistão': 'uz', 'colômbia': 'co',
+        'inglaterra': 'gb-eng', 'croácia': 'hr', 'gana': 'gh', 'panamá': 'pa',
+    };
+
+    function flagFor(teamName) {
+        if (!teamName) return null;
+        const key = teamName.toLowerCase().trim();
+        const iso = FLAG_ISO[key];
+        if (!iso) return null;
+        return `https://flagcdn.com/w40/${iso}.png`;
+    }
+
+    function renderFlag(teamName) {
+        const url = flagFor(teamName);
+        if (url) {
+            return `<img class="wc-flag" src="${url}" alt="" loading="lazy">`;
+        }
+        // Fallback pra times TBD ou sem mapping: placeholder listrado
+        return `<span class="wc-flag tbd-flag"></span>`;
     }
 
     function teamInitials(name) {
@@ -4709,9 +4759,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                         ${isFinal ? '<span class="wc-final-badge">★ FINAL</span>' : ''}
                     </div>
                     <div class="wc-teams">
-                        <span class="wc-team ${teamCasaTbd ? 'tbd' : ''}">${escapeHtml(g.time_casa)}</span>
+                        <span class="wc-team ${teamCasaTbd ? 'tbd' : ''}">${renderFlag(g.time_casa)}${escapeHtml(g.time_casa)}</span>
                         <span class="wc-vs">vs</span>
-                        <span class="wc-team ${teamVisTbd ? 'tbd' : ''}">${escapeHtml(g.time_visitante)}</span>
+                        <span class="wc-team ${teamVisTbd ? 'tbd' : ''}">${renderFlag(g.time_visitante)}${escapeHtml(g.time_visitante)}</span>
                     </div>
                     ${hasScore ? `<div class="wc-score">${g.gols_casa}<span class="wc-x">×</span>${g.gols_visitante}</div>` : ''}
                     ${g.estadio ? `<div class="wc-meta"><span class="material-icons">stadium</span>${escapeHtml(g.estadio)}</div>` : ''}
