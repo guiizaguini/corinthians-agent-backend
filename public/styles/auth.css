@@ -217,3 +217,33 @@ button:disabled { background: var(--ink-mute) !important; border-color: var(--in
     margin-top: 0.4rem;
     letter-spacing: 0.02em;
 }
+
+/* ============ Mobile polish ============ */
+@media (max-width: 600px) {
+    body { padding: 0; align-items: flex-start; }
+    .card {
+        padding: 2rem 1.25rem 1.75rem;
+        max-width: 100%;
+        min-height: 100vh;
+        border: none;
+        box-shadow: none;
+        border-radius: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+    .logo { font-size: 1.9rem; letter-spacing: 0.12em; margin-top: 0.6rem; }
+    .tagline { font-size: 0.65rem; letter-spacing: 0.22em; margin-bottom: 1.5rem; }
+    .tagline::before, .tagline::after { flex: 0 1 1.75rem; }
+    h1 { font-size: 1.4rem; }
+    label { font-size: 0.68rem; letter-spacing: 0.18em; margin-top: 0.95rem; }
+    /* 16px evita zoom automático do iOS ao focar */
+    input, select { font-size: 16px; padding: 0.85rem 0.9rem; }
+    button[type="submit"], .btn-primary {
+        font-size: 0.85rem;
+        letter-spacing: 0.2em;
+        padding: 1rem;
+        margin-top: 1.5rem;
+    }
+    .link { font-size: 0.88rem; }
+}
