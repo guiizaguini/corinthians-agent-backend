@@ -3785,13 +3785,12 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     border-bottom: 2px solid #d4a520;
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.45rem;
 }
-.bolao-ranking h3::before {
-    content: 'emoji_events';
-    font-family: 'Material Icons';
-    font-size: 1rem;
+.bolao-ranking h3 .material-icons {
+    font-size: 1.05rem;
     color: #d4a520;
+    letter-spacing: 0;
 }
 #bolaoRankingList {
     padding: 0.3rem 0.6rem;
@@ -3986,37 +3985,61 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 }
 .bolao-ranking-row.first .bolao-rank-pts-label { color: #7a5a0a; }
 
-/* Regras */
+/* Regras — <details> colapsável */
 .bolao-regras {
-    padding: 0.85rem 1.2rem 1rem;
     border-top: 1px dashed var(--wc-line);
     background: #fdfaf0;
 }
-.bolao-regras h4 {
+.bolao-regras summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 0.7rem 1.2rem;
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 0.62rem;
-    letter-spacing: 0.24em;
+    font-size: 0.65rem;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--wc-ink-mute);
-    margin: 0 0 0.5rem;
     display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.4rem;
+    transition: background 150ms;
+    user-select: none;
 }
-.bolao-regras h4::before {
-    content: 'rule';
-    font-family: 'Material Icons';
-    font-size: 0.85rem;
+.bolao-regras summary::-webkit-details-marker { display: none; }
+.bolao-regras summary:hover { background: rgba(212,165,32,0.08); color: #1a1000; }
+.bolao-regras summary .material-icons {
+    font-size: 0.95rem;
     color: #d4a520;
     letter-spacing: 0;
 }
-.bolao-regras ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.25rem; }
+.bolao-regras-title { flex: 1; }
+.bolao-regras-chev {
+    color: var(--wc-ink-mute) !important;
+    font-size: 1.1rem !important;
+    transition: transform 200ms ease;
+}
+.bolao-regras[open] summary .bolao-regras-chev { transform: rotate(180deg); }
+.bolao-regras[open] summary { background: rgba(212,165,32,0.06); color: #1a1000; }
+
+.bolao-regras ul {
+    list-style: none;
+    padding: 0.25rem 1.2rem 0.9rem;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    animation: bolaoRegrasIn 200ms ease;
+}
+@keyframes bolaoRegrasIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
 .bolao-regras li {
     font-family: 'Oswald', sans-serif;
     font-size: 0.72rem;
     color: var(--wc-ink);
-    padding: 0.35rem 0.5rem;
+    padding: 0.4rem 0.65rem;
     display: grid;
     grid-template-columns: 1fr auto;
     align-items: baseline;
@@ -5006,17 +5029,21 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
                         <!-- Ranking -->
                         <aside class="bolao-ranking" id="bolaoRanking">
-                            <h3>Ranking</h3>
+                            <h3><span class="material-icons">emoji_events</span> Ranking</h3>
                             <div id="bolaoRankingList"><div class="loading">Carregando...</div></div>
-                            <div class="bolao-regras">
-                                <h4>Como pontua</h4>
+                            <details class="bolao-regras">
+                                <summary>
+                                    <span class="material-icons">rule</span>
+                                    <span class="bolao-regras-title">Como pontua</span>
+                                    <span class="material-icons bolao-regras-chev">expand_more</span>
+                                </summary>
                                 <ul>
                                     <li><b>Placar exato</b><span><em id="ptsExato">15</em> pts</span></li>
                                     <li><b>Vencedor + saldo</b><span><em id="ptsSaldo">10</em> pts</span></li>
                                     <li><b>Só vencedor</b><span><em id="ptsVencedor">7</em> pts</span></li>
                                     <li><b>Empate correto</b><span><em id="ptsEmpate">5</em> pts</span></li>
                                 </ul>
-                            </div>
+                            </details>
                         </aside>
                     </div>
                 </div>
