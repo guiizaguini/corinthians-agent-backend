@@ -2570,6 +2570,96 @@ main {
 body.light-theme .feed-result.e { background: rgba(0,0,0,0.06); }
 body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(--vinho); }
 
+/* Feed post — variante Copa do Mundo */
+.feed-content.is-copa {
+    background: linear-gradient(155deg, #faf2dc 0%, #fff8e3 100%);
+    border: 1px solid rgba(212,165,32,0.35);
+    color: #1a1000;
+    position: relative;
+    overflow: hidden;
+}
+.feed-content.is-copa::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg,
+        var(--wc-red) 0%, var(--wc-red) 16.66%,
+        var(--wc-orange) 16.66%, var(--wc-orange) 33.33%,
+        var(--wc-yellow) 33.33%, var(--wc-yellow) 50%,
+        var(--wc-green) 50%, var(--wc-green) 66.66%,
+        var(--wc-blue) 66.66%, var(--wc-blue) 83.33%,
+        var(--wc-purple) 83.33%, var(--wc-purple) 100%);
+}
+.feed-content.is-copa .feed-content-fase {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.6rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #a8791b;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 0.3rem;
+}
+.feed-content.is-copa .feed-content-fase::before {
+    content: '';
+    width: 16px;
+    height: 12px;
+    background-image: url('/logos/fifa-2026.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.feed-content.is-copa .feed-content-game {
+    color: #1a1000;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    letter-spacing: 0.02em;
+}
+.feed-content.is-copa .feed-flag {
+    width: 28px;
+    height: 20px;
+    object-fit: cover;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+    flex-shrink: 0;
+    vertical-align: middle;
+}
+.feed-content.is-copa .feed-flag.tbd {
+    background: repeating-linear-gradient(45deg, #e5dfd0 0 4px, #c9bfa8 4px 8px);
+    display: inline-block;
+}
+.feed-content.is-copa .feed-flag-team {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.feed-content.is-copa .feed-vs {
+    color: var(--wc-red);
+    font-weight: 500;
+    font-size: 0.7em;
+    letter-spacing: 0.15em;
+}
+.feed-content.is-copa .feed-content-meta {
+    margin-top: 0.35rem;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: #6a5530;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+.feed-content.is-copa .feed-content-meta .material-icons {
+    font-size: 0.95rem;
+    color: #a8791b;
+}
+
 /* Companions no modal de attendance — chips redondos */
 .companions-picker {
     margin-top: 0.4rem;
@@ -5009,34 +5099,61 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
                 const resCls = item.resultado === 'V' ? 'v' : item.resultado === 'D' ? 'd' : item.resultado === 'E' ? 'e' : '';
                 const resTag = item.resultado ? `<span class="feed-result ${resCls}">${item.resultado}</span>` : '';
-                const gameTeams = item.time_casa
-                    ? `${escapeHtml(item.time_casa)} × ${escapeHtml(item.time_visitante)}`
-                    : '';
+                const isCopa = /Copa do Mundo/i.test(item.campeonato || '');
+
+                // Monta o texto/HTML do confronto (com ou sem bandeiras)
+                let gameTeams = '';
+                if (item.time_casa) {
+                    if (isCopa) {
+                        const fCasa = flagFor(item.time_casa);
+                        const fVis = flagFor(item.time_visitante);
+                        const flagCasa = fCasa
+                            ? `<img class="feed-flag" src="${fCasa}" alt="" loading="lazy">`
+                            : `<span class="feed-flag tbd"></span>`;
+                        const flagVis = fVis
+                            ? `<img class="feed-flag" src="${fVis}" alt="" loading="lazy">`
+                            : `<span class="feed-flag tbd"></span>`;
+                        gameTeams = `
+                            <span class="feed-flag-team">${flagCasa} ${escapeHtml(item.time_casa)}</span>
+                            <span class="feed-vs">vs</span>
+                            <span class="feed-flag-team">${flagVis} ${escapeHtml(item.time_visitante)}</span>
+                        `;
+                    } else {
+                        gameTeams = `<span class="feed-game">${escapeHtml(item.time_casa)} × ${escapeHtml(item.time_visitante)}</span>`;
+                    }
+                }
 
                 let actionLine, contentBlock;
+                const contentClass = isCopa ? 'feed-content is-copa' : 'feed-content';
+                const faseLabel = isCopa && item.campeonato ? `<div class="feed-content-fase">FIFA WORLD CUP 2026</div>` : '';
+
                 if (item.type === 'note') {
                     actionLine = `<span class="material-icons">edit_note</span> publicou uma nota`;
                     const titleHtml = item.title ? `<div class="feed-content-title">${escapeHtml(item.title)}</div>` : '';
                     const gameHtml = gameTeams ? `<div class="feed-content-game">${gameTeams}</div>` : '';
                     contentBlock = `
-                        <div class="feed-content">
+                        <div class="${contentClass}">
+                            ${faseLabel}
                             ${gameHtml}
                             ${titleHtml}
                             <div class="feed-content-body">${escapeHtml(item.body || '')}</div>
                         </div>
                     `;
                 } else {
-                    actionLine = `<span class="material-icons">stadium</span> marcou presença`;
+                    actionLine = isCopa
+                        ? `<span class="material-icons">sports_soccer</span> vai na Copa`
+                        : `<span class="material-icons">stadium</span> marcou presença`;
                     const placarHtml = (item.gols_casa != null)
                         ? `<span class="feed-content-score">${item.gols_casa} × ${item.gols_visitante}</span>`
                         : '';
+                    const metaHtml = isCopa
+                        ? `<div class="feed-content-meta"><span class="material-icons">stadium</span>${escapeHtml(item.estadio || '')}</div>`
+                        : `<div class="feed-content-meta">${placarHtml}${resTag}</div>`;
                     contentBlock = `
-                        <div class="feed-content">
+                        <div class="${contentClass}">
+                            ${faseLabel}
                             <div class="feed-content-game">${gameTeams}</div>
-                            <div class="feed-content-meta">
-                                ${placarHtml}
-                                ${resTag}
-                            </div>
+                            ${metaHtml}
                         </div>
                     `;
                 }
