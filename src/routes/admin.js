@@ -33,6 +33,12 @@ function inferirMandoEResultado({ time_casa, time_visitante, club_name, gols_cas
     return { mando, resultado };
 }
 
+const AutorGolSchema = z.object({
+    time: z.string().min(1).max(60),
+    autor: z.string().min(1).max(80),
+    minuto: z.number().int().min(0).max(150).nullable().optional(),
+});
+
 const GameCreateSchema = z.object({
     club_id: z.number().int().positive(),
     data: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'use YYYY-MM-DD'),
@@ -48,6 +54,7 @@ const GameCreateSchema = z.object({
     fase: z.string().max(40).optional().nullable(),
     titulo_conquistado: z.string().max(60).optional().nullable(),
     publico_total: z.number().int().min(0).optional().nullable(),
+    autores_gols: z.array(AutorGolSchema).optional().nullable(),
 });
 
 const GameUpdateSchema = GameCreateSchema.partial().omit({ club_id: true });
@@ -125,13 +132,14 @@ router.post('/games', async (req, res, next) => {
             gols_visitante: b.gols_visitante,
         });
 
+        const autoresJson = b.autores_gols && b.autores_gols.length ? JSON.stringify(b.autores_gols) : null;
         const { rows } = await query(
             `INSERT INTO games (
                 club_id, data, dia_semana, time_casa, time_visitante, mando,
                 campeonato, genero, estadio, gols_casa, gols_visitante, resultado,
-                foi_classico, teve_penal, fase, titulo_conquistado, publico_total
+                foi_classico, teve_penal, fase, titulo_conquistado, publico_total, autores_gols
              ) VALUES (
-                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18::jsonb
              )
              ON CONFLICT (club_id, data, time_casa, time_visitante, genero)
              DO UPDATE SET
@@ -144,7 +152,8 @@ router.post('/games', async (req, res, next) => {
                 teve_penal = EXCLUDED.teve_penal,
                 fase = EXCLUDED.fase,
                 titulo_conquistado = EXCLUDED.titulo_conquistado,
-                publico_total = EXCLUDED.publico_total
+                publico_total = EXCLUDED.publico_total,
+                autores_gols = EXCLUDED.autores_gols
              RETURNING *`,
             [
                 b.club_id, b.data, dia_semana, b.time_casa, b.time_visitante, mando,
@@ -152,6 +161,7 @@ router.post('/games', async (req, res, next) => {
                 b.gols_casa ?? null, b.gols_visitante ?? null, resultado,
                 b.foi_classico ?? false, b.teve_penal ?? false,
                 b.fase ?? null, b.titulo_conquistado ?? null, b.publico_total ?? null,
+                autoresJson,
             ]
         );
 
@@ -213,6 +223,12 @@ router.patch('/games/:id', async (req, res, next) => {
             if (v === undefined) continue;
             values.push(v);
             fields.push(`${k} = $${values.length}`);
+        }
+        // autores_gols é JSONB — tratamento especial
+        if (b.autores_gols !== undefined) {
+            const autoresJson = b.autores_gols && b.autores_gols.length ? JSON.stringify(b.autores_gols) : null;
+            values.push(autoresJson);
+            fields.push(`autores_gols = $${values.length}::jsonb`);
         }
         if (!fields.length) return res.status(400).json({ error: 'nenhum_campo_valido' });
 

@@ -299,6 +299,61 @@ td.td-actions .btn { padding: 0.3rem 0.6rem; font-size: 0.65rem; margin-left: 0.
     display: none;
 }
 .error-box.show { display: block; }
+
+/* Gols dinâmicos */
+.gols-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
+}
+.gol-row {
+    display: grid;
+    grid-template-columns: 1.2fr 1.6fr 70px auto;
+    gap: 0.4rem;
+    align-items: center;
+}
+.gol-row select, .gol-row input {
+    padding: 0.5rem 0.6rem !important;
+    font-size: 0.82rem !important;
+}
+.gol-row .btn-remove-gol {
+    background: transparent;
+    border: 1.5px solid var(--vinho);
+    color: var(--vinho);
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.gol-row .btn-remove-gol:hover { background: var(--vinho); color: var(--paper); }
+.gol-row .btn-remove-gol .material-icons { font-size: 0.95rem; }
+
+.btn-add-gol {
+    background: transparent;
+    border: 1.5px dashed var(--ink-line);
+    color: var(--ink-soft);
+    padding: 0.55rem 0.9rem;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    align-self: flex-start;
+    margin-top: 0.3rem;
+    transition: all 150ms;
+}
+.btn-add-gol:hover { border-color: var(--accent); color: var(--accent); border-style: solid; }
+.btn-add-gol .material-icons { font-size: 1rem; }
 </style>
 </head>
 <body>
@@ -450,6 +505,15 @@ td.td-actions .btn { padding: 0.3rem 0.6rem; font-size: 0.65rem; margin-left: 0.
                     <label class="check-row" style="margin-top:0.4rem;">
                         <input type="checkbox" id="fPenal"> Teve pênalti
                     </label>
+                </div>
+
+                <div class="full">
+                    <label>Autores dos gols</label>
+                    <div class="gols-wrap" id="golsWrap"></div>
+                    <button type="button" class="btn-add-gol" id="btnAddGol">
+                        <span class="material-icons">add</span>
+                        Adicionar gol
+                    </button>
                 </div>
             </div>
 
@@ -636,7 +700,63 @@ td.td-actions .btn { padding: 0.3rem 0.6rem; font-size: 0.65rem; margin-left: 0.
         document.getElementById('fTitulo').value = '';
         document.getElementById('fClassico').checked = false;
         document.getElementById('fPenal').checked = false;
+        renderGolsList([]);
     }
+
+    // ============ Autores dos gols: UI dinâmica ============
+    function renderGolRow(g = {}) {
+        const div = document.createElement('div');
+        div.className = 'gol-row';
+        const casa = document.getElementById('fTimeCasa').value || '';
+        const vis = document.getElementById('fTimeVis').value || '';
+        div.innerHTML = `
+            <select class="gol-time">
+                <option value="">— Time —</option>
+                ${casa ? `<option value="${esc(casa)}" ${g.time === casa ? 'selected' : ''}>${esc(casa)}</option>` : ''}
+                ${vis ? `<option value="${esc(vis)}" ${g.time === vis ? 'selected' : ''}>${esc(vis)}</option>` : ''}
+                ${g.time && g.time !== casa && g.time !== vis ? `<option value="${esc(g.time)}" selected>${esc(g.time)}</option>` : ''}
+            </select>
+            <input type="text" class="gol-autor" placeholder="Autor do gol" maxlength="80" value="${esc(g.autor || '')}">
+            <input type="number" class="gol-minuto" placeholder="min" min="0" max="150" value="${g.minuto ?? ''}">
+            <button type="button" class="btn-remove-gol" title="Remover">
+                <span class="material-icons">close</span>
+            </button>
+        `;
+        div.querySelector('.btn-remove-gol').addEventListener('click', () => div.remove());
+        return div;
+    }
+
+    function renderGolsList(autores) {
+        const wrap = document.getElementById('golsWrap');
+        wrap.innerHTML = '';
+        const list = Array.isArray(autores) ? autores : [];
+        for (const g of list) wrap.appendChild(renderGolRow(g));
+    }
+
+    function collectGols() {
+        const rows = Array.from(document.querySelectorAll('#golsWrap .gol-row'));
+        return rows
+            .map(r => ({
+                time: r.querySelector('.gol-time').value.trim(),
+                autor: r.querySelector('.gol-autor').value.trim(),
+                minuto: r.querySelector('.gol-minuto').value !== ''
+                    ? parseInt(r.querySelector('.gol-minuto').value, 10) : null,
+            }))
+            .filter(g => g.time && g.autor);
+    }
+
+    document.getElementById('btnAddGol').addEventListener('click', () => {
+        document.getElementById('golsWrap').appendChild(renderGolRow());
+    });
+
+    // Quando os nomes dos times mudam, re-renderiza os selects com os novos nomes
+    // (preservando o que já foi digitado)
+    ['fTimeCasa', 'fTimeVis'].forEach(id => {
+        document.getElementById(id).addEventListener('change', () => {
+            const current = collectGols();
+            renderGolsList(current);
+        });
+    });
 
     async function openEdit(id) {
         try {
@@ -662,6 +782,7 @@ td.td-actions .btn { padding: 0.3rem 0.6rem; font-size: 0.65rem; margin-left: 0.
             document.getElementById('fTitulo').value = g.titulo_conquistado || '';
             document.getElementById('fClassico').checked = !!g.foi_classico;
             document.getElementById('fPenal').checked = !!g.teve_penal;
+            renderGolsList(Array.isArray(g.autores_gols) ? g.autores_gols : []);
             document.getElementById('formModal').classList.add('show');
         } catch (err) {
             alert('Erro: ' + err.message);
@@ -711,6 +832,7 @@ td.td-actions .btn { padding: 0.3rem 0.6rem; font-size: 0.65rem; margin-left: 0.
                 titulo_conquistado: document.getElementById('fTitulo').value.trim() || null,
                 foi_classico: document.getElementById('fClassico').checked,
                 teve_penal: document.getElementById('fPenal').checked,
+                autores_gols: collectGols(),
             };
             if (editing) {
                 const { club_id, ...patch } = body;
