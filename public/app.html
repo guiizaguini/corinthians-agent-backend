@@ -6827,7 +6827,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     // O botão "Perfil" do topbar agora abre a VISTA de perfil (não mais o modal direto).
     // O modal de edição é acessível via botão "Editar" dentro da vista.
     document.getElementById('btnProfile').addEventListener('click', () => {
-        showPerfilView();
+        navigate('/perfil');
     });
 
     function openProfileEditModal() {
@@ -6902,7 +6902,11 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         document.getElementById('kpis').style.display = showRetrospecto ? '' : 'none';
     }
 
-    document.getElementById('perfilBack').addEventListener('click', hidePerfilView);
+    document.getElementById('perfilBack').addEventListener('click', () => {
+        // Tenta voltar pelo histórico; se não tiver, vai pra catálogo
+        if (history.length > 1) history.back();
+        else navigate('/');
+    });
 
     function renderPerfilHero() {
         const name = (user.display_name || user.email?.split('@')[0] || 'Torcedor').toUpperCase();
@@ -7558,31 +7562,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     // Tabs unificadas
     document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', () => {
-            // Se a vista de Perfil estiver aberta, fecha primeiro pra restaurar layout
-            const perfilEl = document.getElementById('perfilView');
-            if (perfilEl && perfilEl.style.display !== 'none') {
-                hidePerfilView();
-            }
-            // Limpa estilos inline residuais de showPerfilView
-            document.querySelectorAll('.tab-panel').forEach(p => p.style.display = '');
-
             const target = tab.dataset.tab;
-            const panelMap = { catalog: 'tabCatalog', mine: 'tabMine', rede: 'tabRede', copa: 'tabCopa' };
-            const panelId = panelMap[target] || 'tabCatalog';
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-            tab.classList.add('active');
-            document.getElementById(panelId).classList.add('active');
-
-            // Carteirinha + KPIs só aparecem no catálogo e meus ingressos
-            const showRetrospecto = (target === 'catalog' || target === 'mine');
-            const cartBar = document.getElementById('cartBar');
-            const kpis = document.getElementById('kpis');
-            if (cartBar) cartBar.style.display = showRetrospecto ? '' : 'none';
-            if (kpis) kpis.style.display = showRetrospecto ? '' : 'none';
-
-            if (target === 'rede') loadFriends();
-            if (target === 'copa') loadCopa();
+            // Tudo agora passa pelo router — atualiza URL e dispara o handler
+            navigate('/' + target);
         });
     });
 
@@ -8149,7 +8131,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
     document.getElementById('bellBtn').addEventListener('click', () => {
         // Vai pra Rede social e foca em Solicitações recebidas
-        document.querySelector('.tab[data-tab="rede"]').click();
+        navigate('/rede');
         setTimeout(() => {
             // Em mobile, abre o dropdown da sidebar pra mostrar as solicitações
             const sidebar = document.getElementById('redeSidebar');
@@ -8409,7 +8391,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 </article>
             `).join('');
             list.querySelectorAll('.bolao-card').forEach(el => {
-                el.addEventListener('click', () => bolaoOpenDetail(parseInt(el.dataset.bolaoId)));
+                el.addEventListener('click', () => navigate('/bolao/' + parseInt(el.dataset.bolaoId)));
             });
         } catch (err) {
             list.innerHTML = `<div class="empty">Erro: ${err.message}</div>`;
@@ -8794,16 +8776,12 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
     // ========= Eventos do bolão =========
     document.getElementById('btnBolaoEnter').addEventListener('click', () => {
-        bolaoShowView('meus');
-        bolaoLoadMeus();
+        navigate('/bolao');
     });
     document.getElementById('btnBolaoBack').addEventListener('click', () => {
-        if (bolaoState.view === 'detail') {
-            bolaoShowView('meus');
-            bolaoLoadMeus();
-        } else {
-            bolaoShowView('default');
-        }
+        // Volta pelo histórico (entrada anterior). Se não tem, vai pra Copa default.
+        if (history.length > 1) history.back();
+        else navigate('/copa');
     });
     document.getElementById('bolaoJoinBtn').addEventListener('click', async () => {
         const input = document.getElementById('bolaoInviteInput');
@@ -8821,7 +8799,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         try {
             const res = await api('/bolao/join', { method: 'POST', body: JSON.stringify({ invite_code: code }) });
             input.value = '';
-            bolaoOpenDetail(res.bolao_id);
+            navigate('/bolao/' + res.bolao_id);
         } catch (e) {
             const msg = {
                 bolao_not_found: 'Código inválido. Verifique e tente de novo.',
@@ -8834,7 +8812,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 try {
                     const meus = await api('/bolao/meus');
                     const found = meus.boloes.find(b => b.invite_code.toUpperCase() === code);
-                    if (found) { bolaoOpenDetail(found.id); return; }
+                    if (found) { navigate('/bolao/' + found.id); return; }
                 } catch {}
             }
         } finally {
@@ -8897,7 +8875,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             const openBtn = document.getElementById('bolaoCreatedOpen');
             const openHandler = () => {
                 document.getElementById('bolaoCreatedModal').classList.remove('show');
-                bolaoOpenDetail(res.bolao.id);
+                navigate('/bolao/' + res.bolao.id);
                 openBtn.removeEventListener('click', openHandler);
             };
             openBtn.addEventListener('click', openHandler);
@@ -8941,8 +8919,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         try {
             await api(`/bolao/${bolaoState.bolaoId}/leave`, { method: 'DELETE' });
             bolaoState.bolaoId = null;
-            bolaoShowView('meus');
-            bolaoLoadMeus();
+            navigate('/bolao', true); // replace pra não acumular histórico do bolão saído
         } catch (e) {
             alert('Erro ao sair: ' + e.message);
             btn.disabled = false;
@@ -8978,8 +8955,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         try {
             await api(`/bolao/${bolaoState.bolaoId}`, { method: 'DELETE' });
             bolaoState.bolaoId = null;
-            bolaoShowView('meus');
-            bolaoLoadMeus();
+            navigate('/bolao', true);
         } catch (e) {
             const msg = e.message === 'only_creator_or_admin'
                 ? 'Apenas o criador do bolão ou um admin pode excluir.'
@@ -9001,23 +8977,114 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         });
     }
 
+    // ===============================================
+    // ROUTER (History API com hash)
+    //   /app#/catalog   /app#/mine   /app#/rede   /app#/copa
+    //   /app#/perfil    /app#/bolao  /app#/bolao/:id
+    // ===============================================
+    const ROUTES = [
+        { pattern: /^\/?$|^\/catalog\/?$/i, handler: () => activateTab('catalog') },
+        { pattern: /^\/mine\/?$/i,          handler: () => activateTab('mine') },
+        { pattern: /^\/rede\/?$/i,          handler: () => activateTab('rede') },
+        { pattern: /^\/copa\/?$/i,          handler: () => { activateTab('copa'); bolaoShowView('default'); } },
+        { pattern: /^\/perfil\/?$/i,        handler: () => showPerfilView() },
+        { pattern: /^\/bolao\/?$/i,         handler: () => { activateTab('copa'); bolaoShowView('meus'); bolaoLoadMeus(); } },
+        { pattern: /^\/bolao\/(\d+)\/?$/i,  handler: (m) => { activateTab('copa'); bolaoOpenDetail(parseInt(m[1])); } },
+    ];
+
+    let _routerSuppress = false;
+
+    function applyRoute(path) {
+        // Se a rota não for /perfil, sai da vista de Perfil (limpa estado)
+        const perfilEl = document.getElementById('perfilView');
+        if (perfilEl && perfilEl.style.display !== 'none' && !/^\/perfil/i.test(path)) {
+            hidePerfilView();
+        }
+        // Se a rota não for /bolao*, reseta a vista do bolão pra default
+        if (!/^\/bolao/i.test(path)) {
+            const copaBolaoEl = document.getElementById('copaViewBolao');
+            if (copaBolaoEl && copaBolaoEl.style.display !== 'none') {
+                bolaoShowView('default');
+            }
+        }
+        for (const r of ROUTES) {
+            const m = path.match(r.pattern);
+            if (m) { r.handler(m); return; }
+        }
+        // Fallback (rota desconhecida)
+        activateTab('catalog');
+    }
+
+    function navigate(path, replace = false) {
+        const url = '#' + path;
+        if (window.location.hash === url || (path === '/' && !window.location.hash)) {
+            applyRoute(path);
+            return;
+        }
+        if (replace) history.replaceState({ path }, '', url);
+        else history.pushState({ path }, '', url);
+        applyRoute(path);
+    }
+
+    window.addEventListener('popstate', () => {
+        const p = window.location.hash.replace(/^#/, '') || '/';
+        // Suprime durante popstate pra evitar pushState recursivo
+        _routerSuppress = true;
+        applyRoute(p);
+        _routerSuppress = false;
+    });
+
+    // Activa uma tab (sem chamar navigate — usado pelo router internamente)
+    function activateTab(target) {
+        // Sai da vista de Perfil se estiver aberta
+        const perfilEl = document.getElementById('perfilView');
+        if (perfilEl && perfilEl.style.display !== 'none') hidePerfilView();
+        // Limpa estilos inline residuais
+        document.querySelectorAll('.tab-panel').forEach(p => p.style.display = '');
+
+        const panelMap = { catalog: 'tabCatalog', mine: 'tabMine', rede: 'tabRede', copa: 'tabCopa' };
+        const panelId = panelMap[target] || 'tabCatalog';
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        const tabBtn = document.querySelector(`.tab[data-tab="${target}"]`);
+        if (tabBtn) tabBtn.classList.add('active');
+        const panelEl = document.getElementById(panelId);
+        if (panelEl) panelEl.classList.add('active');
+
+        const showRetrospecto = (target === 'catalog' || target === 'mine');
+        const cartBar = document.getElementById('cartBar');
+        const kpis = document.getElementById('kpis');
+        if (cartBar) cartBar.style.display = showRetrospecto ? '' : 'none';
+        if (kpis) kpis.style.display = showRetrospecto ? '' : 'none';
+
+        if (target === 'rede') loadFriends();
+        if (target === 'copa') loadCopa();
+    }
+
     // Se chegou via link de compartilhamento (?add=USERNAME), abre a Rede com o user já buscado
     function checkAddFriendParam() {
         const params = new URLSearchParams(window.location.search);
         const add = params.get('add');
         if (!add) return;
-        // Limpa da URL
-        window.history.replaceState({}, '', window.location.pathname);
-        // Espera o app carregar
+        // Limpa da URL (mantém o hash)
+        window.history.replaceState({}, '', window.location.pathname + window.location.hash);
         setTimeout(() => {
-            document.querySelector('.tab[data-tab="rede"]').click();
+            navigate('/rede');
             const input = document.getElementById('redeSearch');
             input.value = add;
             input.dispatchEvent(new Event('input'));
         }, 600);
     }
 
-    loadAll().then(checkAddFriendParam);
+    function handleInitialRoute() {
+        const path = window.location.hash.replace(/^#/, '') || '/';
+        applyRoute(path);
+    }
+
+    loadAll().then(() => {
+        checkAddFriendParam();
+        handleInitialRoute();
+    });
     injectModalCloseX();
 </script>
 </body>
