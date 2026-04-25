@@ -4885,8 +4885,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     .modal-overlay { padding: 0; align-items: stretch; }
     .modal {
         max-width: 100% !important;
-        max-height: 100vh !important;
-        height: 100vh;
+        max-height: 100dvh !important;  /* dvh > vh: respeita barra do iOS */
+        height: 100dvh;
         border-radius: 0 !important;
         padding: 1.1rem 0.95rem 0 !important;
     }
@@ -4894,6 +4894,40 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         margin: 1rem -0.95rem 0;
         padding: 0.8rem 0.95rem;
         padding-bottom: max(0.8rem, env(safe-area-inset-bottom));
+    }
+}
+
+/* X fixo no topo direito de qualquer modal (mobile) — garantia de fechar */
+.modal-x-close {
+    position: absolute;
+    top: 0.65rem;
+    right: 0.7rem;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.55);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    transition: all 150ms;
+    backdrop-filter: blur(4px);
+    padding: 0;
+}
+.modal-x-close:hover, .modal-x-close:active {
+    background: var(--vinho);
+    transform: scale(1.05);
+}
+.modal-x-close .material-icons { font-size: 1.2rem; }
+@media (max-width: 680px) {
+    .modal-x-close { display: inline-flex; }
+}
+@media (max-width: 480px) {
+    .modal-x-close {
+        top: max(0.6rem, env(safe-area-inset-top));
     }
 }
 
@@ -6812,6 +6846,34 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     // ===============================================
     let perfilCurrentFilter = 'all';
     let perfilAchievementsCache = null;
+
+    // ===============================================
+    // Injeta X close em todo modal (acessível em mobile)
+    // ===============================================
+    function injectModalCloseX() {
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            const modal = overlay.querySelector('.modal');
+            if (!modal) return;
+            if (modal.querySelector('.modal-x-close')) return; // já tem
+            // Garante que o modal seja position:relative pra receber o X absoluto
+            const cs = getComputedStyle(modal);
+            if (cs.position === 'static') modal.style.position = 'relative';
+            const x = document.createElement('button');
+            x.type = 'button';
+            x.className = 'modal-x-close';
+            x.title = 'Fechar';
+            x.setAttribute('aria-label', 'Fechar');
+            x.innerHTML = '<span class="material-icons">close</span>';
+            x.addEventListener('click', (e) => {
+                e.stopPropagation();
+                overlay.classList.remove('show');
+            });
+            modal.appendChild(x);
+        });
+    }
+    // Roda 1x na carga + sempre que algo novo possa ter sido adicionado
+    document.addEventListener('DOMContentLoaded', injectModalCloseX);
+    setTimeout(injectModalCloseX, 100);
 
     function showPerfilView() {
         // Esconde tabs + panels + carteirinha bar + KPIs
@@ -8956,6 +9018,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     }
 
     loadAll().then(checkAddFriendParam);
+    injectModalCloseX();
 </script>
 </body>
 </html>
