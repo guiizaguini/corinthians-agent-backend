@@ -275,24 +275,55 @@ router.get('/feed', async (req, res, next) => {
                 SELECT CASE WHEN requester_id = $1 THEN recipient_id ELSE requester_id END AS user_id
                 FROM friendships
                 WHERE status = 'ACCEPTED' AND (requester_id = $1 OR recipient_id = $1)
-                UNION SELECT $1  -- inclui o próprio user no feed (estilo Twitter)
+                UNION SELECT $1
              )
              SELECT * FROM (
                 SELECT
                     'attendance' AS type,
-                    a.id AS ref_id, a.created_at,
+                    a.id AS ref_id,
+                    -- Bumpa a atividade quando alguém confirma companhia (post vai pro topo)
+                    GREATEST(
+                        a.created_at,
+                        COALESCE((
+                            SELECT MAX(ac.confirmed_at)
+                            FROM attendance_companions ac
+                            WHERE ac.attendance_id = a.id AND ac.status = 'CONFIRMED'
+                        ), a.created_at)
+                    ) AS created_at,
                     u.id AS user_id, u.username, u.display_name,
                     c.name AS club_name, c.short_name AS club_short, c.primary_color,
                     g.id AS game_id, g.data, g.time_casa, g.time_visitante,
                     g.gols_casa, g.gols_visitante, g.resultado, g.campeonato, g.estadio,
+                    a.setor AS setor,
+                    -- Lista de companhias CONFIRMADAS (vira "X foi com Y")
+                    COALESCE((
+                        SELECT json_agg(json_build_object(
+                            'user_id', cu.id,
+                            'username', cu.username,
+                            'display_name', cu.display_name
+                        ) ORDER BY cu.display_name)
+                        FROM attendance_companions ac
+                        JOIN users cu ON cu.id = ac.companion_user_id
+                        WHERE ac.attendance_id = a.id AND ac.status = 'CONFIRMED'
+                    ), '[]'::json) AS companions,
                     NULL::varchar AS title, NULL::text AS body,
                     NULL::boolean AS is_public
                 FROM attendances a
                 JOIN users u ON u.id = a.user_id
                 LEFT JOIN clubs c ON c.id = u.club_id
                 JOIN games g ON g.id = a.game_id
-                WHERE a.user_id IN (SELECT user_id FROM friend_ids)
-                  AND a.status = 'PRESENTE'
+                WHERE a.status = 'PRESENTE'
+                  AND (
+                      -- Owner é amigo
+                      a.user_id IN (SELECT user_id FROM friend_ids)
+                      -- OU qualquer companion CONFIRMED é amigo (post compartilhado)
+                      OR EXISTS (
+                          SELECT 1 FROM attendance_companions ac
+                          WHERE ac.attendance_id = a.id
+                            AND ac.status = 'CONFIRMED'
+                            AND ac.companion_user_id IN (SELECT user_id FROM friend_ids)
+                      )
+                  )
 
                 UNION ALL
 
@@ -303,15 +334,15 @@ router.get('/feed', async (req, res, next) => {
                     c.name AS club_name, c.short_name AS club_short, c.primary_color,
                     g.id AS game_id, g.data, g.time_casa, g.time_visitante,
                     g.gols_casa, g.gols_visitante, g.resultado, g.campeonato, g.estadio,
+                    NULL::varchar AS setor,
+                    '[]'::json AS companions,
                     n.title, n.body, n.is_public
                 FROM notes n
                 JOIN users u ON u.id = n.user_id
                 LEFT JOIN clubs c ON c.id = u.club_id
                 LEFT JOIN games g ON g.id = n.game_id
                 WHERE (
-                    -- Notas públicas dos amigos
                     (n.user_id IN (SELECT user_id FROM friend_ids WHERE user_id <> $1) AND n.is_public = TRUE)
-                    -- OR qualquer nota própria (públicas e privadas)
                     OR n.user_id = $1
                 )
              ) sub

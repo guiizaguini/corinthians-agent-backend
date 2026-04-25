@@ -2852,6 +2852,24 @@ main {
     font-size: 0.95rem;
     color: var(--accent);
 }
+.feed-action-with {
+    color: var(--ink);
+    font-weight: 600;
+}
+.feed-content-venue {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.74rem;
+    letter-spacing: 0.04em;
+    color: var(--ink-mute);
+    margin-top: 0.2rem;
+}
+.feed-content-venue .material-icons {
+    font-size: 0.95rem;
+    color: var(--accent);
+}
 .feed-time {
     font-family: 'Oswald', sans-serif;
     font-weight: 500;
@@ -8213,19 +8231,44 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                         </div>
                     `;
                 } else {
+                    // Companions confirmados (post compartilhado quando alguém confirma)
+                    const companions = Array.isArray(item.companions) ? item.companions : [];
+                    let companionsLabel = '';
+                    if (companions.length === 1) {
+                        const c = companions[0];
+                        companionsLabel = ` <span class="feed-action-with">com ${escapeHtml(c.display_name || c.username || 'amigo')}</span>`;
+                    } else if (companions.length === 2) {
+                        const a = companions[0], b = companions[1];
+                        companionsLabel = ` <span class="feed-action-with">com ${escapeHtml(a.display_name || a.username)} e ${escapeHtml(b.display_name || b.username)}</span>`;
+                    } else if (companions.length > 2) {
+                        const first = companions[0];
+                        companionsLabel = ` <span class="feed-action-with">com ${escapeHtml(first.display_name || first.username)} e mais ${companions.length - 1}</span>`;
+                    }
+
                     actionLine = isCopa
-                        ? `<span class="material-icons">sports_soccer</span> vai na Copa`
-                        : `<span class="material-icons">stadium</span> marcou presença`;
+                        ? `<span class="material-icons">sports_soccer</span> vai na Copa${companionsLabel}`
+                        : `<span class="material-icons">stadium</span> marcou presença${companionsLabel}`;
+
                     const placarHtml = (item.gols_casa != null)
                         ? `<span class="feed-content-score">${item.gols_casa} × ${item.gols_visitante}</span>`
                         : '';
+                    // Linha de estádio + setor (quando o user preencheu)
+                    const venueParts = [];
+                    if (item.estadio) venueParts.push(escapeHtml(item.estadio));
+                    if (item.setor)   venueParts.push(`Setor ${escapeHtml(item.setor)}`);
+                    const venueHtml = venueParts.length
+                        ? `<div class="feed-content-venue"><span class="material-icons">stadium</span>${venueParts.join(' · ')}</div>`
+                        : '';
+                    // Meta padrão (placar + resultado) — se Copa, não mostra placar/resultado
                     const metaHtml = isCopa
-                        ? `<div class="feed-content-meta"><span class="material-icons">stadium</span>${escapeHtml(item.estadio || '')}</div>`
+                        ? ''
                         : `<div class="feed-content-meta">${placarHtml}${resTag}</div>`;
+
                     contentBlock = `
                         <div class="${contentClass}">
                             ${faseLabel}
                             <div class="feed-content-game">${gameTeams}</div>
+                            ${venueHtml}
                             ${metaHtml}
                         </div>
                     `;
