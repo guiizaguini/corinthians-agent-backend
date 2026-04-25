@@ -5532,13 +5532,13 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             <h2 id="modalTitle">—</h2>
             <div class="meta" id="modalMeta">—</div>
 
-            <label>Você foi nesse jogo?</label>
+            <label id="modalStatusLabel">Você foi nesse jogo?</label>
             <div class="status-toggle">
                 <button type="button" class="status-btn presente" data-status="PRESENTE">
-                    <span class="material-icons">check_circle</span> Fui
+                    <span class="material-icons">check_circle</span> <span class="status-btn-label-presente">Fui</span>
                 </button>
                 <button type="button" class="status-btn ausente" data-status="AUSENTE">
-                    <span class="material-icons">cancel</span> Não fui
+                    <span class="material-icons">cancel</span> <span class="status-btn-label-ausente">Não fui</span>
                 </button>
             </div>
 
@@ -6911,6 +6911,17 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const scoreText = game.gols_casa != null ? ` · ${game.gols_casa} x ${game.gols_visitante}` : '';
         document.getElementById('modalMeta').textContent =
             `${d.weekday} ${d.main} · ${game.campeonato || '—'}${game.estadio ? ' · ' + game.estadio : ''}${scoreText}`;
+
+        // Detecta se o jogo é no futuro pra trocar texto dos botões pra "VOU/NÃO VOU"
+        const hoje = new Date(); hoje.setHours(0,0,0,0);
+        const dtJogo = new Date(game.data);
+        const isFuturo = dtJogo >= hoje;
+        const labelStatus = document.getElementById('modalStatusLabel');
+        const labelPresente = document.querySelector('.status-btn-label-presente');
+        const labelAusente = document.querySelector('.status-btn-label-ausente');
+        if (labelStatus) labelStatus.textContent = isFuturo ? 'Você vai nesse jogo?' : 'Você foi nesse jogo?';
+        if (labelPresente) labelPresente.textContent = isFuturo ? 'Vou' : 'Fui';
+        if (labelAusente) labelAusente.textContent = isFuturo ? 'Não vou' : 'Não fui';
 
         setStatus(game.status_presenca || 'PRESENTE');
         renderSetorPills(game.estadio, game.setor);
