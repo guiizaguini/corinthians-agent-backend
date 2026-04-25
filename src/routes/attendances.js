@@ -1,6 +1,7 @@
 import express from 'express';
 import { z } from 'zod';
 import { query } from '../db/pool.js';
+import { invalidate } from '../utils/cache.js';
 
 /**
  * CRUD de registros de presença do usuário autenticado.
@@ -125,6 +126,7 @@ router.post('/', async (req, res, next) => {
         if (body.companion_user_ids !== undefined) {
             await syncCompanions(rows[0].id, req.user.id, body.companion_user_ids);
         }
+        invalidate.user(req.user.id);
         res.status(201).json({ attendance: rows[0] });
     } catch (err) { next(err); }
 });
@@ -176,6 +178,7 @@ router.patch('/:id', async (req, res, next) => {
             await syncCompanions(attendance.id, req.user.id, parsed.data.companion_user_ids);
         }
 
+        invalidate.user(req.user.id);
         res.json({ attendance });
     } catch (err) { next(err); }
 });
@@ -190,6 +193,7 @@ router.delete('/:id', async (req, res, next) => {
             [req.params.id, req.user.id]
         );
         if (!rowCount) return res.status(404).json({ error: 'attendance_not_found' });
+        invalidate.user(req.user.id);
         res.json({ removido: true });
     } catch (err) { next(err); }
 });

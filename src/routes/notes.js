@@ -1,6 +1,7 @@
 import express from 'express';
 import { z } from 'zod';
 import { query } from '../db/pool.js';
+import { invalidate } from '../utils/cache.js';
 
 /**
  * CRUD de notas (histórias do torcedor sobre jogos).
@@ -72,6 +73,7 @@ router.post('/', async (req, res, next) => {
              RETURNING *`,
             [req.user.id, attendance_id ?? null, resolvedGameId, title ?? null, body, is_public ?? false]
         );
+        invalidate.user(req.user.id);
         res.status(201).json({ note: rows[0] });
     } catch (err) { next(err); }
 });
@@ -130,6 +132,7 @@ router.delete('/:id', async (req, res, next) => {
             [req.params.id, req.user.id]
         );
         if (!rowCount) return res.status(404).json({ error: 'note_not_found' });
+        invalidate.user(req.user.id);
         res.json({ removido: true });
     } catch (err) { next(err); }
 });

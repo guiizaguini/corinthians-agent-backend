@@ -3,6 +3,7 @@ import { z } from 'zod';
 import crypto from 'node:crypto';
 import { query } from '../db/pool.js';
 import { requireUser, requireAdmin } from '../middleware/authUser.js';
+import { cache, invalidate } from '../utils/cache.js';
 
 const router = Router();
 router.use(requireUser);
@@ -134,6 +135,7 @@ router.post('/join', async (req, res, next) => {
             'INSERT INTO bolao_members (bolao_id, user_id) VALUES ($1, $2)',
             [bolao.id, req.user.id]
         );
+        invalidate.bolaoMembers(bolao.id);
         res.json({ bolao_id: bolao.id, name: bolao.name });
     } catch (err) { next(err); }
 });
@@ -148,6 +150,7 @@ router.delete('/:id/leave', async (req, res, next) => {
             'DELETE FROM bolao_members WHERE bolao_id = $1 AND user_id = $2',
             [bolaoId, req.user.id]
         );
+        invalidate.bolaoMembers(bolaoId);
         res.json({ saiu: true });
     } catch (err) { next(err); }
 });
@@ -173,6 +176,7 @@ router.delete('/:id', async (req, res, next) => {
         }
 
         await query('DELETE FROM boloes WHERE id = $1', [bolaoId]);
+        invalidate.bolaoMembers(bolaoId);
         res.json({ deleted: true, bolao_id: bolaoId, name: b.name });
     } catch (err) { next(err); }
 });
@@ -295,6 +299,7 @@ router.put('/:id/palpite/:game_id', async (req, res, next) => {
             RETURNING id, gols_casa, gols_visitante, updated_at
         `, [bolaoId, req.user.id, gameId, parsed.data.gols_casa, parsed.data.gols_visitante]);
 
+        invalidate.bolao(bolaoId);
         res.json({ palpite: rows[0] });
     } catch (err) { next(err); }
 });
@@ -308,6 +313,10 @@ router.get('/:id/ranking', async (req, res, next) => {
         if (!(await assertMember(bolaoId, req.user.id))) {
             return res.status(403).json({ error: 'not_member' });
         }
+
+        const cacheKey = `ranking:${bolaoId}`;
+        const cached = cache.get(cacheKey);
+        if (cached) return res.json(cached);
 
         const { rows } = await query(`
             WITH jogos_com_resultado AS (
@@ -393,7 +402,9 @@ router.get('/:id/ranking', async (req, res, next) => {
             BOLAO_PONTOS.EXTRA_FASE_BRASIL,
         ]);
 
-        res.json({ ranking: rows, regras: BOLAO_PONTOS });
+        const payload = { ranking: rows, regras: BOLAO_PONTOS };
+        cache.set(cacheKey, payload, 30 * 1000); // 30 segundos
+        res.json(payload);
     } catch (err) { next(err); }
 });
 
@@ -452,6 +463,7 @@ router.put('/:id/extras', async (req, res, next) => {
             parsed.data.artilheiro || null,
             parsed.data.fase_brasil || null,
         ]);
+        invalidate.bolao(bolaoId);
         res.json({ extras: rows[0] });
     } catch (err) { next(err); }
 });

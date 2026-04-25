@@ -12,8 +12,14 @@ export const pool = new Pool({
     ssl: process.env.DATABASE_URL?.includes('railway')
         ? { rejectUnauthorized: false }
         : false,
-    max: 10,
+    // 25 conexões — suficiente pra 200-500 users ativos no plano Hobby do Railway.
+    // Railway PG Hobby permite até ~100 conexões simultâneas, então estamos bem dentro do limite.
+    max: parseInt(process.env.PG_POOL_MAX || '25'),
     idleTimeoutMillis: 30_000,
+    // Timeout pra obter conexão do pool — evita request ficar pendurado infinitamente
+    connectionTimeoutMillis: 5_000,
+    // Timeout de query — mata queries que demoram > 30s (segurança)
+    statement_timeout: 30_000,
 });
 
 pool.on('error', (err) => {

@@ -1,5 +1,6 @@
 import express from 'express';
 import { query } from '../db/pool.js';
+import { cache } from '../utils/cache.js';
 
 /**
  * Catálogo de jogos do clube do usuário.
@@ -20,6 +21,14 @@ router.get('/', async (req, res, next) => {
             so_presenca,
             limit = 500, offset = 0, order = 'desc',
         } = req.query;
+
+        // Cache só pra requests "vazios" (sem filtros) — o caso comum do app
+        const isVanilla = !ano && !rival && !campeonato && !estadio && !so_presenca && !offset && order !== 'asc';
+        const cacheKey = isVanilla ? `games:${req.user.id}:${req.user.club_id}:${limit}` : null;
+        if (cacheKey) {
+            const cached = cache.get(cacheKey);
+            if (cached) return res.json(cached);
+        }
 
         const conds = ['g.club_id = $1'];
         const params = [req.user.club_id];
@@ -85,7 +94,9 @@ router.get('/', async (req, res, next) => {
             params.slice(0, userIdx)
         );
 
-        res.json({ total: countRows[0].total, count: rows.length, games: rows });
+        const payload = { total: countRows[0].total, count: rows.length, games: rows };
+        if (cacheKey) cache.set(cacheKey, payload, 5 * 60 * 1000); // 5 min
+        res.json(payload);
     } catch (err) { next(err); }
 });
 

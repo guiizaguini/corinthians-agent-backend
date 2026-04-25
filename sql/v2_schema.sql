@@ -270,6 +270,10 @@ CREATE TABLE IF NOT EXISTS bolao_palpites (
     UNIQUE(bolao_id, user_id, game_id)
 );
 CREATE INDEX IF NOT EXISTS idx_palpites_game_real ON bolao_palpites(game_id);
+-- Acelera o cálculo de ranking (JOIN bolao_members + bolao_palpites + games)
+CREATE INDEX IF NOT EXISTS idx_palpites_bolao_game ON bolao_palpites(bolao_id, game_id);
+-- Acelera "quais jogos têm resultado deste torneio" (CTE jogos_com_resultado)
+CREATE INDEX IF NOT EXISTS idx_games_club_resultado ON games(club_id) WHERE gols_casa IS NOT NULL;
 
 -- Palpites "extras" (campeão, artilheiro, fase do Brasil) — 1 por usuário por bolão
 CREATE TABLE IF NOT EXISTS bolao_palpites_extras (

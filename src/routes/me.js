@@ -1,6 +1,7 @@
 import express from 'express';
 import { query } from '../db/pool.js';
 import { computeAchievements, ACHIEVEMENT_CATEGORIES, RARITY_INFO } from '../utils/achievements.js';
+import { cache } from '../utils/cache.js';
 
 /**
  * Estatísticas por usuário autenticado.
@@ -25,6 +26,10 @@ router.get('/snapshot', async (req, res, next) => {
     try {
         const uid = req.user.id;
         const cid = req.user.club_id;
+
+        const cacheKey = `snapshot:${uid}:${cid || 'noclub'}`;
+        const cached = cache.get(cacheKey);
+        if (cached) return res.json(cached);
 
         const [
             geral,
@@ -243,7 +248,7 @@ router.get('/snapshot', async (req, res, next) => {
         const g = geral.rows[0] ?? {};
         g.saldo_gols = (parseInt(g.gols_pro) || 0) - (parseInt(g.gols_contra) || 0);
 
-        res.json({
+        const payload = {
             club: club_info.rows[0] ?? null,
             user: {
                 id: req.user.id,
@@ -264,7 +269,9 @@ router.get('/snapshot', async (req, res, next) => {
             classicos: classicos.rows,
             jogos: all_games.rows,
             ts: new Date().toISOString(),
-        });
+        };
+        cache.set(cacheKey, payload, 5 * 60 * 1000); // 5 minutos
+        res.json(payload);
     } catch (err) { next(err); }
 });
 
@@ -277,7 +284,6 @@ router.get('/achievements', async (req, res, next) => {
         const cid = req.user.club_id;
 
         if (!cid) {
-            // Sem clube: sem conquistas
             return res.json({
                 achievements: [],
                 categories: ACHIEVEMENT_CATEGORIES,
@@ -285,6 +291,10 @@ router.get('/achievements', async (req, res, next) => {
                 stats: { jogos: 0, vitorias: 0 },
             });
         }
+
+        const cacheKey = `achievements:${uid}:${cid}`;
+        const cached = cache.get(cacheKey);
+        if (cached) return res.json(cached);
 
         // Roda 4 queries em paralelo pra montar o "stats" passado pro catálogo
         const [agg, notas, amigos, companions] = await Promise.all([
@@ -346,12 +356,14 @@ router.get('/achievements', async (req, res, next) => {
 
         const achievements = computeAchievements(stats);
 
-        res.json({
+        const payload = {
             achievements,
             categories: ACHIEVEMENT_CATEGORIES,
             rarities: RARITY_INFO,
             stats,
-        });
+        };
+        cache.set(cacheKey, payload, 10 * 60 * 1000); // 10 minutos
+        res.json(payload);
     } catch (err) { next(err); }
 });
 

@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import compression from 'compression';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import 'dotenv/config';
@@ -31,6 +32,15 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
+// Gzip compression: comprime JSON/HTML/CSS/JS — economia tipicamente 60-80% no tráfego
+app.use(compression({
+    level: 6,                      // bom balanço entre CPU e taxa de compressão
+    threshold: 1024,               // só comprime payloads > 1kb
+    filter: (req, res) => {
+        if (req.headers['x-no-compression']) return false;
+        return compression.filter(req, res);
+    },
+}));
 app.use(express.json({ limit: '1mb' }));
 
 // =============================================================
