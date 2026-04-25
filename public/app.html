@@ -3686,15 +3686,20 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 /* Bloco de resultado real (quando finalizado) */
 .bolao-real-block {
     margin-top: 0.5rem;
-    padding: 0.6rem 0.85rem;
+    padding: 0.65rem 0.85rem 0.55rem;
     background: linear-gradient(135deg, #2a1a0a 0%, #1a1000 100%);
     border-radius: 10px;
     color: #f5e6a8;
     display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.bolao-real-top {
+    display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
 }
 .bolao-real-score {
     display: flex;
@@ -3738,6 +3743,36 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     color: rgba(255,255,255,0.6);
     border: 1px solid rgba(255,255,255,0.15);
 }
+
+/* Linha do motivo (Placar exato / Vencedor / etc) */
+.bolao-real-motivo {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding-top: 0.45rem;
+    border-top: 1px dashed rgba(212,165,32,0.25);
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+.bolao-real-motivo .material-icons {
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+.bolao-real-motivo.motivo-exato { color: #ffd95a; }
+.bolao-real-motivo.motivo-exato .material-icons { color: #ffd95a; filter: drop-shadow(0 0 8px rgba(255,217,90,0.5)); }
+.bolao-real-motivo.motivo-saldo { color: #6cdf85; }
+.bolao-real-motivo.motivo-saldo .material-icons { color: #6cdf85; }
+.bolao-real-motivo.motivo-vencedor { color: #88d8a0; }
+.bolao-real-motivo.motivo-vencedor .material-icons { color: #88d8a0; }
+.bolao-real-motivo.motivo-empate { color: #c4b894; }
+.bolao-real-motivo.motivo-empate .material-icons { color: #c4b894; }
+.bolao-real-motivo.motivo-errou { color: #c07086; }
+.bolao-real-motivo.motivo-errou .material-icons { color: #c07086; }
+.bolao-real-motivo.motivo-sem-palpite { color: rgba(255,255,255,0.45); }
+.bolao-real-motivo.motivo-sem-palpite .material-icons { color: rgba(255,255,255,0.45); }
 
 /* Save button no footer */
 .bolao-jogo-save {
@@ -4175,29 +4210,38 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     }
     .bolao-detail-title { font-size: 1.2rem; }
     .bolao-detail-right {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        gap: 0.55rem;
+    }
+    .bolao-detail-mypoints {
+        padding: 0.7rem 1rem;
+        min-width: 0;
+        display: flex;
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
+        gap: 0.75rem;
         width: 100%;
     }
-    .bolao-detail-mypoints {
-        padding: 0.65rem 1rem;
-        min-width: 0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 0.75rem;
-        flex: 1;
-    }
     .bolao-mp-label { text-align: left; }
-    .bolao-mp-value { font-size: 1.8rem; margin-top: 0; }
-    .bolao-leave-btn {
-        flex-shrink: 0;
-        padding: 0.55rem 0.7rem;
-        font-size: 0.58rem;
+    .bolao-mp-value { font-size: 1.8rem; margin-top: 0; line-height: 1; }
+    .bolao-detail-actions {
+        flex-direction: row;
+        justify-content: stretch;
+        gap: 0.4rem;
+        width: 100%;
+    }
+    .bolao-leave-btn, .bolao-delete-btn {
+        flex: 1;
+        justify-content: center;
+        padding: 0.6rem 0.55rem;
+        font-size: 0.6rem;
         letter-spacing: 0.1em;
     }
-    .bolao-leave-btn .material-icons { font-size: 1rem; }
+    .bolao-leave-btn .material-icons,
+    .bolao-delete-btn .material-icons { font-size: 0.95rem; }
     .bolao-list { grid-template-columns: 1fr; gap: 0.65rem; }
     .bolao-join-row { flex-direction: column; gap: 0.5rem; }
     .bolao-join-row input { font-size: 16px; /* evita zoom */ }
@@ -4209,7 +4253,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 }
 @media (max-width: 420px) {
     .bolao-palpite-input { width: 46px; height: 46px; font-size: 1.35rem; }
-    .bolao-real-block { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
+    .bolao-real-top { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
+    .bolao-real-motivo { font-size: 0.66rem; }
 }
 
 /* ===============================================================
@@ -7814,22 +7859,33 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             </div>
         `;
 
-        // Bloco de resultado real (quando finalizado)
+        // Bloco de resultado real (quando finalizado) — mostra placar real + breakdown da pontuação
         let realBlock = '';
         if (temResultado) {
-            const pts = jaPalpitou ? calcularPontosPalpite(
-                g.palpite_casa, g.palpite_visitante,
-                g.gols_casa_real, g.gols_visitante_real,
-                bolaoState.pontos
-            ) : 0;
-            const earnedCls = pts > 0 ? 'v' : 'z';
+            let detalhe;
+            if (jaPalpitou) {
+                detalhe = calcularPontosDetalhado(
+                    g.palpite_casa, g.palpite_visitante,
+                    g.gols_casa_real, g.gols_visitante_real,
+                    bolaoState.pontos
+                );
+            } else {
+                detalhe = { pts: 0, motivo: 'Você não palpitou', icone: 'block', classe: 'sem-palpite' };
+            }
+            const earnedCls = detalhe.pts > 0 ? 'v' : 'z';
             realBlock = `
                 <div class="bolao-real-block">
-                    <div class="bolao-real-score">
-                        <span class="bolao-real-label">Resultado</span>
-                        <div class="bolao-real-value">${g.gols_casa_real}<span class="bolao-real-x">×</span>${g.gols_visitante_real}</div>
+                    <div class="bolao-real-top">
+                        <div class="bolao-real-score">
+                            <span class="bolao-real-label">Resultado</span>
+                            <div class="bolao-real-value">${g.gols_casa_real}<span class="bolao-real-x">×</span>${g.gols_visitante_real}</div>
+                        </div>
+                        <span class="bolao-earned-pill ${earnedCls}">${detalhe.pts > 0 ? '+' + detalhe.pts : '0'} pts</span>
                     </div>
-                    <span class="bolao-earned-pill ${earnedCls}">${pts > 0 ? '+' + pts : '0'} pts</span>
+                    <div class="bolao-real-motivo motivo-${detalhe.classe}">
+                        <span class="material-icons">${detalhe.icone}</span>
+                        <span class="motivo-texto">${detalhe.motivo}</span>
+                    </div>
                 </div>
             `;
         }
@@ -7884,13 +7940,26 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     }
 
     function calcularPontosPalpite(pH, pA, rH, rA, pts) {
-        if (pH === rH && pA === rA) return pts.PLACAR_EXATO;
-        if (pH === pA && rH === rA) return pts.EMPATE_CORRETO;
+        return calcularPontosDetalhado(pH, pA, rH, rA, pts).pts;
+    }
+
+    // Retorna { pts, motivo, icone, classe } pra mostrar no card
+    function calcularPontosDetalhado(pH, pA, rH, rA, pts) {
+        if (pH === rH && pA === rA) {
+            return { pts: pts.PLACAR_EXATO, motivo: 'Placar exato', icone: 'auto_awesome', classe: 'exato' };
+        }
+        if (pH === pA && rH === rA) {
+            return { pts: pts.EMPATE_CORRETO, motivo: 'Empate correto', icone: 'handshake', classe: 'empate' };
+        }
         const pSaldo = pH - pA;
         const rSaldo = rH - rA;
-        if (Math.sign(pSaldo) === Math.sign(rSaldo) && pSaldo === rSaldo) return pts.VENCEDOR_E_SALDO;
-        if (Math.sign(pSaldo) === Math.sign(rSaldo)) return pts.VENCEDOR;
-        return 0;
+        if (Math.sign(pSaldo) === Math.sign(rSaldo) && pSaldo === rSaldo) {
+            return { pts: pts.VENCEDOR_E_SALDO, motivo: 'Vencedor + saldo certo', icone: 'trending_up', classe: 'saldo' };
+        }
+        if (Math.sign(pSaldo) === Math.sign(rSaldo)) {
+            return { pts: pts.VENCEDOR, motivo: 'Acertou só o vencedor', icone: 'check_circle', classe: 'vencedor' };
+        }
+        return { pts: 0, motivo: 'Errou o palpite', icone: 'close', classe: 'errou' };
     }
 
     // Retorna o "status" da amizade entre mim e outro user_id:
