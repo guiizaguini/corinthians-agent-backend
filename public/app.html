@@ -4522,38 +4522,93 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 @media (max-width: 680px) {
     .modal-overlay { padding: 0.5rem; align-items: flex-end; }
     .modal {
-        padding: 1.4rem 1.1rem;
-        max-height: 95vh;
-        border-radius: 16px 16px 12px 12px;
+        padding: 1.4rem 1.1rem 0 !important;  /* sem padding-bottom, o action-bar vira o "pé" */
+        max-height: 92vh !important;
+        border-radius: 16px 16px 0 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
     }
     .modal h2 { font-size: 1.15rem; }
     .modal .meta { font-size: 0.75rem; margin-bottom: 1rem; }
     .modal label { font-size: 0.62rem; letter-spacing: 0.16em; margin-top: 0.85rem; }
     .modal-actions {
         position: sticky;
-        bottom: -1.4rem;
-        margin: 1.25rem -1.1rem -1.4rem;
+        bottom: 0;
+        margin: 1.25rem -1.1rem 0;
         padding: 0.85rem 1.1rem;
+        padding-bottom: max(0.85rem, env(safe-area-inset-bottom));
         background: var(--paper-soft);
         border-top: 1px solid var(--line);
         flex-wrap: wrap;
+        z-index: 10;
     }
     .modal-actions button {
         flex: 1 1 calc(50% - 0.25rem);
         padding: 0.75rem 0.8rem;
         font-size: 0.72rem;
+        min-width: 0;
     }
 }
 @media (max-width: 480px) {
-    .modal-overlay { padding: 0; }
+    .modal-overlay { padding: 0; align-items: stretch; }
     .modal {
-        max-width: 100%;
-        max-height: 100vh;
+        max-width: 100% !important;
+        max-height: 100vh !important;
         height: 100vh;
-        border-radius: 0;
-        padding: 1.2rem 1rem;
+        border-radius: 0 !important;
+        padding: 1.1rem 0.95rem 0 !important;
     }
-    .modal-actions { bottom: -1.2rem; margin: 1rem -1rem -1.2rem; padding: 0.75rem 1rem; }
+    .modal-actions {
+        margin: 1rem -0.95rem 0;
+        padding: 0.8rem 0.95rem;
+        padding-bottom: max(0.8rem, env(safe-area-inset-bottom));
+    }
+}
+
+/* ============ Carteirinha modal — caso especial ============
+   O wrapper interno tem inline padding:0 + transparent (pq o cartão é o visual). */
+@media (max-width: 680px) {
+    #cartModal.modal-overlay { padding: 1rem; align-items: center; }
+    #cartModal .modal {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        max-height: 95vh !important;
+        height: auto !important;
+        border-radius: 0 !important;
+        overflow-y: auto;
+    }
+    #cartModal .cartao { max-width: 100%; }
+    #cartModal .modal-actions {
+        position: static;
+        margin: 1rem 0 0;
+        padding: 0;
+        padding-bottom: env(safe-area-inset-bottom);
+        background: transparent;
+        border: none;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+    }
+    #cartModal .modal-actions button { flex: 1 1 calc(50% - 0.25rem); }
+}
+@media (max-width: 480px) {
+    #cartModal.modal-overlay { padding: 0.75rem; }
+}
+
+/* ============ Friend collection — modal grande com inline 95vw/90vh ============ */
+@media (max-width: 680px) {
+    #friendCollectionModal .modal {
+        max-height: 95vh !important;
+        max-width: 100% !important;
+        height: auto !important;
+    }
+}
+@media (max-width: 480px) {
+    #friendCollectionModal .modal {
+        height: 100vh !important;
+        max-height: 100vh !important;
+    }
 }
 
 /* ============ Rede social ============ */
