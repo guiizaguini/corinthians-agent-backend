@@ -2480,7 +2480,13 @@ main {
     height: 28px;
 }
 .user-list.compact .user-action .material-icons { font-size: 0.9rem; }
-.user-list.compact .user-action.add-text { padding: 0 0.6rem; font-size: 0.65rem; }
+.user-list.compact .user-action.add-text {
+    width: auto;
+    height: 28px;
+    padding: 0 0.8rem;
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+}
 .user-card {
     background: var(--bg-card);
     border: 1px solid var(--line);
@@ -2565,12 +2571,22 @@ main {
 .user-action .material-icons { font-size: 1rem; }
 .user-action.add-text {
     width: auto;
-    padding: 0 0.7rem;
+    height: 32px;
+    padding: 0 0.95rem;
     font-family: 'Oswald', sans-serif;
     font-weight: 600;
     font-size: 0.7rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
+    border-radius: 999px;
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
+}
+.user-action.add-text:hover {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--accent-text);
 }
 
 .relation-tag {
