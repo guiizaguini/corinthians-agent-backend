@@ -4330,42 +4330,62 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     gap: 1.2rem;
     flex-wrap: wrap;
 }
-.fc-split {
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: 1.25rem;
-    align-items: flex-start;
-    min-height: 0;
-}
-.fc-left, .fc-right {
-    min-width: 0;
+/* Tabs do modal de perfil do amigo */
+.fc-tabs {
     display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
-}
-.fc-section-title {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 700;
-    font-size: 0.78rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--ink);
-    display: flex;
-    align-items: center;
     gap: 0.4rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1.5px solid var(--line);
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--line);
+    padding-bottom: 0;
 }
-.fc-section-title .material-icons { font-size: 1.1rem; color: var(--accent); }
-.fc-section-title .fc-conq-count {
-    margin-left: auto;
+.fc-tab {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--ink-mute);
+    padding: 0.75rem 0.7rem;
     font-family: 'Oswald', sans-serif;
     font-weight: 600;
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    color: var(--ink-mute);
+    font-size: 0.74rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: all 150ms;
+    white-space: nowrap;
 }
+.fc-tab:hover { color: var(--ink); }
+.fc-tab .material-icons { font-size: 1rem; }
+.fc-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    font-weight: 700;
+}
+.fc-tab-badge {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.6rem;
+    background: var(--accent);
+    color: var(--accent-text);
+    padding: 0.1rem 0.4rem;
+    border-radius: 999px;
+    line-height: 1.4;
+    margin-left: 0.1rem;
+}
+.fc-panels { min-height: 200px; }
+.fc-panel { display: none; }
+.fc-panels[data-active-tab="ingressos"]  .fc-panel[data-panel="ingressos"]  { display: block; }
+.fc-panels[data-active-tab="conquistas"] .fc-panel[data-panel="conquistas"] { display: block; }
+.fc-panels[data-active-tab="comparacao"] .fc-panel[data-panel="comparacao"] { display: block; }
 .fc-galeria { grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 700px) {
+    .fc-galeria { grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); }
+}
 
 /* Lista de conquistas — versão compacta dentro do split */
 .fc-conq-list {
@@ -4472,10 +4492,14 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 .fc-conq-rarity.gold { background: rgba(212,165,32,0.15); color: #d4a520; border: 1px solid rgba(212,165,32,0.5); }
 .fc-conq-rarity.platinum { background: rgba(126,224,255,0.15); color: #7ee0ff; border: 1px solid rgba(126,224,255,0.5); }
 
-/* Mobile: vira coluna única */
-@media (max-width: 900px) {
-    .fc-split { grid-template-columns: 1fr; }
-    .fc-conq-list { max-height: none; }
+/* (Mobile tabs antigas removidas — substituídas por .fc-tabs unificadas) */
+@media (max-width: 600px) {
+    .fc-tab { padding: 0.7rem 0.4rem; font-size: 0.66rem; letter-spacing: 0.12em; gap: 0.25rem; }
+    .fc-tab .material-icons { font-size: 0.95rem; }
+}
+@media (max-width: 380px) {
+    /* Em telas muito pequenas, esconde os ícones e mostra só o texto */
+    .fc-tab .material-icons { display: none; }
 }
 
 /* ===============================================================
@@ -5400,28 +5424,39 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 <div id="friendCollectionStats" class="fc-header-stats"></div>
             </header>
 
-            <div class="fc-split">
-                <!-- Coluna ESQUERDA: ingressos / coleção -->
-                <section class="fc-left">
-                    <div class="fc-section-title">
-                        <span class="material-icons">confirmation_number</span>
-                        Ingressos &amp; presenças
-                    </div>
+            <!-- 3 tabs: Ingressos · Conquistas · Comparação -->
+            <div class="fc-tabs" role="tablist">
+                <button class="fc-tab active" data-fc-tab="ingressos" type="button">
+                    <span class="material-icons">confirmation_number</span>Ingressos
+                </button>
+                <button class="fc-tab" data-fc-tab="conquistas" type="button">
+                    <span class="material-icons">emoji_events</span>
+                    Conquistas <span class="fc-tab-badge" id="fcConqBadge"></span>
+                </button>
+                <button class="fc-tab" data-fc-tab="comparacao" type="button">
+                    <span class="material-icons">compare_arrows</span>Comparar
+                </button>
+            </div>
+
+            <!-- Painéis (um aparece por vez) -->
+            <div class="fc-panels" id="fcPanels" data-active-tab="ingressos">
+                <section class="fc-panel" data-panel="ingressos">
                     <div id="friendCollectionContent" class="galeria fc-galeria">
                         <div class="loading">Carregando coleção...</div>
                     </div>
                 </section>
 
-                <!-- Coluna DIREITA: conquistas -->
-                <aside class="fc-right">
-                    <div class="fc-section-title">
-                        <span class="material-icons">emoji_events</span>
-                        Conquistas <span class="fc-conq-count" id="fcConqCount"></span>
-                    </div>
+                <section class="fc-panel" data-panel="conquistas">
                     <div id="fcConqList" class="fc-conq-list">
                         <div class="loading">Carregando conquistas...</div>
                     </div>
-                </aside>
+                </section>
+
+                <section class="fc-panel" data-panel="comparacao">
+                    <div id="fcCompareContent">
+                        <div class="loading">Carregando comparação...</div>
+                    </div>
+                </section>
             </div>
 
             <div class="modal-actions">
@@ -8006,10 +8041,16 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             });
         });
         container.querySelectorAll('[data-compare]').forEach(b => {
-            b.addEventListener('click', () => openCompare(parseInt(b.dataset.compare)));
+            b.addEventListener('click', (e) => {
+                e.stopPropagation(); // evita abrir o card também
+                openFriendCollection(parseInt(b.dataset.compare), 'comparacao');
+            });
         });
         container.querySelectorAll('[data-collection]').forEach(b => {
-            b.addEventListener('click', () => openFriendCollection(parseInt(b.dataset.collection)));
+            b.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openFriendCollection(parseInt(b.dataset.collection), 'ingressos');
+            });
         });
         container.querySelectorAll('[data-unfriend]').forEach(b => {
             b.addEventListener('click', async () => {
@@ -8187,15 +8228,23 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         }
     }
 
-    async function openFriendCollection(userId) {
+    // Estado da modal: guarda userId atual + se já carregou cada tab
+    let _fcState = { userId: null, comparisonLoaded: false };
+
+    async function openFriendCollection(userId, initialTab = 'ingressos') {
         const modal = document.getElementById('friendCollectionModal');
         modal.classList.add('show');
+        _fcState = { userId, comparisonLoaded: false };
+        // Reseta a tab ativa
+        fcSwitchTab(initialTab);
+
         document.getElementById('friendCollectionTitle').textContent = 'Carregando...';
         document.getElementById('friendCollectionMeta').textContent = '';
         document.getElementById('friendCollectionStats').innerHTML = '';
         document.getElementById('friendCollectionContent').innerHTML = '<div class="loading">Carregando coleção...</div>';
         document.getElementById('fcConqList').innerHTML = '<div class="loading">Carregando conquistas...</div>';
-        document.getElementById('fcConqCount').textContent = '';
+        document.getElementById('fcConqBadge').textContent = '';
+        document.getElementById('fcCompareContent').innerHTML = '<div class="loading">Carregando comparação...</div>';
         try {
             const data = await api(`/social/users/${userId}/attendances`);
             const u = data.user;
@@ -8244,14 +8293,14 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
     function renderFriendAchievements(achievements) {
         const list = document.getElementById('fcConqList');
-        const count = document.getElementById('fcConqCount');
+        const badge = document.getElementById('fcConqBadge');
         if (!achievements.length) {
             list.innerHTML = '<div class="empty" style="padding:1.5rem 0.5rem;">Sem conquistas ainda.</div>';
-            count.textContent = '';
+            if (badge) badge.textContent = '';
             return;
         }
         const unlockedN = achievements.filter(a => a.unlocked).length;
-        count.textContent = `(${unlockedN}/${achievements.length})`;
+        if (badge) badge.textContent = unlockedN;
 
         // Ordem: desbloqueadas primeiro (raras topo), depois bloqueadas (mais perto do alvo primeiro)
         const rarityOrder = { platinum: 4, gold: 3, silver: 2, bronze: 1 };
@@ -8284,6 +8333,24 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     });
     document.getElementById('friendCollectionModal').addEventListener('click', (e) => {
         if (e.target.id === 'friendCollectionModal') document.getElementById('friendCollectionModal').classList.remove('show');
+    });
+
+    // Tabs do modal de perfil do amigo
+    function fcSwitchTab(tab) {
+        const panels = document.getElementById('fcPanels');
+        if (!panels) return;
+        panels.dataset.activeTab = tab;
+        document.querySelectorAll('#friendCollectionModal .fc-tab').forEach(b => {
+            b.classList.toggle('active', b.dataset.fcTab === tab);
+        });
+        // Lazy load comparação
+        if (tab === 'comparacao' && _fcState.userId && !_fcState.comparisonLoaded) {
+            renderCompareInto(document.getElementById('fcCompareContent'), _fcState.userId);
+            _fcState.comparisonLoaded = true;
+        }
+    }
+    document.querySelectorAll('#friendCollectionModal .fc-tab').forEach(btn => {
+        btn.addEventListener('click', () => fcSwitchTab(btn.dataset.fcTab));
     });
 
     // ============ Modal: Ver nota completa (read-only) ============
@@ -8488,6 +8555,79 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 setTimeout(() => redeSidebarEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
             }
         });
+    }
+
+    // Render genérico de comparação dentro de um elemento alvo (reutilizado pela aba Comparação)
+    async function renderCompareInto(targetEl, userId) {
+        targetEl.innerHTML = '<div class="loading">Carregando comparação...</div>';
+        try {
+            const data = await api(`/social/compare/${userId}`);
+            const me = data.me, fr = data.friend;
+            targetEl.innerHTML = renderCompareHTML(me, fr, data.common);
+        } catch (e) {
+            targetEl.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
+        }
+    }
+
+    function renderCompareHTML(me, fr, common) {
+        const fmtMoney = (v) => `R$ ${Number(v || 0).toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
+        const wins = (a, b) => Number(a || 0) > Number(b || 0);
+        const meCls = (a, b, isWin = true) => isWin && wins(a, b) ? 'win' : '';
+        const frCls = (a, b, isWin = true) => isWin && wins(b, a) ? 'win' : '';
+
+        const rows = [
+            ['Jogos',         me.jogos, fr.jogos, true],
+            ['Vitórias',      me.vitorias, fr.vitorias, true],
+            ['Empates',       me.empates, fr.empates, false],
+            ['Derrotas',      me.derrotas, fr.derrotas, false],
+            ['Aproveitamento', me.aproveitamento_pct != null ? `${me.aproveitamento_pct}%` : '—', fr.aproveitamento_pct != null ? `${fr.aproveitamento_pct}%` : '—', true],
+            ['Clássicos',     me.classicos, fr.classicos, true],
+            ['Gasto total',   fmtMoney(me.gasto_total), fmtMoney(fr.gasto_total), false],
+        ];
+
+        const meName = (me.display_name || me.username || 'Você').toUpperCase();
+        const frName = (fr.display_name || fr.username || 'Amigo').toUpperCase();
+
+        const commonHtml = common.count
+            ? common.games.map(g => {
+                const dt = new Date(g.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+                const placar = g.gols_casa != null ? `${g.gols_casa} × ${g.gols_visitante}` : '—';
+                return `
+                    <div class="common-game-row">
+                        <span class="cg-date">${dt}</span>
+                        <span>${escapeHtml(g.time_casa)} × ${escapeHtml(g.time_visitante)}</span>
+                        <span class="cg-score">${placar}</span>
+                    </div>
+                `;
+            }).join('')
+            : '<div class="empty" style="padding:1rem;">Vocês ainda não foram juntos em nenhum jogo.</div>';
+
+        return `
+            <div class="compare-grid">
+                <div class="compare-col">
+                    <h4>${escapeHtml(meName)}</h4>
+                    <div class="compare-club">${escapeHtml(me.club_name || 'Sem time')}</div>
+                </div>
+                <div class="compare-vs">VS</div>
+                <div class="compare-col">
+                    <h4>${escapeHtml(frName)}</h4>
+                    <div class="compare-club">${escapeHtml(fr.club_name || 'Sem time')}</div>
+                </div>
+            </div>
+
+            <div class="compare-stats">
+                ${rows.map(([label, a, b, isWin]) => `
+                    <div class="compare-row-num left ${meCls(a, b, isWin)}">${escapeHtml(String(a ?? 0))}</div>
+                    <div class="compare-row-label">${label}</div>
+                    <div class="compare-row-num right ${frCls(a, b, isWin)}">${escapeHtml(String(b ?? 0))}</div>
+                `).join('')}
+            </div>
+
+            <div class="common-games">
+                <h4>Jogos que vocês foram juntos · ${common.count}</h4>
+                ${commonHtml}
+            </div>
+        `;
     }
 
     async function openCompare(userId) {
