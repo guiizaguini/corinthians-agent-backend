@@ -4311,6 +4311,174 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 }
 
 /* ===============================================================
+   FRIEND COLLECTION MODAL — split 2 colunas (ingressos + conquistas)
+   =============================================================== */
+.fc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.85rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid var(--line);
+}
+.fc-header-info { min-width: 0; flex: 1; }
+.fc-header-info h2 { margin-bottom: 0.2rem; }
+.fc-header-stats {
+    display: flex;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+}
+.fc-split {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 1.25rem;
+    align-items: flex-start;
+    min-height: 0;
+}
+.fc-left, .fc-right {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+.fc-section-title {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1.5px solid var(--line);
+}
+.fc-section-title .material-icons { font-size: 1.1rem; color: var(--accent); }
+.fc-section-title .fc-conq-count {
+    margin-left: auto;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--ink-mute);
+}
+.fc-galeria { grid-template-columns: 1fr; gap: 12px; }
+
+/* Lista de conquistas — versão compacta dentro do split */
+.fc-conq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 0.4rem;
+    scrollbar-width: thin;
+}
+.fc-conq-list::-webkit-scrollbar { width: 6px; }
+.fc-conq-list::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+
+.fc-conq-row {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.6rem 0.75rem;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    transition: all 150ms;
+}
+.fc-conq-row.locked { opacity: 0.5; filter: grayscale(70%); }
+.fc-conq-row.unlocked.bronze { border-left: 3px solid #cd7f32; }
+.fc-conq-row.unlocked.silver { border-left: 3px solid #b0b0b0; }
+.fc-conq-row.unlocked.gold {
+    border-left: 3px solid #d4a520;
+    box-shadow: 0 2px 8px rgba(212,165,32,0.15);
+}
+.fc-conq-row.unlocked.platinum {
+    border-left: 3px solid #7ee0ff;
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(126,224,255,0.05) 100%);
+    box-shadow: 0 2px 12px rgba(126,224,255,0.18);
+}
+
+.fc-conq-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--bg-base);
+    border: 1.5px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-mute);
+    flex-shrink: 0;
+}
+.fc-conq-icon .material-icons { font-size: 1.05rem; }
+.fc-conq-row.unlocked.bronze .fc-conq-icon { border-color: #cd7f32; color: #cd7f32; background: rgba(205,127,50,0.1); }
+.fc-conq-row.unlocked.silver .fc-conq-icon { border-color: #b0b0b0; color: #b0b0b0; background: rgba(176,176,176,0.1); }
+.fc-conq-row.unlocked.gold .fc-conq-icon {
+    border-color: #d4a520;
+    color: #d4a520;
+    background: rgba(212,165,32,0.15);
+    box-shadow: 0 0 10px rgba(212,165,32,0.3);
+}
+.fc-conq-row.unlocked.platinum .fc-conq-icon {
+    border-color: #7ee0ff;
+    color: #7ee0ff;
+    background: rgba(126,224,255,0.15);
+    box-shadow: 0 0 12px rgba(126,224,255,0.4);
+}
+
+.fc-conq-info { flex: 1; min-width: 0; }
+.fc-conq-name {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.15;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.fc-conq-desc {
+    font-family: 'SN Pro', 'Oswald', sans-serif;
+    font-size: 0.7rem;
+    color: var(--ink-mute);
+    line-height: 1.3;
+    margin-top: 0.1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+.fc-conq-rarity {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.5rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 0.12rem 0.4rem;
+    border-radius: 999px;
+    flex-shrink: 0;
+    line-height: 1.4;
+}
+.fc-conq-rarity.bronze { background: rgba(205,127,50,0.15); color: #cd7f32; border: 1px solid rgba(205,127,50,0.4); }
+.fc-conq-rarity.silver { background: rgba(176,176,176,0.15); color: #9b9b9b; border: 1px solid rgba(176,176,176,0.4); }
+.fc-conq-rarity.gold { background: rgba(212,165,32,0.15); color: #d4a520; border: 1px solid rgba(212,165,32,0.5); }
+.fc-conq-rarity.platinum { background: rgba(126,224,255,0.15); color: #7ee0ff; border: 1px solid rgba(126,224,255,0.5); }
+
+/* Mobile: vira coluna única */
+@media (max-width: 900px) {
+    .fc-split { grid-template-columns: 1fr; }
+    .fc-conq-list { max-height: none; }
+}
+
+/* ===============================================================
    PERFIL — vista full screen com header + KPIs + conquistas
    =============================================================== */
 #perfilView { position: relative; }
@@ -5223,15 +5391,39 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
     <!-- Modal: Coleção de ingressos do amigo -->
     <div class="modal-overlay" id="friendCollectionModal">
-        <div class="modal modal-xl" style="max-width:95vw;max-height:90vh;">
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:0.4rem;">
-                <div>
+        <div class="modal modal-xl" style="max-width:1100px;max-height:92vh;">
+            <header class="fc-header">
+                <div class="fc-header-info">
                     <h2 id="friendCollectionTitle">—</h2>
                     <div class="meta" id="friendCollectionMeta">—</div>
                 </div>
-                <div id="friendCollectionStats" style="display:flex;gap:1.2rem;"></div>
+                <div id="friendCollectionStats" class="fc-header-stats"></div>
+            </header>
+
+            <div class="fc-split">
+                <!-- Coluna ESQUERDA: ingressos / coleção -->
+                <section class="fc-left">
+                    <div class="fc-section-title">
+                        <span class="material-icons">confirmation_number</span>
+                        Ingressos &amp; presenças
+                    </div>
+                    <div id="friendCollectionContent" class="galeria fc-galeria">
+                        <div class="loading">Carregando coleção...</div>
+                    </div>
+                </section>
+
+                <!-- Coluna DIREITA: conquistas -->
+                <aside class="fc-right">
+                    <div class="fc-section-title">
+                        <span class="material-icons">emoji_events</span>
+                        Conquistas <span class="fc-conq-count" id="fcConqCount"></span>
+                    </div>
+                    <div id="fcConqList" class="fc-conq-list">
+                        <div class="loading">Carregando conquistas...</div>
+                    </div>
+                </aside>
             </div>
-            <div id="friendCollectionContent" class="galeria" style="margin-top:1rem;"><div class="loading">Carregando coleção...</div></div>
+
             <div class="modal-actions">
                 <button class="btn-secondary" id="friendCollectionClose">Fechar</button>
             </div>
@@ -8002,6 +8194,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         document.getElementById('friendCollectionMeta').textContent = '';
         document.getElementById('friendCollectionStats').innerHTML = '';
         document.getElementById('friendCollectionContent').innerHTML = '<div class="loading">Carregando coleção...</div>';
+        document.getElementById('fcConqList').innerHTML = '<div class="loading">Carregando conquistas...</div>';
+        document.getElementById('fcConqCount').textContent = '';
         try {
             const data = await api(`/social/users/${userId}/attendances`);
             const u = data.user;
@@ -8028,20 +8222,61 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 </div>
             `;
 
+            // Coluna ESQUERDA: ingressos
             const container = document.getElementById('friendCollectionContent');
             if (!data.games.length) {
                 container.innerHTML = '<div class="empty">Esse amigo ainda não registrou nenhum ingresso.</div>';
-                return;
+            } else {
+                container.innerHTML = data.games.map(renderIngresso).join('');
+                container.querySelectorAll('.ingresso-actions').forEach(el => el.remove());
+                container.querySelectorAll('.ingresso').forEach(el => {
+                    el.style.cursor = 'default';
+                });
             }
-            container.innerHTML = data.games.map(renderIngresso).join('');
-            // Read-only: ingressos não tem ações de editar/remover
-            container.querySelectorAll('.ingresso-actions').forEach(el => el.remove());
-            container.querySelectorAll('.ingresso').forEach(el => {
-                el.style.cursor = 'default';
-            });
+
+            // Coluna DIREITA: conquistas
+            renderFriendAchievements(data.achievements || []);
         } catch (e) {
             document.getElementById('friendCollectionContent').innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
+            document.getElementById('fcConqList').innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
         }
+    }
+
+    function renderFriendAchievements(achievements) {
+        const list = document.getElementById('fcConqList');
+        const count = document.getElementById('fcConqCount');
+        if (!achievements.length) {
+            list.innerHTML = '<div class="empty" style="padding:1.5rem 0.5rem;">Sem conquistas ainda.</div>';
+            count.textContent = '';
+            return;
+        }
+        const unlockedN = achievements.filter(a => a.unlocked).length;
+        count.textContent = `(${unlockedN}/${achievements.length})`;
+
+        // Ordem: desbloqueadas primeiro (raras topo), depois bloqueadas (mais perto do alvo primeiro)
+        const rarityOrder = { platinum: 4, gold: 3, silver: 2, bronze: 1 };
+        const sorted = [...achievements].sort((a, b) => {
+            if (a.unlocked !== b.unlocked) return a.unlocked ? -1 : 1;
+            if (a.unlocked) return rarityOrder[b.rarity] - rarityOrder[a.rarity];
+            return b.pct - a.pct;
+        });
+
+        list.innerHTML = sorted.map(a => {
+            const cls = `fc-conq-row ${a.unlocked ? 'unlocked ' + a.rarity : 'locked'}`;
+            const meta = a.unlocked
+                ? `<span class="fc-conq-rarity ${a.rarity}">${a.rarity}</span>`
+                : `<span class="fc-conq-rarity ${a.rarity}" title="Falta ${a.target - a.progress}">${a.progress}/${a.target}</span>`;
+            return `
+                <div class="${cls}" title="${escapeHtml(a.description)}">
+                    <div class="fc-conq-icon"><span class="material-icons">${a.icon}</span></div>
+                    <div class="fc-conq-info">
+                        <div class="fc-conq-name">${escapeHtml(a.name)}</div>
+                        <div class="fc-conq-desc">${escapeHtml(a.description)}</div>
+                    </div>
+                    ${meta}
+                </div>
+            `;
+        }).join('');
     }
 
     document.getElementById('friendCollectionClose').addEventListener('click', () => {

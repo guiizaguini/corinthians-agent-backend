@@ -30,7 +30,13 @@
       "Bash(node -e \"const fs=require\\('fs'\\); const s=fs.readFileSync\\(String.raw\\\\`C:\\\\Users\\\\guilh\\\\OneDrive\\\\Área de Trabalho\\\\corinthians-agent-backend\\\\public\\\\app.html\\\\`,'utf8'\\); const m=s.match\\(/<div class=\\\\\"tab-panel/g\\); const n=s.match\\(/data-tab=/g\\); const o=s.match\\(/composerAvatar|composerBody|composerAttendance|composerPost/g\\); console.log\\('tab-panel divs:', m?.length\\); console.log\\('data-tab:', n?.length\\); console.log\\('composer refs:', o?.length\\);\")",
       "Bash(node --check \"C:\\\\Users\\\\guilh\\\\OneDrive\\\\Área de Trabalho\\\\corinthians-agent-backend\\\\src\\\\routes\\\\social.js\")",
       "Bash(node --check \"C:\\\\Users\\\\guilh\\\\OneDrive\\\\Área de Trabalho\\\\corinthians-agent-backend\\\\src\\\\routes\\\\me.js\")",
-      "Bash(node --check \"C:\\\\Users\\\\guilh\\\\OneDrive\\\\Área de Trabalho\\\\corinthians-agent-backend\\\\src\\\\middleware\\\\authUser.js\")"
+      "Bash(node --check \"C:\\\\Users\\\\guilh\\\\OneDrive\\\\Área de Trabalho\\\\corinthians-agent-backend\\\\src\\\\middleware\\\\authUser.js\")",
+      "Bash(node --check \"/c/Users/guilh/OneDrive/Área de Trabalho/corinthians-agent-backend/src/routes/bolao.js\")",
+      "Bash(node --check \"/c/Users/guilh/OneDrive/Área de Trabalho/corinthians-agent-backend/src/server.js\")",
+      "Bash(node --check \"/c/Users/guilh/OneDrive/Área de Trabalho/corinthians-agent-backend/scripts/seed_bolao_default.mjs\")",
+      "Bash(node --check \"/c/Users/guilh/OneDrive/Área de Trabalho/corinthians-agent-backend/src/utils/achievements.js\")",
+      "Bash(node --check \"/c/Users/guilh/OneDrive/Área de Trabalho/corinthians-agent-backend/src/routes/me.js\")",
+      "Bash(node --check \"/c/Users/guilh/OneDrive/Área de Trabalho/corinthians-agent-backend/src/routes/social.js\")"
     ]
   }
 }

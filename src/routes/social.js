@@ -1,6 +1,7 @@
 import express from 'express';
 import { z } from 'zod';
 import { query } from '../db/pool.js';
+import { computeAchievements } from '../utils/achievements.js';
 
 /**
  * Rotas de rede social: busca de users, amizades, comparação de stats.
@@ -355,29 +356,86 @@ router.get('/users/:user_id/attendances', async (req, res, next) => {
             [otherId]
         );
 
-        // Stats agregados (mesma fórmula do compare)
-        const { rows: stats } = await query(
-            `SELECT
-                COUNT(*) FILTER (WHERE a.status='PRESENTE' AND g.resultado IS NOT NULL)::int AS jogos,
-                SUM(CASE WHEN a.status='PRESENTE' AND g.resultado='V' THEN 1 ELSE 0 END)::int AS vitorias,
-                SUM(CASE WHEN a.status='PRESENTE' AND g.resultado='E' THEN 1 ELSE 0 END)::int AS empates,
-                SUM(CASE WHEN a.status='PRESENTE' AND g.resultado='D' THEN 1 ELSE 0 END)::int AS derrotas,
-                ROUND(
-                    (SUM(CASE WHEN a.status='PRESENTE' AND g.resultado='V' THEN 3 ELSE 0 END)
-                     + SUM(CASE WHEN a.status='PRESENTE' AND g.resultado='E' THEN 1 ELSE 0 END))::numeric
-                    / NULLIF(COUNT(*) FILTER (WHERE a.status='PRESENTE' AND g.resultado IS NOT NULL)*3, 0) * 100,
-                    2
-                ) AS aproveitamento_pct
-             FROM attendances a JOIN games g ON g.id = a.game_id
-             WHERE a.user_id = $1`,
-            [otherId]
-        );
+        // Stats agregados + tudo que as conquistas precisam (mesma fórmula do /me/achievements)
+        const otherClubId = userRows[0].club_id;
+        const [statsAgg, statsExtras, notas, amigos, companions] = await Promise.all([
+            query(
+                `SELECT
+                    COUNT(*) FILTER (WHERE a.status='PRESENTE' AND g.resultado IS NOT NULL)::int AS jogos,
+                    SUM(CASE WHEN a.status='PRESENTE' AND g.resultado='V' THEN 1 ELSE 0 END)::int AS vitorias,
+                    SUM(CASE WHEN a.status='PRESENTE' AND g.resultado='E' THEN 1 ELSE 0 END)::int AS empates,
+                    SUM(CASE WHEN a.status='PRESENTE' AND g.resultado='D' THEN 1 ELSE 0 END)::int AS derrotas,
+                    ROUND(
+                        (SUM(CASE WHEN a.status='PRESENTE' AND g.resultado='V' THEN 3 ELSE 0 END)
+                         + SUM(CASE WHEN a.status='PRESENTE' AND g.resultado='E' THEN 1 ELSE 0 END))::numeric
+                        / NULLIF(COUNT(*) FILTER (WHERE a.status='PRESENTE' AND g.resultado IS NOT NULL)*3, 0) * 100,
+                        2
+                    ) AS aproveitamento_pct
+                 FROM attendances a JOIN games g ON g.id = a.game_id
+                 WHERE a.user_id = $1`,
+                [otherId]
+            ),
+            // Stats extras pra conquistas: clássicos + títulos (filtrado pelo clube do user)
+            otherClubId
+                ? query(
+                    `SELECT
+                        COUNT(*) FILTER (WHERE g.foi_classico = TRUE)::int AS classicos,
+                        COUNT(*) FILTER (WHERE g.titulo_conquistado IS NOT NULL AND g.titulo_conquistado <> '')::int AS titulos,
+                        ROUND(
+                            (SUM(CASE WHEN g.resultado='V' THEN 3 ELSE 0 END)
+                             + SUM(CASE WHEN g.resultado='E' THEN 1 ELSE 0 END))::numeric
+                            / NULLIF(COUNT(*)*3, 0) * 100,
+                            0
+                        )::int AS aproveitamento_pct_int
+                     FROM attendances a
+                     JOIN games g ON g.id = a.game_id
+                     WHERE a.user_id = $1
+                       AND a.status = 'PRESENTE'
+                       AND g.club_id = $2
+                       AND g.resultado IS NOT NULL`,
+                    [otherId, otherClubId]
+                )
+                : Promise.resolve({ rows: [{ classicos: 0, titulos: 0, aproveitamento_pct_int: 0 }] }),
+            query('SELECT COUNT(*)::int AS n FROM notes WHERE user_id = $1', [otherId]),
+            query(
+                `SELECT COUNT(*)::int AS n FROM friendships
+                 WHERE status = 'ACCEPTED'
+                   AND (requester_id = $1 OR recipient_id = $1)`,
+                [otherId]
+            ),
+            query(
+                `SELECT COUNT(DISTINCT a.id)::int AS n
+                 FROM attendances a
+                 JOIN attendance_companions ac ON ac.attendance_id = a.id
+                 WHERE a.user_id = $1`,
+                [otherId]
+            ),
+        ]);
+
+        const stats = statsAgg.rows[0];
+        const e = statsExtras.rows[0] || {};
+
+        // Stats que o catálogo de conquistas espera
+        const achStats = {
+            jogos:                  stats?.jogos || 0,
+            vitorias:               stats?.vitorias || 0,
+            empates:                stats?.empates || 0,
+            derrotas:               stats?.derrotas || 0,
+            classicos:              e.classicos || 0,
+            titulos:                e.titulos || 0,
+            aproveitamento_pct:     e.aproveitamento_pct_int || 0,
+            notas:                  notas.rows[0]?.n || 0,
+            amigos:                 amigos.rows[0]?.n || 0,
+            jogos_com_companions:   companions.rows[0]?.n || 0,
+        };
+        const achievements = computeAchievements(achStats);
 
         res.json({
             user: userRows[0],
-            stats: stats[0],
+            stats,
             count: games.length,
             games,
+            achievements,
         });
     } catch (err) { next(err); }
 });
