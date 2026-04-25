@@ -2545,6 +2545,16 @@ main {
     align-self: center;
 }
 .user-card:hover { border-color: var(--accent); }
+.user-card-clickable { cursor: pointer; }
+.user-card-clickable:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+.user-card-clickable:hover .user-name-sm { color: var(--accent); }
+.user-card-clickable:active { transform: translateY(0); }
+/* Os botões de ação NÃO devem mover quando o card hover */
+.user-card-clickable .user-actions-sm { cursor: default; }
 .user-avatar-sm {
     width: 42px;
     height: 42px;
@@ -7730,8 +7740,12 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         }
 
         const userId = u.user_id || u.id;
+        // Card clicável quando é amigo (avatar/nome abrem perfil dele)
+        const cardClickable = mode === 'friend' && userId;
+        const cardOpen = cardClickable ? `data-open-profile="${userId}"` : '';
+        const cardCls = cardClickable ? 'user-card user-card-clickable' : 'user-card';
         return `
-            <div class="user-card">
+            <div class="${cardCls}" ${cardOpen}>
                 <div class="user-avatar-wrap">
                     <div class="user-avatar-sm">${initials}</div>
                     ${isOnline ? '<span class="avatar-presence-dot" title="Online agora"></span>' : ''}
@@ -7747,6 +7761,14 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     }
 
     function bindUserCardActions(container) {
+        // Card de amigo clicável (avatar + nome + área de info abrem o perfil dele)
+        container.querySelectorAll('[data-open-profile]').forEach(card => {
+            card.addEventListener('click', (e) => {
+                // Ignora cliques nos botões de ação (lupinha, comparar, remover, etc)
+                if (e.target.closest('.user-actions-sm')) return;
+                openFriendCollection(parseInt(card.dataset.openProfile));
+            });
+        });
         container.querySelectorAll('[data-compare]').forEach(b => {
             b.addEventListener('click', () => openCompare(parseInt(b.dataset.compare)));
         });
