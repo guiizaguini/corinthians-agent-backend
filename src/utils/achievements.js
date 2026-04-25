@@ -60,7 +60,7 @@ export const ACHIEVEMENTS = [
     },
     {
         id: 'presente_25',
-        name: 'Habitué',
+        name: 'Não Falta',
         description: 'Esteve em 25 jogos do seu time',
         icon: 'stadium',
         rarity: 'silver',
@@ -100,8 +100,8 @@ export const ACHIEVEMENTS = [
     },
     {
         id: 'presente_365',
-        name: 'Fiel da Pesada',
-        description: 'Esteve em 365 jogos — uma vida inteira na arquibancada',
+        name: 'Lenda da Arquibancada',
+        description: 'Esteve em 365 jogos — uma vida inteira na geral',
         icon: 'diamond',
         rarity: 'platinum',
         category: 'presenca',
@@ -198,7 +198,7 @@ export const ACHIEVEMENTS = [
     {
         id: 'classico_10',
         name: 'Inimigo do Rival',
-        description: 'Esteve em 10 clássicos. Cada gritinha aumenta a história.',
+        description: '10 clássicos vividos da arquibancada. Lenda do dérbi.',
         icon: 'whatshot',
         rarity: 'platinum',
         category: 'especial',
