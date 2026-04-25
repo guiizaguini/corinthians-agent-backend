@@ -201,6 +201,17 @@ CREATE TABLE IF NOT EXISTS attendance_companions (
 );
 CREATE INDEX IF NOT EXISTS idx_companions_user ON attendance_companions(companion_user_id);
 
+-- Confirmação bidirecional: quando você marca alguém como companhia,
+-- a pessoa precisa aceitar pra virar CONFIRMED. Defaults retroativos: existentes ficam CONFIRMED.
+ALTER TABLE attendance_companions
+    ADD COLUMN IF NOT EXISTS status VARCHAR(15) NOT NULL DEFAULT 'CONFIRMED';
+ALTER TABLE attendance_companions
+    ADD COLUMN IF NOT EXISTS confirmed_at TIMESTAMPTZ;
+ALTER TABLE attendance_companions
+    ADD COLUMN IF NOT EXISTS responded_at TIMESTAMPTZ;
+CREATE INDEX IF NOT EXISTS idx_companions_user_status
+    ON attendance_companions(companion_user_id, status);
+
 -- =============================================================
 -- Triggers de updated_at (reutiliza função existente se já houver)
 -- =============================================================

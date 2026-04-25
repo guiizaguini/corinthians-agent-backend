@@ -3086,6 +3086,29 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     text-transform: uppercase;
     letter-spacing: 0.04em;
 }
+.companion-pending-tag {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.55rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #a8791b;
+    background: rgba(212,165,32,0.18);
+    border: 1px solid rgba(212,165,32,0.5);
+    padding: 0.1rem 0.4rem;
+    border-radius: 999px;
+    margin-left: 0.35rem;
+    line-height: 1.3;
+}
+.companion-chip.active .companion-pending-tag {
+    background: rgba(255,255,255,0.18);
+    border-color: rgba(255,255,255,0.35);
+    color: #fff;
+}
+
+/* Card de companion request com layout multilinha */
+.companion-req-card .user-meta-sm { -webkit-line-clamp: unset !important; }
+.companion-req-card .user-actions-sm { align-self: center; }
 
 .companions-summary {
     margin-top: 0.6rem;
@@ -5642,6 +5665,11 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                         <div class="user-list compact" id="incomingList"></div>
                     </div>
 
+                    <div class="rede-section" id="companionRequestsSection" style="display:none;">
+                        <h3>Pediram pra confirmar <span class="badge" id="companionRequestsBadge">0</span></h3>
+                        <div class="user-list compact" id="companionRequestsList"></div>
+                    </div>
+
                     <div class="rede-section" id="outgoingSection" style="display:none;">
                         <h3>Enviadas</h3>
                         <div class="user-list compact" id="outgoingList"></div>
@@ -6954,15 +6982,21 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             updateCompanionsSummary();
             return;
         }
-        const currentIds = new Set(currentCompanions.map(c => c.user_id));
+        const currentMap = new Map(currentCompanions.map(c => [c.user_id, c.status || 'CONFIRMED']));
         container.innerHTML = friends.map(f => {
-            const isActive = currentIds.has(f.user_id);
+            const status = currentMap.get(f.user_id);
+            const isActive = !!status;
+            const isPending = status === 'PENDING';
             const icon = isActive ? 'check_circle' : 'radio_button_unchecked';
             const cls = isActive ? 'companion-chip active' : 'companion-chip';
+            const pendingTag = isPending
+                ? '<span class="companion-pending-tag" title="Aguardando confirmação do amigo">aguardando</span>'
+                : '';
             return `
                 <button type="button" class="${cls}" data-uid="${f.user_id}">
                     <span class="material-icons">${icon}</span>
                     <span class="companion-chip-name">${escapeHtml(f.display_name || f.username || '—')}</span>
+                    ${pendingTag}
                 </button>
             `;
         }).join('');
@@ -8439,14 +8473,19 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     });
 
     function updateBell() {
-        const count = friendsState.incoming?.length || 0;
+        const friendReqs = friendsState.incoming?.length || 0;
+        const companionReqs = friendsState.companion_requests_count || 0;
+        const count = friendReqs + companionReqs;
         const bell = document.getElementById('bellBtn');
         const badge = document.getElementById('bellBadge');
         if (count > 0) {
             badge.textContent = count > 9 ? '9+' : count;
             badge.classList.add('show');
             bell.classList.add('has-pending');
-            bell.title = `${count} ${count === 1 ? 'pedido pendente' : 'pedidos pendentes'}`;
+            const partes = [];
+            if (friendReqs) partes.push(`${friendReqs} ${friendReqs === 1 ? 'pedido de amizade' : 'pedidos de amizade'}`);
+            if (companionReqs) partes.push(`${companionReqs} ${companionReqs === 1 ? 'confirmação de companhia' : 'confirmações de companhia'}`);
+            bell.title = partes.join(' · ');
         } else {
             badge.classList.remove('show');
             bell.classList.remove('has-pending');
@@ -8492,9 +8531,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             // Atualiza o texto do toggle mobile "Sua rede"
             const toggleCountEl = document.getElementById('redeToggleCount');
             if (toggleCountEl) {
-                const pending = data.incoming.length;
+                const pending = data.incoming.length + (data.companion_requests_count || 0);
                 if (pending > 0) {
-                    toggleCountEl.textContent = `${pending} pedido${pending > 1 ? 's' : ''}`;
+                    toggleCountEl.textContent = `${pending} pendente${pending > 1 ? 's' : ''}`;
                     toggleCountEl.classList.add('rede-toggle-pending');
                 } else {
                     toggleCountEl.textContent = `${data.friends.length} amigo${data.friends.length !== 1 ? 's' : ''}`;
@@ -8531,8 +8570,76 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             } else {
                 outSec.style.display = 'none';
             }
+
+            // Companion requests (alguém marcou que foi/vai com você)
+            loadCompanionRequests();
         } catch (err) {
             document.getElementById('friendsList').innerHTML = `<div class="empty">Erro: ${err.message}</div>`;
+        }
+    }
+
+    async function loadCompanionRequests() {
+        const sec = document.getElementById('companionRequestsSection');
+        const list = document.getElementById('companionRequestsList');
+        try {
+            const { requests } = await api('/social/companion-requests');
+            if (!requests.length) {
+                sec.style.display = 'none';
+                return;
+            }
+            sec.style.display = '';
+            document.getElementById('companionRequestsBadge').textContent = requests.length;
+            list.innerHTML = requests.map(r => {
+                const dt = new Date(r.game_data).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' });
+                const owner = (r.owner_display_name || r.owner_username || 'Alguém').toUpperCase();
+                const initials = avatarInitials(r.owner_display_name || r.owner_username);
+                const matchTxt = `${r.time_casa} × ${r.time_visitante}`;
+                return `
+                    <div class="user-card companion-req-card">
+                        <div class="user-avatar-sm">${initials}</div>
+                        <div class="user-info-sm">
+                            <div class="user-name-sm">${escapeHtml(owner)}</div>
+                            <div class="user-meta-sm" style="font-size:0.7rem;line-height:1.3;">
+                                marcou que foi com você em<br>
+                                <b style="color:var(--ink);">${escapeHtml(matchTxt)}</b><br>
+                                <span style="color:var(--ink-mute);">${dt}</span>
+                            </div>
+                        </div>
+                        <div class="user-actions-sm">
+                            <button class="user-action accept" title="Confirmar" data-cr-accept="${r.attendance_id}"><span class="material-icons">check</span></button>
+                            <button class="user-action reject" title="Não fui" data-cr-reject="${r.attendance_id}"><span class="material-icons">close</span></button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            // Wire handlers
+            list.querySelectorAll('[data-cr-accept]').forEach(b => {
+                b.addEventListener('click', async () => {
+                    b.disabled = true;
+                    try {
+                        await api(`/social/companion-requests/${b.dataset.crAccept}/accept`, { method: 'POST' });
+                        await loadFriends();
+                    } catch (e) {
+                        alert('Erro: ' + e.message);
+                        b.disabled = false;
+                    }
+                });
+            });
+            list.querySelectorAll('[data-cr-reject]').forEach(b => {
+                b.addEventListener('click', async () => {
+                    if (!confirm('Você não foi/vai nesse jogo? Vamos remover você como companhia.')) return;
+                    b.disabled = true;
+                    try {
+                        await api(`/social/companion-requests/${b.dataset.crReject}`, { method: 'DELETE' });
+                        await loadFriends();
+                    } catch (e) {
+                        alert('Erro: ' + e.message);
+                        b.disabled = false;
+                    }
+                });
+            });
+        } catch {
+            sec.style.display = 'none';
         }
     }
 

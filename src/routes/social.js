@@ -63,22 +63,29 @@ router.get('/users/search', async (req, res, next) => {
 // =============================================================
 router.get('/friends', async (req, res, next) => {
     try {
-        const { rows } = await query(
-            `SELECT
-                f.id, f.status, f.requester_id, f.recipient_id, f.created_at,
-                CASE WHEN f.requester_id = $1 THEN f.recipient_id ELSE f.requester_id END AS other_id,
-                u.username, u.display_name, u.last_seen_at,
-                c.name AS club_name, c.short_name AS club_short, c.primary_color
-             FROM friendships f
-             JOIN users u ON u.id = (CASE WHEN f.requester_id = $1 THEN f.recipient_id ELSE f.requester_id END)
-             LEFT JOIN clubs c ON c.id = u.club_id
-             WHERE f.requester_id = $1 OR f.recipient_id = $1
-             ORDER BY f.created_at DESC`,
-            [req.user.id]
-        );
+        const [friendshipsRes, companionsRes] = await Promise.all([
+            query(
+                `SELECT
+                    f.id, f.status, f.requester_id, f.recipient_id, f.created_at,
+                    CASE WHEN f.requester_id = $1 THEN f.recipient_id ELSE f.requester_id END AS other_id,
+                    u.username, u.display_name, u.last_seen_at,
+                    c.name AS club_name, c.short_name AS club_short, c.primary_color
+                 FROM friendships f
+                 JOIN users u ON u.id = (CASE WHEN f.requester_id = $1 THEN f.recipient_id ELSE f.requester_id END)
+                 LEFT JOIN clubs c ON c.id = u.club_id
+                 WHERE f.requester_id = $1 OR f.recipient_id = $1
+                 ORDER BY f.created_at DESC`,
+                [req.user.id]
+            ),
+            query(
+                `SELECT COUNT(*)::int AS n FROM attendance_companions
+                 WHERE companion_user_id = $1 AND status = 'PENDING'`,
+                [req.user.id]
+            ),
+        ]);
 
         const friends = [], incoming = [], outgoing = [];
-        for (const r of rows) {
+        for (const r of friendshipsRes.rows) {
             const item = {
                 friendship_id: r.id,
                 user_id: r.other_id,
@@ -94,7 +101,12 @@ router.get('/friends', async (req, res, next) => {
             else if (r.requester_id === req.user.id) outgoing.push(item);
             else incoming.push(item);
         }
-        res.json({ friends, incoming, outgoing });
+        res.json({
+            friends,
+            incoming,
+            outgoing,
+            companion_requests_count: companionsRes.rows[0]?.n || 0,
+        });
     } catch (err) { next(err); }
 });
 
@@ -437,6 +449,84 @@ router.get('/users/:user_id/attendances', async (req, res, next) => {
             games,
             achievements,
         });
+    } catch (err) { next(err); }
+});
+
+// =============================================================
+// GET /social/companion-requests — pendings que outros me marcaram
+// =============================================================
+router.get('/companion-requests', async (req, res, next) => {
+    try {
+        const { rows } = await query(`
+            SELECT
+                ac.attendance_id,
+                ac.companion_user_id,
+                ac.created_at,
+                a.id AS attendance_id_full,
+                a.user_id AS owner_id,
+                ow.username AS owner_username,
+                ow.display_name AS owner_display_name,
+                g.id AS game_id,
+                g.data AS game_data,
+                g.time_casa, g.time_visitante,
+                g.campeonato, g.estadio, g.gols_casa, g.gols_visitante
+            FROM attendance_companions ac
+            JOIN attendances a ON a.id = ac.attendance_id
+            JOIN users ow ON ow.id = a.user_id
+            JOIN games g ON g.id = a.game_id
+            WHERE ac.companion_user_id = $1
+              AND ac.status = 'PENDING'
+            ORDER BY ac.created_at DESC
+        `, [req.user.id]);
+        res.json({ requests: rows });
+    } catch (err) { next(err); }
+});
+
+// =============================================================
+// POST /social/companion-requests/:attendance_id/accept
+// =============================================================
+router.post('/companion-requests/:attendance_id/accept', async (req, res, next) => {
+    try {
+        const { rowCount } = await query(
+            `UPDATE attendance_companions
+             SET status = 'CONFIRMED', confirmed_at = NOW(), responded_at = NOW()
+             WHERE attendance_id = $1 AND companion_user_id = $2 AND status = 'PENDING'`,
+            [req.params.attendance_id, req.user.id]
+        );
+        if (!rowCount) return res.status(404).json({ error: 'request_not_found' });
+        // Invalida cache do dono da attendance pra refletir
+        const { rows: ow } = await query(
+            'SELECT user_id FROM attendances WHERE id = $1',
+            [req.params.attendance_id]
+        );
+        if (ow.length) {
+            const { invalidate } = await import('../utils/cache.js');
+            invalidate.user(ow[0].user_id);
+            invalidate.user(req.user.id); // afeta o achievement "jogos_com_companions" do confirmador também
+        }
+        res.json({ confirmed: true });
+    } catch (err) { next(err); }
+});
+
+// =============================================================
+// DELETE /social/companion-requests/:attendance_id — recusa
+// Remove o link (a pessoa marcou errado, ou a companhia não rolou)
+// =============================================================
+router.delete('/companion-requests/:attendance_id', async (req, res, next) => {
+    try {
+        const { rowCount, rows } = await query(
+            `DELETE FROM attendance_companions
+             WHERE attendance_id = $1 AND companion_user_id = $2
+             RETURNING (SELECT user_id FROM attendances WHERE id = attendance_id) AS owner_id`,
+            [req.params.attendance_id, req.user.id]
+        );
+        if (!rowCount) return res.status(404).json({ error: 'request_not_found' });
+        const ownerId = rows[0]?.owner_id;
+        if (ownerId) {
+            const { invalidate } = await import('../utils/cache.js');
+            invalidate.user(ownerId);
+        }
+        res.json({ rejected: true });
     } catch (err) { next(err); }
 });
 

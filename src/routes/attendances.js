@@ -21,13 +21,33 @@ const AttendanceSchema = z.object({
 
 const AttendanceUpdateSchema = AttendanceSchema.partial().omit({ game_id: true });
 
-// Substitui a lista de companions de uma attendance pelos IDs informados.
-// Só aceita companions que sejam amigos ACEITOS do dono.
+// Sincroniza a lista de companions de uma attendance:
+//  - Remove os que saíram da lista
+//  - Adiciona os novos como PENDING (precisam de aceite do amigo pra virar CONFIRMED)
+//  - Mantém os existentes (com qualquer status: PENDING/CONFIRMED/REJECTED)
 async function syncCompanions(attendanceId, ownerUserId, companionIds) {
-    await query('DELETE FROM attendance_companions WHERE attendance_id = $1', [attendanceId]);
-    if (!companionIds || !companionIds.length) return;
+    // Pega o que já existe na attendance
+    const { rows: existing } = await query(
+        `SELECT companion_user_id FROM attendance_companions WHERE attendance_id = $1`,
+        [attendanceId]
+    );
+    const existingSet = new Set(existing.map(r => r.companion_user_id));
 
-    // Filtra só amigos
+    if (!companionIds) companionIds = [];
+
+    // Remove os que não estão mais na lista
+    const toRemove = [...existingSet].filter(id => !companionIds.includes(id));
+    if (toRemove.length) {
+        await query(
+            `DELETE FROM attendance_companions
+             WHERE attendance_id = $1 AND companion_user_id = ANY($2)`,
+            [attendanceId, toRemove]
+        );
+    }
+
+    if (!companionIds.length) return;
+
+    // Filtra novos só pra amigos ACEITOS (evita marcar estranhos)
     const { rows: friends } = await query(
         `SELECT CASE WHEN requester_id = $1 THEN recipient_id ELSE requester_id END AS friend_id
          FROM friendships
@@ -36,12 +56,14 @@ async function syncCompanions(attendanceId, ownerUserId, companionIds) {
         [ownerUserId]
     );
     const friendSet = new Set(friends.map(r => r.friend_id));
-    const valid = companionIds.filter(id => friendSet.has(id) && id !== ownerUserId);
+    const newOnes = companionIds.filter(
+        id => !existingSet.has(id) && friendSet.has(id) && id !== ownerUserId
+    );
 
-    for (const id of valid) {
+    for (const id of newOnes) {
         await query(
-            `INSERT INTO attendance_companions (attendance_id, companion_user_id)
-             VALUES ($1, $2)
+            `INSERT INTO attendance_companions (attendance_id, companion_user_id, status)
+             VALUES ($1, $2, 'PENDING')
              ON CONFLICT DO NOTHING`,
             [attendanceId, id]
         );

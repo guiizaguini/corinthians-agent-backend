@@ -66,7 +66,8 @@ router.get('/', async (req, res, next) => {
                     SELECT json_agg(json_build_object(
                         'user_id', u.id,
                         'username', u.username,
-                        'display_name', u.display_name
+                        'display_name', u.display_name,
+                        'status', ac.status
                     ))
                     FROM attendance_companions ac
                     JOIN users u ON u.id = ac.companion_user_id
