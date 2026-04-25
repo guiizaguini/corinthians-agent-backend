@@ -1,5 +1,6 @@
 import express from 'express';
 import { query } from '../db/pool.js';
+import { computeAchievements, ACHIEVEMENT_CATEGORIES, RARITY_INFO } from '../utils/achievements.js';
 
 /**
  * Estatísticas por usuário autenticado.
@@ -263,6 +264,93 @@ router.get('/snapshot', async (req, res, next) => {
             classicos: classicos.rows,
             jogos: all_games.rows,
             ts: new Date().toISOString(),
+        });
+    } catch (err) { next(err); }
+});
+
+// =============================================================
+// GET /me/achievements — calcula o estado de cada conquista pro user
+// =============================================================
+router.get('/achievements', async (req, res, next) => {
+    try {
+        const uid = req.user.id;
+        const cid = req.user.club_id;
+
+        if (!cid) {
+            // Sem clube: sem conquistas
+            return res.json({
+                achievements: [],
+                categories: ACHIEVEMENT_CATEGORIES,
+                rarities: RARITY_INFO,
+                stats: { jogos: 0, vitorias: 0 },
+            });
+        }
+
+        // Roda 4 queries em paralelo pra montar o "stats" passado pro catálogo
+        const [agg, notas, amigos, companions] = await Promise.all([
+            query(`
+                SELECT
+                    COUNT(*)::int AS jogos,
+                    SUM(CASE WHEN g.resultado='V' THEN 1 ELSE 0 END)::int AS vitorias,
+                    SUM(CASE WHEN g.resultado='E' THEN 1 ELSE 0 END)::int AS empates,
+                    SUM(CASE WHEN g.resultado='D' THEN 1 ELSE 0 END)::int AS derrotas,
+                    COUNT(*) FILTER (WHERE g.foi_classico = TRUE)::int AS classicos,
+                    COUNT(*) FILTER (WHERE g.titulo_conquistado IS NOT NULL AND g.titulo_conquistado <> '')::int AS titulos,
+                    ROUND(
+                        (SUM(CASE WHEN g.resultado='V' THEN 3 ELSE 0 END)
+                         + SUM(CASE WHEN g.resultado='E' THEN 1 ELSE 0 END))::numeric
+                        / NULLIF(COUNT(*)*3, 0) * 100,
+                        0
+                    )::int AS aproveitamento_pct
+                FROM attendances a
+                JOIN games g ON g.id = a.game_id
+                WHERE a.user_id = $1
+                  AND a.status = 'PRESENTE'
+                  AND g.club_id = $2
+                  AND g.resultado IS NOT NULL
+            `, [uid, cid]),
+
+            query(
+                'SELECT COUNT(*)::int AS n FROM notes WHERE user_id = $1',
+                [uid]
+            ),
+
+            query(
+                `SELECT COUNT(*)::int AS n FROM friendships
+                 WHERE status = 'ACCEPTED'
+                   AND (requester_id = $1 OR recipient_id = $1)`,
+                [uid]
+            ),
+
+            query(
+                `SELECT COUNT(DISTINCT a.id)::int AS n
+                 FROM attendances a
+                 JOIN attendance_companions ac ON ac.attendance_id = a.id
+                 WHERE a.user_id = $1`,
+                [uid]
+            ),
+        ]);
+
+        const stats = {
+            jogos:                  agg.rows[0]?.jogos || 0,
+            vitorias:               agg.rows[0]?.vitorias || 0,
+            empates:                agg.rows[0]?.empates || 0,
+            derrotas:               agg.rows[0]?.derrotas || 0,
+            classicos:              agg.rows[0]?.classicos || 0,
+            titulos:                agg.rows[0]?.titulos || 0,
+            aproveitamento_pct:     agg.rows[0]?.aproveitamento_pct || 0,
+            notas:                  notas.rows[0]?.n || 0,
+            amigos:                 amigos.rows[0]?.n || 0,
+            jogos_com_companions:   companions.rows[0]?.n || 0,
+        };
+
+        const achievements = computeAchievements(stats);
+
+        res.json({
+            achievements,
+            categories: ACHIEVEMENT_CATEGORIES,
+            rarities: RARITY_INFO,
+            stats,
         });
     } catch (err) { next(err); }
 });

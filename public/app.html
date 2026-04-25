@@ -4301,6 +4301,328 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 }
 
 /* ===============================================================
+   PERFIL — vista full screen com header + KPIs + conquistas
+   =============================================================== */
+#perfilView { position: relative; }
+
+.perfil-hero {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card-2) 100%);
+    border: 1px solid var(--line);
+    border-left: 5px solid var(--accent);
+    border-radius: 16px;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+}
+.perfil-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(135deg, transparent 0 18px, rgba(255,255,255,0.02) 18px 19px);
+    pointer-events: none;
+}
+.perfil-hero-avatar {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--accent-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 2rem;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    box-shadow: 0 6px 18px var(--accent-glow);
+    position: relative;
+    z-index: 1;
+}
+.perfil-hero-info { flex: 1; min-width: 0; position: relative; z-index: 1; }
+.perfil-hero-eyebrow {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.65rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.3rem;
+}
+.perfil-hero-name {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.65rem;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.05;
+    margin: 0 0 0.3rem;
+    overflow-wrap: break-word;
+}
+.perfil-hero-handle {
+    font-family: 'SN Pro', 'Oswald', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink-mute);
+    letter-spacing: 0.02em;
+}
+.perfil-hero-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+}
+.perfil-hero-actions .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+.perfil-hero-actions .material-icons { font-size: 1rem; }
+
+.perfil-kpis { margin-bottom: 1.75rem; }
+
+/* Conquistas section */
+.perfil-conquistas { margin-top: 0.5rem; }
+.perfil-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+.perfil-section-head h3 {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+.perfil-section-head h3 .material-icons {
+    font-size: 1.2rem;
+    color: var(--accent);
+}
+.perfil-conq-stats {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+}
+.perfil-conq-stats b { color: var(--accent); font-weight: 700; }
+
+/* Filtros */
+.perfil-conq-filters {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 1.1rem;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+    scrollbar-width: none;
+}
+.perfil-conq-filters::-webkit-scrollbar { display: none; }
+.conq-filter {
+    background: transparent;
+    border: 1.5px solid var(--line);
+    color: var(--ink-mute);
+    padding: 0.45rem 0.95rem;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 999px;
+    transition: all 150ms;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.conq-filter:hover { border-color: var(--ink); color: var(--ink); }
+.conq-filter.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-text);
+}
+
+/* Grid de conquistas */
+.perfil-conq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 0.85rem;
+}
+
+.conq-card {
+    position: relative;
+    background: var(--bg-card);
+    border: 1.5px solid var(--line);
+    border-radius: 14px;
+    padding: 1rem 1.1rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    transition: all 200ms;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+.conq-card.locked {
+    opacity: 0.55;
+    filter: grayscale(80%);
+}
+.conq-card.unlocked:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+.conq-card.unlocked.bronze { border-left: 4px solid #cd7f32; }
+.conq-card.unlocked.silver { border-left: 4px solid #b0b0b0; }
+.conq-card.unlocked.gold { border-left: 4px solid #d4a520; box-shadow: 0 4px 16px rgba(212,165,32,0.18); }
+.conq-card.unlocked.platinum {
+    border-left: 4px solid #7ee0ff;
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(126,224,255,0.06) 100%);
+    box-shadow: 0 4px 18px rgba(126,224,255,0.2);
+}
+.conq-card.unlocked.platinum::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 80% 20%, rgba(126,224,255,0.15) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.conq-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--bg-base);
+    border: 2px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--ink-mute);
+    transition: all 200ms;
+}
+.conq-icon .material-icons { font-size: 1.5rem; }
+.conq-card.unlocked.bronze .conq-icon { border-color: #cd7f32; color: #cd7f32; background: rgba(205,127,50,0.1); }
+.conq-card.unlocked.silver .conq-icon { border-color: #b0b0b0; color: #b0b0b0; background: rgba(176,176,176,0.1); }
+.conq-card.unlocked.gold .conq-icon {
+    border-color: #d4a520;
+    color: #d4a520;
+    background: rgba(212,165,32,0.15);
+    box-shadow: 0 0 16px rgba(212,165,32,0.4);
+}
+.conq-card.unlocked.platinum .conq-icon {
+    border-color: #7ee0ff;
+    color: #7ee0ff;
+    background: rgba(126,224,255,0.15);
+    box-shadow: 0 0 18px rgba(126,224,255,0.5);
+}
+
+.conq-body { flex: 1; min-width: 0; position: relative; z-index: 1; }
+.conq-name {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    margin-bottom: 0.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.conq-rarity-badge {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.5rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 0.1rem 0.4rem;
+    border-radius: 999px;
+    line-height: 1.4;
+    flex-shrink: 0;
+}
+.conq-rarity-badge.bronze { background: rgba(205,127,50,0.15); color: #cd7f32; border: 1px solid rgba(205,127,50,0.4); }
+.conq-rarity-badge.silver { background: rgba(176,176,176,0.15); color: #9b9b9b; border: 1px solid rgba(176,176,176,0.4); }
+.conq-rarity-badge.gold { background: rgba(212,165,32,0.15); color: #d4a520; border: 1px solid rgba(212,165,32,0.5); }
+.conq-rarity-badge.platinum { background: rgba(126,224,255,0.15); color: #7ee0ff; border: 1px solid rgba(126,224,255,0.5); }
+
+.conq-desc {
+    font-family: 'SN Pro', 'Oswald', sans-serif;
+    font-size: 0.78rem;
+    color: var(--ink-mute);
+    line-height: 1.4;
+    margin-bottom: 0.45rem;
+}
+
+/* Progress bar (só aparece quando bloqueado) */
+.conq-progress {
+    margin-top: 0.5rem;
+}
+.conq-progress-bar {
+    height: 4px;
+    background: var(--bg-base);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 0.25rem;
+}
+.conq-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--ink-mute) 0%, var(--accent) 100%);
+    transition: width 600ms ease;
+    border-radius: 999px;
+}
+.conq-progress-text {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--ink-mute);
+    text-transform: uppercase;
+}
+.conq-progress-text b { color: var(--ink); font-weight: 700; }
+
+/* Lock icon overlay no card bloqueado */
+.conq-lock-icon {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.6rem;
+    color: var(--ink-mute);
+    opacity: 0.5;
+}
+.conq-lock-icon .material-icons { font-size: 1rem; }
+
+/* Mobile */
+@media (max-width: 680px) {
+    .perfil-hero {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1.1rem 1.15rem;
+        gap: 0.85rem;
+    }
+    .perfil-hero-avatar { width: 64px; height: 64px; font-size: 1.5rem; }
+    .perfil-hero-name { font-size: 1.3rem; }
+    .perfil-hero-actions { width: 100%; }
+    .perfil-hero-actions .btn-ghost { flex: 1; justify-content: center; }
+    .perfil-conq-grid { grid-template-columns: 1fr; gap: 0.6rem; }
+    .conq-card { padding: 0.85rem 0.95rem; gap: 0.7rem; }
+    .conq-icon { width: 44px; height: 44px; }
+    .conq-icon .material-icons { font-size: 1.3rem; }
+    .perfil-section-head h3 { font-size: 0.88rem; }
+}
+
+/* ===============================================================
    Modal de resumo (openSummary) — classes reutilizáveis
    =============================================================== */
 .summary-eyebrow {
@@ -5099,6 +5421,58 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 </section>
             </div>
         </div>
+
+        <!-- ============ Vista PERFIL (full-screen, esconde tabs) ============ -->
+        <section id="perfilView" style="display:none;">
+            <button class="bolao-back" id="perfilBack" type="button">
+                <span class="material-icons">arrow_back</span>Voltar
+            </button>
+
+            <header class="perfil-hero">
+                <div class="perfil-hero-avatar" id="perfilAvatar">—</div>
+                <div class="perfil-hero-info">
+                    <div class="perfil-hero-eyebrow"><span id="perfilHeroClub">—</span></div>
+                    <h2 class="perfil-hero-name" id="perfilHeroName">—</h2>
+                    <div class="perfil-hero-handle" id="perfilHeroHandle">—</div>
+                </div>
+                <div class="perfil-hero-actions">
+                    <button class="btn-ghost" id="perfilEditBtn">
+                        <span class="material-icons">edit</span>Editar
+                    </button>
+                </div>
+            </header>
+
+            <!-- KPIs reaproveita layout do .kpis -->
+            <section class="kpis perfil-kpis">
+                <div class="kpi"><div class="kpi-label">Jogos</div><div class="kpi-value" id="perfilKpiJogos">0</div></div>
+                <div class="kpi"><div class="kpi-label">Vitórias</div><div class="kpi-value v" id="perfilKpiV">0</div></div>
+                <div class="kpi"><div class="kpi-label">Empates</div><div class="kpi-value e" id="perfilKpiE">0</div></div>
+                <div class="kpi"><div class="kpi-label">Derrotas</div><div class="kpi-value d" id="perfilKpiD">0</div></div>
+                <div class="kpi"><div class="kpi-label">Aprov.</div><div class="kpi-value" id="perfilKpiApr">—</div></div>
+                <div class="kpi"><div class="kpi-label">Conquistas</div><div class="kpi-value" id="perfilKpiConq">0</div></div>
+            </section>
+
+            <!-- Conquistas -->
+            <section class="perfil-conquistas">
+                <header class="perfil-section-head">
+                    <h3><span class="material-icons">emoji_events</span>Conquistas</h3>
+                    <div class="perfil-conq-stats" id="perfilConqStats">— de —</div>
+                </header>
+
+                <div class="perfil-conq-filters" id="perfilConqFilters">
+                    <button class="conq-filter active" data-filter="all">Todas</button>
+                    <button class="conq-filter" data-filter="presenca">Presença</button>
+                    <button class="conq-filter" data-filter="vitorias">Vitórias</button>
+                    <button class="conq-filter" data-filter="especial">Especiais</button>
+                    <button class="conq-filter" data-filter="colecao">Coleção</button>
+                    <button class="conq-filter" data-filter="social">Sociais</button>
+                </div>
+
+                <div class="perfil-conq-grid" id="perfilConqGrid">
+                    <div class="loading">Carregando conquistas...</div>
+                </div>
+            </section>
+        </section>
 
         <div class="tab-panel" id="tabCopa">
             <!-- VIEW: default (jogos da Copa) -->
@@ -6406,13 +6780,149 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         } catch (_) {}
     }
 
-    document.getElementById('btnProfile').addEventListener('click', async () => {
-        await ensureClubsLoaded();
-        document.getElementById('pName').value = user.display_name || '';
-        document.getElementById('pUsername').value = user.username || '';
-        document.getElementById('pEmail').value = user.email || '';
-        pClub.value = user.club_slug || '';
-        profileModal.classList.add('show');
+    // O botão "Perfil" do topbar agora abre a VISTA de perfil (não mais o modal direto).
+    // O modal de edição é acessível via botão "Editar" dentro da vista.
+    document.getElementById('btnProfile').addEventListener('click', () => {
+        showPerfilView();
+    });
+
+    function openProfileEditModal() {
+        ensureClubsLoaded().then(() => {
+            document.getElementById('pName').value = user.display_name || '';
+            document.getElementById('pUsername').value = user.username || '';
+            document.getElementById('pEmail').value = user.email || '';
+            pClub.value = user.club_slug || '';
+            profileModal.classList.add('show');
+        });
+    }
+    document.getElementById('perfilEditBtn').addEventListener('click', openProfileEditModal);
+
+    // ===============================================
+    // VISTA PERFIL — header + KPIs + conquistas
+    // ===============================================
+    let perfilCurrentFilter = 'all';
+    let perfilAchievementsCache = null;
+
+    function showPerfilView() {
+        // Esconde tabs + panels + carteirinha bar + KPIs
+        document.querySelector('.tabs').style.display = 'none';
+        document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
+        document.getElementById('cartBar').style.display = 'none';
+        document.getElementById('kpis').style.display = 'none';
+        document.getElementById('perfilView').style.display = '';
+
+        renderPerfilHero();
+        loadPerfilAchievements();
+        window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+
+    function hidePerfilView() {
+        document.getElementById('perfilView').style.display = 'none';
+        document.querySelector('.tabs').style.display = '';
+        // Restaura o tab-panel ativo
+        document.querySelectorAll('.tab-panel').forEach(p => {
+            p.style.display = p.classList.contains('active') ? '' : 'none';
+        });
+        // Recompõe carteirinha + kpis se a tab ativa for catálogo/mine
+        const activeTab = document.querySelector('.tab.active')?.dataset.tab;
+        const showRetrospecto = (activeTab === 'catalog' || activeTab === 'mine');
+        document.getElementById('cartBar').style.display = showRetrospecto ? '' : 'none';
+        document.getElementById('kpis').style.display = showRetrospecto ? '' : 'none';
+    }
+
+    document.getElementById('perfilBack').addEventListener('click', hidePerfilView);
+
+    function renderPerfilHero() {
+        const name = (user.display_name || user.email?.split('@')[0] || 'Torcedor').toUpperCase();
+        const initials = avatarInitials(user.display_name || user.email);
+        const handle = user.username ? `@${user.username}` : 'Sem @username';
+        const club = user.club_name ? user.club_name.toUpperCase() : 'Sem time';
+
+        document.getElementById('perfilAvatar').textContent = initials;
+        document.getElementById('perfilHeroName').textContent = name;
+        document.getElementById('perfilHeroHandle').textContent = handle;
+        document.getElementById('perfilHeroClub').textContent = club;
+
+        // KPIs do snapshot já carregado (snapshot global)
+        if (snapshot && snapshot.geral) {
+            const g = snapshot.geral;
+            document.getElementById('perfilKpiJogos').textContent = g.jogos || 0;
+            document.getElementById('perfilKpiV').textContent = g.vitorias || 0;
+            document.getElementById('perfilKpiE').textContent = g.empates || 0;
+            document.getElementById('perfilKpiD').textContent = g.derrotas || 0;
+            document.getElementById('perfilKpiApr').textContent = g.aproveitamento_pct != null ? g.aproveitamento_pct + '%' : '—';
+        }
+    }
+
+    async function loadPerfilAchievements() {
+        const grid = document.getElementById('perfilConqGrid');
+        grid.innerHTML = '<div class="loading">Carregando conquistas...</div>';
+        try {
+            const data = await api('/me/achievements');
+            perfilAchievementsCache = data.achievements;
+            const unlocked = data.achievements.filter(a => a.unlocked).length;
+            document.getElementById('perfilKpiConq').textContent = unlocked;
+            document.getElementById('perfilConqStats').innerHTML = `<b>${unlocked}</b> de ${data.achievements.length}`;
+            renderPerfilConqGrid();
+        } catch (err) {
+            grid.innerHTML = `<div class="empty">Erro ao carregar conquistas: ${err.message}</div>`;
+        }
+    }
+
+    function renderPerfilConqGrid() {
+        if (!perfilAchievementsCache) return;
+        const grid = document.getElementById('perfilConqGrid');
+        const filtered = perfilCurrentFilter === 'all'
+            ? perfilAchievementsCache
+            : perfilAchievementsCache.filter(a => a.category === perfilCurrentFilter);
+
+        // Ordem: desbloqueadas primeiro (raras primeiro), depois bloqueadas (mais perto do alvo primeiro)
+        const rarityOrder = { platinum: 4, gold: 3, silver: 2, bronze: 1 };
+        const sorted = [...filtered].sort((a, b) => {
+            if (a.unlocked !== b.unlocked) return a.unlocked ? -1 : 1;
+            if (a.unlocked) return rarityOrder[b.rarity] - rarityOrder[a.rarity];
+            return b.pct - a.pct;
+        });
+
+        if (!sorted.length) {
+            grid.innerHTML = '<div class="empty" style="grid-column:1/-1;">Nenhuma conquista nessa categoria.</div>';
+            return;
+        }
+
+        grid.innerHTML = sorted.map(a => {
+            const cls = `conq-card ${a.unlocked ? 'unlocked ' + a.rarity : 'locked'}`;
+            const lockIcon = a.unlocked ? '' : '<span class="conq-lock-icon"><span class="material-icons">lock</span></span>';
+            const progressBlock = a.unlocked
+                ? ''
+                : `<div class="conq-progress">
+                       <div class="conq-progress-bar"><div class="conq-progress-fill" style="width: ${a.pct}%;"></div></div>
+                       <div class="conq-progress-text"><b>${a.progress}</b> / ${a.target}</div>
+                   </div>`;
+            return `
+                <article class="${cls}" title="${escapeHtml(a.description)}">
+                    ${lockIcon}
+                    <div class="conq-icon"><span class="material-icons">${a.icon}</span></div>
+                    <div class="conq-body">
+                        <div class="conq-name">
+                            ${escapeHtml(a.name)}
+                            <span class="conq-rarity-badge ${a.rarity}">${a.rarity}</span>
+                        </div>
+                        <div class="conq-desc">${escapeHtml(a.description)}</div>
+                        ${progressBlock}
+                    </div>
+                </article>
+            `;
+        }).join('');
+    }
+
+    // Filtros de categoria
+    document.querySelectorAll('#perfilConqFilters .conq-filter').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('#perfilConqFilters .conq-filter').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            perfilCurrentFilter = btn.dataset.filter;
+            renderPerfilConqGrid();
+        });
     });
 
     document.getElementById('pCancel').addEventListener('click', () => {
@@ -6437,6 +6947,12 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             profileModal.classList.remove('show');
             await loadAll();
             document.getElementById('userName').textContent = user.display_name || user.email?.split('@')[0] || 'torcedor';
+            // Se a vista de Perfil estiver aberta, re-renderiza o header com os dados novos
+            const perfilEl = document.getElementById('perfilView');
+            if (perfilEl && perfilEl.style.display !== 'none') {
+                renderPerfilHero();
+                loadPerfilAchievements();
+            }
         } catch (err) {
             alert('Erro: ' + err.message);
         } finally {
@@ -6970,6 +7486,14 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     // Tabs unificadas
     document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', () => {
+            // Se a vista de Perfil estiver aberta, fecha primeiro pra restaurar layout
+            const perfilEl = document.getElementById('perfilView');
+            if (perfilEl && perfilEl.style.display !== 'none') {
+                hidePerfilView();
+            }
+            // Limpa estilos inline residuais de showPerfilView
+            document.querySelectorAll('.tab-panel').forEach(p => p.style.display = '');
+
             const target = tab.dataset.tab;
             const panelMap = { catalog: 'tabCatalog', mine: 'tabMine', rede: 'tabRede', copa: 'tabCopa' };
             const panelId = panelMap[target] || 'tabCatalog';
