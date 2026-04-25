@@ -5552,9 +5552,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             <label>Valor pago (R$)</label>
             <input type="number" id="fValor" step="0.01" min="0" placeholder="0.00">
 
-            <label>Foi com algum amigo?</label>
+            <label id="modalCompanionsLabel">Foi com algum amigo?</label>
             <div class="companions-picker" id="fCompanions">
-                <div class="empty-friends">Adicione amigos na aba Rede social pra marcar quem foi com você.</div>
+                <div class="empty-friends" id="fCompanionsEmpty">Adicione amigos na aba Rede social pra marcar quem foi com você.</div>
             </div>
             <div class="companions-summary" id="fCompanionsSummary"></div>
 
@@ -6922,6 +6922,17 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         if (labelStatus) labelStatus.textContent = isFuturo ? 'Você vai nesse jogo?' : 'Você foi nesse jogo?';
         if (labelPresente) labelPresente.textContent = isFuturo ? 'Vou' : 'Fui';
         if (labelAusente) labelAusente.textContent = isFuturo ? 'Não vou' : 'Não fui';
+        // Texto da seção "amigos" também muda conforme o jogo é futuro/passado
+        const labelCompanions = document.getElementById('modalCompanionsLabel');
+        if (labelCompanions) labelCompanions.textContent = isFuturo ? 'Vai com algum amigo?' : 'Foi com algum amigo?';
+        const emptyCompanions = document.getElementById('fCompanionsEmpty');
+        if (emptyCompanions) {
+            emptyCompanions.textContent = isFuturo
+                ? 'Adicione amigos na aba Rede social pra marcar quem vai com você.'
+                : 'Adicione amigos na aba Rede social pra marcar quem foi com você.';
+        }
+        // Guarda no editingGame pra updateCompanionsSummary saber qual texto usar
+        editingGame._isFuturo = isFuturo;
 
         setStatus(game.status_presenca || 'PRESENTE');
         renderSetorPills(game.estadio, game.setor);
@@ -6970,7 +6981,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const active = document.querySelectorAll('#fCompanions .companion-chip.active');
         const sum = document.getElementById('fCompanionsSummary');
         if (!active.length) { sum.textContent = ''; return; }
-        sum.textContent = `Foi com ${active.length} ${active.length === 1 ? 'amigo' : 'amigos'}`;
+        const verbo = (editingGame && editingGame._isFuturo) ? 'Vai' : 'Foi';
+        sum.textContent = `${verbo} com ${active.length} ${active.length === 1 ? 'amigo' : 'amigos'}`;
     }
 
     function getSelectedCompanions() {
