@@ -3868,7 +3868,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 }
 
 /* Info (nome + @handle) */
-.bolao-rank-info { min-width: 0; overflow: hidden; display: flex; flex-direction: column; gap: 0.08rem; }
+.bolao-rank-info { min-width: 0; overflow: hidden; display: flex; flex-direction: column; gap: 0.12rem; }
 .bolao-rank-name {
     font-weight: 700;
     font-size: 0.8rem;
@@ -3880,28 +3880,31 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     align-items: center;
     gap: 0.35rem;
     min-width: 0;
+    flex-wrap: wrap;
 }
 .bolao-rank-name-text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
     min-width: 0;
-    flex-shrink: 1;
+    flex: 1 1 auto;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 .bolao-ranking-row.first .bolao-rank-name { color: #1a1000; }
 .bolao-rank-me-tag {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 0.52rem;
-    letter-spacing: 0.18em;
+    font-size: 0.5rem;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
     color: #fff;
     background: var(--vinho);
-    padding: 0.12rem 0.42rem;
+    padding: 0.1rem 0.38rem;
     border-radius: 999px;
     line-height: 1.3;
     flex-shrink: 0;
-    letter-spacing: 0.15em;
 }
 .bolao-rank-handle {
     font-family: 'Oswald', sans-serif;
@@ -4122,13 +4125,20 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
 /* Mobile layout bolão */
 @media (max-width: 900px) {
-    .bolao-detail-layout { grid-template-columns: 1fr; }
+    /* Vira flex column com order pra poder colocar o ranking ACIMA dos jogos */
+    .bolao-detail-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
     .bolao-ranking {
         position: static;
         display: none;
         max-height: none;
+        order: 1;  /* acima dos jogos */
     }
-    .bolao-ranking.open { display: block; }
+    .bolao-jogos { order: 2; }
+    .bolao-ranking.open { display: flex; flex-direction: column; }
     .bolao-ranking-toggle { display: inline-flex; }
 }
 @media (max-width: 680px) {
@@ -8189,14 +8199,14 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         }
     });
 
-    // Toggle ranking mobile
+    // Toggle ranking mobile — não precisa de scroll porque o painel aparece
+    // logo abaixo do toggle (via CSS order em mobile). Ficaria pior dar scroll.
     const rankToggle = document.getElementById('bolaoRankingToggle');
     const rankPanel = document.getElementById('bolaoRanking');
     if (rankToggle && rankPanel) {
         rankToggle.addEventListener('click', () => {
             const open = rankPanel.classList.toggle('open');
             rankToggle.classList.toggle('open', open);
-            if (open) setTimeout(() => rankPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
         });
     }
 
