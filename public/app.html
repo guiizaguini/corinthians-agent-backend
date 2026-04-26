@@ -9985,6 +9985,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         try {
             const res = await api('/me/achievements/pending');
             const list = res.pending || [];
+            console.debug('[achievements] pending:', list.length, list.map(a => a.id));
             achievementsPendingCount = list.length;
             updateBell();
             if (!list.length) return;
@@ -9992,10 +9993,15 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             list.forEach((a, i) => setTimeout(() => showAchievementToast(a), i * 400));
             // Marca como vistas (fire-and-forget — proxima checagem retorna []
             // mesmo se essa falhar, porque os IDs ja viraram seen apos próximo poll)
-            api('/me/achievements/seen', { method: 'POST' }).catch(() => {});
+            api('/me/achievements/seen', { method: 'POST' }).catch((e) => {
+                console.warn('[achievements] /seen falhou:', e.message);
+            });
             achievementsPendingCount = 0;
-        } catch (_) { /* silencioso */ }
-        finally { achievementCheckInFlight = false; }
+        } catch (e) {
+            // Loga visível no console pra debug — antes era silencioso e
+            // ninguem sabia se o endpoint estava 500 (tabela faltando, etc)
+            console.warn('[achievements] /pending falhou:', e.message);
+        } finally { achievementCheckInFlight = false; }
     }
 
     function updateBell() {
