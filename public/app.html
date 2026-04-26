@@ -4049,6 +4049,82 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 /* Card de jogo do bolão — estilo wc-ticket da Copa */
 #bolaoJogosList { display: flex; flex-direction: column; gap: 0.85rem; }
 
+/* Filtros do detalhe do bolão */
+.bolao-filtros {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 0.85rem;
+    padding: 0.75rem 0.85rem;
+    background: var(--wc-card);
+    border: 1px solid var(--wc-line);
+    border-radius: 12px;
+}
+.bolao-filtros-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+.bolao-filtros-search,
+.bolao-filtros-select {
+    flex: 1;
+    min-width: 160px;
+    background: #fff;
+    border: 1.5px solid var(--wc-line);
+    color: var(--wc-ink);
+    padding: 0.55rem 0.75rem;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.82rem;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 150ms;
+}
+.bolao-filtros-search:focus,
+.bolao-filtros-select:focus { border-color: #d4a520; }
+.bolao-filtros-select { max-width: 180px; cursor: pointer; }
+
+.bolao-filtros-chips {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    overflow-x: auto;
+    padding-bottom: 0.15rem;
+    scrollbar-width: thin;
+}
+.bolao-fase-chip {
+    background: transparent;
+    border: 1.5px solid var(--wc-line);
+    color: var(--wc-ink-mute);
+    padding: 0.32rem 0.7rem;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 999px;
+    transition: all 150ms;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.bolao-fase-chip:hover { border-color: #d4a520; color: var(--wc-ink); }
+.bolao-fase-chip.active {
+    background: #d4a520;
+    border-color: #d4a520;
+    color: #1a1000;
+}
+
+/* Empty state quando nenhum jogo bate o filtro */
+.bolao-empty-filter {
+    padding: 2rem 1rem;
+    text-align: center;
+    background: var(--wc-card);
+    border: 2px dashed var(--wc-line);
+    border-radius: 12px;
+    color: var(--wc-ink-mute);
+    font-family: 'Oswald', sans-serif;
+}
+
 .bolao-ticket {
     cursor: default;
     min-height: auto;
@@ -4082,31 +4158,88 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.55rem;
     color: #fff;
+    padding: 0.85rem 1rem;
+    text-align: center;
+    width: 100%;
 }
-.bolao-saved-check {
-    font-size: 3.4rem !important;
-    color: #fff;
-    background: rgba(255,255,255,0.18);
-    border-radius: 50%;
-    padding: 0.25rem;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.25), 0 0 0 3px rgba(255,255,255,0.35);
+/* Mini badge "✓ Palpite salvo" no topo */
+.bolao-saved-check-mini {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: rgba(255,255,255,0.22);
+    border: 1.5px solid rgba(255,255,255,0.45);
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
     animation: bolaoSavedCheck 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.bolao-saved-check-mini .material-icons { font-size: 0.95rem; }
+
+/* Linha do confronto: bandeira+nome | placar | bandeira+nome */
+.bolao-saved-match {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    max-width: 340px;
+}
+.bolao-saved-team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    min-width: 0;
+}
+.bolao-saved-team .wc-flag {
+    width: 32px;
+    height: 22px;
+    object-fit: cover;
+    border-radius: 3px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    flex-shrink: 0;
+}
+.bolao-saved-team .wc-flag.tbd-flag {
+    background: repeating-linear-gradient(45deg, rgba(255,255,255,0.4) 0 4px, rgba(255,255,255,0.2) 4px 8px);
+    display: block;
+}
+.bolao-saved-team-name {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.95);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    line-height: 1.1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
 }
 .bolao-saved-score {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 1.6rem;
+    font-size: 1.85rem;
     letter-spacing: 0.04em;
     color: #fff;
-    text-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    text-shadow: 0 2px 8px rgba(0,0,0,0.35);
     line-height: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 0.15em;
 }
 .bolao-saved-x {
     color: rgba(255,255,255,0.6);
-    margin: 0 0.15em;
-    font-size: 0.85em;
+    font-size: 0.7em;
+    font-weight: 500;
 }
 .bolao-saved-edit {
     margin-top: 0.3rem;
@@ -6439,6 +6572,32 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                                 <h3>Jogos da Copa</h3>
                                 <div class="bolao-jogos-stats" id="bolaoJogosStats">— palpites</div>
                             </div>
+
+                            <!-- Filtros: fase, grupo, busca por seleção -->
+                            <div class="bolao-filtros">
+                                <div class="bolao-filtros-row">
+                                    <input
+                                        type="search"
+                                        id="bolaoFilterSearch"
+                                        class="bolao-filtros-search"
+                                        placeholder="Buscar seleção (ex: Brasil, Argentina)..."
+                                        autocomplete="off"
+                                    >
+                                    <select id="bolaoFilterGrupo" class="bolao-filtros-select">
+                                        <option value="">Todos os grupos</option>
+                                    </select>
+                                </div>
+                                <div class="bolao-filtros-chips" id="bolaoFilterFases">
+                                    <button type="button" class="bolao-fase-chip active" data-fase="">Todas</button>
+                                    <button type="button" class="bolao-fase-chip" data-fase="grupos">Grupos</button>
+                                    <button type="button" class="bolao-fase-chip" data-fase="oitavas">Oitavas</button>
+                                    <button type="button" class="bolao-fase-chip" data-fase="quartas">Quartas</button>
+                                    <button type="button" class="bolao-fase-chip" data-fase="semis">Semis</button>
+                                    <button type="button" class="bolao-fase-chip" data-fase="terceiro">3º lugar</button>
+                                    <button type="button" class="bolao-fase-chip" data-fase="final">Final</button>
+                                </div>
+                            </div>
+
                             <div id="bolaoJogosList"><div class="loading">Carregando jogos...</div></div>
                         </section>
 
@@ -9737,6 +9896,11 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         pontos: { PLACAR_EXATO: 15, VENCEDOR_E_SALDO: 10, VENCEDOR: 7, EMPATE_CORRETO: 5 },
         travarMin: 1,
         minhaId: null,
+        // Cache + filtros do detalhe
+        allGames: [],
+        filterFase: '',
+        filterGrupo: '',
+        filterSearch: '',
     };
 
     function bolaoShowView(view) {
@@ -9899,14 +10063,91 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         list.innerHTML = '<div class="loading">Carregando jogos...</div>';
         try {
             const { games } = await api(`/bolao/${id}/games`);
-            const palpitados = games.filter(g => g.palpite_casa != null).length;
-            const total = games.length;
-            document.getElementById('bolaoJogosStats').textContent = `${palpitados}/${total} palpites`;
+            // Cacheia pra filtragem
+            bolaoState.allGames = games;
+            // Popula opções dos filtros (grupos disponíveis + chips de fase)
+            bolaoSetupFiltros(games);
+            // Render aplica filtros atuais
+            bolaoRenderJogos();
+        } catch (err) {
+            list.innerHTML = `<div class="empty">Erro: ${err.message}</div>`;
+        }
+    }
 
-            list.innerHTML = games.map(g => bolaoRenderJogo(g)).join('');
+    function bolaoSetupFiltros(games) {
+        // Extrai grupos únicos (ex: "A", "B", "C"...) das fases
+        const grupos = new Set();
+        for (const g of games) {
+            const m = (g.fase || '').match(/Grupo\s+([A-L])/i);
+            if (m) grupos.add(m[1].toUpperCase());
+        }
+        const sel = document.getElementById('bolaoFilterGrupo');
+        const current = sel.value;
+        sel.innerHTML = '<option value="">Todos os grupos</option>'
+            + [...grupos].sort().map(g => `<option value="${g}"${g === current ? ' selected' : ''}>Grupo ${g}</option>`).join('');
+    }
 
-            // Wire up save buttons e inputs
-            list.querySelectorAll('.bolao-ticket').forEach(el => {
+    /** Aplica os filtros atuais e re-renderiza */
+    function bolaoRenderJogos() {
+        const list = document.getElementById('bolaoJogosList');
+        const all = bolaoState.allGames || [];
+        const fase = bolaoState.filterFase || '';
+        const grupo = bolaoState.filterGrupo || '';
+        const search = (bolaoState.filterSearch || '').toLowerCase().trim();
+        // Normaliza sem acento pra busca
+        const norm = (s) => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        const searchN = norm(search);
+
+        // Mapeamento dos chips → regex que casa com a fase
+        const faseMatchers = {
+            grupos:   /Grupo|Fase de Grupos/i,
+            oitavas:  /Oitavas/i,
+            quartas:  /Quartas/i,
+            semis:    /Semifinal|Semi-final|Semis/i,
+            final:    /^Final$|FINAL$/i,
+            terceiro: /Disputa|3º|3 de/i,
+        };
+
+        const filtered = all.filter(g => {
+            // Filtro fase
+            if (fase) {
+                const re = faseMatchers[fase];
+                if (re && !re.test(g.fase || '')) return false;
+            }
+            // Filtro grupo
+            if (grupo) {
+                const m = (g.fase || '').match(/Grupo\s+([A-L])/i);
+                if (!m || m[1].toUpperCase() !== grupo) return false;
+            }
+            // Filtro busca por seleção
+            if (searchN) {
+                const c = norm(g.time_casa);
+                const v = norm(g.time_visitante);
+                if (!c.includes(searchN) && !v.includes(searchN)) return false;
+            }
+            return true;
+        });
+
+        // Stats
+        const palpitados = all.filter(g => g.palpite_casa != null).length;
+        const total = all.length;
+        const showingTxt = filtered.length === total
+            ? `${palpitados}/${total} palpites`
+            : `${filtered.length} de ${total} jogos · ${palpitados} palpitados`;
+        document.getElementById('bolaoJogosStats').textContent = showingTxt;
+
+        if (!filtered.length) {
+            list.innerHTML = `<div class="bolao-empty-filter">Nenhum jogo encontrado com esses filtros.<br><br><button type="button" class="bolao-fase-chip" id="bolaoLimparFiltros">Limpar filtros</button></div>`;
+            const clearBtn = document.getElementById('bolaoLimparFiltros');
+            if (clearBtn) clearBtn.addEventListener('click', bolaoLimparFiltros);
+            return;
+        }
+
+        list.innerHTML = filtered.map(g => bolaoRenderJogo(g)).join('');
+        const id = bolaoState.bolaoId;
+
+        // Wire up save buttons e inputs
+        list.querySelectorAll('.bolao-ticket').forEach(el => {
                 const gameId = parseInt(el.dataset.gameId);
                 const inpHome = el.querySelector('.bolao-palpite-input.home');
                 const inpAway = el.querySelector('.bolao-palpite-input.away');
@@ -9964,9 +10205,20 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                     }
                 });
             });
-        } catch (err) {
-            list.innerHTML = `<div class="empty">Erro: ${err.message}</div>`;
-        }
+    }
+
+    function bolaoLimparFiltros() {
+        bolaoState.filterFase = '';
+        bolaoState.filterGrupo = '';
+        bolaoState.filterSearch = '';
+        const search = document.getElementById('bolaoFilterSearch');
+        const grupo = document.getElementById('bolaoFilterGrupo');
+        if (search) search.value = '';
+        if (grupo) grupo.value = '';
+        document.querySelectorAll('#bolaoFilterFases .bolao-fase-chip').forEach(c => {
+            c.classList.toggle('active', c.dataset.fase === '');
+        });
+        bolaoRenderJogos();
     }
 
     function bolaoRenderJogo(g) {
@@ -10077,12 +10329,26 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         }
 
         // Overlay verde quando palpitado (e não finalizado ainda) — fica sempre visível.
-        // Tem botão de lápis pra editar (libera os inputs).
+        // Mostra bandeiras + nomes + placar pra você reconhecer o jogo, com botão de editar.
         const overlayHtml = (jaPalpitou && !temResultado)
             ? `<div class="bolao-saved-overlay">
                   <div class="bolao-saved-content">
-                      <span class="material-icons bolao-saved-check">check_circle</span>
-                      <div class="bolao-saved-score">${escapeHtml(String(g.palpite_casa))} <span class="bolao-saved-x">×</span> ${escapeHtml(String(g.palpite_visitante))}</div>
+                      <div class="bolao-saved-check-mini"><span class="material-icons">check_circle</span><span>Palpite salvo</span></div>
+                      <div class="bolao-saved-match">
+                          <div class="bolao-saved-team">
+                              ${flagHtml(fCasa)}
+                              <span class="bolao-saved-team-name">${escapeHtml(g.time_casa)}</span>
+                          </div>
+                          <div class="bolao-saved-score">
+                              <span>${escapeHtml(String(g.palpite_casa))}</span>
+                              <span class="bolao-saved-x">×</span>
+                              <span>${escapeHtml(String(g.palpite_visitante))}</span>
+                          </div>
+                          <div class="bolao-saved-team">
+                              ${flagHtml(fVis)}
+                              <span class="bolao-saved-team-name">${escapeHtml(g.time_visitante)}</span>
+                          </div>
+                      </div>
                       <button type="button" class="bolao-saved-edit" data-action="edit" title="Editar palpite">
                           <span class="material-icons">edit</span>
                           Editar
@@ -10319,6 +10585,28 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     });
     document.getElementById('bolaoInviteInput').addEventListener('keydown', (e) => {
         if (e.key === 'Enter') document.getElementById('bolaoJoinBtn').click();
+    });
+
+    // ========= Filtros do bolão (fase / grupo / busca) =========
+    document.querySelectorAll('#bolaoFilterFases .bolao-fase-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            document.querySelectorAll('#bolaoFilterFases .bolao-fase-chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            bolaoState.filterFase = chip.dataset.fase || '';
+            bolaoRenderJogos();
+        });
+    });
+    let bolaoSearchTimer;
+    document.getElementById('bolaoFilterSearch').addEventListener('input', (e) => {
+        clearTimeout(bolaoSearchTimer);
+        bolaoSearchTimer = setTimeout(() => {
+            bolaoState.filterSearch = e.target.value;
+            bolaoRenderJogos();
+        }, 200);
+    });
+    document.getElementById('bolaoFilterGrupo').addEventListener('change', (e) => {
+        bolaoState.filterGrupo = e.target.value;
+        bolaoRenderJogos();
     });
     document.getElementById('bolaoDetailCopy').addEventListener('click', async () => {
         const code = document.getElementById('bolaoDetailCode').textContent;
