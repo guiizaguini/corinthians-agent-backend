@@ -1269,6 +1269,18 @@ main {
     background: repeating-linear-gradient(45deg, #e5dfd0 0 5px, #c9bfa8 5px 10px);
     display: block;
 }
+
+/* Logos dos times no ingresso comum (Brasileirão/Libertadores/etc) — quadrado */
+.ingresso .ingresso-logo {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.18));
+}
+@media (max-width: 540px) {
+    .ingresso .ingresso-logo { width: 34px; height: 34px; }
+}
 .ingresso.copa .confronto-google .nome-clube {
     font-size: clamp(13px, 3.6cqw, 16px);
     letter-spacing: 0.04em;
@@ -6848,9 +6860,21 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const placarVis = g.gols_visitante != null ? g.gols_visitante : '';
         const hasPlacar = g.gols_casa != null && g.gols_visitante != null;
 
-        // Pra Copa: bandeira em cima do nome do time
-        const flagCasa = isCopa ? `<img class="ingresso-flag" src="${flagFor(g.time_casa) || ''}" alt="" onerror="this.classList.add('tbd');this.removeAttribute('src')">` : '';
-        const flagVis = isCopa ? `<img class="ingresso-flag" src="${flagFor(g.time_visitante) || ''}" alt="" onerror="this.classList.add('tbd');this.removeAttribute('src')">` : '';
+        // Pra Copa: bandeira de país. Pra clubes: escudo do time.
+        const renderTeamMark = (teamName) => {
+            if (isCopa) {
+                const url = flagFor(teamName);
+                return url
+                    ? `<img class="ingresso-flag" src="${url}" alt="" loading="lazy" onerror="this.classList.add('tbd');this.removeAttribute('src')">`
+                    : `<span class="ingresso-flag tbd"></span>`;
+            }
+            const url = resolveTeamLogo(teamName);
+            return url
+                ? `<img class="ingresso-logo" src="${url}" alt="" loading="lazy" onerror="this.style.display='none'">`
+                : '';
+        };
+        const flagCasa = renderTeamMark(g.time_casa);
+        const flagVis = renderTeamMark(g.time_visitante);
 
         const corpoTopoConteudo = isCopa
             ? `<span>FIFA WORLD CUP 2026${g.fase ? ' · ' + escapeHtml(g.fase) : ''}</span><img class="wc-fifa-logo" src="/logos/fifa-2026.png" alt="FIFA 2026">`
