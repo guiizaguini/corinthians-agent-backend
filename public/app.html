@@ -202,7 +202,6 @@ header::after {
 .btn-ghost:hover { border-color: var(--ink); color: var(--ink); background: var(--paper-soft); }
 
 /* Sino de notificações */
-.bell-wrap { position: relative; display: inline-block; }
 .bell-btn {
     position: relative;
     background: transparent;
@@ -253,21 +252,23 @@ header::after {
     20%, 40% { transform: rotate(12deg); }
 }
 
-/* Dropdown de notificações ancorado no sino — usa vars do tema */
+/* Dropdown de notificações — vive no <body> com position:fixed pra
+   ESCAPAR de qualquer stacking context de elementos pais.
+   Top/left são setados via JS no openBellDropdown(). */
 .bell-dropdown {
-    position: absolute;
-    top: calc(100% + 0.6rem);
-    right: 0;
+    position: fixed;
+    top: 60px;            /* placeholder — JS recalcula */
+    right: 1rem;
     width: 380px;
     max-width: calc(100vw - 1rem);
     max-height: 520px;
     background: var(--bg-card);
     border: 1px solid var(--line);
     border-radius: 12px;
-    box-shadow: 0 16px 40px rgba(0,0,0,0.45), 0 0 0 1px var(--line);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.55), 0 0 0 1px var(--line);
     display: none;
     flex-direction: column;
-    z-index: 9999;
+    z-index: 99999;
     overflow: hidden;
     animation: bellDropIn 0.18s ease-out;
 }
@@ -6385,22 +6386,10 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         <div class="user-info">
             <span class="club-badge" id="clubBadge"></span>
             <span>Olá, <strong id="userName">—</strong></span>
-            <div class="bell-wrap">
-                <button class="bell-btn" id="bellBtn" title="Notificações" aria-haspopup="true" aria-expanded="false">
-                    <span class="material-icons">notifications</span>
-                    <span class="bell-badge" id="bellBadge">0</span>
-                </button>
-                <!-- Dropdown de notificações (toggleável pelo sino) -->
-                <div class="bell-dropdown" id="bellDropdown" role="menu" aria-hidden="true">
-                    <header class="bell-dropdown-head">
-                        <h3>Notificações</h3>
-                        <button type="button" class="bell-dropdown-close" id="bellDropdownClose" aria-label="Fechar">×</button>
-                    </header>
-                    <div class="bell-dropdown-body" id="bellDropdownBody">
-                        <div class="bell-empty">Sem novidades por aqui.</div>
-                    </div>
-                </div>
-            </div>
+            <button class="bell-btn" id="bellBtn" title="Notificações" aria-haspopup="true" aria-expanded="false">
+                <span class="material-icons">notifications</span>
+                <span class="bell-badge" id="bellBadge">0</span>
+            </button>
             <a href="/admin" class="btn-ghost" id="linkAdmin" style="display:none;text-decoration:none;">Admin</a>
             <button class="btn-ghost" id="btnProfile">Perfil</button>
             <button class="btn-ghost" id="btnLogout">Sair</button>
@@ -6408,6 +6397,18 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     </header>
 
     <!-- Modal: Perfil -->
+    <!-- Dropdown de notificações (anchored ao sino mas fora do header pra evitar
+         stacking context de elementos pais) -->
+    <div class="bell-dropdown" id="bellDropdown" role="menu" aria-hidden="true">
+        <header class="bell-dropdown-head">
+            <h3>Notificações</h3>
+            <button type="button" class="bell-dropdown-close" id="bellDropdownClose" aria-label="Fechar">×</button>
+        </header>
+        <div class="bell-dropdown-body" id="bellDropdownBody">
+            <div class="bell-empty">Sem novidades por aqui.</div>
+        </div>
+    </div>
+
     <!-- Modal: Excluir conta (confirmação dupla) -->
     <div class="modal-overlay" id="deleteAccountModal">
         <div class="modal">
@@ -10264,12 +10265,30 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         });
     }
 
+    function positionBellDropdown() {
+        const dd = document.getElementById('bellDropdown');
+        const btn = document.getElementById('bellBtn');
+        if (!dd || !btn) return;
+        const rect = btn.getBoundingClientRect();
+        const ddWidth = Math.min(380, window.innerWidth - 16);
+        // Alinha a borda direita do dropdown com a borda direita do sino
+        const right = Math.max(8, window.innerWidth - rect.right);
+        dd.style.right = right + 'px';
+        dd.style.left = 'auto';
+        dd.style.top = (rect.bottom + 8) + 'px';
+        dd.style.width = ddWidth + 'px';
+    }
+
     function openBellDropdown() {
         const dd = document.getElementById('bellDropdown');
         dd.classList.add('show');
         dd.setAttribute('aria-hidden', 'false');
         document.getElementById('bellBtn').setAttribute('aria-expanded', 'true');
         renderBellDropdown();
+        positionBellDropdown();
+        // Reposiciona se a janela mudar de tamanho enquanto aberto
+        window.addEventListener('resize', positionBellDropdown);
+        window.addEventListener('scroll', positionBellDropdown, true);
         // Marca conquistas como vistas no servidor (mas mantém na lista
         // visualmente até o user fechar o dropdown ou clicar em algo)
         if (achievementsPending.length) {
@@ -10281,6 +10300,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         dd.classList.remove('show');
         dd.setAttribute('aria-hidden', 'true');
         document.getElementById('bellBtn').setAttribute('aria-expanded', 'false');
+        window.removeEventListener('resize', positionBellDropdown);
+        window.removeEventListener('scroll', positionBellDropdown, true);
         // Quando fecha, zera o badge das conquistas (já foram vistas no server)
         if (achievementsPending.length) {
             achievementsPending = [];
@@ -10322,11 +10343,12 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         else openBellDropdown();
     });
     document.getElementById('bellDropdownClose').addEventListener('click', closeBellDropdown);
-    // Fecha quando clica fora
+    // Fecha quando clica fora (sino e dropdown agora estão em árvores DOM diferentes)
     document.addEventListener('click', (e) => {
         const dd = document.getElementById('bellDropdown');
         if (!dd.classList.contains('show')) return;
-        if (e.target.closest('.bell-wrap')) return; // dentro do dropdown ou no botão
+        if (e.target.closest('#bellBtn')) return;       // clicou no sino → toggle handler cuida
+        if (e.target.closest('#bellDropdown')) return;  // clicou dentro do dropdown
         closeBellDropdown();
     });
     // Fecha com Escape
