@@ -18,11 +18,24 @@
         <label for="display_name">Como te chamamos?</label>
         <input id="display_name" name="display_name" type="text" maxlength="80" autocomplete="name">
 
+        <label for="username">Username <span style="color:var(--vinho);">*</span></label>
+        <input id="username" name="username" type="text" minlength="3" maxlength="30"
+               pattern="[a-zA-Z0-9_.]{3,30}"
+               autocomplete="username"
+               autocapitalize="none"
+               spellcheck="false"
+               placeholder="ex: guizaguini ou gui_zaguini"
+               required>
+        <div class="hint">3 a 30 caracteres · letras, números, ponto (.) ou underline (_) — sem espaços nem acentos</div>
+
         <label for="email">Email</label>
         <input id="email" name="email" type="email" autocomplete="email" required>
 
-        <label for="password">Senha (mínimo 8 caracteres)</label>
+        <label for="password">Senha <span style="color:var(--ink-mute);font-weight:400;">(mínimo 8 caracteres)</span></label>
         <input id="password" name="password" type="password" minlength="8" autocomplete="new-password" required>
+
+        <label for="password_confirm">Confirme a senha <span style="color:var(--vinho);">*</span></label>
+        <input id="password_confirm" name="password_confirm" type="password" minlength="8" autocomplete="new-password" required>
 
         <label for="club">Pra qual time você torce?</label>
         <select id="club" name="club">
@@ -75,9 +88,53 @@
         }
     });
 
+    // Validação ao vivo do username — destaca erro de formato
+    const usernameInput = document.getElementById('username');
+    const USERNAME_RE = /^[a-zA-Z0-9_.]{3,30}$/;
+    usernameInput.addEventListener('input', () => {
+        const v = usernameInput.value.trim();
+        if (!v) { usernameInput.setCustomValidity(''); return; }
+        if (!USERNAME_RE.test(v)) {
+            usernameInput.setCustomValidity('Use só letras, números, ponto (.) ou underline (_), 3 a 30 caracteres');
+        } else {
+            usernameInput.setCustomValidity('');
+        }
+    });
+
+    // Validação ao vivo de "confirme a senha"
+    const passInput = document.getElementById('password');
+    const passConfirm = document.getElementById('password_confirm');
+    const checkPassMatch = () => {
+        if (passConfirm.value && passInput.value !== passConfirm.value) {
+            passConfirm.setCustomValidity('As senhas não conferem');
+        } else {
+            passConfirm.setCustomValidity('');
+        }
+    };
+    passInput.addEventListener('input', checkPassMatch);
+    passConfirm.addEventListener('input', checkPassMatch);
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         errBox.classList.remove('show');
+
+        // Validações finais antes do submit
+        const username = usernameInput.value.trim();
+        const password = passInput.value;
+        const passwordConfirm = passConfirm.value;
+
+        if (!USERNAME_RE.test(username)) {
+            errBox.textContent = 'Username inválido — use 3 a 30 caracteres (letras, números, . ou _)';
+            errBox.classList.add('show');
+            return;
+        }
+        if (password !== passwordConfirm) {
+            errBox.textContent = 'As senhas não conferem.';
+            errBox.classList.add('show');
+            passConfirm.focus();
+            return;
+        }
+
         btn.disabled = true;
         btn.textContent = 'Criando...';
 
@@ -88,7 +145,8 @@
                 body: JSON.stringify({
                     display_name: form.display_name.value.trim() || undefined,
                     email: form.email.value.trim(),
-                    password: form.password.value,
+                    password,
+                    username: username.toLowerCase(),
                     club_slug: clubSelect.value || null,
                 }),
             });
@@ -96,7 +154,8 @@
             if (!res.ok) {
                 const msg = {
                     email_already_registered: 'Esse email já tem conta',
-                    validation_failed: 'Confere os campos — senha precisa ter 8+ caracteres',
+                    username_taken: 'Esse @username já está em uso, tenta outro',
+                    validation_failed: 'Confere os campos — senha 8+ chars, username 3-30 (letras/números/_/.)',
                     club_not_found: 'Clube inválido',
                 }[data.error] || data.error || 'Erro ao criar conta';
                 throw new Error(msg);

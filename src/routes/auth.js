@@ -7,11 +7,14 @@ import { requireUser } from '../middleware/authUser.js';
 
 const router = express.Router();
 
+const USERNAME_RE = /^[a-z0-9_.]{3,30}$/i;
+
 const SignupSchema = z.object({
     email: z.string().email().max(200),
     password: z.string().min(8).max(120),
     display_name: z.string().min(1).max(80).optional(),
     club_slug: z.string().min(1).max(40).nullable().optional(),
+    username: z.string().regex(USERNAME_RE, 'use letras/números/_/., 3 a 30 caracteres'),
 });
 
 const UpdateMeSchema = z.object({
@@ -54,6 +57,7 @@ router.post('/signup', async (req, res, next) => {
         }
         const { email, password, display_name } = parsed.data;
         const slug = parsed.data.club_slug;
+        const usernameLc = parsed.data.username.toLowerCase().trim();
 
         let clubId = null;
         if (slug) {
@@ -69,12 +73,21 @@ router.post('/signup', async (req, res, next) => {
             return res.status(409).json({ error: 'email_already_registered' });
         }
 
+        // Username precisa ser único (case-insensitive)
+        const dupUser = await query(
+            'SELECT id FROM users WHERE LOWER(username) = $1',
+            [usernameLc]
+        );
+        if (dupUser.rows.length) {
+            return res.status(409).json({ error: 'username_taken' });
+        }
+
         const hash = await bcrypt.hash(password, 10);
         const { rows } = await query(
-            `INSERT INTO users (email, password_hash, display_name, club_id)
-             VALUES ($1, $2, $3, $4)
+            `INSERT INTO users (email, password_hash, display_name, club_id, username)
+             VALUES ($1, $2, $3, $4, $5)
              RETURNING id, email, display_name, club_id, is_admin`,
-            [emailLc, hash, display_name ?? null, clubId]
+            [emailLc, hash, display_name ?? null, clubId, usernameLc]
         );
         const user = rows[0];
         const token = signToken({ sub: user.id, email: user.email });
