@@ -536,6 +536,7 @@ router.post('/companion-requests/:attendance_id/accept', async (req, res, next) 
         let createdAttendance = null;
         if (ow.length) {
             const gameId = ow[0].game_id;
+            const ownerId = ow[0].user_id;
             const { rows: existing } = await query(
                 'SELECT id FROM attendances WHERE user_id = $1 AND game_id = $2',
                 [req.user.id, gameId]
@@ -548,6 +549,14 @@ router.post('/companion-requests/:attendance_id/accept', async (req, res, next) 
                     [req.user.id, gameId]
                 );
                 createdAttendance = newRows[0];
+                // Cria companion REVERSO: o owner original (Guilherme) já vai como CONFIRMED
+                // na nova attendance do confirmador (Tester) — sem precisar de novo aceite.
+                await query(
+                    `INSERT INTO attendance_companions (attendance_id, companion_user_id, status, confirmed_at, responded_at)
+                     VALUES ($1, $2, 'CONFIRMED', NOW(), NOW())
+                     ON CONFLICT DO NOTHING`,
+                    [createdAttendance.id, ownerId]
+                );
             }
         }
 

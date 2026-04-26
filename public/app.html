@@ -8528,10 +8528,58 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         });
     }
 
+    // Deduplica attendances do feed: se múltiplas attendances pro mesmo game,
+    // consolida numa única "canônica" (a com mais companions ou a mais antiga),
+    // mergiando os owners das outras como companions na canônica.
+    function dedupFeedItems(feed) {
+        const byGame = new Map();
+        for (const item of feed) {
+            if (item.type !== 'attendance' || !item.game_id) continue;
+            const arr = byGame.get(item.game_id) || [];
+            arr.push(item);
+            byGame.set(item.game_id, arr);
+        }
+        const hide = new Set();
+        for (const [gameId, items] of byGame) {
+            if (items.length < 2) continue;
+            // Ordena: mais companions primeiro, empate → mais antigo (created_at ASC)
+            items.sort((a, b) => {
+                const cA = (a.companions || []).length;
+                const cB = (b.companions || []).length;
+                if (cA !== cB) return cB - cA;
+                return new Date(a.created_at) - new Date(b.created_at);
+            });
+            const canonical = items[0];
+            const existingIds = new Set((canonical.companions || []).map(c => c.user_id));
+            existingIds.add(canonical.user_id); // owner não conta como companion
+            for (let i = 1; i < items.length; i++) {
+                const dup = items[i];
+                if (!existingIds.has(dup.user_id)) {
+                    canonical.companions = [...(canonical.companions || []), {
+                        user_id: dup.user_id,
+                        username: dup.username,
+                        display_name: dup.display_name,
+                    }];
+                    existingIds.add(dup.user_id);
+                }
+                // Mergia também os companions do duplicado
+                for (const c of (dup.companions || [])) {
+                    if (!existingIds.has(c.user_id)) {
+                        canonical.companions.push(c);
+                        existingIds.add(c.user_id);
+                    }
+                }
+                hide.add(`${dup.type}:${dup.ref_id}`);
+            }
+        }
+        return feed.filter(item => !hide.has(`${item.type}:${item.ref_id}`));
+    }
+
     async function loadFeed() {
         const list = document.getElementById('feedList');
         try {
-            const { feed } = await api('/social/feed?limit=30');
+            let { feed } = await api('/social/feed?limit=30');
+            feed = dedupFeedItems(feed);
             if (!feed.length) {
                 list.innerHTML = '<div class="empty">Nenhuma atividade ainda. Quando seus amigos marcarem jogos, aparece aqui.</div>';
                 return;
@@ -8635,9 +8683,14 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                     } else {
                         displayName = `${ownerName}, ${c1Name} e mais ${companions.length - 1}`;
                     }
+                    // Verbo conforme tempo: jogo futuro → "vão juntos"; passado → "foram juntos"
+                    const hojeRef = new Date(); hojeRef.setHours(0,0,0,0);
+                    const dtJogo = item.data ? new Date(item.data) : null;
+                    const isFuturoJogo = dtJogo ? dtJogo >= hojeRef : false;
+                    const verboJuntos = isFuturoJogo ? 'vão juntos' : 'foram juntos';
                     actionLine = isCopa
-                        ? `<span class="material-icons">handshake</span> foram juntos na Copa`
-                        : `<span class="material-icons">handshake</span> foram juntos no jogo`;
+                        ? `<span class="material-icons">handshake</span> ${verboJuntos} na Copa`
+                        : `<span class="material-icons">handshake</span> ${verboJuntos} no jogo`;
 
                     // Avatares stacked: owner + companion(s)
                     const ownerInitials = avatarInitials(item.display_name || item.username);
