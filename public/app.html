@@ -8785,7 +8785,12 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                         const noteData = (feed.find(f => f.type === 'note' && f.ref_id === refId));
                         if (noteData) openNoteView(noteData);
                     } else {
-                        openFriendCollection(friendId);
+                        // Post próprio: leva pro próprio Perfil (em vez de modal de "amigo" apontando pra si)
+                        if (friendId === user.id) {
+                            navigate('/perfil');
+                        } else {
+                            openFriendCollection(friendId);
+                        }
                     }
                 });
             });
