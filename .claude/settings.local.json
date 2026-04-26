@@ -36,7 +36,28 @@
       "Bash(node --check \"/c/Users/guilh/OneDrive/Área de Trabalho/corinthians-agent-backend/scripts/seed_bolao_default.mjs\")",
       "Bash(node --check \"/c/Users/guilh/OneDrive/Área de Trabalho/corinthians-agent-backend/src/utils/achievements.js\")",
       "Bash(node --check \"/c/Users/guilh/OneDrive/Área de Trabalho/corinthians-agent-backend/src/routes/me.js\")",
-      "Bash(node --check \"/c/Users/guilh/OneDrive/Área de Trabalho/corinthians-agent-backend/src/routes/social.js\")"
+      "Bash(node --check \"/c/Users/guilh/OneDrive/Área de Trabalho/corinthians-agent-backend/src/routes/social.js\")",
+      "Bash(node --check src/db/pool.js)",
+      "Bash(node --check src/utils/cache.js)",
+      "Bash(node --check src/routes/bolao.js)",
+      "Bash(node -e \"const d=require\\('C:/Users/guilh/Downloads/corinthians_jogos.json'\\); console.log\\('Total jogos:', d.length\\); console.log\\('Primeira data:', d[0].data\\); console.log\\('Última data:', d[d.length-1].data\\);\")",
+      "Bash(node --check \"/c/Users/guilh/OneDrive/Área de Trabalho/corinthians-agent-backend/scripts/import_corinthians_jogos.mjs\")",
+      "Bash(node --check \"/c/Users/guilh/OneDrive/Área de Trabalho/corinthians-agent-backend/src/routes/attendances.js\")",
+      "Bash(node --check \"/c/Users/guilh/OneDrive/Área de Trabalho/corinthians-agent-backend/scripts/cleanup_orphan_companions.mjs\")",
+      "Bash(curl -sI \"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Sport_Club_Corinthians_Paulista_brasao.svg/240px-Sport_Club_Corinthians_Paulista_brasao.svg.png\")",
+      "Bash(curl -sI \"https://media.api-sports.io/football/teams/118.png\")",
+      "Bash(curl -sI \"https://www.thesportsdb.com/images/media/team/badge/qq3qpz1473859923.png\")",
+      "Bash(curl -sI \"https://logoeps.com/wp-content/uploads/2013/03/sport-club-corinthians-paulista-vector-logo.png\")",
+      "Bash(curl -sI \"https://upload.wikimedia.org/wikipedia/commons/b/b4/Sport_Club_Corinthians_Paulista_brasao.svg\")",
+      "Bash(curl -sI -H \"User-Agent: ArquibancadaApp/1.0 \\(https://corinthians-agent-backend-production.up.railway.app; admin@arquibancada.app\\)\" \"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Sport_Club_Corinthians_Paulista_brasao.svg/240px-Sport_Club_Corinthians_Paulista_brasao.svg.png\")",
+      "Bash(curl -sI \"https://www.thesportsdb.com/images/media/team/badge/uyhbfe1612467022.png\")",
+      "Bash(curl -sI \"https://images.fotmob.com/image_resources/logo/teamlogo/8254.png\")",
+      "Bash(curl -sI \"https://1xbet.whoscored.com/Images/Logos/Teams/4051.png\")",
+      "Bash(curl -sI \"https://en.wikipedia.org/api/rest_v1/page/summary/Sport_Club_Corinthians_Paulista\")",
+      "Bash(curl -s \"https://en.wikipedia.org/api/rest_v1/page/summary/Sport_Club_Corinthians_Paulista\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d.get\\('thumbnail',{}\\).get\\('source'\\)\\)\")",
+      "Bash(curl -sI \"https://upload.wikimedia.org/wikipedia/en/thumb/5/5a/Sport_Club_Corinthians_Paulista_crest.svg/330px-Sport_Club_Corinthians_Paulista_crest.svg.png\")",
+      "Bash(node scripts/download_team_logos.mjs)"
     ]
   }
 }
