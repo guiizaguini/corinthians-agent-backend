@@ -5055,6 +5055,10 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         font-size: 0.7rem;
         letter-spacing: 0.01em;
     }
+    /* IMPORTANTE: o time visitante tem ordem inversa no HTML (nome, bandeira)
+       pra ficar simetrico no desktop — no mobile precisamos REVERTER pra que
+       a bandeira fique em cima e o nome embaixo (igual ao time da casa). */
+    .bolao-palpite-team.away { flex-direction: column-reverse; }
     .bolao-palpite-team.home,
     .bolao-palpite-team.away {
         justify-content: flex-start;
