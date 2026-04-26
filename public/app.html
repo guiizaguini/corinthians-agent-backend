@@ -10148,7 +10148,46 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             return;
         }
 
-        list.innerHTML = filtered.map(g => bolaoRenderJogo(g)).join('');
+        // Agrupa por seção (Grupo A-L + cada fase de mata-mata) — mesmo padrão
+        // do catálogo da Copa pra dar separação visual com header.
+        const groups = new Map();
+        const addTo = (key, g) => {
+            if (!groups.has(key)) groups.set(key, []);
+            groups.get(key).push(g);
+        };
+        for (const g of filtered) {
+            const f = g.fase || '';
+            const grpMatch = f.match(/Grupo\s+([A-L])/i);
+            if (grpMatch) { addTo(`Grupo ${grpMatch[1].toUpperCase()}`, g); continue; }
+            if (/Oitavas\s+de\s+32/i.test(f)) { addTo('Oitavas de 32', g); continue; }
+            if (/Oitavas/i.test(f))           { addTo('Oitavas de Final', g); continue; }
+            if (/Quartas/i.test(f))           { addTo('Quartas de Final', g); continue; }
+            if (/Semifinal|Semi-final/i.test(f)) { addTo('Semifinais', g); continue; }
+            if (/Disputa|3º|3 de|Third Place/i.test(f)) { addTo('Disputa de 3º Lugar', g); continue; }
+            if (/^Final\b/i.test(f.trim())) { addTo('Final', g); continue; }
+            addTo('Outros', g);
+        }
+        const ordem = [
+            'Grupo A','Grupo B','Grupo C','Grupo D','Grupo E','Grupo F',
+            'Grupo G','Grupo H','Grupo I','Grupo J','Grupo K','Grupo L',
+            'Oitavas de 32','Oitavas de Final','Quartas de Final','Semifinais','Disputa de 3º Lugar','Final',
+            'Outros',
+        ];
+        list.innerHTML = ordem
+            .filter(sec => groups.has(sec))
+            .map(sec => {
+                const games = groups.get(sec);
+                const isFinal = sec === 'Final';
+                const palpitadosSec = games.filter(g => g.palpite_casa != null).length;
+                const countTxt = `${palpitadosSec}/${games.length} ${games.length === 1 ? 'palpite' : 'palpites'}`;
+                return `
+                    <h3 class="wc-section-title ${isFinal ? 'final' : ''}">
+                        ${isFinal ? '🏆 ' : ''}${sec}
+                        <span class="wc-section-count">${countTxt}</span>
+                    </h3>
+                    ${games.map(g => bolaoRenderJogo(g)).join('')}
+                `;
+            }).join('');
         const id = bolaoState.bolaoId;
 
         // Wire up save buttons e inputs
