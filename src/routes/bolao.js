@@ -51,16 +51,94 @@ async function assertMember(bolaoId, userId) {
 // =============================================================
 router.get('/meus', async (req, res, next) => {
     try {
+        // Total de jogos do torneio (constante por enquanto = jogos da Copa 2026)
+        const { rows: totalJogosRows } = await query(`
+            SELECT COUNT(*)::int AS n
+            FROM games g JOIN clubs c ON c.id = g.club_id
+            WHERE c.slug = $1
+        `, [TOURNAMENT_SLUG]);
+        const total_jogos = totalJogosRows[0]?.n || 0;
+
+        // Próximo jogo da Copa (kickoff > now)
+        const { rows: proxRows } = await query(`
+            SELECT g.id, g.data, g.horario, g.time_casa, g.time_visitante, g.fase, g.estadio
+            FROM games g JOIN clubs c ON c.id = g.club_id
+            WHERE c.slug = $1
+              AND g.data >= CURRENT_DATE
+            ORDER BY g.data ASC, g.horario ASC NULLS LAST
+            LIMIT 1
+        `, [TOURNAMENT_SLUG]);
+        const proximo_jogo_global = proxRows[0] || null;
+
+        // Bolões do user — com pontos/posição/progresso de palpites
         const { rows } = await query(`
+            WITH meus_boloes AS (
+                SELECT b.id, b.name, b.description, b.invite_code, b.created_at, b.created_by, bm.joined_at
+                FROM boloes b
+                JOIN bolao_members bm ON bm.bolao_id = b.id AND bm.user_id = $1
+            ),
+            ranking AS (
+                SELECT
+                    bm.bolao_id,
+                    bm.user_id,
+                    COALESCE(SUM(
+                        CASE
+                            WHEN p.gols_casa = jr.gols_casa AND p.gols_visitante = jr.gols_visitante THEN $3
+                            WHEN p.gols_casa = p.gols_visitante AND jr.gols_casa = jr.gols_visitante THEN $6
+                            WHEN SIGN(p.gols_casa - p.gols_visitante) = SIGN(jr.gols_casa - jr.gols_visitante)
+                                AND (p.gols_casa - p.gols_visitante) = (jr.gols_casa - jr.gols_visitante) THEN $4
+                            WHEN SIGN(p.gols_casa - p.gols_visitante) = SIGN(jr.gols_casa - jr.gols_visitante) THEN $5
+                            ELSE 0
+                        END
+                    ), 0)::int AS pontos
+                FROM bolao_members bm
+                LEFT JOIN bolao_palpites p
+                    ON p.user_id = bm.user_id AND p.bolao_id = bm.bolao_id
+                LEFT JOIN games jrg ON jrg.id = p.game_id
+                LEFT JOIN clubs jrc ON jrc.id = jrg.club_id
+                LEFT JOIN games jr ON jr.id = p.game_id
+                    AND jr.gols_casa IS NOT NULL AND jr.gols_visitante IS NOT NULL
+                WHERE bm.bolao_id IN (SELECT id FROM meus_boloes)
+                GROUP BY bm.bolao_id, bm.user_id
+            ),
+            posicoes AS (
+                SELECT
+                    bolao_id, user_id, pontos,
+                    RANK() OVER (PARTITION BY bolao_id ORDER BY pontos DESC) AS posicao
+                FROM ranking
+            ),
+            palpites_feitos AS (
+                SELECT bolao_id, COUNT(*)::int AS n
+                FROM bolao_palpites
+                WHERE user_id = $1
+                  AND bolao_id IN (SELECT id FROM meus_boloes)
+                GROUP BY bolao_id
+            )
             SELECT
-                b.id, b.name, b.description, b.invite_code, b.created_at, b.created_by,
-                bm.joined_at,
-                (SELECT COUNT(*)::int FROM bolao_members WHERE bolao_id = b.id) AS member_count
-            FROM boloes b
-            JOIN bolao_members bm ON bm.bolao_id = b.id AND bm.user_id = $1
-            ORDER BY bm.joined_at DESC
-        `, [req.user.id]);
-        res.json({ boloes: rows, pontos: BOLAO_PONTOS });
+                b.id, b.name, b.description, b.invite_code, b.created_at, b.created_by, b.joined_at,
+                (SELECT COUNT(*)::int FROM bolao_members WHERE bolao_id = b.id) AS member_count,
+                COALESCE(po.pontos, 0) AS my_pontos,
+                COALESCE(po.posicao, NULL) AS my_posicao,
+                COALESCE(pf.n, 0) AS palpites_feitos
+            FROM meus_boloes b
+            LEFT JOIN posicoes po ON po.bolao_id = b.id AND po.user_id = $1
+            LEFT JOIN palpites_feitos pf ON pf.bolao_id = b.id
+            ORDER BY b.joined_at DESC
+        `, [
+            req.user.id,
+            TOURNAMENT_SLUG,
+            BOLAO_PONTOS.PLACAR_EXATO,
+            BOLAO_PONTOS.VENCEDOR_E_SALDO,
+            BOLAO_PONTOS.VENCEDOR,
+            BOLAO_PONTOS.EMPATE_CORRETO,
+        ]);
+
+        res.json({
+            boloes: rows,
+            pontos: BOLAO_PONTOS,
+            total_jogos,
+            proximo_jogo: proximo_jogo_global,
+        });
     } catch (err) { next(err); }
 });
 
