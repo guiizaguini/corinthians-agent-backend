@@ -210,12 +210,42 @@ router.patch('/:id', async (req, res, next) => {
 // =============================================================
 router.delete('/:id', async (req, res, next) => {
     try {
-        const { rowCount } = await query(
-            'DELETE FROM attendances WHERE id = $1 AND user_id = $2',
+        // Antes de deletar, pega o game_id pra limpar companion links em outras attendances
+        const { rows: att } = await query(
+            'SELECT game_id FROM attendances WHERE id = $1 AND user_id = $2',
             [req.params.id, req.user.id]
         );
-        if (!rowCount) return res.status(404).json({ error: 'attendance_not_found' });
+        if (!att.length) return res.status(404).json({ error: 'attendance_not_found' });
+        const gameId = att[0].game_id;
+
+        // Pega os user_ids dos donos das attendances onde eu sou companion (pra invalidar cache)
+        const { rows: ownersAffected } = await query(
+            `SELECT DISTINCT a.user_id
+             FROM attendance_companions ac
+             JOIN attendances a ON a.id = ac.attendance_id
+             WHERE ac.companion_user_id = $1 AND a.game_id = $2`,
+            [req.user.id, gameId]
+        );
+
+        // Remove eu (req.user.id) de companions em QUALQUER attendance desse jogo —
+        // se eu não fui mais, não posso continuar listado como companion na de ninguém.
+        await query(
+            `DELETE FROM attendance_companions ac
+             USING attendances a
+             WHERE ac.attendance_id = a.id
+               AND a.game_id = $2
+               AND ac.companion_user_id = $1`,
+            [req.user.id, gameId]
+        );
+
+        // Deleta a attendance (cascade derruba seus próprios companions)
+        await query('DELETE FROM attendances WHERE id = $1 AND user_id = $2',
+            [req.params.id, req.user.id]);
+
+        // Invalida cache de quem foi afetado
         invalidate.user(req.user.id);
+        for (const o of ownersAffected) invalidate.user(o.user_id);
+
         res.json({ removido: true });
     } catch (err) { next(err); }
 });
