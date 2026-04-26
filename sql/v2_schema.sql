@@ -262,6 +262,11 @@ CREATE INDEX IF NOT EXISTS idx_boloes_invite ON boloes(UPPER(invite_code));
 ALTER TABLE boloes ADD COLUMN IF NOT EXISTS is_public BOOLEAN NOT NULL DEFAULT FALSE;
 CREATE INDEX IF NOT EXISTS idx_boloes_is_public ON boloes(is_public) WHERE is_public = TRUE;
 
+-- created_by usa SET NULL quando user é excluído (não derruba o bolão dos outros membros)
+ALTER TABLE boloes DROP CONSTRAINT IF EXISTS boloes_created_by_fkey;
+ALTER TABLE boloes ADD CONSTRAINT boloes_created_by_fkey
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL;
+
 -- Quem participa de qual bolão
 CREATE TABLE IF NOT EXISTS bolao_members (
     id         SERIAL PRIMARY KEY,

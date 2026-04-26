@@ -28,6 +28,11 @@ const LoginSchema = z.object({
     password: z.string().min(1).max(120),
 });
 
+const DeleteMeSchema = z.object({
+    password: z.string().min(1).max(120),
+    confirm: z.string().min(1).max(50), // user precisa digitar "EXCLUIR" pra confirmar
+});
+
 async function getClubIdBySlug(slug) {
     const { rows } = await query('SELECT id FROM clubs WHERE slug = $1', [slug]);
     return rows[0]?.id ?? null;
@@ -190,6 +195,40 @@ router.patch('/me', requireUser, async (req, res, next) => {
             values
         );
         res.json({ user: rows[0] });
+    } catch (err) { next(err); }
+});
+
+// =============================================================
+// DELETE /auth/me — exclui a própria conta (irreversível)
+// Exige senha + confirmação textual ("EXCLUIR")
+// CASCADE apaga attendances, palpites, friendships, etc.
+// boloes.created_by vira NULL pra não derrubar bolões de outros membros.
+// =============================================================
+router.delete('/me', requireUser, async (req, res, next) => {
+    try {
+        const parsed = DeleteMeSchema.safeParse(req.body);
+        if (!parsed.success) {
+            return res.status(400).json({ error: 'validation_failed' });
+        }
+        const { password, confirm } = parsed.data;
+
+        if (confirm.trim().toUpperCase() !== 'EXCLUIR') {
+            return res.status(400).json({ error: 'confirmation_mismatch' });
+        }
+
+        // Verifica a senha antes de excluir
+        const { rows } = await query(
+            'SELECT id, email, password_hash FROM users WHERE id = $1',
+            [req.user.id]
+        );
+        const u = rows[0];
+        if (!u) return res.status(404).json({ error: 'user_not_found' });
+
+        const ok = await bcrypt.compare(password, u.password_hash);
+        if (!ok) return res.status(401).json({ error: 'invalid_password' });
+
+        await query('DELETE FROM users WHERE id = $1', [req.user.id]);
+        res.json({ deleted: true });
     } catch (err) { next(err); }
 });
 

@@ -5275,6 +5275,65 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
    =============================================================== */
 #perfilView { position: relative; }
 
+/* Zona perigosa — exclusão de conta */
+.perfil-danger-zone {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed rgba(168,50,50,0.25);
+}
+.perfil-danger-zone .perfil-section-head h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.perfil-danger-card {
+    background: linear-gradient(180deg, #fff5f5 0%, #fff 100%);
+    border: 1.5px solid rgba(168,50,50,0.25);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.perfil-danger-info { flex: 1; min-width: 0; }
+.perfil-danger-title {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #a83232;
+    margin-bottom: 0.25rem;
+}
+.perfil-danger-desc {
+    font-family: 'SN Pro', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink-mute);
+    line-height: 1.45;
+}
+.perfil-danger-btn {
+    background: #fff;
+    border: 1.5px solid #a83232;
+    color: #a83232;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: background 0.15s ease, color 0.15s ease;
+    flex-shrink: 0;
+}
+.perfil-danger-btn:hover { background: #a83232; color: #fff; }
+.perfil-danger-btn .material-icons { font-size: 1.05rem; }
+@media (max-width: 600px) {
+    .perfil-danger-btn { width: 100%; justify-content: center; }
+}
+
 .perfil-hero {
     background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card-2) 100%);
     border: 1px solid var(--line);
@@ -6052,6 +6111,35 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     </header>
 
     <!-- Modal: Perfil -->
+    <!-- Modal: Excluir conta (confirmação dupla) -->
+    <div class="modal-overlay" id="deleteAccountModal">
+        <div class="modal">
+            <h2 style="color:#a83232;display:flex;align-items:center;gap:0.5rem;">
+                <span class="material-icons" style="color:#a83232;">warning</span>
+                Excluir conta
+            </h2>
+            <div class="meta" style="line-height:1.5;">
+                Você está prestes a apagar <strong>permanentemente</strong> sua conta e todos os dados associados:
+                presenças, palpites, amizades, posições em bolões e conquistas. <strong>Não dá pra desfazer.</strong>
+            </div>
+
+            <label for="delConfirmText">Pra confirmar, digite <code style="background:#fff3f3;color:#a83232;padding:0.1rem 0.4rem;border-radius:4px;font-weight:700;">EXCLUIR</code></label>
+            <input id="delConfirmText" type="text" maxlength="20" placeholder="EXCLUIR" autocomplete="off" autocapitalize="characters">
+
+            <label for="delPassword">Sua senha</label>
+            <input id="delPassword" type="password" maxlength="120" autocomplete="current-password" placeholder="Sua senha atual">
+
+            <div class="error" id="delErr" style="display:none;color:#a83232;margin-top:0.5rem;font-size:0.85rem;"></div>
+
+            <div class="modal-actions">
+                <button class="btn-secondary" id="delCancel">Cancelar</button>
+                <button class="btn-primary" id="delConfirm" style="background:#a83232;border-color:#a83232;" disabled>
+                    Excluir minha conta
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="profileModal">
         <div class="modal">
             <h2>Editar perfil</h2>
@@ -6514,6 +6602,26 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
                 <div class="perfil-conq-grid" id="perfilConqGrid">
                     <div class="loading">Carregando conquistas...</div>
+                </div>
+            </section>
+
+            <!-- Zona perigosa: exclusão de conta -->
+            <section class="perfil-danger-zone">
+                <header class="perfil-section-head">
+                    <h3 style="color:#a83232;"><span class="material-icons" style="color:#a83232;">warning</span>Zona perigosa</h3>
+                </header>
+                <div class="perfil-danger-card">
+                    <div class="perfil-danger-info">
+                        <div class="perfil-danger-title">Excluir minha conta</div>
+                        <div class="perfil-danger-desc">
+                            Apaga seu perfil, presenças, palpites, amizades e te tira de todos os bolões.
+                            <strong>Essa ação é irreversível.</strong>
+                        </div>
+                    </div>
+                    <button class="perfil-danger-btn" id="btnExcluirConta" type="button">
+                        <span class="material-icons">delete_forever</span>
+                        Excluir conta
+                    </button>
                 </div>
             </section>
         </section>
@@ -8128,6 +8236,77 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         });
     }
     document.getElementById('perfilEditBtn').addEventListener('click', openProfileEditModal);
+
+    // ===============================================
+    // EXCLUIR CONTA — modal com confirmação dupla
+    // ===============================================
+    const deleteAccountModal = document.getElementById('deleteAccountModal');
+    const delConfirmText = document.getElementById('delConfirmText');
+    const delPassword = document.getElementById('delPassword');
+    const delConfirmBtn = document.getElementById('delConfirm');
+    const delCancelBtn = document.getElementById('delCancel');
+    const delErr = document.getElementById('delErr');
+
+    function openDeleteAccountModal() {
+        delConfirmText.value = '';
+        delPassword.value = '';
+        delErr.style.display = 'none';
+        delErr.textContent = '';
+        delConfirmBtn.disabled = true;
+        delConfirmBtn.textContent = 'Excluir minha conta';
+        deleteAccountModal.classList.add('show');
+        // foca o primeiro input depois da animação
+        setTimeout(() => delConfirmText.focus(), 100);
+    }
+    function closeDeleteAccountModal() {
+        deleteAccountModal.classList.remove('show');
+    }
+
+    document.getElementById('btnExcluirConta').addEventListener('click', openDeleteAccountModal);
+    delCancelBtn.addEventListener('click', closeDeleteAccountModal);
+    deleteAccountModal.addEventListener('click', (e) => {
+        if (e.target.id === 'deleteAccountModal') closeDeleteAccountModal();
+    });
+
+    // Habilita o botão "Excluir" só quando os 2 campos estão válidos
+    function refreshDelBtn() {
+        const okText = delConfirmText.value.trim().toUpperCase() === 'EXCLUIR';
+        const okPass = delPassword.value.length >= 1;
+        delConfirmBtn.disabled = !(okText && okPass);
+    }
+    delConfirmText.addEventListener('input', refreshDelBtn);
+    delPassword.addEventListener('input', refreshDelBtn);
+
+    delConfirmBtn.addEventListener('click', async () => {
+        delErr.style.display = 'none';
+        delConfirmBtn.disabled = true;
+        delConfirmBtn.textContent = 'Excluindo...';
+        try {
+            await api('/auth/me', {
+                method: 'DELETE',
+                body: JSON.stringify({
+                    password: delPassword.value,
+                    confirm: delConfirmText.value.trim().toUpperCase(),
+                }),
+            });
+            // Limpa estado local e manda pro login
+            localStorage.removeItem('fiel_token');
+            localStorage.removeItem('fiel_user');
+            // Pequena msg final antes de redirect
+            delConfirmBtn.textContent = 'Conta excluída';
+            setTimeout(() => window.location.replace('/login'), 600);
+        } catch (err) {
+            const msg = {
+                invalid_password: 'Senha incorreta. Tenta de novo.',
+                confirmation_mismatch: 'Você precisa digitar EXCLUIR pra confirmar.',
+                validation_failed: 'Preenche os dois campos pra continuar.',
+            }[err.message] || ('Erro: ' + err.message);
+            delErr.textContent = msg;
+            delErr.style.display = '';
+            delConfirmBtn.disabled = false;
+            delConfirmBtn.textContent = 'Excluir minha conta';
+        }
+    });
 
     // ===============================================
     // VISTA PERFIL — header + KPIs + conquistas
