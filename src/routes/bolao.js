@@ -77,27 +77,25 @@ router.get('/meus', async (req, res, next) => {
                 FROM boloes b
                 JOIN bolao_members bm ON bm.bolao_id = b.id AND bm.user_id = $1
             ),
-            ranking AS (
+            all_rank AS (
                 SELECT
                     bm.bolao_id,
                     bm.user_id,
                     COALESCE(SUM(
                         CASE
-                            WHEN p.gols_casa = jr.gols_casa AND p.gols_visitante = jr.gols_visitante THEN $3
-                            WHEN p.gols_casa = p.gols_visitante AND jr.gols_casa = jr.gols_visitante THEN $6
-                            WHEN SIGN(p.gols_casa - p.gols_visitante) = SIGN(jr.gols_casa - jr.gols_visitante)
-                                AND (p.gols_casa - p.gols_visitante) = (jr.gols_casa - jr.gols_visitante) THEN $4
-                            WHEN SIGN(p.gols_casa - p.gols_visitante) = SIGN(jr.gols_casa - jr.gols_visitante) THEN $5
+                            WHEN p.gols_casa = g.gols_casa AND p.gols_visitante = g.gols_visitante THEN $2
+                            WHEN p.gols_casa = p.gols_visitante AND g.gols_casa = g.gols_visitante THEN $5
+                            WHEN SIGN(p.gols_casa - p.gols_visitante) = SIGN(g.gols_casa - g.gols_visitante)
+                                AND (p.gols_casa - p.gols_visitante) = (g.gols_casa - g.gols_visitante) THEN $3
+                            WHEN SIGN(p.gols_casa - p.gols_visitante) = SIGN(g.gols_casa - g.gols_visitante) THEN $4
                             ELSE 0
                         END
                     ), 0)::int AS pontos
                 FROM bolao_members bm
                 LEFT JOIN bolao_palpites p
                     ON p.user_id = bm.user_id AND p.bolao_id = bm.bolao_id
-                LEFT JOIN games jrg ON jrg.id = p.game_id
-                LEFT JOIN clubs jrc ON jrc.id = jrg.club_id
-                LEFT JOIN games jr ON jr.id = p.game_id
-                    AND jr.gols_casa IS NOT NULL AND jr.gols_visitante IS NOT NULL
+                LEFT JOIN games g ON g.id = p.game_id
+                    AND g.gols_casa IS NOT NULL AND g.gols_visitante IS NOT NULL
                 WHERE bm.bolao_id IN (SELECT id FROM meus_boloes)
                 GROUP BY bm.bolao_id, bm.user_id
             ),
@@ -105,7 +103,7 @@ router.get('/meus', async (req, res, next) => {
                 SELECT
                     bolao_id, user_id, pontos,
                     RANK() OVER (PARTITION BY bolao_id ORDER BY pontos DESC) AS posicao
-                FROM ranking
+                FROM all_rank
             ),
             palpites_feitos AS (
                 SELECT bolao_id, COUNT(*)::int AS n
@@ -117,16 +115,15 @@ router.get('/meus', async (req, res, next) => {
             SELECT
                 b.id, b.name, b.description, b.invite_code, b.created_at, b.created_by, b.joined_at,
                 (SELECT COUNT(*)::int FROM bolao_members WHERE bolao_id = b.id) AS member_count,
-                COALESCE(po.pontos, 0) AS my_pontos,
-                COALESCE(po.posicao, NULL) AS my_posicao,
-                COALESCE(pf.n, 0) AS palpites_feitos
+                COALESCE(po.pontos, 0)::int AS my_pontos,
+                po.posicao::int AS my_posicao,
+                COALESCE(pf.n, 0)::int AS palpites_feitos
             FROM meus_boloes b
             LEFT JOIN posicoes po ON po.bolao_id = b.id AND po.user_id = $1
             LEFT JOIN palpites_feitos pf ON pf.bolao_id = b.id
             ORDER BY b.joined_at DESC
         `, [
             req.user.id,
-            TOURNAMENT_SLUG,
             BOLAO_PONTOS.PLACAR_EXATO,
             BOLAO_PONTOS.VENCEDOR_E_SALDO,
             BOLAO_PONTOS.VENCEDOR,
