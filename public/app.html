@@ -9635,8 +9635,13 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 else posHtml = `<span class="bolao-rank-num">${pos}</span>`;
 
                 let actionHtml = '';
-                if (status === 'none' && r.username) {
-                    actionHtml = `<button class="bolao-rank-addfriend" data-add-username="${escapeHtml(r.username)}" data-add-id="${r.id}" title="Adicionar @${escapeHtml(r.username)} como amigo"><span class="material-icons">person_add</span></button>`;
+                if (status === 'none') {
+                    // Username é opcional — se não tiver, manda só user_id
+                    const usernameAttr = r.username ? ` data-add-username="${escapeHtml(r.username)}"` : '';
+                    const titleTxt = r.username
+                        ? `Adicionar @${escapeHtml(r.username)} como amigo`
+                        : `Adicionar como amigo`;
+                    actionHtml = `<button class="bolao-rank-addfriend" data-add-id="${r.id}"${usernameAttr} title="${titleTxt}"><span class="material-icons">person_add</span></button>`;
                 } else if (status === 'outgoing') {
                     actionHtml = `<span class="bolao-rank-pending" title="Pedido enviado"><span class="material-icons">schedule_send</span></span>`;
                 } else if (status === 'incoming') {
@@ -9675,7 +9680,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             }).join('');
 
             // Handlers dos botões de adicionar amigo
-            list.querySelectorAll('[data-add-username]').forEach(btn => {
+            // (usa a classe pq nem todo card tem username — manda user_id como fallback)
+            list.querySelectorAll('.bolao-rank-addfriend').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
                     e.stopPropagation();
                     const username = btn.dataset.addUsername;
