@@ -532,7 +532,9 @@ router.post('/companion-requests/:attendance_id/accept', async (req, res, next) 
             [req.params.attendance_id]
         );
 
-        // Auto-marca presença pro confirmador, se ele ainda não tiver attendance pra esse jogo
+        // Garante o link reverso (mutual): owner original vira companion CONFIRMED
+        // na attendance do confirmador (existente ou recém-criada). Sem isso o feed
+        // não consegue agrupar os dois eventos.
         let createdAttendance = null;
         if (ow.length) {
             const gameId = ow[0].game_id;
@@ -541,6 +543,7 @@ router.post('/companion-requests/:attendance_id/accept', async (req, res, next) 
                 'SELECT id FROM attendances WHERE user_id = $1 AND game_id = $2',
                 [req.user.id, gameId]
             );
+            let myAttendanceId;
             if (!existing.length) {
                 const { rows: newRows } = await query(
                     `INSERT INTO attendances (user_id, game_id, status)
@@ -549,15 +552,22 @@ router.post('/companion-requests/:attendance_id/accept', async (req, res, next) 
                     [req.user.id, gameId]
                 );
                 createdAttendance = newRows[0];
-                // Cria companion REVERSO: o owner original (Guilherme) já vai como CONFIRMED
-                // na nova attendance do confirmador (Tester) — sem precisar de novo aceite.
-                await query(
-                    `INSERT INTO attendance_companions (attendance_id, companion_user_id, status, confirmed_at, responded_at)
-                     VALUES ($1, $2, 'CONFIRMED', NOW(), NOW())
-                     ON CONFLICT DO NOTHING`,
-                    [createdAttendance.id, ownerId]
-                );
+                myAttendanceId = createdAttendance.id;
+            } else {
+                myAttendanceId = existing[0].id;
             }
+            // Insere o owner como companion CONFIRMED na MINHA attendance
+            // (idempotente via ON CONFLICT — se já existir, faz UPDATE pra CONFIRMED).
+            await query(
+                `INSERT INTO attendance_companions
+                    (attendance_id, companion_user_id, status, confirmed_at, responded_at)
+                 VALUES ($1, $2, 'CONFIRMED', NOW(), NOW())
+                 ON CONFLICT (attendance_id, companion_user_id) DO UPDATE SET
+                    status = 'CONFIRMED',
+                    confirmed_at = COALESCE(attendance_companions.confirmed_at, NOW()),
+                    responded_at = NOW()`,
+                [myAttendanceId, ownerId]
+            );
         }
 
         // Invalida caches afetados
