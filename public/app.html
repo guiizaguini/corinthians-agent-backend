@@ -1010,18 +1010,17 @@ main {
     box-shadow:
         0 1px 2px rgba(15,23,42,0.04),
         0 8px 24px rgba(15,23,42,0.08);
-    transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+    transition: transform 220ms ease, box-shadow 220ms ease;
     cursor: pointer;
     overflow: hidden;
     font-family: 'Google Sans Flex', 'Google Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, "Helvetica Neue", Arial, sans-serif;
-    border: 1px solid var(--ing-line);
+    border: none;
 }
 .ingresso:hover {
     transform: translateY(-3px);
     box-shadow:
         0 2px 4px rgba(15,23,42,0.06),
-        0 16px 36px rgba(15,23,42,0.14);
-    border-color: var(--cor-acento);
+        0 16px 36px rgba(15,23,42,0.18);
 }
 
 /* Variantes V/E/D — paleta moderna 2025 */
@@ -1042,6 +1041,13 @@ main {
     --cor-acento-clara: #f43f5e;
     --cor-acento-escura: #be123c;
     --cor-acento-text: #ffffff;
+}
+/* Corinthians: vitória usa o dourado tradicional do clube */
+body[data-club="corinthians"] .ingresso.v {
+    --cor-acento: #b8941f;
+    --cor-acento-clara: #d4a520;
+    --cor-acento-escura: #7a6638;
+    --cor-acento-text: #1a1000;
 }
 
 .canhoto {
@@ -6769,6 +6775,13 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const themeMode = (club && CLUB_THEMES[club.slug]) || 'dark';
         document.body.classList.toggle('light-theme', themeMode === 'light');
 
+        // Slug do clube vai pro body — usado em overrides CSS (ex: vitória dourada do Corinthians)
+        if (club && club.slug) {
+            document.body.dataset.club = club.slug;
+        } else {
+            delete document.body.dataset.club;
+        }
+
         // Corinthians: dourado escuro tradicional
         if (club && club.slug === 'corinthians') {
             setAccentPalette(root, '#7a6638');
@@ -7063,9 +7076,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const resClass = isPres && g.resultado ? g.resultado.toLowerCase() : '';
         const hoje = new Date(); hoje.setHours(0,0,0,0);
         const isFuture = dt >= hoje && !g.resultado;
-        const selo = isPres && g.resultado
-            ? (g.resultado === 'V' ? 'VITÓRIA' : g.resultado === 'E' ? 'EMPATE' : 'DERROTA')
-            : (isCopa && isFuture ? 'EU VOU' : (g.status_presenca || '—'));
+        // Selo: só mostra "EU VOU" pra jogos futuros da Copa.
+        // Vitória/Empate/Derrota são sinalizados apenas pela cor do canhoto.
+        const selo = (isCopa && isFuture) ? 'EU VOU' : null;
         const resultadoPt = g.resultado === 'V' ? 'VITÓRIA' : g.resultado === 'E' ? 'EMPATE' : g.resultado === 'D' ? 'DERROTA' : '—';
 
         const mando = g.mando === 'MANDANTE' ? 'CASA' : g.mando === 'VISITANTE' ? 'FORA' : 'NEUTRO';
@@ -7116,7 +7129,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                         <div class="canhoto-mes">${escapeHtml(mes)}</div>
                         <div class="canhoto-ano">${ano}</div>
                     </div>
-                    <div class="canhoto-selo">${escapeHtml(selo)}</div>
+                    ${selo ? `<div class="canhoto-selo">${escapeHtml(selo)}</div>` : ''}
                     <div class="canhoto-num">Nº ${String(g.id).padStart(4, '0')}</div>
                 </div>
                 <div class="picotado"></div>
@@ -7149,10 +7162,11 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                             <span class="det-label">Setor</span>
                             <span class="det-valor">${escapeHtml(g.setor || '—')}</span>
                         </div>
+                        ${isCopa ? `
                         <div class="det-linha">
-                            <span class="det-label">${isCopa ? 'Fase' : 'Mando'}</span>
-                            <span class="det-valor">${escapeHtml(isCopa ? (g.fase || 'Grupo') : mando)}</span>
-                        </div>
+                            <span class="det-label">Fase</span>
+                            <span class="det-valor">${escapeHtml(g.fase || 'Grupo')}</span>
+                        </div>` : ''}
                         <div class="det-linha">
                             <span class="det-label">Valor</span>
                             <span class="det-valor">${g.valor_pago != null ? fmtMoeda(g.valor_pago) : 'CORTESIA'}</span>
