@@ -10105,8 +10105,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         // "Quartas de Final" etc. (todos terminam em "final").
         const faseMatchers = {
             grupos:   /Grupo|Fase de Grupos/i,
-            r32:      /Round of 32|16.?avos|Playoff|Repescagem|Dezesseis.?avos/i,
-            oitavas:  /Oitavas|Round of 16/i,
+            r32:      /Round of 32|16.?avos|Playoff|Repescagem|Dezesseis.?avos|Oitavas\s+de\s+32/i,
+            oitavas:  /Oitavas(?!\s+de\s+32)|Round of 16/i,
             quartas:  /Quartas|Quarter.?finals?|Round of 8/i,
             semis:    /Semifinal|Semi-final|Semis|Semi.?finals?/i,
             final:    /^Final\b/i,
