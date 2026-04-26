@@ -6590,6 +6590,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                                 <div class="bolao-filtros-chips" id="bolaoFilterFases">
                                     <button type="button" class="bolao-fase-chip active" data-fase="">Todas</button>
                                     <button type="button" class="bolao-fase-chip" data-fase="grupos">Grupos</button>
+                                    <button type="button" class="bolao-fase-chip" data-fase="r32">Round of 32</button>
                                     <button type="button" class="bolao-fase-chip" data-fase="oitavas">Oitavas</button>
                                     <button type="button" class="bolao-fase-chip" data-fase="quartas">Quartas</button>
                                     <button type="button" class="bolao-fase-chip" data-fase="semis">Semis</button>
@@ -10099,13 +10100,17 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const searchN = norm(search);
 
         // Mapeamento dos chips → regex que casa com a fase
+        // OBS: matchers são mutuamente exclusivos. Cuidado com FINAL —
+        // tem que ancorar no INÍCIO senão pega "Semifinal", "Oitavas de Final",
+        // "Quartas de Final" etc. (todos terminam em "final").
         const faseMatchers = {
             grupos:   /Grupo|Fase de Grupos/i,
-            oitavas:  /Oitavas/i,
-            quartas:  /Quartas/i,
-            semis:    /Semifinal|Semi-final|Semis/i,
-            final:    /^Final$|FINAL$/i,
-            terceiro: /Disputa|3º|3 de/i,
+            r32:      /Round of 32|16.?avos|Playoff|Repescagem|Dezesseis.?avos/i,
+            oitavas:  /Oitavas|Round of 16/i,
+            quartas:  /Quartas|Quarter.?finals?|Round of 8/i,
+            semis:    /Semifinal|Semi-final|Semis|Semi.?finals?/i,
+            final:    /^Final\b/i,
+            terceiro: /Disputa|3º|3 de|Third Place/i,
         };
 
         const filtered = all.filter(g => {
