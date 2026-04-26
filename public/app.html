@@ -4841,7 +4841,19 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 .fc-panels[data-active-tab="comparacao"] .fc-panel[data-panel="comparacao"] { display: block; }
 .fc-galeria { grid-template-columns: 1fr; gap: 12px; }
 @media (min-width: 700px) {
-    .fc-galeria { grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); }
+    /* Min maior pra caber nomes de times sem cortar (CORINTHIANS, INTERNACIONAL etc) */
+    .fc-galeria { grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); }
+}
+/* Dentro do modal de coleção, deixa nome do time quebrar em 2 linhas se necessário */
+.fc-galeria .confronto-google .nome-clube {
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    text-overflow: clip;
+    line-height: 1.15;
 }
 
 /* Lista de conquistas — versão compacta dentro do split */
