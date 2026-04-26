@@ -275,6 +275,73 @@ router.get('/snapshot', async (req, res, next) => {
     } catch (err) { next(err); }
 });
 
+// Helper: monta o objeto `stats` que o catálogo de conquistas consome.
+// Extraído pra ser reusado pelos endpoints /achievements e /achievements/pending.
+async function fetchUserStats(uid, cid) {
+    const [agg, notas, amigos, companions] = await Promise.all([
+        query(`
+            SELECT
+                COUNT(*)::int AS jogos,
+                SUM(CASE WHEN g.resultado='V' THEN 1 ELSE 0 END)::int AS vitorias,
+                SUM(CASE WHEN g.resultado='E' THEN 1 ELSE 0 END)::int AS empates,
+                SUM(CASE WHEN g.resultado='D' THEN 1 ELSE 0 END)::int AS derrotas,
+                COUNT(*) FILTER (WHERE g.foi_classico = TRUE)::int AS classicos,
+                COUNT(*) FILTER (WHERE g.titulo_conquistado IS NOT NULL AND g.titulo_conquistado <> '')::int AS titulos,
+                ROUND(
+                    (SUM(CASE WHEN g.resultado='V' THEN 3 ELSE 0 END)
+                     + SUM(CASE WHEN g.resultado='E' THEN 1 ELSE 0 END))::numeric
+                    / NULLIF(COUNT(*)*3, 0) * 100,
+                    0
+                )::int AS aproveitamento_pct
+            FROM attendances a
+            JOIN games g ON g.id = a.game_id
+            WHERE a.user_id = $1
+              AND a.status = 'PRESENTE'
+              AND g.club_id = $2
+              AND g.resultado IS NOT NULL
+        `, [uid, cid]),
+        query('SELECT COUNT(*)::int AS n FROM notes WHERE user_id = $1', [uid]),
+        query(
+            `SELECT COUNT(*)::int AS n FROM friendships
+             WHERE status = 'ACCEPTED' AND (requester_id = $1 OR recipient_id = $1)`,
+            [uid]
+        ),
+        query(
+            `SELECT COUNT(DISTINCT a.id)::int AS n
+             FROM attendances a
+             JOIN attendance_companions ac ON ac.attendance_id = a.id
+             WHERE a.user_id = $1`,
+            [uid]
+        ),
+    ]);
+    return {
+        jogos:                  agg.rows[0]?.jogos || 0,
+        vitorias:               agg.rows[0]?.vitorias || 0,
+        empates:                agg.rows[0]?.empates || 0,
+        derrotas:               agg.rows[0]?.derrotas || 0,
+        classicos:              agg.rows[0]?.classicos || 0,
+        titulos:                agg.rows[0]?.titulos || 0,
+        aproveitamento_pct:     agg.rows[0]?.aproveitamento_pct || 0,
+        notas:                  notas.rows[0]?.n || 0,
+        amigos:                 amigos.rows[0]?.n || 0,
+        jogos_com_companions:   companions.rows[0]?.n || 0,
+    };
+}
+
+// Helper: insere conquistas recém desbloqueadas em user_achievements (idempotente).
+// Retorna a lista de IDs que foram inseridos AGORA (primeira vez).
+async function syncUnlockedAchievements(uid, achievements) {
+    const unlockedIds = achievements.filter(a => a.unlocked).map(a => a.id);
+    if (!unlockedIds.length) return [];
+    const { rows } = await query(`
+        INSERT INTO user_achievements (user_id, achievement_id)
+        SELECT $1, unnest($2::text[])
+        ON CONFLICT (user_id, achievement_id) DO NOTHING
+        RETURNING achievement_id
+    `, [uid, unlockedIds]);
+    return rows.map(r => r.achievement_id);
+}
+
 // =============================================================
 // GET /me/achievements — calcula o estado de cada conquista pro user
 // =============================================================
@@ -296,74 +363,72 @@ router.get('/achievements', async (req, res, next) => {
         const cached = cache.get(cacheKey);
         if (cached) return res.json(cached);
 
-        // Roda 4 queries em paralelo pra montar o "stats" passado pro catálogo
-        const [agg, notas, amigos, companions] = await Promise.all([
-            query(`
-                SELECT
-                    COUNT(*)::int AS jogos,
-                    SUM(CASE WHEN g.resultado='V' THEN 1 ELSE 0 END)::int AS vitorias,
-                    SUM(CASE WHEN g.resultado='E' THEN 1 ELSE 0 END)::int AS empates,
-                    SUM(CASE WHEN g.resultado='D' THEN 1 ELSE 0 END)::int AS derrotas,
-                    COUNT(*) FILTER (WHERE g.foi_classico = TRUE)::int AS classicos,
-                    COUNT(*) FILTER (WHERE g.titulo_conquistado IS NOT NULL AND g.titulo_conquistado <> '')::int AS titulos,
-                    ROUND(
-                        (SUM(CASE WHEN g.resultado='V' THEN 3 ELSE 0 END)
-                         + SUM(CASE WHEN g.resultado='E' THEN 1 ELSE 0 END))::numeric
-                        / NULLIF(COUNT(*)*3, 0) * 100,
-                        0
-                    )::int AS aproveitamento_pct
-                FROM attendances a
-                JOIN games g ON g.id = a.game_id
-                WHERE a.user_id = $1
-                  AND a.status = 'PRESENTE'
-                  AND g.club_id = $2
-                  AND g.resultado IS NOT NULL
-            `, [uid, cid]),
-
-            query(
-                'SELECT COUNT(*)::int AS n FROM notes WHERE user_id = $1',
-                [uid]
-            ),
-
-            query(
-                `SELECT COUNT(*)::int AS n FROM friendships
-                 WHERE status = 'ACCEPTED'
-                   AND (requester_id = $1 OR recipient_id = $1)`,
-                [uid]
-            ),
-
-            query(
-                `SELECT COUNT(DISTINCT a.id)::int AS n
-                 FROM attendances a
-                 JOIN attendance_companions ac ON ac.attendance_id = a.id
-                 WHERE a.user_id = $1`,
-                [uid]
-            ),
-        ]);
-
-        const stats = {
-            jogos:                  agg.rows[0]?.jogos || 0,
-            vitorias:               agg.rows[0]?.vitorias || 0,
-            empates:                agg.rows[0]?.empates || 0,
-            derrotas:               agg.rows[0]?.derrotas || 0,
-            classicos:              agg.rows[0]?.classicos || 0,
-            titulos:                agg.rows[0]?.titulos || 0,
-            aproveitamento_pct:     agg.rows[0]?.aproveitamento_pct || 0,
-            notas:                  notas.rows[0]?.n || 0,
-            amigos:                 amigos.rows[0]?.n || 0,
-            jogos_com_companions:   companions.rows[0]?.n || 0,
-        };
-
+        const stats = await fetchUserStats(uid, cid);
         const achievements = computeAchievements(stats);
 
-        const payload = {
-            achievements,
-            categories: ACHIEVEMENT_CATEGORIES,
-            rarities: RARITY_INFO,
-            stats,
-        };
-        cache.set(cacheKey, payload, 10 * 60 * 1000); // 10 minutos
+        // Sincroniza unlocks no DB (silently — esse endpoint não é a porta de
+        // entrada das notificações, só garante consistência se /pending nunca
+        // for chamado por algum motivo)
+        syncUnlockedAchievements(uid, achievements).catch(() => {});
+
+        const payload = { achievements, categories: ACHIEVEMENT_CATEGORIES, rarities: RARITY_INFO, stats };
+        cache.set(cacheKey, payload, 10 * 60 * 1000);
         res.json(payload);
+    } catch (err) { next(err); }
+});
+
+// =============================================================
+// GET /me/achievements/pending — conquistas desbloqueadas que o user
+// ainda NÃO viu (toast + sino). Faz a sync primeiro pra capturar
+// unlocks recém criados por mutations em outras rotas.
+// =============================================================
+router.get('/achievements/pending', async (req, res, next) => {
+    try {
+        const uid = req.user.id;
+        const cid = req.user.club_id;
+        if (!cid) return res.json({ pending: [] });
+
+        // Recomputa do zero (não usa cache pra captar unlocks novos)
+        const stats = await fetchUserStats(uid, cid);
+        const achievements = computeAchievements(stats);
+        const newIds = await syncUnlockedAchievements(uid, achievements);
+
+        // Se houve novos unlocks, invalida o cache de /achievements pra perfil
+        // não mostrar estado antigo na próxima abertura
+        if (newIds.length) cache.invalidate(`achievements:${uid}:${cid}`);
+
+        // Lista todas as desbloqueadas ainda não vistas (não só as recém criadas)
+        const { rows } = await query(`
+            SELECT achievement_id, unlocked_at
+            FROM user_achievements
+            WHERE user_id = $1 AND seen_at IS NULL
+            ORDER BY unlocked_at ASC
+        `, [uid]);
+
+        const byId = Object.fromEntries(achievements.map(a => [a.id, a]));
+        const pending = rows
+            .map(r => byId[r.achievement_id] && {
+                ...byId[r.achievement_id],
+                unlocked_at: r.unlocked_at,
+            })
+            .filter(Boolean);
+
+        res.json({ pending });
+    } catch (err) { next(err); }
+});
+
+// =============================================================
+// POST /me/achievements/seen — marca todas as pendentes como vistas
+// (chamado pelo front após exibir os toasts)
+// =============================================================
+router.post('/achievements/seen', async (req, res, next) => {
+    try {
+        const { rowCount } = await query(`
+            UPDATE user_achievements
+            SET seen_at = NOW()
+            WHERE user_id = $1 AND seen_at IS NULL
+        `, [req.user.id]);
+        res.json({ marked_seen: rowCount });
     } catch (err) { next(err); }
 });
 

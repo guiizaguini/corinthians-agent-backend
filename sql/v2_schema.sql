@@ -267,6 +267,21 @@ ALTER TABLE boloes DROP CONSTRAINT IF EXISTS boloes_created_by_fkey;
 ALTER TABLE boloes ADD CONSTRAINT boloes_created_by_fkey
     FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL;
 
+-- =============================================================
+-- CONQUISTAS DESBLOQUEADAS — pra notificar (toast + sino) na 1a vez
+-- =============================================================
+CREATE TABLE IF NOT EXISTS user_achievements (
+    id              SERIAL PRIMARY KEY,
+    user_id         INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    achievement_id  VARCHAR(60) NOT NULL,
+    unlocked_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    seen_at         TIMESTAMPTZ,
+    UNIQUE(user_id, achievement_id)
+);
+-- Index parcial só pra unseen → bell badge query é instantânea
+CREATE INDEX IF NOT EXISTS idx_user_achievements_unseen
+    ON user_achievements(user_id) WHERE seen_at IS NULL;
+
 -- Quem participa de qual bolão
 CREATE TABLE IF NOT EXISTS bolao_members (
     id         SERIAL PRIMARY KEY,
