@@ -1042,12 +1042,27 @@ main {
     --cor-acento-escura: #be123c;
     --cor-acento-text: #ffffff;
 }
-/* Corinthians: vitória usa o dourado tradicional do clube */
+/* ===== Corinthians: paleta clássica (preto/dourado champagne/vinho) ===== */
+/* Vitória: champagne sofisticado em vez do dourado mostarda */
 body[data-club="corinthians"] .ingresso.v {
-    --cor-acento: #b8941f;
-    --cor-acento-clara: #d4a520;
-    --cor-acento-escura: #7a6638;
+    --cor-acento: #c5a572;
+    --cor-acento-clara: #d4b886;
+    --cor-acento-escura: #8a7340;
     --cor-acento-text: #1a1000;
+}
+/* Empate: grafite em vez do slate (combina com a vibe preto Corinthians) */
+body[data-club="corinthians"] .ingresso.e {
+    --cor-acento: #3a3a3a;
+    --cor-acento-clara: #555555;
+    --cor-acento-escura: #1a1a1a;
+    --cor-acento-text: #f5f0e4;
+}
+/* Derrota: vinho profundo em vez do rose berrante (vibe clássica brasileira) */
+body[data-club="corinthians"] .ingresso.d {
+    --cor-acento: #6b1e2c;
+    --cor-acento-clara: #8b2838;
+    --cor-acento-escura: #4a141e;
+    --cor-acento-text: #ffffff;
 }
 
 .canhoto {
@@ -1257,11 +1272,15 @@ body[data-club="corinthians"] .ingresso.v {
     font-size: 13px !important;
     font-weight: 600 !important;
     color: var(--ing-ink) !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     line-height: 1.3 !important;
     letter-spacing: -0.005em !important;
+    /* Permite quebra em até 2 linhas pra valores longos (estádio com nome composto, valor com 4 dígitos, etc) */
+    overflow: hidden;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 
 .ingresso.ausente {
@@ -1273,10 +1292,13 @@ body[data-club="corinthians"] .ingresso.v {
 /* ======= Variante: INGRESSO DA COPA DO MUNDO ======= */
 .ingresso.copa {
     background: #faf2dc;
+    /* Mesma sombra do ingresso comum (sem outline forte) — preserva o mesmo tamanho/peso visual */
     box-shadow:
-        0 2px 0 rgba(0,0,0,0.05),
-        0 10px 24px rgba(20,15,10,0.22),
-        0 0 0 1px rgba(212,165,32,0.3);
+        0 1px 2px rgba(15,23,42,0.04),
+        0 8px 24px rgba(15,23,42,0.08);
+    /* Garante o mesmo grid e altura mínima do ingresso normal */
+    grid-template-columns: 100px 1fr;
+    min-height: 200px;
 }
 /* Faixa colorida da Copa no topo — sobre o canhoto todo */
 .ingresso.copa::after {
