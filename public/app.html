@@ -4066,31 +4066,77 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 .bolao-ticket.palpitado:hover { border-color: #4ec96d; }
 .bolao-ticket.finalizado { background: linear-gradient(155deg, #fffbe8 0%, #ffffff 100%); }
 
-/* Overlay verde quando o palpite foi salvo. Some no hover pra editar. */
+/* Overlay verde quando palpite salvo — fica SEMPRE visível com botão lápis pra editar */
 .bolao-saved-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(78,201,109,0.35) 0%, rgba(42,122,61,0.3) 100%);
-    backdrop-filter: blur(1px);
+    background: linear-gradient(135deg, rgba(78,201,109,0.92) 0%, rgba(42,122,61,0.94) 100%);
+    backdrop-filter: blur(2px);
     display: flex;
     align-items: center;
     justify-content: center;
-    pointer-events: none;
-    z-index: 2;
-    opacity: 1;
-    transition: opacity 220ms ease;
-    animation: bolaoSavedPop 420ms ease;
+    z-index: 3;
+    animation: bolaoSavedPop 320ms ease;
 }
-.bolao-saved-overlay .material-icons {
-    font-size: 5.5rem;
+.bolao-saved-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
     color: #fff;
-    background: rgba(42,122,61,0.95);
-    border-radius: 50%;
-    padding: 0.35rem;
-    box-shadow: 0 8px 24px rgba(78,201,109,0.5), 0 0 0 4px rgba(255,255,255,0.4);
-    animation: bolaoSavedCheck 520ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.bolao-ticket.palpitado:hover .bolao-saved-overlay { opacity: 0; }
+.bolao-saved-check {
+    font-size: 3.4rem !important;
+    color: #fff;
+    background: rgba(255,255,255,0.18);
+    border-radius: 50%;
+    padding: 0.25rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25), 0 0 0 3px rgba(255,255,255,0.35);
+    animation: bolaoSavedCheck 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.bolao-saved-score {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.6rem;
+    letter-spacing: 0.04em;
+    color: #fff;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    line-height: 1;
+}
+.bolao-saved-x {
+    color: rgba(255,255,255,0.6);
+    margin: 0 0.15em;
+    font-size: 0.85em;
+}
+.bolao-saved-edit {
+    margin-top: 0.3rem;
+    background: rgba(255,255,255,0.22);
+    border: 1.5px solid rgba(255,255,255,0.55);
+    color: #fff;
+    padding: 0.4rem 0.95rem;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 999px;
+    transition: all 150ms;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.bolao-saved-edit:hover {
+    background: #fff;
+    color: #1a5a2a;
+    border-color: #fff;
+    transform: scale(1.03);
+}
+.bolao-saved-edit .material-icons { font-size: 0.95rem; }
+
+/* Quando o ticket está em modo "editing", esconde o overlay pra liberar os inputs */
+.bolao-ticket.editing .bolao-saved-overlay { display: none; }
+
 @keyframes bolaoSavedPop {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -4124,16 +4170,16 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 .bolao-status-badge.finalizado { background: #fff8e0; border-color: #d4a520; color: #a8791b; }
 .bolao-status-badge.travado { background: #f0ebe0; color: var(--wc-ink-mute); }
 
-/* Bloco do palpite — inline, compacto, sem box gigante */
+/* Bloco do palpite — linha unificada com time+input grudados */
 .bolao-palpite-block {
-    margin-top: 0.4rem;
+    margin-top: 0.5rem;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    padding: 0.3rem 0;
+    gap: 0.5rem;
+    padding: 0.4rem 0 0.2rem;
 }
-.bolao-palpite-block.locked { opacity: 0.75; }
+.bolao-palpite-block.locked { opacity: 0.85; }
 .bolao-palpite-label {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
@@ -4144,10 +4190,37 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     white-space: nowrap;
 }
 .bolao-palpite-block.locked .bolao-palpite-label { color: var(--wc-ink-mute); }
-.bolao-palpite-inputs {
+
+/* Linha: time-casa | input-casa | × | input-visitante | time-visitante */
+.bolao-palpite-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto 1fr;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+}
+.bolao-palpite-team {
     display: flex;
     align-items: center;
     gap: 0.45rem;
+    min-width: 0;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--wc-ink);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+.bolao-palpite-team.home { justify-content: flex-end; text-align: right; }
+.bolao-palpite-team.away { justify-content: flex-start; text-align: left; }
+.bolao-palpite-team.tbd { color: var(--wc-ink-mute); font-style: italic; font-weight: 500; }
+.bolao-palpite-team-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.bolao-palpite-team .wc-flag {
+    flex-shrink: 0;
 }
 .bolao-palpite-input {
     width: 46px;
@@ -4762,10 +4835,17 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     .bolao-join-row { flex-direction: column; gap: 0.5rem; }
     .bolao-join-row input { font-size: 16px; /* evita zoom */ }
     .bolao-join-row .btn-primary { width: 100%; padding: 0.8rem; }
-    .bolao-palpite-input { width: 50px; height: 50px; font-size: 1.5rem; }
-    .bolao-palpite-block { padding: 0.6rem 0.75rem; }
+    .bolao-palpite-input { width: 48px; height: 48px; font-size: 1.4rem; }
+    .bolao-palpite-block { padding: 0.4rem 0.4rem 0.2rem; }
+    .bolao-palpite-row { gap: 0.4rem; }
+    .bolao-palpite-team { font-size: 0.78rem; gap: 0.3rem; }
     .bolao-real-value { font-size: 1.15rem; }
     .bolao-earned-pill { font-size: 0.7rem; padding: 0.25rem 0.6rem; }
+}
+@media (max-width: 480px) {
+    /* Em telas pequenas, esconde o nome do time pra dar espaço — bandeira basta */
+    .bolao-palpite-team-name { display: none; }
+    .bolao-palpite-team .wc-flag { width: 32px; height: 22px; }
 }
 @media (max-width: 420px) {
     .bolao-palpite-input { width: 46px; height: 46px; font-size: 1.35rem; }
@@ -9831,6 +9911,18 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 const inpHome = el.querySelector('.bolao-palpite-input.home');
                 const inpAway = el.querySelector('.bolao-palpite-input.away');
                 const saveBtn = el.querySelector('.bolao-jogo-save');
+                const editBtn = el.querySelector('[data-action="edit"]');
+
+                // Botão lápis no overlay → entra em modo edição (esconde overlay, libera inputs)
+                if (editBtn) {
+                    editBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        el.classList.add('editing');
+                        // Foca o primeiro input pra UX rápida
+                        if (inpHome) inpHome.focus();
+                    });
+                }
+
                 if (!saveBtn || !inpHome || !inpAway) return;
 
                 const onChange = () => {
@@ -9858,6 +9950,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                         saveBtn.textContent = 'Salvo ✓';
                         saveBtn.classList.add('saved');
                         el.classList.add('palpitado');
+                        el.classList.remove('editing');
                         // Recarrega tudo pra refletir o novo estado
                         await bolaoLoadJogos(id);
                         await bolaoLoadRanking(id);
@@ -9918,16 +10011,25 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             statusBadge = '<span class="bolao-status-badge palpitado" title="Palpite salvo"><span class="material-icons">check_circle</span></span>';
         }
 
-        // Placar do palpite (inputs grandes estilo wc-score)
+        // Linha única do palpite: time-casa + flag + input casa | × | input visitante + flag + time-visitante
+        // Cada input fica grudado na bandeira do seu time pra eliminar ambiguidade.
         const valH = g.palpite_casa != null ? g.palpite_casa : '';
         const valA = g.palpite_visitante != null ? g.palpite_visitante : '';
         const palpiteBlock = `
             <div class="bolao-palpite-block ${travarInputs ? 'locked' : ''}">
                 <div class="bolao-palpite-label">Seu palpite</div>
-                <div class="bolao-palpite-inputs">
-                    <input type="number" min="0" max="20" class="bolao-palpite-input home" value="${valH}" ${travarInputs ? 'disabled' : ''} inputmode="numeric" placeholder="—">
+                <div class="bolao-palpite-row">
+                    <div class="bolao-palpite-team home ${teamCasaTbd ? 'tbd' : ''}">
+                        ${flagHtml(fCasa)}
+                        <span class="bolao-palpite-team-name">${escapeHtml(g.time_casa)}</span>
+                    </div>
+                    <input type="number" min="0" max="20" class="bolao-palpite-input home" value="${valH}" ${travarInputs ? 'disabled' : ''} inputmode="numeric" placeholder="—" aria-label="Palpite ${escapeHtml(g.time_casa)}">
                     <span class="bolao-palpite-x">×</span>
-                    <input type="number" min="0" max="20" class="bolao-palpite-input away" value="${valA}" ${travarInputs ? 'disabled' : ''} inputmode="numeric" placeholder="—">
+                    <input type="number" min="0" max="20" class="bolao-palpite-input away" value="${valA}" ${travarInputs ? 'disabled' : ''} inputmode="numeric" placeholder="—" aria-label="Palpite ${escapeHtml(g.time_visitante)}">
+                    <div class="bolao-palpite-team away ${teamVisTbd ? 'tbd' : ''}">
+                        <span class="bolao-palpite-team-name">${escapeHtml(g.time_visitante)}</span>
+                        ${flagHtml(fVis)}
+                    </div>
                 </div>
             </div>
         `;
@@ -9974,9 +10076,19 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             footerRight = `<button class="bolao-jogo-save" type="button" disabled>Salvar</button>`;
         }
 
-        // Overlay verde quando palpitado (e não finalizado ainda)
+        // Overlay verde quando palpitado (e não finalizado ainda) — fica sempre visível.
+        // Tem botão de lápis pra editar (libera os inputs).
         const overlayHtml = (jaPalpitou && !temResultado)
-            ? `<div class="bolao-saved-overlay" title="Palpite salvo · passe o mouse pra editar"><span class="material-icons">check_circle</span></div>`
+            ? `<div class="bolao-saved-overlay">
+                  <div class="bolao-saved-content">
+                      <span class="material-icons bolao-saved-check">check_circle</span>
+                      <div class="bolao-saved-score">${escapeHtml(String(g.palpite_casa))} <span class="bolao-saved-x">×</span> ${escapeHtml(String(g.palpite_visitante))}</div>
+                      <button type="button" class="bolao-saved-edit" data-action="edit" title="Editar palpite">
+                          <span class="material-icons">edit</span>
+                          Editar
+                      </button>
+                  </div>
+              </div>`
             : '';
 
         return `
@@ -9989,12 +10101,6 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                         ${isFinal ? '<span class="wc-final-badge">★ FINAL</span>' : ''}
                         ${statusBadge}
                     </div>
-                    <div class="wc-teams">
-                        <span class="wc-team ${teamCasaTbd ? 'tbd' : ''}">${flagHtml(fCasa)}${escapeHtml(g.time_casa)}</span>
-                        <span class="wc-vs">vs</span>
-                        <span class="wc-team ${teamVisTbd ? 'tbd' : ''}">${flagHtml(fVis)}${escapeHtml(g.time_visitante)}</span>
-                    </div>
-
                     ${palpiteBlock}
                     ${realBlock}
 
