@@ -10672,12 +10672,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 const name = (r.display_name || r.username || 'Amigo').toUpperCase();
                 const status = friendshipStatusWith(r.id);
 
-                // Posição: top 3 ganha medalha, resto é número
-                let posHtml;
-                if (pos === 1) posHtml = '<span class="bolao-rank-medal gold" title="1º lugar">🥇</span>';
-                else if (pos === 2) posHtml = '<span class="bolao-rank-medal silver" title="2º lugar">🥈</span>';
-                else if (pos === 3) posHtml = '<span class="bolao-rank-medal bronze" title="3º lugar">🥉</span>';
-                else posHtml = `<span class="bolao-rank-num">${pos}</span>`;
+                // Posição: número simples (sem medalhas — pedido do user)
+                const posHtml = `<span class="bolao-rank-num">${pos}</span>`;
 
                 let actionHtml = '';
                 if (status === 'none') {
