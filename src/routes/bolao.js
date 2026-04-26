@@ -183,6 +183,62 @@ router.post('/', requireAdmin, async (req, res, next) => {
 });
 
 // =============================================================
+// GET /bolao/publicos — lista os bolões públicos (qualquer usuário pode entrar)
+// =============================================================
+router.get('/publicos', async (req, res, next) => {
+    try {
+        const { rows } = await query(`
+            SELECT
+                b.id, b.name, b.description, b.invite_code, b.created_at,
+                (SELECT COUNT(*)::int FROM bolao_members WHERE bolao_id = b.id) AS member_count,
+                EXISTS (
+                    SELECT 1 FROM bolao_members
+                    WHERE bolao_id = b.id AND user_id = $1
+                ) AS is_member
+            FROM boloes b
+            WHERE b.is_public = TRUE
+            ORDER BY b.id ASC
+        `, [req.user.id]);
+        res.json({ boloes: rows });
+    } catch (err) { next(err); }
+});
+
+// =============================================================
+// POST /bolao/:id/entrar-publico — entra num bolão público (sem invite_code)
+// =============================================================
+router.post('/:id/entrar-publico', async (req, res, next) => {
+    try {
+        const bolaoId = parseInt(req.params.id);
+        if (!Number.isInteger(bolaoId)) {
+            return res.status(400).json({ error: 'invalid_bolao_id' });
+        }
+
+        // Só pode entrar se o bolão for público
+        const { rows } = await query(
+            'SELECT id, name, is_public FROM boloes WHERE id = $1',
+            [bolaoId]
+        );
+        if (!rows.length) return res.status(404).json({ error: 'bolao_not_found' });
+        const bolao = rows[0];
+        if (!bolao.is_public) return res.status(403).json({ error: 'bolao_not_public' });
+
+        // Já é membro?
+        const { rows: existing } = await query(
+            'SELECT id FROM bolao_members WHERE bolao_id = $1 AND user_id = $2',
+            [bolao.id, req.user.id]
+        );
+        if (existing.length) return res.status(409).json({ error: 'already_member', bolao_id: bolao.id });
+
+        await query(
+            'INSERT INTO bolao_members (bolao_id, user_id) VALUES ($1, $2)',
+            [bolao.id, req.user.id]
+        );
+        invalidate.bolaoMembers(bolao.id);
+        res.json({ bolao_id: bolao.id, name: bolao.name });
+    } catch (err) { next(err); }
+});
+
+// =============================================================
 // POST /bolao/join — entra via invite_code
 // =============================================================
 const JoinSchema = z.object({ invite_code: z.string().trim().min(4).max(30) });

@@ -3822,6 +3822,67 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     border-radius: 4px;
 }
 
+/* Subtitulo da seção (ex: "Entre direto, sem precisar de código") */
+.bolao-section-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    color: var(--wc-ink-mute);
+    margin-left: auto;
+    font-style: italic;
+}
+
+/* Card de bolão público — borda dourada + badge "Aberto" */
+.bolao-card-publico {
+    border-color: #d4a520;
+    background: linear-gradient(180deg, #fffdf2 0%, var(--wc-card) 100%);
+    cursor: default;
+}
+.bolao-card-publico:hover {
+    transform: none;
+    box-shadow: 0 4px 14px rgba(212,165,32,0.18);
+}
+.bolao-card-publico-badge {
+    position: absolute;
+    top: 0.65rem;
+    right: 0.65rem;
+    background: #d4a520;
+    color: #fff;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 0.22rem 0.55rem 0.22rem 0.4rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    box-shadow: 0 2px 4px rgba(168,121,27,0.25);
+}
+.bolao-card-publico-badge .material-icons { font-size: 0.85rem; color: #fff; }
+.bolao-card-entrar {
+    margin-left: auto;
+    background: #d4a520;
+    color: #fff;
+    border: none;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 0.45rem 0.85rem;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+.bolao-card-entrar:hover { background: #c2941d; }
+.bolao-card-entrar:active { transform: scale(0.97); }
+.bolao-card-entrar:disabled { opacity: 0.6; cursor: wait; }
+.bolao-card-entrar .material-icons { font-size: 0.95rem; color: #fff; }
+
 /* Empty state ilustrado */
 .bolao-empty-state {
     grid-column: 1 / -1;
@@ -6524,6 +6585,15 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                         </div>
                         <div class="bolao-join-err" id="bolaoJoinErr"></div>
                     </section>
+
+                    <!-- Seção: Bolões abertos (públicos, qualquer um pode entrar) -->
+                    <div id="bolaoPublicosWrap" style="display:none;">
+                        <div class="bolao-section-head">
+                            <h3><span class="material-icons" style="font-size:1.1rem;vertical-align:middle;color:#d4a520;">public</span> Bolões abertos</h3>
+                            <span class="bolao-section-sub">Entre direto, sem precisar de código</span>
+                        </div>
+                        <div id="bolaoPublicosList" class="bolao-list"></div>
+                    </div>
 
                     <div class="bolao-section-head">
                         <h3>Meus bolões</h3>
@@ -9946,7 +10016,12 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const list = document.getElementById('bolaoList');
         list.innerHTML = '<div class="loading">Carregando bolões...</div>';
         try {
-            const data = await api('/bolao/meus');
+            // Fetch em paralelo: meus bolões + bolões públicos (abertos)
+            const [data, pubData] = await Promise.all([
+                api('/bolao/meus'),
+                api('/bolao/publicos').catch(() => ({ boloes: [] })),
+            ]);
+            bolaoRenderPublicos(pubData.boloes || []);
             bolaoState.pontos = data.pontos || bolaoState.pontos;
 
             // Atualiza stats inline
@@ -9990,6 +10065,55 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         } catch (err) {
             list.innerHTML = `<div class="empty">Erro: ${err.message}</div>`;
         }
+    }
+
+    function bolaoRenderPublicos(publicos) {
+        const wrap = document.getElementById('bolaoPublicosWrap');
+        const list = document.getElementById('bolaoPublicosList');
+        // Filtra os que o user JÁ é membro — esses já vão aparecer em "Meus bolões"
+        const visiveis = publicos.filter(b => !b.is_member);
+        if (!visiveis.length) {
+            wrap.style.display = 'none';
+            return;
+        }
+        wrap.style.display = '';
+        list.innerHTML = visiveis.map(b => `
+            <article class="bolao-card bolao-card-publico" data-bolao-id="${b.id}">
+                <div class="bolao-card-publico-badge"><span class="material-icons">public</span>Aberto</div>
+                <div class="bolao-card-head">
+                    <div class="bolao-card-name">${escapeHtml(b.name)}</div>
+                </div>
+                ${b.description ? `<div class="bolao-card-desc">${escapeHtml(b.description)}</div>` : ''}
+                <div class="bolao-card-meta">
+                    <span class="bolao-card-meta-item"><span class="material-icons">groups</span>${b.member_count} ${b.member_count === 1 ? 'membro' : 'membros'}</span>
+                    <button type="button" class="bolao-card-entrar" data-bolao-id="${b.id}">
+                        Entrar
+                        <span class="material-icons">arrow_forward</span>
+                    </button>
+                </div>
+            </article>
+        `).join('');
+        // Wire up "Entrar" buttons
+        list.querySelectorAll('.bolao-card-entrar').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const id = parseInt(btn.dataset.bolaoId);
+                btn.disabled = true;
+                btn.innerHTML = 'Entrando...';
+                try {
+                    await api(`/bolao/${id}/entrar-publico`, { method: 'POST' });
+                    navigate('/bolao/' + id);
+                } catch (err) {
+                    if (err.message === 'already_member') {
+                        navigate('/bolao/' + id);
+                        return;
+                    }
+                    alert('Erro: ' + err.message);
+                    btn.disabled = false;
+                    btn.innerHTML = 'Entrar <span class="material-icons">arrow_forward</span>';
+                }
+            });
+        });
     }
 
     function bolaoRenderCard(b, totalJogos) {

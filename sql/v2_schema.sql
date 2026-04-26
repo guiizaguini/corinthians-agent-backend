@@ -258,6 +258,10 @@ CREATE TABLE IF NOT EXISTS boloes (
 );
 CREATE INDEX IF NOT EXISTS idx_boloes_invite ON boloes(UPPER(invite_code));
 
+-- Bolão público: visível pra todo mundo, qualquer usuário pode entrar sem código
+ALTER TABLE boloes ADD COLUMN IF NOT EXISTS is_public BOOLEAN NOT NULL DEFAULT FALSE;
+CREATE INDEX IF NOT EXISTS idx_boloes_is_public ON boloes(is_public) WHERE is_public = TRUE;
+
 -- Quem participa de qual bolão
 CREATE TABLE IF NOT EXISTS bolao_members (
     id         SERIAL PRIMARY KEY,
