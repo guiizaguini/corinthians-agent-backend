@@ -525,17 +525,44 @@ router.post('/companion-requests/:attendance_id/accept', async (req, res, next) 
             [req.params.attendance_id, req.user.id]
         );
         if (!rowCount) return res.status(404).json({ error: 'request_not_found' });
-        // Invalida cache do dono da attendance pra refletir
+
+        // Pega o dono e o game_id da attendance original
         const { rows: ow } = await query(
-            'SELECT user_id FROM attendances WHERE id = $1',
+            'SELECT user_id, game_id FROM attendances WHERE id = $1',
             [req.params.attendance_id]
         );
+
+        // Auto-marca presença pro confirmador, se ele ainda não tiver attendance pra esse jogo
+        let createdAttendance = null;
+        if (ow.length) {
+            const gameId = ow[0].game_id;
+            const { rows: existing } = await query(
+                'SELECT id FROM attendances WHERE user_id = $1 AND game_id = $2',
+                [req.user.id, gameId]
+            );
+            if (!existing.length) {
+                const { rows: newRows } = await query(
+                    `INSERT INTO attendances (user_id, game_id, status)
+                     VALUES ($1, $2, 'PRESENTE')
+                     RETURNING id, game_id`,
+                    [req.user.id, gameId]
+                );
+                createdAttendance = newRows[0];
+            }
+        }
+
+        // Invalida caches afetados
         if (ow.length) {
             const { invalidate } = await import('../utils/cache.js');
             invalidate.user(ow[0].user_id);
-            invalidate.user(req.user.id); // afeta o achievement "jogos_com_companions" do confirmador também
+            invalidate.user(req.user.id);
         }
-        res.json({ confirmed: true });
+
+        res.json({
+            confirmed: true,
+            // Quando preenchido, o frontend abre o modal pro user refinar setor/valor
+            created_attendance: createdAttendance,
+        });
     } catch (err) { next(err); }
 });
 

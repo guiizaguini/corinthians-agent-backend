@@ -2784,7 +2784,7 @@ main {
 /* Cabeçalho do post: avatar + nome + ação + tempo (+ delete opcional) */
 .feed-head {
     display: grid;
-    grid-template-columns: 42px 1fr auto auto;
+    grid-template-columns: auto 1fr auto auto;
     gap: 0.75rem;
     align-items: center;
 }
@@ -2855,6 +2855,53 @@ main {
 .feed-action-with {
     color: var(--ink);
     font-weight: 600;
+}
+
+/* Stack de avatares pra posts compartilhados (com companions confirmados) */
+.feed-avatars-stack {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+.feed-avatar-stack {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--accent-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    border: 2.5px solid var(--bg-card);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+}
+.feed-avatar-stack + .feed-avatar-stack {
+    margin-left: -12px;
+}
+.feed-avatar-stack.feed-avatar-extra {
+    background: var(--bg-base);
+    color: var(--ink);
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    border-color: var(--bg-card);
+}
+
+/* Post compartilhado — destaque sutil */
+.feed-item.is-shared {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--accent-soft) 100%);
+    box-shadow: var(--shadow-sm), 0 0 0 1px var(--accent-soft);
+}
+.feed-item.is-shared .feed-head .material-icons {
+    color: var(--accent);
+}
+.feed-item.is-shared .feed-action .material-icons {
+    /* handshake icon brilha um pouco */
+    filter: drop-shadow(0 0 6px var(--accent-glow));
 }
 .feed-content-venue {
     display: inline-flex;
@@ -8543,39 +8590,22 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                         </div>
                     `;
                 } else {
-                    // Companions confirmados (post compartilhado quando alguém confirma)
-                    const companions = Array.isArray(item.companions) ? item.companions : [];
-                    let companionsLabel = '';
-                    if (companions.length === 1) {
-                        const c = companions[0];
-                        companionsLabel = ` <span class="feed-action-with">com ${escapeHtml(c.display_name || c.username || 'amigo')}</span>`;
-                    } else if (companions.length === 2) {
-                        const a = companions[0], b = companions[1];
-                        companionsLabel = ` <span class="feed-action-with">com ${escapeHtml(a.display_name || a.username)} e ${escapeHtml(b.display_name || b.username)}</span>`;
-                    } else if (companions.length > 2) {
-                        const first = companions[0];
-                        companionsLabel = ` <span class="feed-action-with">com ${escapeHtml(first.display_name || first.username)} e mais ${companions.length - 1}</span>`;
-                    }
-
-                    actionLine = isCopa
-                        ? `<span class="material-icons">sports_soccer</span> vai na Copa${companionsLabel}`
-                        : `<span class="material-icons">stadium</span> marcou presença${companionsLabel}`;
-
+                    // Attendance — pode ser solo ou compartilhado (com companions confirmados)
                     const placarHtml = (item.gols_casa != null)
                         ? `<span class="feed-content-score">${item.gols_casa} × ${item.gols_visitante}</span>`
                         : '';
-                    // Linha de estádio + setor (quando o user preencheu)
                     const venueParts = [];
                     if (item.estadio) venueParts.push(escapeHtml(item.estadio));
                     if (item.setor)   venueParts.push(`Setor ${escapeHtml(item.setor)}`);
                     const venueHtml = venueParts.length
                         ? `<div class="feed-content-venue"><span class="material-icons">stadium</span>${venueParts.join(' · ')}</div>`
                         : '';
-                    // Meta padrão (placar + resultado) — se Copa, não mostra placar/resultado
                     const metaHtml = isCopa
                         ? ''
                         : `<div class="feed-content-meta">${placarHtml}${resTag}</div>`;
-
+                    actionLine = isCopa
+                        ? `<span class="material-icons">sports_soccer</span> vai na Copa`
+                        : `<span class="material-icons">stadium</span> marcou presença`;
                     contentBlock = `
                         <div class="${contentClass}">
                             ${faseLabel}
@@ -8586,18 +8616,66 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                     `;
                 }
 
-                const isMine = item.user_id === user.id;
-                const canDelete = isMine && item.type === 'note';
+                // ====== Detecção de "post compartilhado" (com companions confirmados) ======
+                const companions = (item.type === 'attendance' && Array.isArray(item.companions))
+                    ? item.companions : [];
+                const isShared = companions.length > 0;
+                const ownerName = item.display_name || item.username || 'Amigo';
+
+                // Se for post compartilhado, override action + nome + avatares
+                let headAvatarsHtml, displayName;
+                if (isShared) {
+                    const c1 = companions[0];
+                    const c1Name = c1.display_name || c1.username || 'amigo';
+                    if (companions.length === 1) {
+                        displayName = `${ownerName} e ${c1Name}`;
+                    } else if (companions.length === 2) {
+                        const c2 = companions[1];
+                        displayName = `${ownerName}, ${c1Name} e ${c2.display_name || c2.username || 'amigo'}`;
+                    } else {
+                        displayName = `${ownerName}, ${c1Name} e mais ${companions.length - 1}`;
+                    }
+                    actionLine = isCopa
+                        ? `<span class="material-icons">handshake</span> foram juntos na Copa`
+                        : `<span class="material-icons">handshake</span> foram juntos no jogo`;
+
+                    // Avatares stacked: owner + companion(s)
+                    const ownerInitials = avatarInitials(item.display_name || item.username);
+                    const c1Initials = avatarInitials(c1.display_name || c1.username);
+                    let extraSlot = '';
+                    if (companions.length === 2) {
+                        const c2 = companions[1];
+                        extraSlot = `<div class="feed-avatar-stack">${avatarInitials(c2.display_name || c2.username)}</div>`;
+                    } else if (companions.length > 2) {
+                        extraSlot = `<div class="feed-avatar-stack feed-avatar-extra">+${companions.length - 1}</div>`;
+                    }
+                    headAvatarsHtml = `
+                        <div class="feed-avatars-stack">
+                            <div class="feed-avatar-stack">${ownerInitials}</div>
+                            <div class="feed-avatar-stack">${c1Initials}</div>
+                            ${extraSlot}
+                        </div>
+                    `;
+                } else {
+                    displayName = item.display_name || ownerName;
+                    headAvatarsHtml = `<div class="user-avatar-sm">${initials}</div>`;
+                }
+
+                // "Você" tag aparece se eu sou owner OU companion confirmado
+                const iAmOwner = item.user_id === user.id;
+                const iAmCompanion = isShared && companions.some(c => c.user_id === user.id);
+                const isMine = iAmOwner || iAmCompanion;
+                const canDelete = iAmOwner && item.type === 'note';
                 const deleteBtn = canDelete
                     ? `<button class="feed-delete" data-delete-note="${item.ref_id}" title="Remover essa nota"><span class="material-icons">delete_outline</span></button>`
                     : '';
 
                 return `
-                    <div class="feed-item${isMine ? ' is-mine' : ''}" data-friend-id="${item.user_id}" data-type="${item.type}" data-ref-id="${item.ref_id}">
+                    <div class="feed-item${iAmOwner ? ' is-mine' : ''}${isShared ? ' is-shared' : ''}" data-friend-id="${item.user_id}" data-type="${item.type}" data-ref-id="${item.ref_id}">
                         <div class="feed-head">
-                            <div class="user-avatar-sm">${initials}</div>
+                            ${headAvatarsHtml}
                             <div class="feed-author">
-                                <div class="feed-author-name">${escapeHtml(handle)}${isMine ? ' <span class="feed-mine-tag">você</span>' : ''}</div>
+                                <div class="feed-author-name">${escapeHtml(displayName)}${isMine ? ' <span class="feed-mine-tag">você</span>' : ''}</div>
                                 <div class="feed-action">${actionLine}</div>
                             </div>
                             <div class="feed-time">${when}</div>
@@ -8977,8 +9055,17 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 b.addEventListener('click', async () => {
                     b.disabled = true;
                     try {
-                        await api(`/social/companion-requests/${b.dataset.crAccept}/accept`, { method: 'POST' });
+                        const res = await api(`/social/companion-requests/${b.dataset.crAccept}/accept`, { method: 'POST' });
+                        // Recarrega tudo (snapshot com novo attendance, friends, feed)
+                        await loadAll();
                         await loadFriends();
+                        // Se o sistema criou um attendance novo (você ainda não tinha esse jogo marcado),
+                        // abre o modal pra você refinar setor/valor/etc
+                        if (res.created_attendance && res.created_attendance.game_id) {
+                            const gid = res.created_attendance.game_id;
+                            // Espera 1 frame pro allGames refletir o novo attendance_id
+                            setTimeout(() => openModal(gid), 200);
+                        }
                     } catch (e) {
                         alert('Erro: ' + e.message);
                         b.disabled = false;
