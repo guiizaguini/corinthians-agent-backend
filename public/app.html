@@ -5047,9 +5047,26 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     .bolao-earned-pill { font-size: 0.7rem; padding: 0.25rem 0.6rem; }
 }
 @media (max-width: 480px) {
-    /* Em telas pequenas, esconde o nome do time pra dar espaço — bandeira basta */
-    .bolao-palpite-team-name { display: none; }
-    .bolao-palpite-team .wc-flag { width: 32px; height: 22px; }
+    /* Em telas pequenas: empilha bandeira em cima do nome (vertical) pra
+       caber sem cortar e ainda mostrar o pais */
+    .bolao-palpite-team {
+        flex-direction: column;
+        gap: 0.25rem;
+        font-size: 0.7rem;
+        letter-spacing: 0.01em;
+    }
+    .bolao-palpite-team.home,
+    .bolao-palpite-team.away {
+        justify-content: flex-start;
+        text-align: center;
+        align-items: center;
+    }
+    .bolao-palpite-team-name {
+        white-space: normal;       /* permite quebrar em 2 linhas se preciso */
+        line-height: 1.1;
+        max-width: 100%;
+    }
+    .bolao-palpite-team .wc-flag { width: 36px; height: 24px; }
 }
 @media (max-width: 420px) {
     .bolao-palpite-input { width: 46px; height: 46px; font-size: 1.35rem; }
