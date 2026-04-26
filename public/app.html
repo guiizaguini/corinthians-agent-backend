@@ -202,6 +202,7 @@ header::after {
 .btn-ghost:hover { border-color: var(--ink); color: var(--ink); background: var(--paper-soft); }
 
 /* Sino de notificações */
+.bell-wrap { position: relative; display: inline-block; }
 .bell-btn {
     position: relative;
     background: transparent;
@@ -250,6 +251,156 @@ header::after {
     0%, 60%, 100% { transform: rotate(0); }
     10%, 30% { transform: rotate(-12deg); }
     20%, 40% { transform: rotate(12deg); }
+}
+
+/* Dropdown de notificações ancorado no sino */
+.bell-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    width: 360px;
+    max-width: calc(100vw - 1rem);
+    max-height: 480px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.04);
+    display: none;
+    flex-direction: column;
+    z-index: 1000;
+    overflow: hidden;
+    animation: bellDropIn 0.18s ease-out;
+}
+.bell-dropdown.show { display: flex; }
+@keyframes bellDropIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+/* Setinha apontando pro sino */
+.bell-dropdown::before {
+    content: '';
+    position: absolute;
+    top: -7px;
+    right: 14px;
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+    transform: rotate(45deg);
+}
+.bell-dropdown-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--line);
+    background: var(--paper-soft);
+}
+.bell-dropdown-head h3 {
+    margin: 0;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink);
+}
+.bell-dropdown-close {
+    background: none; border: none; cursor: pointer;
+    color: var(--ink-mute);
+    font-size: 1.4rem; line-height: 1;
+    padding: 0 0.25rem;
+    transition: color 0.15s;
+}
+.bell-dropdown-close:hover { color: var(--ink); }
+.bell-dropdown-body {
+    overflow-y: auto;
+    flex: 1;
+    padding: 0.4rem 0;
+}
+.bell-empty {
+    padding: 2rem 1rem;
+    text-align: center;
+    font-family: 'SN Pro', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink-mute);
+    font-style: italic;
+}
+
+/* Item dentro do dropdown */
+.bell-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    padding: 0.7rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+    transition: background 0.12s;
+    text-align: left;
+    width: 100%;
+    background: none;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    font-family: inherit;
+    color: inherit;
+}
+.bell-item:last-child { border-bottom: none; }
+.bell-item:hover { background: var(--paper-soft); }
+.bell-item-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--paper-soft);
+    color: var(--accent);
+}
+.bell-item-icon .material-icons { font-size: 1.2rem; }
+.bell-item.achievement .bell-item-icon {
+    background: var(--bell-rarity-color, #cd7f32);
+    color: #fff;
+}
+.bell-item.achievement .bell-item-icon.rarity-bronze   { background: #cd7f32; }
+.bell-item.achievement .bell-item-icon.rarity-silver   { background: #9b9b9b; }
+.bell-item.achievement .bell-item-icon.rarity-gold     { background: #d4a520; }
+.bell-item.achievement .bell-item-icon.rarity-platinum { background: #7ee0ff; color: #1a1a1a; }
+.bell-item-body { flex: 1; min-width: 0; }
+.bell-item-eyebrow {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-bottom: 0.1rem;
+}
+.bell-item-title {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--ink);
+    margin-bottom: 0.15rem;
+    line-height: 1.2;
+}
+.bell-item-desc {
+    font-family: 'SN Pro', sans-serif;
+    font-size: 0.78rem;
+    color: var(--ink-mute);
+    line-height: 1.3;
+}
+.bell-item-time {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.65rem;
+    color: var(--ink-mute);
+    margin-top: 0.2rem;
+    letter-spacing: 0.05em;
+}
+@media (max-width: 600px) {
+    .bell-dropdown { width: calc(100vw - 1rem); right: -0.4rem; }
 }
 
 main {
@@ -6231,10 +6382,22 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         <div class="user-info">
             <span class="club-badge" id="clubBadge"></span>
             <span>Olá, <strong id="userName">—</strong></span>
-            <button class="bell-btn" id="bellBtn" title="Notificações">
-                <span class="material-icons">notifications</span>
-                <span class="bell-badge" id="bellBadge">0</span>
-            </button>
+            <div class="bell-wrap">
+                <button class="bell-btn" id="bellBtn" title="Notificações" aria-haspopup="true" aria-expanded="false">
+                    <span class="material-icons">notifications</span>
+                    <span class="bell-badge" id="bellBadge">0</span>
+                </button>
+                <!-- Dropdown de notificações (toggleável pelo sino) -->
+                <div class="bell-dropdown" id="bellDropdown" role="menu" aria-hidden="true">
+                    <header class="bell-dropdown-head">
+                        <h3>Notificações</h3>
+                        <button type="button" class="bell-dropdown-close" id="bellDropdownClose" aria-label="Fechar">×</button>
+                    </header>
+                    <div class="bell-dropdown-body" id="bellDropdownBody">
+                        <div class="bell-empty">Sem novidades por aqui.</div>
+                    </div>
+                </div>
+            </div>
             <a href="/admin" class="btn-ghost" id="linkAdmin" style="display:none;text-decoration:none;">Admin</a>
             <button class="btn-ghost" id="btnProfile">Perfil</button>
             <button class="btn-ghost" id="btnLogout">Sair</button>
@@ -9936,9 +10099,14 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     });
 
     // ===============================================
-    // CONQUISTAS — toast + pending count
+    // CONQUISTAS — toast + sino com dropdown
     // ===============================================
-    let achievementsPendingCount = 0;
+    // Estado: lista das conquistas pendentes (não vistas pelo user)
+    // O sino guarda enquanto o user não clicar pra abrir o dropdown.
+    let achievementsPending = [];
+    // IDs já mostrados como TOAST nesta sessão — evita repetir o toast
+    // toda vez que checkPendingAchievements roda (após save de note, etc)
+    const achievementsToastedIds = new Set();
     let achievementCheckInFlight = false;
 
     function showAchievementToast(ach) {
@@ -9971,43 +10139,157 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             setTimeout(() => toast.remove(), 350);
         };
         toast.querySelector('.achievement-toast-close').addEventListener('click', remove);
-        // Auto dismiss em 6s
-        setTimeout(remove, 6000);
+        // Clicar no toast leva pro perfil
+        toast.querySelector('.achievement-toast-body').addEventListener('click', () => {
+            navigate('/perfil');
+            remove();
+        });
+        toast.querySelector('.achievement-toast-body').style.cursor = 'pointer';
+        // Auto dismiss em 7s (mais tempo pro user notar)
+        setTimeout(remove, 7000);
     }
 
     /**
-     * Busca conquistas pendentes (desbloqueadas mas não vistas), exibe toasts,
-     * marca como vistas. Idempotente — chamadas duplicadas não criam toasts.
+     * Busca conquistas pendentes (desbloqueadas mas não vistas).
+     * - Atualiza o estado `achievementsPending` (usado pelo dropdown do sino).
+     * - Mostra toast SÓ pras que ainda não foram exibidas nesta sessão.
+     * - NÃO marca como seen automaticamente — sino segura até o user clicar.
      */
     async function checkPendingAchievements() {
         if (achievementCheckInFlight) return;
         achievementCheckInFlight = true;
         try {
             const res = await api('/me/achievements/pending');
-            const list = res.pending || [];
-            console.debug('[achievements] pending:', list.length, list.map(a => a.id));
-            achievementsPendingCount = list.length;
+            achievementsPending = res.pending || [];
+            console.debug('[achievements] pending:', achievementsPending.length, achievementsPending.map(a => a.id));
             updateBell();
-            if (!list.length) return;
-            // Stagger 400ms entre toasts (cascata visual)
-            list.forEach((a, i) => setTimeout(() => showAchievementToast(a), i * 400));
-            // Marca como vistas (fire-and-forget — proxima checagem retorna []
-            // mesmo se essa falhar, porque os IDs ja viraram seen apos próximo poll)
-            api('/me/achievements/seen', { method: 'POST' }).catch((e) => {
-                console.warn('[achievements] /seen falhou:', e.message);
+            renderBellDropdown();
+            // Toasts apenas pras conquistas NOVAS desta sessão
+            const novas = achievementsPending.filter(a => !achievementsToastedIds.has(a.id));
+            novas.forEach((a, i) => {
+                achievementsToastedIds.add(a.id);
+                setTimeout(() => showAchievementToast(a), i * 400);
             });
-            achievementsPendingCount = 0;
         } catch (e) {
-            // Loga visível no console pra debug — antes era silencioso e
-            // ninguem sabia se o endpoint estava 500 (tabela faltando, etc)
             console.warn('[achievements] /pending falhou:', e.message);
         } finally { achievementCheckInFlight = false; }
+    }
+
+    // ===============================================
+    // SINO — dropdown com pendentes (conquistas + amigos + companions)
+    // ===============================================
+    function renderBellDropdown() {
+        const body = document.getElementById('bellDropdownBody');
+        const items = [];
+
+        // 1) Conquistas pendentes (mais raras primeiro)
+        const rarityOrder = { platinum: 4, gold: 3, silver: 2, bronze: 1 };
+        const conqOrdenadas = [...achievementsPending].sort(
+            (a, b) => (rarityOrder[b.rarity] || 0) - (rarityOrder[a.rarity] || 0)
+        );
+        for (const a of conqOrdenadas) {
+            items.push(`
+                <button type="button" class="bell-item achievement" data-action="achievement" data-id="${escapeHtml(a.id)}">
+                    <div class="bell-item-icon rarity-${escapeHtml(a.rarity || 'bronze')}">
+                        <span class="material-icons">${escapeHtml(a.icon || 'emoji_events')}</span>
+                    </div>
+                    <div class="bell-item-body">
+                        <div class="bell-item-eyebrow">Conquista desbloqueada</div>
+                        <div class="bell-item-title">${escapeHtml(a.name)}</div>
+                        <div class="bell-item-desc">${escapeHtml(a.description)}</div>
+                    </div>
+                </button>
+            `);
+        }
+
+        // 2) Pedidos de amizade
+        const friendReqs = friendsState.incoming || [];
+        for (const f of friendReqs) {
+            const nome = f.display_name || f.username || 'Alguém';
+            items.push(`
+                <button type="button" class="bell-item" data-action="friend-request">
+                    <div class="bell-item-icon"><span class="material-icons">person_add</span></div>
+                    <div class="bell-item-body">
+                        <div class="bell-item-eyebrow">Pedido de amizade</div>
+                        <div class="bell-item-title">${escapeHtml(nome)}</div>
+                        <div class="bell-item-desc">Quer te adicionar como amigo</div>
+                    </div>
+                </button>
+            `);
+        }
+
+        // 3) Confirmações de companhia
+        const companionReqs = friendsState.companion_requests_count || 0;
+        if (companionReqs) {
+            items.push(`
+                <button type="button" class="bell-item" data-action="companion-requests">
+                    <div class="bell-item-icon"><span class="material-icons">groups_2</span></div>
+                    <div class="bell-item-body">
+                        <div class="bell-item-eyebrow">Companheiros de jogo</div>
+                        <div class="bell-item-title">${companionReqs} ${companionReqs === 1 ? 'confirmação pendente' : 'confirmações pendentes'}</div>
+                        <div class="bell-item-desc">Alguém te marcou como companhia em um jogo</div>
+                    </div>
+                </button>
+            `);
+        }
+
+        if (!items.length) {
+            body.innerHTML = `<div class="bell-empty">Sem novidades por aqui.</div>`;
+            return;
+        }
+        body.innerHTML = items.join('');
+
+        // Wire up clicks
+        body.querySelectorAll('[data-action]').forEach(el => {
+            el.addEventListener('click', () => {
+                const action = el.dataset.action;
+                closeBellDropdown();
+                if (action === 'achievement') {
+                    navigate('/perfil');
+                    // Marca todas como vistas + zera estado local
+                    api('/me/achievements/seen', { method: 'POST' }).catch(() => {});
+                    achievementsPending = [];
+                    updateBell();
+                } else if (action === 'friend-request' || action === 'companion-requests') {
+                    navigate('/rede');
+                    setTimeout(() => {
+                        const target = document.getElementById('incomingSection');
+                        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 150);
+                }
+            });
+        });
+    }
+
+    function openBellDropdown() {
+        const dd = document.getElementById('bellDropdown');
+        dd.classList.add('show');
+        dd.setAttribute('aria-hidden', 'false');
+        document.getElementById('bellBtn').setAttribute('aria-expanded', 'true');
+        renderBellDropdown();
+        // Marca conquistas como vistas no servidor (mas mantém na lista
+        // visualmente até o user fechar o dropdown ou clicar em algo)
+        if (achievementsPending.length) {
+            api('/me/achievements/seen', { method: 'POST' }).catch(() => {});
+        }
+    }
+    function closeBellDropdown() {
+        const dd = document.getElementById('bellDropdown');
+        dd.classList.remove('show');
+        dd.setAttribute('aria-hidden', 'true');
+        document.getElementById('bellBtn').setAttribute('aria-expanded', 'false');
+        // Quando fecha, zera o badge das conquistas (já foram vistas no server)
+        if (achievementsPending.length) {
+            achievementsPending = [];
+            updateBell();
+        }
     }
 
     function updateBell() {
         const friendReqs = friendsState.incoming?.length || 0;
         const companionReqs = friendsState.companion_requests_count || 0;
-        const count = friendReqs + companionReqs + achievementsPendingCount;
+        const achievs = achievementsPending.length;
+        const count = friendReqs + companionReqs + achievs;
         const bell = document.getElementById('bellBtn');
         const badge = document.getElementById('bellBadge');
         if (count > 0) {
@@ -10015,33 +10297,41 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             badge.classList.add('show');
             bell.classList.add('has-pending');
             const partes = [];
+            if (achievs) partes.push(`${achievs} ${achievs === 1 ? 'conquista nova' : 'conquistas novas'}`);
             if (friendReqs) partes.push(`${friendReqs} ${friendReqs === 1 ? 'pedido de amizade' : 'pedidos de amizade'}`);
             if (companionReqs) partes.push(`${companionReqs} ${companionReqs === 1 ? 'confirmação de companhia' : 'confirmações de companhia'}`);
-            if (achievementsPendingCount) partes.push(`${achievementsPendingCount} ${achievementsPendingCount === 1 ? 'conquista nova' : 'conquistas novas'}`);
             bell.title = partes.join(' · ');
         } else {
             badge.classList.remove('show');
             bell.classList.remove('has-pending');
             bell.title = 'Sem notificações';
         }
+        // Atualiza dropdown se aberto
+        const dd = document.getElementById('bellDropdown');
+        if (dd && dd.classList.contains('show')) renderBellDropdown();
     }
 
-    document.getElementById('bellBtn').addEventListener('click', () => {
-        // Vai pra Rede social e foca em Solicitações recebidas
-        navigate('/rede');
-        setTimeout(() => {
-            // Em mobile, abre o dropdown da sidebar pra mostrar as solicitações
-            const sidebar = document.getElementById('redeSidebar');
-            const toggleBtn = document.getElementById('redeToggle');
-            if (sidebar && toggleBtn && window.innerWidth <= 900 && !sidebar.classList.contains('open')) {
-                sidebar.classList.add('open');
-                toggleBtn.classList.add('open');
-            }
-            const target = document.getElementById('incomingSection');
-            if (target && target.style.display !== 'none') {
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }, 150);
+    // Sino: toggle do dropdown (não navega mais direto pra /rede)
+    document.getElementById('bellBtn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const dd = document.getElementById('bellDropdown');
+        if (dd.classList.contains('show')) closeBellDropdown();
+        else openBellDropdown();
+    });
+    document.getElementById('bellDropdownClose').addEventListener('click', closeBellDropdown);
+    // Fecha quando clica fora
+    document.addEventListener('click', (e) => {
+        const dd = document.getElementById('bellDropdown');
+        if (!dd.classList.contains('show')) return;
+        if (e.target.closest('.bell-wrap')) return; // dentro do dropdown ou no botão
+        closeBellDropdown();
+    });
+    // Fecha com Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const dd = document.getElementById('bellDropdown');
+            if (dd.classList.contains('show')) closeBellDropdown();
+        }
     });
 
     let composerReady = false;

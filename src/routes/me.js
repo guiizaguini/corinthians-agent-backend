@@ -3,6 +3,31 @@ import { query } from '../db/pool.js';
 import { computeAchievements, ACHIEVEMENT_CATEGORIES, RARITY_INFO } from '../utils/achievements.js';
 import { cache } from '../utils/cache.js';
 
+// Auto-bootstrap: garante tabela user_achievements existe (sem precisar rodar migration manual).
+// Roda 1x na 1a request, depois cacheia o resultado.
+let _userAchievementsReady = false;
+async function ensureUserAchievementsTable() {
+    if (_userAchievementsReady) return;
+    try {
+        await query(`
+            CREATE TABLE IF NOT EXISTS user_achievements (
+                id              SERIAL PRIMARY KEY,
+                user_id         INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                achievement_id  VARCHAR(60) NOT NULL,
+                unlocked_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                seen_at         TIMESTAMPTZ,
+                UNIQUE(user_id, achievement_id)
+            );
+            CREATE INDEX IF NOT EXISTS idx_user_achievements_unseen
+                ON user_achievements(user_id) WHERE seen_at IS NULL;
+        `);
+        _userAchievementsReady = true;
+    } catch (e) {
+        // Loga mas não derruba a request — vai falhar em /pending também
+        console.error('[me] ensureUserAchievementsTable falhou:', e.message);
+    }
+}
+
 /**
  * Estatísticas por usuário autenticado.
  * Monta o "snapshot" completo que a dashboard consome, mas filtrado
@@ -384,6 +409,7 @@ router.get('/achievements', async (req, res, next) => {
 // =============================================================
 router.get('/achievements/pending', async (req, res, next) => {
     try {
+        await ensureUserAchievementsTable();
         const uid = req.user.id;
         const cid = req.user.club_id;
         if (!cid) return res.json({ pending: [] });
@@ -423,6 +449,7 @@ router.get('/achievements/pending', async (req, res, next) => {
 // =============================================================
 router.post('/achievements/seen', async (req, res, next) => {
     try {
+        await ensureUserAchievementsTable();
         const { rowCount } = await query(`
             UPDATE user_achievements
             SET seen_at = NOW()
