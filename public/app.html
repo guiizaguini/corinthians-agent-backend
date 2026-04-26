@@ -4047,7 +4047,17 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 }
 
 /* Card de jogo do bolão — estilo wc-ticket da Copa */
-#bolaoJogosList { display: flex; flex-direction: column; gap: 0.85rem; }
+/* Container externo: empilha headers e grids de seção */
+#bolaoJogosList { display: flex; flex-direction: column; gap: 0; }
+/* Cards de cada seção: 1 coluna no mobile, 2 no desktop */
+.bolao-section-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+}
+@media (min-width: 900px) {
+    .bolao-section-cards { grid-template-columns: 1fr 1fr; }
+}
 
 /* Filtros do detalhe do bolão */
 .bolao-filtros {
@@ -6866,13 +6876,17 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const key = teamName.toLowerCase().trim();
         const iso = FLAG_ISO[key];
         if (!iso) return null;
-        return `https://flagcdn.com/w40/${iso}.png`;
+        // w160 = 160px wide (sharp em até 40px @ 4x DPI). w40 era serrilhado no mobile retina.
+        return `https://flagcdn.com/w160/${iso}.png`;
     }
 
     function renderFlag(teamName) {
         const url = flagFor(teamName);
         if (url) {
-            return `<img class="wc-flag" src="${url}" alt="" loading="lazy">`;
+            // srcset entrega 80px no 1x, 160px no 2x, 320px no 3x retina — sempre nítido
+            const iso = FLAG_ISO[teamName.toLowerCase().trim()];
+            const srcset = `https://flagcdn.com/w80/${iso}.png 1x, https://flagcdn.com/w160/${iso}.png 2x, https://flagcdn.com/w320/${iso}.png 3x`;
+            return `<img class="wc-flag" src="${url}" srcset="${srcset}" alt="" loading="lazy">`;
         }
         // Fallback pra times TBD ou sem mapping: placeholder listrado
         return `<span class="wc-flag tbd-flag"></span>`;
@@ -10185,7 +10199,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                         ${isFinal ? '🏆 ' : ''}${sec}
                         <span class="wc-section-count">${countTxt}</span>
                     </h3>
-                    ${games.map(g => bolaoRenderJogo(g)).join('')}
+                    <div class="bolao-section-cards">
+                        ${games.map(g => bolaoRenderJogo(g)).join('')}
+                    </div>
                 `;
             }).join('');
         const id = bolaoState.bolaoId;
@@ -10225,20 +10241,30 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                     saveBtn.disabled = true;
                     saveBtn.textContent = 'Salvando...';
                     try {
+                        const h = parseInt(inpHome.value);
+                        const a = parseInt(inpAway.value);
                         await api(`/bolao/${id}/palpite/${gameId}`, {
                             method: 'PUT',
-                            body: JSON.stringify({
-                                gols_casa: parseInt(inpHome.value),
-                                gols_visitante: parseInt(inpAway.value),
-                            }),
+                            body: JSON.stringify({ gols_casa: h, gols_visitante: a }),
                         });
                         saveBtn.textContent = 'Salvo ✓';
                         saveBtn.classList.add('saved');
                         el.classList.add('palpitado');
                         el.classList.remove('editing');
-                        // Recarrega tudo pra refletir o novo estado
-                        await bolaoLoadJogos(id);
-                        await bolaoLoadRanking(id);
+                        // Atualiza o jogo no cache local pra refletir o novo estado
+                        // sem precisar refetchar a lista inteira (o que destruia o scroll)
+                        const cached = bolaoState.allGames.find(x => x.id === gameId);
+                        if (cached) {
+                            cached.palpite_casa = h;
+                            cached.palpite_visitante = a;
+                        }
+                        // Re-renderiza preservando scroll: salva posição, re-renderiza, restaura.
+                        const scrollY = window.scrollY;
+                        bolaoRenderJogos();
+                        // requestAnimationFrame garante restauração após o reflow
+                        requestAnimationFrame(() => window.scrollTo({ top: scrollY, behavior: 'instant' }));
+                        // Atualiza ranking em paralelo (elemento separado, não mexe no scroll)
+                        bolaoLoadRanking(id);
                     } catch (err) {
                         const msg = err.message === 'palpite_closed'
                             ? 'Palpites fechados (faltam menos de 1 min pro jogo)'
@@ -10268,9 +10294,17 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     function bolaoRenderJogo(g) {
         const fCasa = flagFor(g.time_casa);
         const fVis = flagFor(g.time_visitante);
-        const flagHtml = (url) => url
-            ? `<img class="wc-flag" src="${url}" alt="" loading="lazy">`
-            : `<span class="wc-flag tbd-flag"></span>`;
+        // Helper: gera srcset retina-aware se conseguir extrair o iso da url
+        const flagHtml = (url) => {
+            if (!url) return `<span class="wc-flag tbd-flag"></span>`;
+            const isoMatch = url.match(/\/w\d+\/([a-z-]+)\.png$/i);
+            if (isoMatch) {
+                const iso = isoMatch[1];
+                const srcset = `https://flagcdn.com/w80/${iso}.png 1x, https://flagcdn.com/w160/${iso}.png 2x, https://flagcdn.com/w320/${iso}.png 3x`;
+                return `<img class="wc-flag" src="${url}" srcset="${srcset}" alt="" loading="lazy">`;
+            }
+            return `<img class="wc-flag" src="${url}" alt="" loading="lazy">`;
+        };
 
         const temResultado = g.gols_casa_real != null && g.gols_visitante_real != null;
         const jaPalpitou = g.palpite_casa != null;
