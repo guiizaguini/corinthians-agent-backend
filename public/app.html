@@ -5822,15 +5822,25 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         padding: 0.55rem 0.95rem;
         border-width: 1px;
     }
-    /* Chips com scroll horizontal sangrando até a borda da tela */
+    /* Chips com scroll horizontal interno — sem negative margin que vazava
+       pra direita no mobile. Scroll fica contido dentro da própria div. */
     .bolao-filtros-chips {
         gap: 0.3rem;
-        margin: 0 -1rem;
-        padding: 0 1rem 0.25rem;
         flex-wrap: nowrap;
         overflow-x: auto;
+        padding-bottom: 0.25rem;
+        /* Esconde scrollbar visualmente mas mantém funcional */
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
     }
-    .bolao-fase-chip { padding: 0.32rem 0.75rem; font-size: 0.62rem; }
+    .bolao-filtros-chips::-webkit-scrollbar { display: none; }
+    .bolao-fase-chip { padding: 0.32rem 0.75rem; font-size: 0.62rem; flex-shrink: 0; }
+
+    /* Garantia anti-vazamento pra coluna de jogos no mobile —
+       se algum filho tiver largura inesperada, fica contido */
+    .bolao-jogos { overflow-x: hidden; }
+    .bolao-jogos-head { min-width: 0; }
+    .bolao-jogos-head h3 { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 
     /* JOGOS HEAD — divisor sutil em vez de bloco */
     .bolao-jogos-head {
