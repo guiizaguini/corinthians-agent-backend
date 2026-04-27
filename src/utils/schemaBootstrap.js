@@ -44,6 +44,17 @@ export async function bootstrapSchema() {
                 ON user_achievements(unlocked_at DESC, user_id) WHERE from_bulk_sync = FALSE
         `);
 
+        // ====== users.google_sub (login via Google) ======
+        // Sem essa coluna o endpoint POST /auth/google quebra com 500
+        // (INSERT/UPDATE referenciando coluna inexistente).
+        await query(`
+            ALTER TABLE users ADD COLUMN IF NOT EXISTS google_sub VARCHAR(64)
+        `);
+        await query(`
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_users_google_sub
+                ON users(google_sub) WHERE google_sub IS NOT NULL
+        `);
+
         _bootstrapDone = true;
         console.log('[schemaBootstrap] OK');
     } catch (e) {
