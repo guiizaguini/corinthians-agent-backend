@@ -5481,6 +5481,176 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     .bolao-detail-title { font-size: clamp(2rem, 2.4vw, 2.6rem); }
 }
 
+/* ============================================================
+   LOBBY DO BOLÃO (#bolaoViewMeus) — refino DESKTOP-ONLY.
+   Mobile (<=900px) preservado. Identidade Copa intacta:
+   gradient FIFA, ouro #d4a520, rainbow stripes.
+   ============================================================ */
+@media (min-width: 901px) {
+    /* Container do lobby — limita largura pra não ficar full-bleed
+       e ganhar respiro editorial nas laterais */
+    #bolaoViewMeus {
+        max-width: 1180px;
+        margin: 0 auto;
+    }
+
+    /* === HERO BLOCK: hero + stats integrados num só billboard ===
+       No mobile eles ficam empilhados. Aqui agrupamos: stats vão
+       PARA DENTRO do hero, no lado direito. Headline na esquerda. */
+    .bolao-hero-block {
+        position: relative;
+        margin-bottom: 2.5rem;
+    }
+    .bolao-hero-block .bolao-hero {
+        padding: 1.85rem 2rem 1.75rem;
+        padding-right: 22.5rem; /* abre espaço pra stats absolutos */
+        margin-bottom: 0;
+        min-height: 9rem;
+    }
+    .bolao-hero-block .bolao-hero-content { max-width: 480px; }
+    .bolao-hero-block .bolao-hero-title {
+        font-size: clamp(1.6rem, 2.4vw, 2.05rem);
+    }
+    .bolao-hero-block .bolao-hero-sub { font-size: 0.92rem; max-width: 460px; }
+
+    /* Stats DENTRO do hero — posicionados absolutos à direita.
+       Sem caixa branca: tudo em cima do gradient escuro. */
+    .bolao-hero-block .bolao-stats-row {
+        position: absolute;
+        top: 50%;
+        right: 1.85rem;
+        transform: translateY(-50%);
+        margin: 0;
+        background: transparent;
+        border: 0;
+        padding: 0;
+        box-shadow: none;
+        width: 19rem;
+        flex-wrap: wrap;
+        gap: 0;
+        z-index: 3;
+    }
+    .bolao-hero-block .bolao-stat {
+        flex: 1 1 calc(50% - 0px);
+        min-width: 0;
+        padding: 0.55rem 0.85rem;
+        background: transparent;
+        border-radius: 0;
+        gap: 0.6rem;
+    }
+    .bolao-hero-block .bolao-stat + .bolao-stat::before {
+        background: rgba(245,230,168,0.18);
+        top: 25%; bottom: 25%;
+    }
+    .bolao-hero-block .bolao-stat-icon {
+        background: rgba(212,165,32,0.22);
+        color: #f0c040;
+        width: 30px; height: 30px;
+    }
+    .bolao-hero-block .bolao-stat-num {
+        color: #f5e6a8;
+        font-size: 1.25rem;
+    }
+    .bolao-hero-block .bolao-stat-label {
+        color: rgba(245,230,168,0.55);
+        letter-spacing: 0.18em;
+    }
+    .bolao-hero-block .bolao-stat-proximo {
+        background: transparent;
+        flex-basis: 100%;
+        border-top: 1px solid rgba(245,230,168,0.12);
+        margin-top: 0.5rem;
+        padding-top: 0.7rem;
+    }
+    .bolao-hero-block .bolao-stat-proximo .bolao-stat-num {
+        color: #f5e6a8;
+        font-size: 0.88rem;
+    }
+
+    /* === SECTION HEAD: hierarquia editorial (título grande à esquerda,
+       CTA à direita ancorado, mais respiro) === */
+    #bolaoViewMeus .bolao-section-head-primary {
+        align-items: flex-end;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--wc-line);
+    }
+    #bolaoViewMeus .bolao-section-head-primary h3 {
+        font-size: 1.45rem;
+        letter-spacing: 0.04em;
+    }
+    #bolaoViewMeus .bolao-section-head-primary .bolao-create-btn {
+        padding: 0.78rem 1.35rem;
+        font-size: 0.78rem;
+    }
+
+    /* === LISTA: 2 colunas controladas (não auto-fill que vira 4-5 cards
+       de 280px estreitos numa fileira só — a listagem perde personalidade). */
+    #bolaoViewMeus #bolaoList,
+    #bolaoViewMeus #bolaoPublicosList {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.25rem;
+    }
+
+    /* Cards: padding maior, sombra mais marcada no hover */
+    #bolaoViewMeus .bolao-card {
+        padding: 1.5rem 1.65rem 1.25rem;
+        border-radius: 16px;
+    }
+    #bolaoViewMeus .bolao-card-name { font-size: 1.25rem; }
+
+    /* === BOLÕES ABERTOS: header da seção secundária com mesmo peso
+       editorial mas tom mais leve (sem border-bottom forte) === */
+    #bolaoViewMeus #bolaoPublicosWrap > .bolao-section-head {
+        margin-top: 3rem !important;
+        margin-bottom: 1.25rem;
+    }
+    #bolaoViewMeus #bolaoPublicosWrap h3 { font-size: 1.05rem; letter-spacing: 0.16em; }
+
+    /* === INVITE CARD (rodapé): centralizado e com identidade Copa
+       (rainbow stripe sutil no topo). Continua sendo CLARAMENTE secundário. */
+    #bolaoViewMeus > .bolao-join-card {
+        position: relative;
+        max-width: 560px;
+        margin: 3rem auto 0 !important;
+        padding: 1.4rem 1.65rem 1.5rem;
+        border: 1px solid var(--wc-line);
+        background: linear-gradient(180deg, #fffdf5 0%, #ffffff 100%);
+        border-radius: 14px;
+        overflow: hidden;
+    }
+    #bolaoViewMeus > .bolao-join-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: linear-gradient(90deg,
+            #e63946 0 16.666%, #ff7a00 16.666% 33.333%,
+            #ffc93a 33.333% 50%, #06a957 50% 66.666%,
+            #4361ee 66.666% 83.333%, #7b2cbf 83.333% 100%);
+    }
+    #bolaoViewMeus > .bolao-join-card .bolao-join-eyebrow {
+        justify-content: center;
+        font-size: 0.6rem;
+        margin-bottom: 0.55rem;
+    }
+    #bolaoViewMeus > .bolao-join-card label {
+        text-align: center;
+    }
+    #bolaoViewMeus > .bolao-join-card .bolao-join-row {
+        max-width: 380px;
+        margin: 0 auto;
+    }
+}
+
+/* Wide screens: respiro extra */
+@media (min-width: 1280px) {
+    #bolaoViewMeus { max-width: 1240px; }
+    .bolao-hero-block .bolao-hero { padding: 2rem 2.25rem 1.85rem; padding-right: 23rem; }
+    #bolaoViewMeus #bolaoList,
+    #bolaoViewMeus #bolaoPublicosList { gap: 1.5rem; }
+}
+
 /* Mobile layout bolão */
 @media (max-width: 900px) {
     /* Vira flex column com order pra poder colocar o ranking ACIMA dos jogos */
@@ -7326,6 +7496,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
                 <!-- Sub-view: Meus Bolões (lista + entrar por código) -->
                 <div id="bolaoViewMeus">
+                  <!-- Hero block: agrupa hero + stats num container só, pra
+                       no desktop integrarmos os stats DENTRO do gradient FIFA. -->
+                  <div class="bolao-hero-block">
                     <!-- HERO Copa do Mundo: gradiente FIFA + listras + bola -->
                     <section class="bolao-hero">
                         <div class="bolao-hero-stripes" aria-hidden="true">
@@ -7371,6 +7544,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                             </div>
                         </div>
                     </section>
+                  </div>
+                  <!-- /bolao-hero-block -->
 
                     <!-- ═══ Hierarquia: 1. Título + CTA principal → 2. Lista (foco) ═══ -->
                     <div class="bolao-section-head bolao-section-head-primary">
