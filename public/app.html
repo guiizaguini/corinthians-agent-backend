@@ -6574,10 +6574,20 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     header {
         padding: 0.85rem 1rem;
         gap: 0.5rem;
+        /* No-wrap: brand fica na MESMA linha que os botões, alinhado.
+           Antes a .user-info tinha width:100% que forçava quebra de linha
+           e deixava o nome da plataforma "colado no topo" sozinho. */
+        flex-wrap: nowrap;
     }
+    .brand-wrap { min-width: 0; flex: 0 1 auto; }
     .brand { font-size: 1.3rem; letter-spacing: 0.14em; }
     .brand-tagline { font-size: 0.56rem; letter-spacing: 0.22em; }
-    .user-info { gap: 0.4rem; font-size: 0.78rem; width: 100%; justify-content: flex-end; }
+    .user-info {
+        gap: 0.4rem;
+        font-size: 0.78rem;
+        flex: 0 0 auto;
+        justify-content: flex-end;
+    }
     /* "Olá, Nome" perde o "Olá," em telas pequenas pra economizar espaço.
        Exceção: #appLangSlot (container do dropdown de idioma — visível em mobile). */
     .user-info > span:not(.club-badge):not(.bell-badge):not(#appLangSlot) { display: none; }
