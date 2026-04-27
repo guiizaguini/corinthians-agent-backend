@@ -6753,20 +6753,20 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     <!-- Modal: Criar bolão (admin) -->
     <div class="modal-overlay" id="bolaoCreateModal">
         <div class="modal">
-            <h2>Criar bolão</h2>
-            <div class="meta">Dê um nome e (opcional) uma descrição. O código do convite é gerado automaticamente.</div>
+            <h2 data-i18n="app.bolao.create_modal_title">Criar bolão</h2>
+            <div class="meta" data-i18n="app.bolao.create_modal_meta">Dê um nome e (opcional) uma descrição. O código do convite é gerado automaticamente.</div>
 
-            <label for="bolaoCreateName">Nome do bolão</label>
-            <input id="bolaoCreateName" type="text" maxlength="120" placeholder="Ex: Bolão da Fiel · Copa 2026" autocomplete="off">
+            <label for="bolaoCreateName" data-i18n="app.bolao.create_name_label">Nome do bolão</label>
+            <input id="bolaoCreateName" type="text" maxlength="120" placeholder="Ex: Bolão da Fiel · Copa 2026" data-i18n-attr="placeholder:app.bolao.create_name_ph" autocomplete="off">
 
-            <label for="bolaoCreateDesc">Descrição (opcional)</label>
-            <textarea id="bolaoCreateDesc" rows="3" maxlength="500" placeholder="Regras especiais, prêmio, qualquer coisa..."></textarea>
+            <label for="bolaoCreateDesc" data-i18n="app.bolao.create_desc_label">Descrição (opcional)</label>
+            <textarea id="bolaoCreateDesc" rows="3" maxlength="500" placeholder="Regras especiais, prêmio, qualquer coisa..." data-i18n-attr="placeholder:app.bolao.create_desc_ph"></textarea>
 
             <div class="error" id="bolaoCreateErr" style="margin-top:1rem;padding:0.7rem 0.9rem;background:rgba(107,31,42,0.1);border-left:3px solid var(--vinho);color:var(--vinho);font-size:0.85rem;display:none;"></div>
 
             <div class="modal-actions">
-                <button class="btn-secondary" id="bolaoCreateCancel">Cancelar</button>
-                <button class="btn-primary" id="bolaoCreateSave">Criar</button>
+                <button class="btn-secondary" id="bolaoCreateCancel" data-i18n="app.btn.cancel">Cancelar</button>
+                <button class="btn-primary" id="bolaoCreateSave" data-i18n="app.bolao.create_save">Criar</button>
             </div>
         </div>
     </div>
@@ -6774,17 +6774,17 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     <!-- Modal: Bolão criado (mostra o código) -->
     <div class="modal-overlay" id="bolaoCreatedModal">
         <div class="modal">
-            <h2>Bolão criado!</h2>
-            <div class="meta">Compartilhe o código de convite pra galera entrar:</div>
+            <h2 data-i18n="app.bolao.created_title">Bolão criado!</h2>
+            <div class="meta" data-i18n="app.bolao.created_meta">Compartilhe o código de convite pra galera entrar:</div>
 
             <div style="text-align:center;margin:1.5rem 0;padding:1.25rem;background:linear-gradient(135deg,#fff8e0,#fdefc2);border:2px dashed #d4a520;border-radius:12px;">
-                <div style="font-family:'Oswald',sans-serif;font-size:0.65rem;letter-spacing:0.22em;color:#a8791b;text-transform:uppercase;margin-bottom:0.35rem;">Código de convite</div>
+                <div style="font-family:'Oswald',sans-serif;font-size:0.65rem;letter-spacing:0.22em;color:#a8791b;text-transform:uppercase;margin-bottom:0.35rem;" data-i18n="app.bolao.created_code_label">Código de convite</div>
                 <code id="bolaoCreatedCode" style="font-family:'Oswald',monospace;font-weight:700;font-size:1.6rem;letter-spacing:0.18em;color:#1a1000;background:transparent;">—</code>
             </div>
 
             <div class="modal-actions">
-                <button class="btn-secondary" id="bolaoCreatedCopy"><span class="material-icons" style="font-size:1rem;vertical-align:middle;">content_copy</span> Copiar código</button>
-                <button class="btn-primary" id="bolaoCreatedOpen">Abrir bolão</button>
+                <button class="btn-secondary" id="bolaoCreatedCopy"><span class="material-icons" style="font-size:1rem;vertical-align:middle;">content_copy</span> <span data-i18n="app.bolao.created_copy">Copiar código</span></button>
+                <button class="btn-primary" id="bolaoCreatedOpen" data-i18n="app.bolao.created_open">Abrir bolão</button>
             </div>
         </div>
     </div>
@@ -7049,28 +7049,28 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 <section class="wc-header">
                     <img src="/logos/fifa-2026.png" alt="Copa do Mundo 2026">
                     <div class="wc-header-text">
-                        <div class="wc-eyebrow">FIFA World Cup · 16 sedes</div>
-                        <h2 class="wc-title">Copa do Mundo 2026</h2>
-                        <p class="wc-subtitle">Canadá · México · Estados Unidos. Marque seus jogos com "EU VOU" antes, e confirme presença depois que a bola rolar.</p>
+                        <div class="wc-eyebrow" data-i18n="app.copa.header_eyebrow">FIFA World Cup · 16 sedes</div>
+                        <h2 class="wc-title" data-i18n="app.copa.header_title">Copa do Mundo 2026</h2>
+                        <p class="wc-subtitle" data-i18n="app.copa.header_subtitle">Canadá · México · Estados Unidos. Marque seus jogos com "EU VOU" antes, e confirme presença depois que a bola rolar.</p>
                     </div>
                 </section>
 
                 <button class="bolao-entry-btn" id="btnBolaoEnter" type="button">
                     <div class="bolao-entry-icon"><span class="material-icons">emoji_events</span></div>
                     <div class="bolao-entry-text">
-                        <div class="bolao-entry-title">Bolão da Copa</div>
-                        <div class="bolao-entry-sub">Palpite os jogos · dispute o ranking · ganhe pontos por acerto</div>
+                        <div class="bolao-entry-title" data-i18n="app.bolao.entry_title">Bolão da Copa</div>
+                        <div class="bolao-entry-sub" data-i18n="app.bolao.entry_sub">Palpite os jogos · dispute o ranking · ganhe pontos por acerto</div>
                     </div>
                     <span class="material-icons bolao-entry-chevron">chevron_right</span>
                 </button>
 
-                <div id="copaList"><div class="loading">Carregando jogos...</div></div>
+                <div id="copaList"><div class="loading" data-i18n="app.bolao.loading_jogos">Carregando jogos...</div></div>
             </div>
 
             <!-- VIEW: bolão (Meus Bolões ou detalhe) -->
             <div id="copaViewBolao" style="display:none;">
                 <button class="bolao-back" id="btnBolaoBack" type="button">
-                    <span class="material-icons">arrow_back</span>Voltar à Copa
+                    <span class="material-icons">arrow_back</span><span data-i18n="app.bolao.back">Voltar à Copa</span>
                 </button>
 
                 <!-- Sub-view: Meus Bolões (lista + entrar por código) -->
@@ -7085,11 +7085,11 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                             <div class="bolao-hero-fifa">
                                 <img src="/logos/fifa-2026.png" alt="FIFA 2026">
                                 <div>
-                                    <div class="bolao-hero-eyebrow">FIFA WORLD CUP 2026 · BOLÃO</div>
-                                    <h2 class="bolao-hero-title">Palpite. Pontue. <em>Vença.</em></h2>
+                                    <div class="bolao-hero-eyebrow" data-i18n="app.bolao.hero_eyebrow">FIFA WORLD CUP 2026 · BOLÃO</div>
+                                    <h2 class="bolao-hero-title" data-i18n-html="app.bolao.hero_title_html">Palpite. Pontue. <em>Vença.</em></h2>
                                 </div>
                             </div>
-                            <p class="bolao-hero-sub">
+                            <p class="bolao-hero-sub" data-i18n="app.bolao.hero_sub">
                                 Entre num bolão pelo código do convite e palpite cada jogo da Copa.
                                 Acerte o placar e suba no ranking.
                             </p>
@@ -7102,32 +7102,32 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                             <div class="bolao-stat-icon"><span class="material-icons">groups</span></div>
                             <div>
                                 <div class="bolao-stat-num" id="statMyBoloes">—</div>
-                                <div class="bolao-stat-label">Bolões que estou</div>
+                                <div class="bolao-stat-label" data-i18n="app.bolao.stat_my">Bolões que estou</div>
                             </div>
                         </div>
                         <div class="bolao-stat">
                             <div class="bolao-stat-icon"><span class="material-icons">sports_soccer</span></div>
                             <div>
                                 <div class="bolao-stat-num" id="statMyPalpites">—</div>
-                                <div class="bolao-stat-label">Palpites feitos</div>
+                                <div class="bolao-stat-label" data-i18n="app.bolao.stat_palpites">Palpites feitos</div>
                             </div>
                         </div>
                         <div class="bolao-stat bolao-stat-proximo" id="bolaoProxBox" style="display:none;">
                             <div class="bolao-stat-icon"><span class="material-icons">schedule</span></div>
                             <div style="min-width:0;flex:1;">
                                 <div class="bolao-stat-num" id="statProxData">—</div>
-                                <div class="bolao-stat-label" id="statProxJogo">Próximo jogo</div>
+                                <div class="bolao-stat-label" id="statProxJogo" data-i18n="app.bolao.stat_proximo">Próximo jogo</div>
                             </div>
                         </div>
                     </section>
 
                     <!-- Card de entrar por código -->
                     <section class="bolao-join-card">
-                        <div class="bolao-join-eyebrow"><span class="material-icons">vpn_key</span>Tem um convite?</div>
-                        <label for="bolaoInviteInput">Cole o código aqui</label>
+                        <div class="bolao-join-eyebrow"><span class="material-icons">vpn_key</span><span data-i18n="app.bolao.join_eyebrow">Tem um convite?</span></div>
+                        <label for="bolaoInviteInput" data-i18n="app.bolao.join_label">Cole o código aqui</label>
                         <div class="bolao-join-row">
-                            <input id="bolaoInviteInput" type="text" maxlength="24" placeholder="Ex: A3F7B9C2E1" autocomplete="off" autocapitalize="characters">
-                            <button class="btn-primary" id="bolaoJoinBtn">Entrar</button>
+                            <input id="bolaoInviteInput" type="text" maxlength="24" placeholder="Ex: A3F7B9C2E1" data-i18n-attr="placeholder:app.bolao.join_placeholder" autocomplete="off" autocapitalize="characters">
+                            <button class="btn-primary" id="bolaoJoinBtn" data-i18n="app.bolao.join_btn">Entrar</button>
                         </div>
                         <div class="bolao-join-err" id="bolaoJoinErr"></div>
                     </section>
@@ -7135,49 +7135,49 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                     <!-- Seção: Bolões abertos (públicos, qualquer um pode entrar) -->
                     <div id="bolaoPublicosWrap" style="display:none;">
                         <div class="bolao-section-head">
-                            <h3><span class="material-icons" style="font-size:1.1rem;vertical-align:middle;color:#d4a520;">public</span> Bolões abertos</h3>
-                            <span class="bolao-section-sub">Entre direto, sem precisar de código</span>
+                            <h3><span class="material-icons" style="font-size:1.1rem;vertical-align:middle;color:#d4a520;">public</span> <span data-i18n="app.bolao.publicos_title">Bolões abertos</span></h3>
+                            <span class="bolao-section-sub" data-i18n="app.bolao.publicos_sub">Entre direto, sem precisar de código</span>
                         </div>
                         <div id="bolaoPublicosList" class="bolao-list"></div>
                     </div>
 
                     <div class="bolao-section-head">
-                        <h3>Meus bolões</h3>
-                        <button class="bolao-create-btn" id="bolaoCreateBtn" disabled title="Em breve">
+                        <h3 data-i18n="app.bolao.meus_title">Meus bolões</h3>
+                        <button class="bolao-create-btn" id="bolaoCreateBtn" disabled title="Em breve" data-i18n-attr="title:app.bolao.create_btn_locked_title">
                             <span class="material-icons">lock</span>
-                            Criar bolão
+                            <span data-i18n="app.bolao.create_btn">Criar bolão</span>
                         </button>
                     </div>
 
-                    <div id="bolaoList" class="bolao-list"><div class="loading">Carregando bolões...</div></div>
+                    <div id="bolaoList" class="bolao-list"><div class="loading" data-i18n="app.bolao.loading_boloes">Carregando bolões...</div></div>
                 </div>
 
                 <!-- Sub-view: Detalhe do bolão (jogos + ranking) -->
                 <div id="bolaoViewDetail" style="display:none;">
                     <div class="bolao-detail-head">
                         <div class="bolao-detail-info">
-                            <div class="bolao-detail-eyebrow"><span class="material-icons">groups</span><span id="bolaoDetailMembers">0</span> membros</div>
+                            <div class="bolao-detail-eyebrow"><span class="material-icons">groups</span><span id="bolaoDetailMembers">0</span> <span data-i18n="app.bolao.detail_members_suffix">membros</span></div>
                             <h2 class="bolao-detail-title" id="bolaoDetailTitle">—</h2>
                             <p class="bolao-detail-desc" id="bolaoDetailDesc"></p>
                             <div class="bolao-detail-code">
-                                <span class="bolao-code-label">Código</span>
+                                <span class="bolao-code-label" data-i18n="app.bolao.detail_code_label">Código</span>
                                 <code id="bolaoDetailCode">—</code>
-                                <button class="bolao-code-copy" id="bolaoDetailCopy" title="Copiar"><span class="material-icons">content_copy</span></button>
+                                <button class="bolao-code-copy" id="bolaoDetailCopy" title="Copiar" data-i18n-attr="title:app.bolao.detail_copy_title"><span class="material-icons">content_copy</span></button>
                             </div>
                         </div>
                         <div class="bolao-detail-right">
                             <div class="bolao-detail-mypoints">
-                                <div class="bolao-mp-label">Meus pontos</div>
+                                <div class="bolao-mp-label" data-i18n="app.bolao.detail_my_points">Meus pontos</div>
                                 <div class="bolao-mp-value" id="bolaoMyPoints">0</div>
                             </div>
                             <div class="bolao-detail-actions">
-                                <button class="bolao-leave-btn" id="bolaoLeaveBtn" type="button" title="Sair desse bolão">
+                                <button class="bolao-leave-btn" id="bolaoLeaveBtn" type="button" title="Sair desse bolão" data-i18n-attr="title:app.bolao.detail_leave_title">
                                     <span class="material-icons">logout</span>
-                                    Sair do bolão
+                                    <span data-i18n="app.bolao.detail_leave">Sair do bolão</span>
                                 </button>
-                                <button class="bolao-delete-btn" id="bolaoDeleteBtn" type="button" title="Excluir esse bolão permanentemente" style="display:none;">
+                                <button class="bolao-delete-btn" id="bolaoDeleteBtn" type="button" title="Excluir esse bolão permanentemente" data-i18n-attr="title:app.bolao.detail_delete_title" style="display:none;">
                                     <span class="material-icons">delete_forever</span>
-                                    Excluir bolão
+                                    <span data-i18n="app.bolao.detail_delete">Excluir bolão</span>
                                 </button>
                             </div>
                         </div>
@@ -7186,7 +7186,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                     <!-- Toggle mobile: abre ranking -->
                     <button class="bolao-ranking-toggle" id="bolaoRankingToggle" type="button">
                         <span class="material-icons">leaderboard</span>
-                        <span>Ranking</span>
+                        <span data-i18n="app.bolao.detail_ranking_toggle">Ranking</span>
                         <span class="bolao-rank-toggle-count" id="bolaoRankToggleCount">—</span>
                         <span class="material-icons bolao-rank-chevron">expand_more</span>
                     </button>
@@ -7195,7 +7195,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                         <!-- Jogos -->
                         <section class="bolao-jogos">
                             <div class="bolao-jogos-head">
-                                <h3>Jogos da Copa</h3>
+                                <h3 data-i18n="app.bolao.jogos_title">Jogos da Copa</h3>
                                 <div class="bolao-jogos-stats" id="bolaoJogosStats">— palpites</div>
                             </div>
 
@@ -7207,42 +7207,43 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                                         id="bolaoFilterSearch"
                                         class="bolao-filtros-search"
                                         placeholder="Buscar seleção (ex: Brasil, Argentina)..."
+                                        data-i18n-attr="placeholder:app.bolao.jogos_filter_search_ph"
                                         autocomplete="off"
                                     >
                                     <select id="bolaoFilterGrupo" class="bolao-filtros-select">
-                                        <option value="">Todos os grupos</option>
+                                        <option value="" data-i18n="app.bolao.jogos_filter_grupos">Todos os grupos</option>
                                     </select>
                                 </div>
                                 <div class="bolao-filtros-chips" id="bolaoFilterFases">
-                                    <button type="button" class="bolao-fase-chip active" data-fase="">Todas</button>
-                                    <button type="button" class="bolao-fase-chip" data-fase="grupos">Grupos</button>
-                                    <button type="button" class="bolao-fase-chip" data-fase="r32">Round of 32</button>
-                                    <button type="button" class="bolao-fase-chip" data-fase="oitavas">Oitavas</button>
-                                    <button type="button" class="bolao-fase-chip" data-fase="quartas">Quartas</button>
-                                    <button type="button" class="bolao-fase-chip" data-fase="semis">Semis</button>
-                                    <button type="button" class="bolao-fase-chip" data-fase="terceiro">3º lugar</button>
-                                    <button type="button" class="bolao-fase-chip" data-fase="final">Final</button>
+                                    <button type="button" class="bolao-fase-chip active" data-fase="" data-i18n="app.bolao.jogos_fase_todas">Todas</button>
+                                    <button type="button" class="bolao-fase-chip" data-fase="grupos" data-i18n="app.bolao.jogos_fase_grupos">Grupos</button>
+                                    <button type="button" class="bolao-fase-chip" data-fase="r32" data-i18n="app.bolao.jogos_fase_r32">Round of 32</button>
+                                    <button type="button" class="bolao-fase-chip" data-fase="oitavas" data-i18n="app.bolao.jogos_fase_oitavas">Oitavas</button>
+                                    <button type="button" class="bolao-fase-chip" data-fase="quartas" data-i18n="app.bolao.jogos_fase_quartas">Quartas</button>
+                                    <button type="button" class="bolao-fase-chip" data-fase="semis" data-i18n="app.bolao.jogos_fase_semis">Semis</button>
+                                    <button type="button" class="bolao-fase-chip" data-fase="terceiro" data-i18n="app.bolao.jogos_fase_terceiro">3º lugar</button>
+                                    <button type="button" class="bolao-fase-chip" data-fase="final" data-i18n="app.bolao.jogos_fase_final">Final</button>
                                 </div>
                             </div>
 
-                            <div id="bolaoJogosList"><div class="loading">Carregando jogos...</div></div>
+                            <div id="bolaoJogosList"><div class="loading" data-i18n="app.bolao.loading_jogos">Carregando jogos...</div></div>
                         </section>
 
                         <!-- Ranking -->
                         <aside class="bolao-ranking" id="bolaoRanking">
-                            <h3><span class="material-icons">emoji_events</span> Ranking</h3>
-                            <div id="bolaoRankingList"><div class="loading">Carregando...</div></div>
+                            <h3><span class="material-icons">emoji_events</span> <span data-i18n="app.bolao.ranking_title">Ranking</span></h3>
+                            <div id="bolaoRankingList"><div class="loading" data-i18n="app.bolao.loading">Carregando...</div></div>
                             <details class="bolao-regras">
                                 <summary>
                                     <span class="material-icons">rule</span>
-                                    <span class="bolao-regras-title">Como pontua</span>
+                                    <span class="bolao-regras-title" data-i18n="app.bolao.regras_title">Como pontua</span>
                                     <span class="material-icons bolao-regras-chev">expand_more</span>
                                 </summary>
                                 <ul>
-                                    <li><b>Placar exato</b><span><em id="ptsExato">15</em> pts</span></li>
-                                    <li><b>Vencedor + saldo</b><span><em id="ptsSaldo">10</em> pts</span></li>
-                                    <li><b>Só vencedor</b><span><em id="ptsVencedor">7</em> pts</span></li>
-                                    <li><b>Empate correto</b><span><em id="ptsEmpate">5</em> pts</span></li>
+                                    <li><b data-i18n="app.bolao.regras_exato">Placar exato</b><span><em id="ptsExato">15</em> <span data-i18n="app.bolao.regras_pts">pts</span></span></li>
+                                    <li><b data-i18n="app.bolao.regras_saldo">Vencedor + saldo</b><span><em id="ptsSaldo">10</em> <span data-i18n="app.bolao.regras_pts">pts</span></span></li>
+                                    <li><b data-i18n="app.bolao.regras_vencedor">Só vencedor</b><span><em id="ptsVencedor">7</em> <span data-i18n="app.bolao.regras_pts">pts</span></span></li>
+                                    <li><b data-i18n="app.bolao.regras_empate">Empate correto</b><span><em id="ptsEmpate">5</em> <span data-i18n="app.bolao.regras_pts">pts</span></span></li>
                                 </ul>
                             </details>
                         </aside>
@@ -7699,6 +7700,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         if (typeof user !== 'undefined' && user && !user.club_id) {
             try { renderNoClub(); } catch (_) {}
         }
+        // Bolão: re-renderiza se a view tá aberta (lista de bolões, jogos da Copa, ranking)
+        try { if (typeof bolaoLoadMeus === 'function' && document.getElementById('bolaoViewMeus')?.style.display !== 'none') bolaoLoadMeus(); } catch (_) {}
+        try { if (typeof bolaoRenderJogos === 'function' && document.getElementById('bolaoViewDetail')?.style.display !== 'none') bolaoRenderJogos(); } catch (_) {}
     });
 
     function applyClubTheme(club) {
@@ -11056,9 +11060,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         else medal = '<span class="pos-num">—</span>';
 
         const posPill = `
-            <div class="bolao-card-pos" title="Sua posição no ranking">
+            <div class="bolao-card-pos" title="${t('app.bolao.card_pos_title')}">
                 ${medal}
-                <span>${pts} <span class="pos-pts">pts</span></span>
+                <span>${pts} <span class="pos-pts">${t('app.bolao.regras_pts')}</span></span>
             </div>
         `;
 
@@ -11066,7 +11070,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const progressBlock = `
             <div class="bolao-card-progress">
                 <div class="bolao-card-progress-label">
-                    <span>Seus palpites</span>
+                    <span>${t('app.bolao.card_progress_label')}</span>
                     <span><b>${palpites}</b> / ${totalJogos}</span>
                 </div>
                 <div class="bolao-card-progress-bar">
@@ -11200,12 +11204,12 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const palpitados = all.filter(g => g.palpite_casa != null).length;
         const total = all.length;
         const showingTxt = filtered.length === total
-            ? `${palpitados}/${total} palpites`
-            : `${filtered.length} de ${total} jogos · ${palpitados} palpitados`;
+            ? t('app.bolao.jogos_stats', { count: `${palpitados}/${total}` })
+            : t('app.bolao.jogos_stats_filtered', { shown: filtered.length, total, palpitados });
         document.getElementById('bolaoJogosStats').textContent = showingTxt;
 
         if (!filtered.length) {
-            list.innerHTML = `<div class="bolao-empty-filter">Nenhum jogo encontrado com esses filtros.<br><br><button type="button" class="bolao-fase-chip" id="bolaoLimparFiltros">Limpar filtros</button></div>`;
+            list.innerHTML = `<div class="bolao-empty-filter">${t('app.bolao.jogos_empty')}<br><br><button type="button" class="bolao-fase-chip" id="bolaoLimparFiltros">${t('app.bolao.jogos_clear_filters')}</button></div>`;
             const clearBtn = document.getElementById('bolaoLimparFiltros');
             if (clearBtn) clearBtn.addEventListener('click', bolaoLimparFiltros);
             return;
@@ -11242,7 +11246,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 const games = groups.get(sec);
                 const isFinal = sec === 'Final';
                 const palpitadosSec = games.filter(g => g.palpite_casa != null).length;
-                const countTxt = `${palpitadosSec}/${games.length} ${games.length === 1 ? 'palpite' : 'palpites'}`;
+                const countTxt = t('app.bolao.jogos_stats', { count: `${palpitadosSec}/${games.length}` });
                 return `
                     <h3 class="wc-section-title ${isFinal ? 'final' : ''}">
                         ${isFinal ? '🏆 ' : ''}${sec}
@@ -11675,21 +11679,21 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         err.classList.remove('show');
         const code = input.value.trim().toUpperCase();
         if (code.length < 4) {
-            err.textContent = 'Digite um código válido.';
+            err.textContent = t('app.bolao.join_err_invalid');
             err.classList.add('show');
             return;
         }
         const btn = document.getElementById('bolaoJoinBtn');
         btn.disabled = true;
-        btn.textContent = 'Entrando...';
+        btn.textContent = t('app.bolao.join_btn_loading');
         try {
             const res = await api('/bolao/join', { method: 'POST', body: JSON.stringify({ invite_code: code }) });
             input.value = '';
             navigate('/bolao/' + res.bolao_id);
         } catch (e) {
             const msg = {
-                bolao_not_found: 'Código inválido. Verifique e tente de novo.',
-                already_member: 'Você já está nesse bolão.',
+                bolao_not_found: t('app.bolao.join_err_not_found'),
+                already_member: t('app.bolao.join_err_member'),
             }[e.message] || e.message;
             err.textContent = msg;
             err.classList.add('show');
@@ -11818,7 +11822,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     document.getElementById('bolaoLeaveBtn').addEventListener('click', async () => {
         if (!bolaoState.bolaoId) return;
         const title = document.getElementById('bolaoDetailTitle').textContent;
-        const ok = confirm(`Sair do bolão "${title}"?\n\nSeus palpites serão removidos. Pra voltar, você precisa do código de convite.`);
+        const ok = confirm(t('app.bolao.leave_confirm', { title }));
         if (!ok) return;
         const btn = document.getElementById('bolaoLeaveBtn');
         btn.disabled = true;
