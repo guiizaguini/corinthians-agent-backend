@@ -7812,9 +7812,19 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
     function formatDate(iso) {
         const d = new Date(iso);
+        // IMPORTANTE: força timezone UTC pra evitar off-by-one.
+        // A API retorna "2026-04-26" (meia-noite UTC). Sem timeZone:'UTC',
+        // toLocaleDateString converte pro fuso local (BRT) e vira "25/04/26".
+        // Meus Ingressos (renderIngresso) ja usa getUTC* — alinhamos aqui.
         return {
-            main: d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }),
-            weekday: d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', ''),
+            main: d.toLocaleDateString('pt-BR', {
+                day: '2-digit', month: '2-digit', year: '2-digit',
+                timeZone: 'UTC',
+            }),
+            weekday: d.toLocaleDateString('pt-BR', {
+                weekday: 'short',
+                timeZone: 'UTC',
+            }).replace('.', ''),
         };
     }
 
@@ -8187,6 +8197,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
         const dateExt = new Date(g.data).toLocaleDateString('pt-BR', {
             weekday: 'long', day: '2-digit', month: 'long', year: 'numeric',
+            timeZone: 'UTC',
         });
 
         const compParts = [g.campeonato || 'Amistoso'];
@@ -9205,7 +9216,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         if (note.game_id && note.time_casa) {
             // Date + competition
             const d = new Date(note.game_data);
-            const dateStr = d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }).toUpperCase();
+            const dateStr = d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'UTC' }).toUpperCase();
             const comp = (note.campeonato || 'AMISTOSO').toUpperCase() + (note.fase ? ' · ' + note.fase.toUpperCase() : '');
 
             ctx.fillStyle = '#6a625a';
@@ -9306,7 +9317,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         for (const g of (copaGames || [])) if (g.attendance_id) porId.set(g.id, g);
         const mine = [...porId.values()].sort((a, b) => new Date(b.data) - new Date(a.data));
         for (const g of mine) {
-            const d = new Date(g.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+            const d = new Date(g.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', timeZone: 'UTC' });
             const opt = document.createElement('option');
             opt.value = g.attendance_id;
             opt.textContent = `${d} — ${g.time_casa} × ${g.time_visitante}`;
@@ -9487,7 +9498,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const dia = String(dt.getUTCDate()).padStart(2,'0');
         const mes = MESES_ABREV[dt.getUTCMonth()];
         const ano = dt.getUTCFullYear();
-        const weekday = dt.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.','').toUpperCase();
+        const weekday = dt.toLocaleDateString('pt-BR', { weekday: 'short', timeZone: 'UTC' }).replace('.','').toUpperCase();
         const fase = (g.fase || g.campeonato || 'Jogo').toUpperCase();
         // só a FINAL mesmo — não "oitavas/quartas de final" nem "semifinal"
         const isFinal = fase.trim() === 'FINAL';
@@ -10515,7 +10526,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             list.innerHTML = requests.map(r => {
                 const gameDate = new Date(r.game_data);
                 const isFuturo = gameDate >= hoje;
-                const dt = gameDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' });
+                const dt = gameDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit', timeZone: 'UTC' });
                 const owner = (r.owner_display_name || r.owner_username || 'Alguém').toUpperCase();
                 const initials = avatarInitials(r.owner_display_name || r.owner_username);
                 const matchTxt = `${r.time_casa} × ${r.time_visitante}`;
@@ -10657,7 +10668,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
         const commonHtml = common.count
             ? common.games.map(g => {
-                const dt = new Date(g.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+                const dt = new Date(g.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', timeZone: 'UTC' });
                 const placar = g.gols_casa != null ? `${g.gols_casa} × ${g.gols_visitante}` : '—';
                 return `
                     <div class="common-game-row">
@@ -10724,7 +10735,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
             const commonHtml = data.common.count
                 ? data.common.games.map(g => {
-                    const dt = new Date(g.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+                    const dt = new Date(g.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', timeZone: 'UTC' });
                     const placar = g.gols_casa != null ? `${g.gols_casa} × ${g.gols_visitante}` : '—';
                     return `
                         <div class="common-game-row">
@@ -11240,7 +11251,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const dia = String(dt.getUTCDate()).padStart(2, '0');
         const mes = MESES_ABREV[dt.getUTCMonth()];
         const ano = dt.getUTCFullYear();
-        const weekday = dt.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.','').toUpperCase();
+        const weekday = dt.toLocaleDateString('pt-BR', { weekday: 'short', timeZone: 'UTC' }).replace('.','').toUpperCase();
 
         const fase = (g.fase || g.campeonato || 'Jogo').toUpperCase();
         const isFinal = fase.trim() === 'FINAL';
