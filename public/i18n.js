@@ -98,6 +98,10 @@
             'auth.login.create': 'Criar conta',
             'auth.login.err_invalid': 'Email ou senha incorretos',
             'auth.login.err_generic': 'Erro ao entrar',
+            'auth.divider': 'ou',
+            'auth.google.continue': 'Continuar com Google',
+            'auth.google.err_invalid': 'Não foi possível autenticar com o Google. Tente de novo.',
+            'auth.google.err_email': 'Sua conta Google precisa ter o email verificado.',
 
             'auth.signup.title_pre': 'Abrir o ',
             'auth.signup.title_em': 'diário',
@@ -380,6 +384,10 @@
             'auth.login.create': 'Create account',
             'auth.login.err_invalid': 'Wrong email or password',
             'auth.login.err_generic': 'Sign in error',
+            'auth.divider': 'or',
+            'auth.google.continue': 'Continue with Google',
+            'auth.google.err_invalid': 'Could not authenticate with Google. Please try again.',
+            'auth.google.err_email': 'Your Google account must have a verified email.',
 
             'auth.signup.title_pre': 'Open the ',
             'auth.signup.title_em': 'diary',
@@ -651,6 +659,10 @@
             'auth.login.create': 'Crear cuenta',
             'auth.login.err_invalid': 'Email o contraseña incorrectos',
             'auth.login.err_generic': 'Error al entrar',
+            'auth.divider': 'o',
+            'auth.google.continue': 'Continuar con Google',
+            'auth.google.err_invalid': 'No se pudo autenticar con Google. Probá de nuevo.',
+            'auth.google.err_email': 'Tu cuenta de Google necesita tener el email verificado.',
 
             'auth.signup.title_pre': 'Abrir el ',
             'auth.signup.title_em': 'diario',

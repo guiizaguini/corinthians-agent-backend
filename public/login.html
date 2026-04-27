@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles/auth.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
     .auth-lang-bar { position: absolute; top: 1rem; right: 1rem; z-index: 5; }
     @media (max-width: 600px) { .auth-lang-bar { top: 0.6rem; right: 0.6rem; } }
@@ -32,6 +33,9 @@
 
         <button type="submit" id="btn" data-i18n="auth.login.btn">Entrar</button>
 
+        <div class="auth-divider hidden" id="authDivider"><span data-i18n="auth.divider">ou</span></div>
+        <div class="google-btn-wrap hidden" id="googleBtnWrap"></div>
+
         <div class="link">
             <span data-i18n="auth.login.no_account">Não tem conta?</span> <a href="/signup" data-i18n="auth.login.create">Criar conta</a>
         </div>
@@ -50,7 +54,69 @@
         if (bar && window.CN_I18N) {
             bar.appendChild(window.CN_I18N.createLangDropdown({ variant: 'paper' }));
         }
+        initGoogleSignIn();
     });
+
+    // Google Sign-In: pega o client ID do servidor, renderiza o botão se houver
+    async function initGoogleSignIn() {
+        let clientId;
+        try {
+            const r = await fetch('/config/public');
+            const c = await r.json();
+            clientId = c.google_client_id;
+        } catch (_) { return; }
+        if (!clientId) return;
+
+        const ready = () => {
+            if (!window.google?.accounts?.id) {
+                setTimeout(ready, 80);
+                return;
+            }
+            window.google.accounts.id.initialize({
+                client_id: clientId,
+                callback: handleGoogleCredential,
+                ux_mode: 'popup',
+                auto_select: false,
+            });
+            const wrap = document.getElementById('googleBtnWrap');
+            window.google.accounts.id.renderButton(wrap, {
+                theme: 'outline', size: 'large',
+                text: 'continue_with', shape: 'rectangular',
+                logo_alignment: 'left', width: wrap.clientWidth || 360,
+            });
+            document.getElementById('authDivider').classList.remove('hidden');
+            wrap.classList.remove('hidden');
+        };
+        ready();
+    }
+
+    async function handleGoogleCredential(resp) {
+        const errBox = document.getElementById('err');
+        errBox.classList.remove('show');
+        try {
+            const r = await fetch('/auth/google', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ credential: resp.credential }),
+            });
+            const data = await r.json();
+            if (!r.ok) {
+                throw new Error(
+                    data.error === 'invalid_google_token'
+                        ? t('auth.google.err_invalid')
+                        : data.error === 'google_email_not_verified'
+                            ? t('auth.google.err_email')
+                            : data.error || t('auth.google.err_invalid')
+                );
+            }
+            localStorage.setItem('fiel_token', data.token);
+            localStorage.setItem('fiel_user', JSON.stringify(data.user));
+            window.location.replace('/app');
+        } catch (e) {
+            errBox.textContent = e.message;
+            errBox.classList.add('show');
+        }
+    }
 
     const form = document.getElementById('loginForm');
     const errBox = document.getElementById('err');

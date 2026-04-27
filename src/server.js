@@ -88,6 +88,17 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 // =============================================================
 app.use('/auth', authRouter);
 app.use('/clubs', clubsRouter);
+
+// Config pública pro frontend (sem auth) — só expõe o Google Client ID
+// se ele estiver configurado. Frontend usa pra decidir se renderiza
+// o botão "Continuar com Google".
+app.get('/config/public', (req, res) => {
+    res.json({
+        google_client_id: process.env.GOOGLE_CLIENT_ID
+            ? process.env.GOOGLE_CLIENT_ID.split(',')[0].trim()
+            : null,
+    });
+});
 app.use('/games', requireUser, gamesRouter);
 app.use('/attendances', requireUser, attendancesRouter);
 app.use('/me', requireUser, meRouter);

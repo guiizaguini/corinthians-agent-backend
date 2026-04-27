@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles/auth.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
     .auth-lang-bar { position: absolute; top: 1rem; right: 1rem; z-index: 5; }
     @media (max-width: 600px) { .auth-lang-bar { top: 0.6rem; right: 0.6rem; } }
@@ -21,6 +22,10 @@
         <h1>
             <span data-i18n="auth.signup.title_pre">Abrir o </span><em data-i18n="auth.signup.title_em">diário</em><span data-i18n="auth.signup.title_post">.</span>
         </h1>
+
+        <!-- Google Sign-Up — atalho que cria conta direto sem preencher form -->
+        <div class="google-btn-wrap hidden" id="googleBtnWrap" style="margin-bottom:0.5rem;"></div>
+        <div class="auth-divider hidden" id="authDivider" style="margin:1rem 0 1.25rem;"><span data-i18n="auth.divider">ou</span></div>
 
         <label for="display_name" data-i18n="auth.signup.name">Como te chamamos?</label>
         <input id="display_name" name="display_name" type="text" maxlength="80" autocomplete="name">
@@ -73,7 +78,71 @@
         if (bar && window.CN_I18N) {
             bar.appendChild(window.CN_I18N.createLangDropdown({ variant: 'paper' }));
         }
+        initGoogleSignUp();
     });
+
+    async function initGoogleSignUp() {
+        let clientId;
+        try {
+            const r = await fetch('/config/public');
+            const c = await r.json();
+            clientId = c.google_client_id;
+        } catch (_) { return; }
+        if (!clientId) return;
+        const ready = () => {
+            if (!window.google?.accounts?.id) {
+                setTimeout(ready, 80);
+                return;
+            }
+            window.google.accounts.id.initialize({
+                client_id: clientId,
+                callback: handleGoogleSignup,
+                ux_mode: 'popup',
+                auto_select: false,
+            });
+            const wrap = document.getElementById('googleBtnWrap');
+            window.google.accounts.id.renderButton(wrap, {
+                theme: 'outline', size: 'large',
+                text: 'signup_with', shape: 'rectangular',
+                logo_alignment: 'left', width: wrap.clientWidth || 360,
+            });
+            document.getElementById('authDivider').classList.remove('hidden');
+            wrap.classList.remove('hidden');
+        };
+        ready();
+    }
+
+    async function handleGoogleSignup(resp) {
+        const errBox = document.getElementById('err');
+        errBox.classList.remove('show');
+        // Se o user já escolheu um clube no dropdown, manda junto pra criar a conta linkada
+        const clubSlug = clubSelect.value || null;
+        try {
+            const r = await fetch('/auth/google', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ credential: resp.credential, club_slug: clubSlug }),
+            });
+            const data = await r.json();
+            if (!r.ok) {
+                throw new Error(
+                    data.error === 'invalid_google_token'
+                        ? t('auth.google.err_invalid')
+                        : data.error === 'google_email_not_verified'
+                            ? t('auth.google.err_email')
+                            : data.error === 'club_not_found'
+                                ? t('auth.signup.err_club')
+                                : data.error || t('auth.google.err_invalid')
+                );
+            }
+            localStorage.setItem('fiel_token', data.token);
+            localStorage.setItem('fiel_user', JSON.stringify(data.user));
+            window.location.replace('/app');
+        } catch (e) {
+            errBox.textContent = e.message;
+            errBox.classList.add('show');
+        }
+    }
 
     const form = document.getElementById('signupForm');
     const errBox = document.getElementById('err');

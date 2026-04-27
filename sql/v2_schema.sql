@@ -90,6 +90,13 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username_lower
 -- Tracking de último login/acesso (pra indicador online na rede social)
 ALTER TABLE users ADD COLUMN IF NOT EXISTS last_seen_at TIMESTAMPTZ;
 
+-- Google OAuth — sub (subject) do ID token, identificador único do user no Google.
+-- UNIQUE pra impedir duas contas linkadas no mesmo Google. NULLABLE porque
+-- usuários antigos com login por senha não têm.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS google_sub VARCHAR(64);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_google_sub
+    ON users(google_sub) WHERE google_sub IS NOT NULL;
+
 -- =============================================================
 -- GAMES (catálogo — fatos do jogo, sem dados pessoais do torcedor)
 -- Cada jogo pertence a um clube (do ponto de vista da UI do torcedor).

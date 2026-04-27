@@ -1,6 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
+import { OAuth2Client } from 'google-auth-library';
 import { query } from '../db/pool.js';
 import { signToken } from '../auth/jwt.js';
 import { requireUser } from '../middleware/authUser.js';
@@ -8,6 +9,12 @@ import { requireUser } from '../middleware/authUser.js';
 const router = express.Router();
 
 const USERNAME_RE = /^[a-z0-9_.]{3,30}$/i;
+
+// Google OAuth — verificador de ID token. Aceita qualquer um dos client IDs
+// listados em GOOGLE_CLIENT_ID (pode ser CSV se tiver web + iOS, etc).
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
+const googleClient = GOOGLE_CLIENT_ID ? new OAuth2Client() : null;
+const googleAudiences = GOOGLE_CLIENT_ID.split(',').map(s => s.trim()).filter(Boolean);
 
 const SignupSchema = z.object({
     email: z.string().email().max(200),
@@ -97,6 +104,118 @@ router.post('/signup', async (req, res, next) => {
         const user = rows[0];
         const token = signToken({ sub: user.id, email: user.email });
         res.status(201).json({ token, user: publicUser(user) });
+    } catch (err) { next(err); }
+});
+
+// =============================================================
+// POST /auth/google — login OU signup via Google ID token
+// Body: { credential: <google_id_token>, club_slug?: string }
+// Comportamento:
+//   - Se já tem user com esse google_sub OU email → loga
+//   - Se email existir mas sem google_sub → linka a conta
+//   - Se nada existir → cria user novo (username gerado do email)
+// =============================================================
+const GoogleAuthSchema = z.object({
+    credential: z.string().min(20).max(4000),
+    club_slug: z.string().min(1).max(40).nullable().optional(),
+});
+
+async function generateUsernameFromEmail(emailLc) {
+    // pega prefixo do email, sanitiza, garante unicidade
+    let base = emailLc.split('@')[0]
+        .toLowerCase()
+        .replace(/[^a-z0-9_.]/g, '')
+        .slice(0, 26) || 'user';
+    if (base.length < 3) base = base + '___'.slice(0, 3 - base.length);
+
+    let candidate = base;
+    let suffix = 0;
+    // até 50 tentativas (muito improvável precisar de mais)
+    for (let i = 0; i < 50; i++) {
+        const { rows } = await query(
+            'SELECT 1 FROM users WHERE LOWER(username) = $1',
+            [candidate]
+        );
+        if (!rows.length) return candidate;
+        suffix++;
+        candidate = `${base}${suffix}`.slice(0, 30);
+    }
+    return `${base}_${Date.now().toString(36)}`.slice(0, 30);
+}
+
+router.post('/google', async (req, res, next) => {
+    try {
+        if (!googleClient) {
+            return res.status(503).json({ error: 'google_auth_not_configured' });
+        }
+        const parsed = GoogleAuthSchema.safeParse(req.body);
+        if (!parsed.success) {
+            return res.status(400).json({ error: 'validation_failed' });
+        }
+        const { credential, club_slug } = parsed.data;
+
+        let payload;
+        try {
+            const ticket = await googleClient.verifyIdToken({
+                idToken: credential,
+                audience: googleAudiences.length === 1 ? googleAudiences[0] : googleAudiences,
+            });
+            payload = ticket.getPayload();
+        } catch (_) {
+            return res.status(401).json({ error: 'invalid_google_token' });
+        }
+
+        const { sub: googleSub, email, email_verified, name } = payload;
+        if (!email || email_verified === false) {
+            return res.status(401).json({ error: 'google_email_not_verified' });
+        }
+        const emailLc = email.toLowerCase();
+
+        // 1) Tenta achar por google_sub (já linkado anteriormente)
+        let { rows } = await query(
+            `SELECT id, email, display_name, club_id, is_admin, google_sub
+             FROM users WHERE google_sub = $1`,
+            [googleSub]
+        );
+        let user = rows[0];
+
+        // 2) Se não, tenta por email — linka conta existente
+        if (!user) {
+            const r = await query(
+                `SELECT id, email, display_name, club_id, is_admin, google_sub
+                 FROM users WHERE email = $1`,
+                [emailLc]
+            );
+            user = r.rows[0];
+            if (user && !user.google_sub) {
+                await query(
+                    'UPDATE users SET google_sub = $1 WHERE id = $2',
+                    [googleSub, user.id]
+                );
+            }
+        }
+
+        // 3) Não achou nem por sub nem por email → cria conta nova
+        if (!user) {
+            let clubId = null;
+            if (club_slug) {
+                clubId = await getClubIdBySlug(club_slug);
+                if (!clubId) return res.status(400).json({ error: 'club_not_found' });
+            }
+            const username = await generateUsernameFromEmail(emailLc);
+            // password_hash fica vazio — login por senha não vai funcionar, só Google.
+            // O usuário pode definir senha depois via fluxo de "definir senha" (não implementado ainda).
+            const ins = await query(
+                `INSERT INTO users (email, password_hash, display_name, club_id, username, google_sub)
+                 VALUES ($1, '', $2, $3, $4, $5)
+                 RETURNING id, email, display_name, club_id, is_admin`,
+                [emailLc, name || null, clubId, username, googleSub]
+            );
+            user = ins.rows[0];
+        }
+
+        const token = signToken({ sub: user.id, email: user.email });
+        res.json({ token, user: publicUser(user) });
     } catch (err) { next(err); }
 });
 
