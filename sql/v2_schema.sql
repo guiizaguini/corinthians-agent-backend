@@ -282,6 +282,10 @@ CREATE TABLE IF NOT EXISTS user_achievements (
 -- passado) de unlocks reais — evita floodar feed/toast pra users existentes
 ALTER TABLE user_achievements
     ADD COLUMN IF NOT EXISTS from_bulk_sync BOOLEAN NOT NULL DEFAULT FALSE;
+-- toasted_at: separa "ja mostrei o toast" (uma vez por desbloqueio)
+-- de "user clicou no sino" (seen_at). Sem isso, refresh da pagina re-toastava.
+ALTER TABLE user_achievements
+    ADD COLUMN IF NOT EXISTS toasted_at TIMESTAMPTZ;
 -- Index parcial só pra unseen → bell badge query é instantânea
 CREATE INDEX IF NOT EXISTS idx_user_achievements_unseen
     ON user_achievements(user_id) WHERE seen_at IS NULL;

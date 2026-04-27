@@ -10177,10 +10177,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     // ===============================================
     // Estado: lista das conquistas pendentes (não vistas pelo user)
     // O sino guarda enquanto o user não clicar pra abrir o dropdown.
+    // Quem decide o que toastar é o servidor (campo needs_toast = toasted_at IS NULL),
+    // pra que refresh da página NÃO re-mostre o mesmo toast.
     let achievementsPending = [];
-    // IDs já mostrados como TOAST nesta sessão — evita repetir o toast
-    // toda vez que checkPendingAchievements roda (após save de note, etc)
-    const achievementsToastedIds = new Set();
     let achievementCheckInFlight = false;
 
     function showAchievementToast(ach) {
@@ -10226,7 +10225,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     /**
      * Busca conquistas pendentes (desbloqueadas mas não vistas).
      * - Atualiza o estado `achievementsPending` (usado pelo dropdown do sino).
-     * - Mostra toast SÓ pras que ainda não foram exibidas nesta sessão.
+     * - Mostra toast APENAS pras que servidor disse `needs_toast = true`
+     *   (toasted_at IS NULL no banco — assim refresh não re-mostra).
+     * - Após exibir os toasts, chama /toasted pra marcar persistentemente.
      * - NÃO marca como seen automaticamente — sino segura até o user clicar.
      */
     async function checkPendingAchievements() {
@@ -10235,14 +10236,17 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         try {
             const res = await api('/me/achievements/pending');
             achievementsPending = res.pending || [];
-            console.debug('[achievements] pending:', achievementsPending.length, achievementsPending.map(a => a.id));
+            console.debug('[achievements] pending:', achievementsPending.length,
+                achievementsPending.map(a => `${a.id}${a.needs_toast ? '★' : ''}`));
             updateBell();
             renderBellDropdown();
-            // Toasts apenas pras conquistas NOVAS desta sessão
-            const novas = achievementsPending.filter(a => !achievementsToastedIds.has(a.id));
-            novas.forEach((a, i) => {
-                achievementsToastedIds.add(a.id);
-                setTimeout(() => showAchievementToast(a), i * 400);
+            // Toasts SÓ pras conquistas que ainda não foram exibidas (server-side flag)
+            const novas = achievementsPending.filter(a => a.needs_toast);
+            if (!novas.length) return;
+            novas.forEach((a, i) => setTimeout(() => showAchievementToast(a), i * 400));
+            // Marca como toastadas no servidor pra refresh/reabrir não re-mostrar
+            api('/me/achievements/toasted', { method: 'POST' }).catch((e) => {
+                console.warn('[achievements] /toasted falhou:', e.message);
             });
         } catch (e) {
             console.warn('[achievements] /pending falhou:', e.message);

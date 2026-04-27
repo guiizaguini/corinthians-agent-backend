@@ -2,35 +2,11 @@ import express from 'express';
 import { query } from '../db/pool.js';
 import { computeAchievements, ACHIEVEMENT_CATEGORIES, RARITY_INFO } from '../utils/achievements.js';
 import { cache } from '../utils/cache.js';
+import { bootstrapSchema } from '../utils/schemaBootstrap.js';
 
-// Auto-bootstrap: garante tabela user_achievements existe (sem precisar rodar migration manual).
-// Roda 1x na 1a request, depois cacheia o resultado.
-let _userAchievementsReady = false;
-async function ensureUserAchievementsTable() {
-    if (_userAchievementsReady) return;
-    try {
-        await query(`
-            CREATE TABLE IF NOT EXISTS user_achievements (
-                id              SERIAL PRIMARY KEY,
-                user_id         INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-                achievement_id  VARCHAR(60) NOT NULL,
-                unlocked_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-                seen_at         TIMESTAMPTZ,
-                UNIQUE(user_id, achievement_id)
-            );
-            ALTER TABLE user_achievements
-                ADD COLUMN IF NOT EXISTS from_bulk_sync BOOLEAN NOT NULL DEFAULT FALSE;
-            CREATE INDEX IF NOT EXISTS idx_user_achievements_unseen
-                ON user_achievements(user_id) WHERE seen_at IS NULL;
-            CREATE INDEX IF NOT EXISTS idx_user_achievements_feed
-                ON user_achievements(unlocked_at DESC, user_id) WHERE from_bulk_sync = FALSE;
-        `);
-        _userAchievementsReady = true;
-    } catch (e) {
-        // Loga mas não derruba a request — vai falhar em /pending também
-        console.error('[me] ensureUserAchievementsTable falhou:', e.message);
-    }
-}
+// Atalho legado — startup ja roda bootstrapSchema, mas em dev/test
+// pode ser que nao. Mantém como safety-net idempotente.
+const ensureUserAchievementsTable = bootstrapSchema;
 
 /**
  * Estatísticas por usuário autenticado.
@@ -445,10 +421,12 @@ router.get('/achievements/pending', async (req, res, next) => {
         if (newIds.length) cache.invalidate(`achievements:${uid}:${cid}`);
 
         // Lista todas as desbloqueadas ainda não vistas (não só as recém criadas)
-        // IMPORTANTE: exclui bulk-sync (1a sync de user existente que ja tinha
-        // unlocks no historico — não devem disparar notificação)
+        // - seen_at IS NULL → ainda no sino (badge persiste)
+        // - from_bulk_sync = FALSE → não é bulk inicial (esses não notificam)
+        // - needs_toast = (toasted_at IS NULL) → toast ainda não foi exibido
+        //   (front filtra por isso pra não re-toastar em refresh)
         const { rows } = await query(`
-            SELECT achievement_id, unlocked_at
+            SELECT achievement_id, unlocked_at, (toasted_at IS NULL) AS needs_toast
             FROM user_achievements
             WHERE user_id = $1
               AND seen_at IS NULL
@@ -461,6 +439,7 @@ router.get('/achievements/pending', async (req, res, next) => {
             .map(r => byId[r.achievement_id] && {
                 ...byId[r.achievement_id],
                 unlocked_at: r.unlocked_at,
+                needs_toast: r.needs_toast,
             })
             .filter(Boolean);
 
@@ -481,6 +460,27 @@ router.post('/achievements/seen', async (req, res, next) => {
             WHERE user_id = $1 AND seen_at IS NULL
         `, [req.user.id]);
         res.json({ marked_seen: rowCount });
+    } catch (err) { next(err); }
+});
+
+// =============================================================
+// POST /me/achievements/toasted — marca desbloqueios já exibidos via toast
+// (chamado pelo front IMEDIATAMENTE após mostrar os toasts)
+// Garante que refresh/reabertura não re-mostre o mesmo toast.
+// O sino ainda mantém badge até /seen ser chamado.
+// =============================================================
+router.post('/achievements/toasted', async (req, res, next) => {
+    try {
+        await ensureUserAchievementsTable();
+        const { rowCount } = await query(`
+            UPDATE user_achievements
+            SET toasted_at = NOW()
+            WHERE user_id = $1
+              AND toasted_at IS NULL
+              AND seen_at IS NULL
+              AND from_bulk_sync = FALSE
+        `, [req.user.id]);
+        res.json({ marked_toasted: rowCount });
     } catch (err) { next(err); }
 });
 

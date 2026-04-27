@@ -8,6 +8,7 @@ import 'dotenv/config';
 import { requireApiKey } from './middleware/auth.js';
 import { requireUser, requireAdmin } from './middleware/authUser.js';
 import { pool } from './db/pool.js';
+import { bootstrapSchema } from './utils/schemaBootstrap.js';
 
 // Rotas novas (v2 — SaaS)
 import authRouter from './routes/auth.js';
@@ -147,6 +148,12 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: 'internal_error', message: err.message });
 });
 
-app.listen(PORT, () => {
-    console.log(`[server] ouvindo em :${PORT}`);
-});
+// Bootstrap defensivo de schema antes de começar a aceitar requests
+// (garante colunas/tabelas novas existem mesmo se migration manual nao rodou)
+bootstrapSchema()
+    .catch(err => console.error('[server] bootstrap falhou (continuando assim mesmo):', err.message))
+    .finally(() => {
+        app.listen(PORT, () => {
+            console.log(`[server] ouvindo em :${PORT}`);
+        });
+    });
