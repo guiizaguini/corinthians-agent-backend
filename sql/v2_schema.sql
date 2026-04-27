@@ -278,9 +278,16 @@ CREATE TABLE IF NOT EXISTS user_achievements (
     seen_at         TIMESTAMPTZ,
     UNIQUE(user_id, achievement_id)
 );
+-- Flag pra distinguir 1a sincronização (bulk de tudo que ja desbloqueou no
+-- passado) de unlocks reais — evita floodar feed/toast pra users existentes
+ALTER TABLE user_achievements
+    ADD COLUMN IF NOT EXISTS from_bulk_sync BOOLEAN NOT NULL DEFAULT FALSE;
 -- Index parcial só pra unseen → bell badge query é instantânea
 CREATE INDEX IF NOT EXISTS idx_user_achievements_unseen
     ON user_achievements(user_id) WHERE seen_at IS NULL;
+-- Index pra feed (recentes não-bulk dos amigos)
+CREATE INDEX IF NOT EXISTS idx_user_achievements_feed
+    ON user_achievements(unlocked_at DESC, user_id) WHERE from_bulk_sync = FALSE;
 
 -- Quem participa de qual bolão
 CREATE TABLE IF NOT EXISTS bolao_members (

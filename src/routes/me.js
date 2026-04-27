@@ -18,8 +18,12 @@ async function ensureUserAchievementsTable() {
                 seen_at         TIMESTAMPTZ,
                 UNIQUE(user_id, achievement_id)
             );
+            ALTER TABLE user_achievements
+                ADD COLUMN IF NOT EXISTS from_bulk_sync BOOLEAN NOT NULL DEFAULT FALSE;
             CREATE INDEX IF NOT EXISTS idx_user_achievements_unseen
                 ON user_achievements(user_id) WHERE seen_at IS NULL;
+            CREATE INDEX IF NOT EXISTS idx_user_achievements_feed
+                ON user_achievements(unlocked_at DESC, user_id) WHERE from_bulk_sync = FALSE;
         `);
         _userAchievementsReady = true;
     } catch (e) {
@@ -354,17 +358,34 @@ async function fetchUserStats(uid, cid) {
 }
 
 // Helper: insere conquistas recém desbloqueadas em user_achievements (idempotente).
-// Retorna a lista de IDs que foram inseridos AGORA (primeira vez).
+// Retorna lista de IDs que foram inseridos AGORA E não são bulk-sync da 1a vez.
+//
+// IMPORTANTE: na 1a sincronização do user (sem rows na tabela), TODAS as
+// conquistas atuais são marcadas como `from_bulk_sync = TRUE` + seen — assim
+// elas NÃO floodam toast/sino/feed. So unlocks reais vindos depois disparam.
 async function syncUnlockedAchievements(uid, achievements) {
     const unlockedIds = achievements.filter(a => a.unlocked).map(a => a.id);
     if (!unlockedIds.length) return [];
+
+    // Detecta primeira sync (user nunca teve nenhuma row na tabela)
+    const { rows: existsRows } = await query(
+        'SELECT 1 FROM user_achievements WHERE user_id = $1 LIMIT 1',
+        [uid]
+    );
+    const isFirstSync = existsRows.length === 0;
+
+    // Bulk-sync: marca tudo como já visto + flag pra excluir do feed
+    // Real unlock: seen_at = NULL + flag FALSE → vai pro toast/sino/feed
     const { rows } = await query(`
-        INSERT INTO user_achievements (user_id, achievement_id)
-        SELECT $1, unnest($2::text[])
+        INSERT INTO user_achievements (user_id, achievement_id, from_bulk_sync, seen_at)
+        SELECT $1, unnest($2::text[]), $3,
+               CASE WHEN $3 THEN NOW() ELSE NULL END
         ON CONFLICT (user_id, achievement_id) DO NOTHING
-        RETURNING achievement_id
-    `, [uid, unlockedIds]);
-    return rows.map(r => r.achievement_id);
+        RETURNING achievement_id, from_bulk_sync
+    `, [uid, unlockedIds, isFirstSync]);
+
+    // Retorna apenas as não-bulk (essas geram toast e aparecem no feed)
+    return rows.filter(r => !r.from_bulk_sync).map(r => r.achievement_id);
 }
 
 // =============================================================
@@ -424,10 +445,14 @@ router.get('/achievements/pending', async (req, res, next) => {
         if (newIds.length) cache.invalidate(`achievements:${uid}:${cid}`);
 
         // Lista todas as desbloqueadas ainda não vistas (não só as recém criadas)
+        // IMPORTANTE: exclui bulk-sync (1a sync de user existente que ja tinha
+        // unlocks no historico — não devem disparar notificação)
         const { rows } = await query(`
             SELECT achievement_id, unlocked_at
             FROM user_achievements
-            WHERE user_id = $1 AND seen_at IS NULL
+            WHERE user_id = $1
+              AND seen_at IS NULL
+              AND from_bulk_sync = FALSE
             ORDER BY unlocked_at ASC
         `, [uid]);
 

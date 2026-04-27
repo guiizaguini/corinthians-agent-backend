@@ -3198,6 +3198,60 @@ body[data-club="corinthians"] .ingresso.d {
     flex-direction: column;
     gap: 0.45rem;
 }
+/* Card de conquista no feed — layout horizontal com ícone colorido */
+.feed-content.feed-achievement {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.85rem;
+    border-color: var(--feed-ach-color, #cd7f32);
+    background: linear-gradient(135deg,
+        color-mix(in srgb, var(--feed-ach-color, #cd7f32) 8%, var(--bg-base)) 0%,
+        var(--bg-base) 60%);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--feed-ach-color, #cd7f32) 25%, transparent) inset;
+}
+.feed-achievement.rarity-bronze   { --feed-ach-color: #cd7f32; }
+.feed-achievement.rarity-silver   { --feed-ach-color: #c0c0c0; }
+.feed-achievement.rarity-gold     { --feed-ach-color: #f0c419; }
+.feed-achievement.rarity-platinum { --feed-ach-color: #7ee0ff; }
+.feed-achievement-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: var(--feed-ach-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 0 18px color-mix(in srgb, var(--feed-ach-color) 60%, transparent);
+}
+.feed-achievement-icon .material-icons {
+    font-size: 1.85rem;
+    color: #1a1a1a;
+}
+.feed-achievement-info { flex: 1; min-width: 0; }
+.feed-achievement-rarity {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.62rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--feed-ach-color);
+    margin-bottom: 0.15rem;
+}
+.feed-achievement-name {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--ink);
+    margin-bottom: 0.2rem;
+    line-height: 1.2;
+}
+.feed-achievement-desc {
+    font-family: 'SN Pro', sans-serif;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    line-height: 1.35;
+}
 .feed-content-game {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
@@ -9764,7 +9818,23 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 const contentClass = isCopa ? 'feed-content is-copa' : 'feed-content';
                 const faseLabel = isCopa && item.campeonato ? `<div class="feed-content-fase">FIFA WORLD CUP 2026</div>` : '';
 
-                if (item.type === 'note') {
+                if (item.type === 'achievement' && item.achievement) {
+                    const ach = item.achievement;
+                    const rarity = ach.rarity || 'bronze';
+                    actionLine = `<span class="material-icons">emoji_events</span> desbloqueou uma conquista`;
+                    contentBlock = `
+                        <div class="feed-content feed-achievement rarity-${escapeHtml(rarity)}">
+                            <div class="feed-achievement-icon">
+                                <span class="material-icons">${escapeHtml(ach.icon || 'emoji_events')}</span>
+                            </div>
+                            <div class="feed-achievement-info">
+                                <div class="feed-achievement-rarity">${escapeHtml(rarity)}</div>
+                                <div class="feed-achievement-name">${escapeHtml(ach.name)}</div>
+                                <div class="feed-achievement-desc">${escapeHtml(ach.description || '')}</div>
+                            </div>
+                        </div>
+                    `;
+                } else if (item.type === 'note') {
                     actionLine = `<span class="material-icons">edit_note</span> publicou uma nota`;
                     const titleHtml = item.title ? `<div class="feed-content-title">${escapeHtml(item.title)}</div>` : '';
                     const gameHtml = gameTeams ? `<div class="feed-content-game">${gameTeams}</div>` : '';

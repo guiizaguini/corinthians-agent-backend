@@ -1,7 +1,11 @@
 import express from 'express';
 import { z } from 'zod';
 import { query } from '../db/pool.js';
-import { computeAchievements } from '../utils/achievements.js';
+import { computeAchievements, ACHIEVEMENTS } from '../utils/achievements.js';
+
+// Map de id → metadata da conquista (nome, icon, raridade, descrição) pra
+// enriquecer rows do feed sem precisar de outro fetch no front.
+const ACHIEVEMENT_BY_ID = Object.fromEntries(ACHIEVEMENTS.map(a => [a.id, a]));
 
 /**
  * Rotas de rede social: busca de users, amizades, comparação de stats.
@@ -336,7 +340,8 @@ router.get('/feed', async (req, res, next) => {
                     g.gols_casa, g.gols_visitante, g.resultado, g.campeonato, g.estadio,
                     NULL::varchar AS setor,
                     '[]'::json AS companions,
-                    n.title, n.body, n.is_public
+                    n.title, n.body, n.is_public,
+                    NULL::varchar AS achievement_id
                 FROM notes n
                 JOIN users u ON u.id = n.user_id
                 LEFT JOIN clubs c ON c.id = u.club_id
@@ -345,12 +350,58 @@ router.get('/feed', async (req, res, next) => {
                     (n.user_id IN (SELECT user_id FROM friend_ids WHERE user_id <> $1) AND n.is_public = TRUE)
                     OR n.user_id = $1
                 )
+
+                UNION ALL
+
+                -- Conquistas desbloqueadas (próprias + de amigos).
+                -- Filtra bulk_sync (1a sincronização de user antigo NÃO flooda
+                -- o feed) e limita aos últimos 30 dias pra evitar lixo histórico.
+                SELECT
+                    'achievement' AS type,
+                    ua.id AS ref_id, ua.unlocked_at AS created_at,
+                    u.id AS user_id, u.username, u.display_name,
+                    c.name AS club_name, c.short_name AS club_short, c.primary_color,
+                    NULL::int AS game_id, NULL::date AS data,
+                    NULL::varchar AS time_casa, NULL::varchar AS time_visitante,
+                    NULL::int AS gols_casa, NULL::int AS gols_visitante,
+                    NULL::varchar AS resultado, NULL::varchar AS campeonato,
+                    NULL::varchar AS estadio,
+                    NULL::varchar AS setor,
+                    '[]'::json AS companions,
+                    NULL::varchar AS title, NULL::text AS body, NULL::boolean AS is_public,
+                    ua.achievement_id
+                FROM user_achievements ua
+                JOIN users u ON u.id = ua.user_id
+                LEFT JOIN clubs c ON c.id = u.club_id
+                WHERE ua.from_bulk_sync = FALSE
+                  AND ua.unlocked_at > NOW() - INTERVAL '30 days'
+                  AND ua.user_id IN (SELECT user_id FROM friend_ids)
              ) sub
              ORDER BY created_at DESC
              LIMIT $2`,
             [req.user.id, limit]
         );
-        res.json({ count: rows.length, feed: rows });
+
+        // Enriquece linhas de conquista com nome/icon/raridade do catálogo
+        // (catálogo é em JS, não em SQL — seria custoso replicar no banco)
+        const feed = rows.map(r => {
+            if (r.type !== 'achievement') return r;
+            const meta = ACHIEVEMENT_BY_ID[r.achievement_id];
+            if (!meta) return null; // orfã (catálogo mudou)
+            return {
+                ...r,
+                achievement: {
+                    id: meta.id,
+                    name: meta.name,
+                    description: meta.description,
+                    icon: meta.icon,
+                    rarity: meta.rarity,
+                    category: meta.category,
+                },
+            };
+        }).filter(Boolean);
+
+        res.json({ count: feed.length, feed });
     } catch (err) { next(err); }
 });
 
