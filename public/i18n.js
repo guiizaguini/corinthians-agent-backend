@@ -680,25 +680,39 @@
                 <span class="cn-lang-short">${LANGS[getLang()].short}</span>
                 <span class="cn-lang-caret">▾</span>
             </button>
-            <ul class="cn-lang-menu" role="listbox" hidden>
-                ${Object.values(LANGS).map(l => `
-                    <li role="option" data-lang="${l.code}" ${l.code === getLang() ? 'aria-selected="true"' : ''}>
-                        <span class="cn-lang-flag">${l.flag}</span>
-                        <span>${l.label}</span>
-                    </li>
-                `).join('')}
-            </ul>
         `;
+
+        // Menu vai num portal (document.body) pra escapar de stacking contexts
+        // de elementos pais (que estavam clipando ele na landing/área logada).
+        const menu = document.createElement('ul');
+        menu.className = `cn-lang-menu cn-lang-menu-${variant}`;
+        menu.setAttribute('role', 'listbox');
+        menu.hidden = true;
+        menu.innerHTML = Object.values(LANGS).map(l => `
+            <li role="option" data-lang="${l.code}" ${l.code === getLang() ? 'aria-selected="true"' : ''}>
+                <span class="cn-lang-flag">${l.flag}</span>
+                <span>${l.label}</span>
+            </li>
+        `).join('');
+
         const trigger = wrap.querySelector('.cn-lang-trigger');
-        const menu = wrap.querySelector('.cn-lang-menu');
         const flagEl = wrap.querySelector('.cn-lang-trigger .cn-lang-flag');
         const shortEl = wrap.querySelector('.cn-lang-short');
 
+        function position() {
+            const rect = trigger.getBoundingClientRect();
+            menu.style.position = 'fixed';
+            menu.style.top = (rect.bottom + 4) + 'px';
+            menu.style.right = Math.max(8, window.innerWidth - rect.right) + 'px';
+            menu.style.left = 'auto';
+        }
         function close() {
             menu.hidden = true;
             trigger.setAttribute('aria-expanded', 'false');
         }
         function open() {
+            if (!menu.parentNode) document.body.appendChild(menu);
+            position();
             menu.hidden = false;
             trigger.setAttribute('aria-expanded', 'true');
         }
@@ -707,7 +721,8 @@
             menu.hidden ? open() : close();
         });
         menu.querySelectorAll('li').forEach(li => {
-            li.addEventListener('click', () => {
+            li.addEventListener('click', (e) => {
+                e.stopPropagation();
                 const lang = li.getAttribute('data-lang');
                 setLang(lang);
                 flagEl.textContent = LANGS[lang].flag;
@@ -718,8 +733,10 @@
             });
         });
         document.addEventListener('click', (e) => {
-            if (!wrap.contains(e.target)) close();
+            if (!wrap.contains(e.target) && !menu.contains(e.target)) close();
         });
+        window.addEventListener('resize', () => { if (!menu.hidden) position(); });
+        window.addEventListener('scroll', () => { if (!menu.hidden) position(); }, true);
         return wrap;
     }
 
@@ -742,26 +759,28 @@
             .cn-lang-dark .cn-lang-trigger:hover { background: rgba(255,255,255,0.08); }
             .cn-lang-flag { font-size: 1rem; line-height: 1; }
             .cn-lang-caret { font-size: 0.7rem; opacity: 0.7; }
+            /* Menu portado pro body via position: fixed — não fica preso em
+               stacking context de pais (problema na landing/área logada). */
             .cn-lang-menu {
-                position: absolute; right: 0; top: calc(100% + 4px);
-                min-width: 160px; list-style: none; margin: 0; padding: 0.3rem 0;
+                min-width: 180px; list-style: none; margin: 0; padding: 0.3rem 0;
                 background: #fff; color: #141414;
                 border: 1px solid rgba(0,0,0,0.12);
-                box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-                z-index: 1000; font-size: 0.85rem;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+                z-index: 2147483000; font-size: 0.85rem;
+                font-family: 'Oswald', sans-serif;
             }
-            .cn-lang-dark .cn-lang-menu {
+            .cn-lang-menu-dark {
                 background: #1a1a1a; color: #f5f0e4;
                 border-color: rgba(255,255,255,0.12);
-                box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+                box-shadow: 0 8px 24px rgba(0,0,0,0.55);
             }
             .cn-lang-menu li {
                 display: flex; align-items: center; gap: 0.55rem;
-                padding: 0.5rem 0.85rem; cursor: pointer;
+                padding: 0.55rem 0.95rem; cursor: pointer;
                 letter-spacing: 0.04em; text-transform: none; font-weight: 500;
             }
             .cn-lang-menu li:hover { background: rgba(0,0,0,0.06); }
-            .cn-lang-dark .cn-lang-menu li:hover { background: rgba(255,255,255,0.08); }
+            .cn-lang-menu-dark li:hover { background: rgba(255,255,255,0.08); }
             .cn-lang-menu li[aria-selected="true"] { font-weight: 700; }
             .cn-lang-menu li[aria-selected="true"]::after {
                 content: '✓'; margin-left: auto; opacity: 0.7;
