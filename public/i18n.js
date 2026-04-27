@@ -36,7 +36,7 @@
 
             'landing.stats.games': 'Jogos já catalogados',
             'landing.stats.games_value': '124+',
-            'landing.stats.clubs_value': '12',
+            'landing.stats.clubs_value': '14',
             'landing.stats.clubs': 'Clubes no catálogo',
             'landing.stats.museum_html': '<em>1</em> museu',
             'landing.stats.museum_label': 'Por torcedor · personalizado',
@@ -79,7 +79,7 @@
 
             'landing.clubs.eyebrow': 'Catálogo pronto',
             'landing.clubs.h2': 'Pro seu time, o catálogo já está lá.',
-            'landing.clubs.desc': '12 clubes brasileiros com os jogos pré-cadastrados. Você só marca a presença.',
+            'landing.clubs.desc': '14 clubes (Brasil + Argentina) com os jogos pré-cadastrados. Você só marca a presença.',
 
             'landing.final.h2_html': 'Seu próximo jogo ainda<br>não <em>aconteceu</em>.',
             'landing.final.lede': 'Mas os que já aconteceram merecem um lugar pra viver.',
@@ -241,7 +241,7 @@
 
             'landing.stats.games_value': '124+',
             'landing.stats.games': 'Matches catalogued',
-            'landing.stats.clubs_value': '12',
+            'landing.stats.clubs_value': '14',
             'landing.stats.clubs': 'Clubs in the catalogue',
             'landing.stats.museum_html': '<em>1</em> museum',
             'landing.stats.museum_label': 'Per fan · personalised',
@@ -284,7 +284,7 @@
 
             'landing.clubs.eyebrow': 'Catalogue ready',
             'landing.clubs.h2': 'For your club, the catalogue is already there.',
-            'landing.clubs.desc': '12 Brazilian clubs with matches pre-loaded. You just mark attendance.',
+            'landing.clubs.desc': '14 clubs (Brazil + Argentina) with matches pre-loaded. You just mark attendance.',
 
             'landing.final.h2_html': 'Your next match has<br>not <em>happened</em> yet.',
             'landing.final.lede': 'But the ones that already did deserve a place to live.',
@@ -436,7 +436,7 @@
 
             'landing.stats.games_value': '124+',
             'landing.stats.games': 'Partidos catalogados',
-            'landing.stats.clubs_value': '12',
+            'landing.stats.clubs_value': '14',
             'landing.stats.clubs': 'Clubes en el catálogo',
             'landing.stats.museum_html': '<em>1</em> museo',
             'landing.stats.museum_label': 'Por hincha · personalizado',
@@ -479,7 +479,7 @@
 
             'landing.clubs.eyebrow': 'Catálogo listo',
             'landing.clubs.h2': 'Para tu club, el catálogo ya está.',
-            'landing.clubs.desc': '12 clubes brasileños con los partidos pre-cargados. Vos solo marcás presencia.',
+            'landing.clubs.desc': '14 clubes (Brasil + Argentina) con los partidos pre-cargados. Vos solo marcás presencia.',
 
             'landing.final.h2_html': 'Tu próximo partido todavía<br>no <em>pasó</em>.',
             'landing.final.lede': 'Pero los que ya pasaron se merecen un lugar para vivir.',

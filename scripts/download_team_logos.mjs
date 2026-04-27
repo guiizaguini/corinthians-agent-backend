@@ -26,6 +26,8 @@ const TEAMS = {
     'fluminense':     ['Fluminense Football Club', 'Fluminense'],
     'botafogo':       ['Botafogo de Futebol e Regatas', 'Botafogo FR'],
     'cruzeiro':       ['Cruzeiro Esporte Clube'],
+    'river-plate':    ['Club Atlético River Plate', 'River Plate'],
+    'boca-juniors':   ['Club Atlético Boca Juniors', 'Boca Juniors'],
     'atletico-mg':    ['Clube Atlético Mineiro', 'Atlético Mineiro'],
     'gremio':         ['Grêmio Foot-Ball Porto Alegrense', 'Grêmio'],
     'internacional':  ['Sport Club Internacional', 'Internacional (RS)'],

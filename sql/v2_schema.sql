@@ -45,7 +45,10 @@ INSERT INTO clubs (slug, name, short_name, primary_color, secondary_color) VALUE
     ('gremio',        'Grêmio',            'Imortal',     '#3b82f6', '#000000'),
     ('internacional', 'Internacional',     'Colorado',    '#e53e3e', '#ffffff'),
     ('atletico-mg',   'Atlético Mineiro',  'Galo',        '#f5f5f5', '#000000'),
-    ('cruzeiro',      'Cruzeiro',          'Raposa',      '#3b82f6', '#ffffff')
+    ('cruzeiro',      'Cruzeiro',          'Raposa',      '#3b82f6', '#ffffff'),
+    -- Argentina (cores espelhadas dos similares brasileiros: River=SPFC, Boca=Cruzeiro)
+    ('river-plate',   'River Plate',       'Millonario',  '#e53e3e', '#000000'),
+    ('boca-juniors',  'Boca Juniors',      'Xeneize',     '#3b82f6', '#ffffff')
 ON CONFLICT (slug) DO UPDATE SET
     name = EXCLUDED.name,
     short_name = EXCLUDED.short_name,
