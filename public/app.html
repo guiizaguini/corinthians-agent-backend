@@ -3664,12 +3664,13 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 .bolao-hero {
     position: relative;
     overflow: hidden;
-    border-radius: 18px;
-    padding: 2rem 1.75rem 1.85rem;
-    margin-bottom: 1.5rem;
+    border-radius: 16px;
+    /* Hero menos dominante — ~30% mais baixo que antes */
+    padding: 1.35rem 1.5rem 1.3rem;
+    margin-bottom: 2rem;
     background:
         linear-gradient(135deg, #1a1000 0%, #2a1d08 45%, #3a2a10 100%);
-    box-shadow: 0 16px 40px rgba(20,10,0,0.45), inset 0 1px 0 rgba(255,255,255,0.08);
+    box-shadow: 0 12px 32px rgba(20,10,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
     color: #f5e6a8;
 }
 .bolao-hero-stripes {
@@ -3708,18 +3709,18 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 .bolao-hero-fifa {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 0.6rem;
+    gap: 0.85rem;
+    margin-bottom: 0.35rem;
 }
 .bolao-hero-fifa img {
-    width: 56px;
-    height: 56px;
+    width: 42px;
+    height: 42px;
     object-fit: contain;
     background: rgba(255,255,255,0.96);
-    border-radius: 12px;
-    padding: 0.3rem;
+    border-radius: 10px;
+    padding: 0.25rem;
     flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
 }
 .bolao-hero-eyebrow {
     font-family: 'Oswald', sans-serif;
@@ -3733,7 +3734,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 .bolao-hero-title {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: clamp(1.4rem, 3vw, 2rem);
+    /* Título é o ponto principal — claramente maior que sub e que tudo abaixo */
+    font-size: clamp(1.25rem, 2.6vw, 1.7rem);
     color: #fff;
     letter-spacing: 0.01em;
     text-transform: uppercase;
@@ -3748,37 +3750,57 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 }
 .bolao-hero-sub {
     font-family: 'SN Pro','Oswald',sans-serif;
-    font-size: 0.95rem;
-    color: rgba(245,230,168,0.78);
-    margin-top: 0.5rem;
-    max-width: 540px;
-    line-height: 1.45;
+    font-size: 0.85rem;
+    color: rgba(245,230,168,0.7);
+    margin-top: 0.4rem;
+    max-width: 520px;
+    line-height: 1.4;
 }
 
-/* Stats row */
+/* Stats — strip horizontal compacta (uma linha só, sem caixa por bloco) */
 .bolao-stats-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-}
-.bolao-stat {
     display: flex;
-    align-items: center;
-    gap: 0.85rem;
+    align-items: stretch;
+    gap: 0;
+    margin-bottom: 2rem;
     background: var(--wc-card);
     border: 1px solid var(--wc-line);
-    border-radius: 14px;
-    padding: 0.85rem 1.05rem;
-    box-shadow: 0 4px 12px rgba(20,15,10,0.06);
+    border-radius: 12px;
+    padding: 0.5rem 0.25rem;
+    flex-wrap: wrap;
+    box-shadow: 0 2px 8px rgba(20,15,10,0.04);
+}
+.bolao-stat {
+    flex: 1 1 0;
+    min-width: 140px;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.5rem 1rem;
+    /* Sem borda/sombra por bloco — separação fica nos divisores entre eles */
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    position: relative;
+}
+/* Divisores discretos entre os stats */
+.bolao-stat + .bolao-stat::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 18%;
+    bottom: 18%;
+    width: 1px;
+    background: var(--wc-line);
 }
 .bolao-stat-proximo {
-    border-color: #d4a520;
-    background: linear-gradient(135deg, #fff8e0 0%, #fdefc2 100%);
+    background: linear-gradient(135deg, rgba(255,248,224,0.7) 0%, rgba(253,239,194,0.55) 100%);
+    border-radius: 8px;
 }
 .bolao-stat-icon {
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     background: rgba(212,165,32,0.15);
     display: flex;
@@ -3787,11 +3809,11 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     color: #a8791b;
     flex-shrink: 0;
 }
-.bolao-stat-icon .material-icons { font-size: 1.25rem; }
+.bolao-stat-icon .material-icons { font-size: 1rem; }
 .bolao-stat-num {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     color: var(--wc-ink);
     line-height: 1;
     letter-spacing: -0.01em;
@@ -3799,83 +3821,89 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 .bolao-stat-label {
     font-family: 'Oswald', sans-serif;
     font-weight: 500;
-    font-size: 0.6rem;
-    letter-spacing: 0.18em;
+    font-size: 0.58rem;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--wc-ink-mute);
-    margin-top: 0.25rem;
+    margin-top: 0.2rem;
 }
 .bolao-stat-proximo .bolao-stat-num {
-    font-size: 1rem;
+    font-size: 0.92rem;
     color: #1a1000;
 }
 
 .bolao-join-eyebrow {
     font-family: 'Oswald', sans-serif;
-    font-weight: 700;
-    font-size: 0.62rem;
+    font-weight: 600;
+    font-size: 0.58rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: #a8791b;
+    color: var(--wc-ink-mute);
     display: flex;
     align-items: center;
     gap: 0.35rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
 }
-.bolao-join-eyebrow .material-icons { font-size: 0.95rem; color: #d4a520; }
+.bolao-join-eyebrow .material-icons { font-size: 0.85rem; color: #a8791b; }
 
+/* Invite card — ação SECUNDÁRIA. Demovido visualmente:
+   sem caixa elevada, max-width reduzido, alinhado pra parecer
+   "ação adicional" e não competir com Criar bolão / lista de bolões. */
 .bolao-join-card {
-    background: var(--wc-card);
-    border: 1px solid var(--wc-line);
-    border-radius: 14px;
-    padding: 1.1rem 1.25rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 4px 12px rgba(20,15,10,0.06);
+    background: transparent;
+    border: 1px dashed var(--wc-line);
+    border-radius: 12px;
+    padding: 0.9rem 1.1rem;
+    margin: 1rem 0 1.5rem;
+    max-width: 480px;
+    box-shadow: none;
 }
 .bolao-join-card label {
     display: block;
     font-family: 'Oswald', sans-serif;
-    font-weight: 600;
-    font-size: 0.68rem;
-    letter-spacing: 0.22em;
+    font-weight: 500;
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--wc-ink-mute);
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.35rem;
 }
 .bolao-join-row {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.4rem;
 }
 .bolao-join-row input {
     flex: 1;
     background: #fff;
-    border: 1.5px solid var(--wc-line);
+    border: 1px solid var(--wc-line);
     color: var(--wc-ink);
-    padding: 0.7rem 0.95rem;
+    padding: 0.55rem 0.85rem;
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 0.95rem;
+    font-size: 0.88rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     outline: none;
-    border-radius: 10px;
+    border-radius: 8px;
 }
 .bolao-join-row input:focus { border-color: #d4a520; }
+/* Botão "Entrar" com contraste — secundário (outline) em vez de primário,
+   pra deixar Criar bolão como o único primary da tela. */
 .bolao-join-row .btn-primary {
-    background: #1a1a1a;
+    background: transparent;
     border: 1.5px solid #1a1a1a;
-    color: #fff;
-    padding: 0.7rem 1.3rem;
+    color: #1a1a1a;
+    padding: 0.55rem 1.15rem;
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 0.75rem;
-    letter-spacing: 0.2em;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
     cursor: pointer;
-    border-radius: 10px;
+    border-radius: 8px;
     transition: all 150ms;
 }
-.bolao-join-row .btn-primary:hover { background: #d4a520; border-color: #d4a520; color: #1a1000; }
+.bolao-join-row .btn-primary:hover { background: #1a1a1a; color: #fff; }
 .bolao-join-err {
     margin-top: 0.6rem;
     font-family: 'SN Pro', 'Oswald', sans-serif;
@@ -3890,69 +3918,82 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     align-items: center;
     justify-content: space-between;
     gap: 0.6rem;
-    margin-bottom: 0.85rem;
+    margin-bottom: 1.1rem;
     flex-wrap: wrap;
 }
 .bolao-section-head h3 {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 0.85rem;
-    letter-spacing: 0.25em;
+    /* Aumentado pra ser claramente o título da seção principal */
+    font-size: 1.15rem;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--wc-ink);
     margin: 0;
+    line-height: 1.1;
 }
+/* CTA principal — tamanho e contraste maiores. Cores idênticas ao tema (gold). */
 .bolao-create-btn {
-    background: transparent;
-    border: 1.5px solid var(--wc-line);
-    color: var(--wc-ink-mute);
-    padding: 0.55rem 0.95rem;
+    background: #1a1a1a;
+    border: 1.5px solid #1a1a1a;
+    color: #d4a520;
+    padding: 0.7rem 1.25rem;
     font-family: 'Oswald', sans-serif;
-    font-weight: 600;
-    font-size: 0.72rem;
-    letter-spacing: 0.18em;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
     cursor: pointer;
-    border-radius: 999px;
+    border-radius: 10px;
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.45rem;
     transition: all 150ms;
+    box-shadow: 0 4px 14px rgba(212,165,32,0.18);
+}
+.bolao-create-btn:hover {
+    background: #d4a520;
+    border-color: #d4a520;
+    color: #1a1000;
+    box-shadow: 0 6px 18px rgba(212,165,32,0.32);
+    transform: translateY(-1px);
 }
 .bolao-create-btn:disabled {
-    opacity: 0.6;
+    opacity: 0.55;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
-.bolao-create-btn.admin-unlocked {
-    border-color: #d4a520;
+.bolao-create-btn:disabled:hover {
     background: #1a1a1a;
     color: #d4a520;
+    border-color: #1a1a1a;
+}
+.bolao-create-btn.admin-unlocked {
+    /* Já vem com o estilo primário acima — sem override extra */
     opacity: 1;
     cursor: pointer;
 }
-.bolao-create-btn.admin-unlocked:hover {
-    background: #d4a520;
-    color: #1a1000;
-}
-.bolao-create-btn .material-icons { font-size: 1rem; }
+.bolao-create-btn .material-icons { font-size: 1.05rem; }
 
 .bolao-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 0.85rem;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
 }
 .bolao-card {
     position: relative;
     background: var(--wc-card);
-    border: 1.5px solid var(--wc-line);
-    border-radius: 16px;
-    padding: 1.1rem 1.2rem 1rem;
+    /* Borda mais leve, padding interno maior pra respirar */
+    border: 1px solid var(--wc-line);
+    border-radius: 14px;
+    padding: 1.25rem 1.35rem 1.1rem;
     cursor: pointer;
     transition: all 180ms;
-    box-shadow: 0 6px 16px rgba(20,15,10,0.08);
+    box-shadow: 0 2px 8px rgba(20,15,10,0.04);
     display: flex;
     flex-direction: column;
-    gap: 0.7rem;
+    gap: 0.85rem;
     overflow: hidden;
 }
 /* Listras coloridas no topo do card pra ter assinatura visual da Copa */
@@ -3972,8 +4013,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 }
 .bolao-card:hover {
     border-color: #d4a520;
-    transform: translateY(-3px);
-    box-shadow: 0 12px 28px rgba(212,165,32,0.22);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(212,165,32,0.18);
 }
 .bolao-card-head {
     display: flex;
@@ -3984,7 +4025,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 .bolao-card-name {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 1.05rem;
+    /* Nome do bolão é o destaque do card */
+    font-size: 1.15rem;
     color: var(--wc-ink);
     text-transform: uppercase;
     letter-spacing: 0.02em;
@@ -4062,35 +4104,38 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 .bolao-card-progress-fill.empty { background: var(--wc-line); box-shadow: none; }
 
 .bolao-card-meta {
+    /* Meta é informação SECUNDÁRIA — código + participantes. Discreto. */
     display: flex;
     align-items: center;
     gap: 0.85rem;
     margin-top: auto;
-    padding-top: 0.6rem;
-    border-top: 1px dashed var(--wc-line);
+    padding-top: 0.55rem;
+    /* Sem divisor pesado — o eye-flow fica em nome → progresso → pontuação */
     font-family: 'Oswald', sans-serif;
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     letter-spacing: 0.14em;
     color: var(--wc-ink-mute);
     text-transform: uppercase;
+    opacity: 0.7;
 }
-.bolao-card-meta .material-icons { font-size: 0.9rem; color: #d4a520; }
+.bolao-card-meta .material-icons { font-size: 0.85rem; color: var(--wc-ink-mute); }
 .bolao-card-meta-item {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
 }
 .bolao-card-code {
+    /* Código mantém a cor mas perde o fundo amarelo pra não competir
+       com a pontuação dourada do canto superior direito */
     margin-left: auto;
     font-family: 'Oswald', monospace;
     font-weight: 700;
     letter-spacing: 0.12em;
     color: #a8791b;
-    font-size: 0.62rem;
-    background: #fff8e0;
-    border: 1px dashed rgba(212,165,32,0.5);
-    padding: 0.1rem 0.45rem;
-    border-radius: 4px;
+    font-size: 0.58rem;
+    background: transparent;
+    border: 0;
+    padding: 0;
 }
 
 /* Subtitulo da seção (ex: "Entre direto, sem precisar de código") */
@@ -7121,8 +7166,28 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                         </div>
                     </section>
 
-                    <!-- Card de entrar por código -->
-                    <section class="bolao-join-card">
+                    <!-- ═══ Hierarquia: 1. Título + CTA principal → 2. Lista (foco) ═══ -->
+                    <div class="bolao-section-head bolao-section-head-primary">
+                        <h3 data-i18n="app.bolao.meus_title">Meus bolões</h3>
+                        <button class="bolao-create-btn" id="bolaoCreateBtn" disabled title="Em breve" data-i18n-attr="title:app.bolao.create_btn_locked_title">
+                            <span class="material-icons">add</span>
+                            <span data-i18n="app.bolao.create_btn">Criar bolão</span>
+                        </button>
+                    </div>
+
+                    <div id="bolaoList" class="bolao-list"><div class="loading" data-i18n="app.bolao.loading_boloes">Carregando bolões...</div></div>
+
+                    <!-- Bolões abertos (quando houver) — mantém logo após Meus bolões -->
+                    <div id="bolaoPublicosWrap" style="display:none;">
+                        <div class="bolao-section-head" style="margin-top:2.25rem;">
+                            <h3><span class="material-icons" style="font-size:1.1rem;vertical-align:middle;color:#d4a520;">public</span> <span data-i18n="app.bolao.publicos_title">Bolões abertos</span></h3>
+                            <span class="bolao-section-sub" data-i18n="app.bolao.publicos_sub">Entre direto, sem precisar de código</span>
+                        </div>
+                        <div id="bolaoPublicosList" class="bolao-list"></div>
+                    </div>
+
+                    <!-- ═══ Ação SECUNDÁRIA: convite por código (rodapé da view) ═══ -->
+                    <section class="bolao-join-card" style="margin-top:2.25rem;">
                         <div class="bolao-join-eyebrow"><span class="material-icons">vpn_key</span><span data-i18n="app.bolao.join_eyebrow">Tem um convite?</span></div>
                         <label for="bolaoInviteInput" data-i18n="app.bolao.join_label">Cole o código aqui</label>
                         <div class="bolao-join-row">
@@ -7131,25 +7196,6 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                         </div>
                         <div class="bolao-join-err" id="bolaoJoinErr"></div>
                     </section>
-
-                    <!-- Seção: Bolões abertos (públicos, qualquer um pode entrar) -->
-                    <div id="bolaoPublicosWrap" style="display:none;">
-                        <div class="bolao-section-head">
-                            <h3><span class="material-icons" style="font-size:1.1rem;vertical-align:middle;color:#d4a520;">public</span> <span data-i18n="app.bolao.publicos_title">Bolões abertos</span></h3>
-                            <span class="bolao-section-sub" data-i18n="app.bolao.publicos_sub">Entre direto, sem precisar de código</span>
-                        </div>
-                        <div id="bolaoPublicosList" class="bolao-list"></div>
-                    </div>
-
-                    <div class="bolao-section-head">
-                        <h3 data-i18n="app.bolao.meus_title">Meus bolões</h3>
-                        <button class="bolao-create-btn" id="bolaoCreateBtn" disabled title="Em breve" data-i18n-attr="title:app.bolao.create_btn_locked_title">
-                            <span class="material-icons">lock</span>
-                            <span data-i18n="app.bolao.create_btn">Criar bolão</span>
-                        </button>
-                    </div>
-
-                    <div id="bolaoList" class="bolao-list"><div class="loading" data-i18n="app.bolao.loading_boloes">Carregando bolões...</div></div>
                 </div>
 
                 <!-- Sub-view: Detalhe do bolão (jogos + ranking) -->
