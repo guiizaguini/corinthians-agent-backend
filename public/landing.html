@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Arquibancada — Diário do Torcedor</title>
+<title>Cadeira Numerada — Diário do Torcedor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
@@ -540,6 +540,77 @@ nav {
 }
 .step-icon .material-icons { font-size: 1.3rem; }
 
+/* ========================= FEATURES GRID ========================= */
+.features {
+    padding: 5rem 2rem 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    border-top: 1px solid var(--ink-line);
+}
+.features-head {
+    margin-bottom: 3rem;
+    max-width: 720px;
+}
+.features-head h2 {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.85rem, 4vw, 3rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-top: 0.75rem;
+}
+.features-head h2 em { font-style: normal; font-weight: 700; color: var(--vinho); }
+.features-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1px;
+    background: var(--ink-line);
+    border: 1px solid var(--ink-line);
+}
+@media (min-width: 700px) {
+    .features-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1000px) {
+    .features-grid { grid-template-columns: repeat(3, 1fr); }
+}
+.feature-cell {
+    background: var(--paper);
+    padding: 2rem 1.75rem 2.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    position: relative;
+}
+.feature-tag {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.66rem;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--vinho);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.feature-tag .material-icons { font-size: 1rem; }
+.feature-cell h3 {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.4rem;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+}
+.feature-cell p {
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    line-height: 1.55;
+}
+.feature-cell.highlight {
+    background: var(--paper-alt);
+    border-left: 3px solid var(--vinho);
+}
+.feature-cell.highlight .feature-tag { color: var(--ouro-escuro); }
+
 /* ========================= DARK SECTION — MUSEU PREVIEW ========================= */
 .dark-section {
     background: var(--preto);
@@ -784,7 +855,7 @@ footer {
 <body>
     <nav>
         <div class="brand-row">
-            <span class="brand">Arquibancada</span>
+            <span class="brand">Cadeira Numerada</span>
             <span class="brand-mark">· Est. 2026</span>
         </div>
         <div class="nav-links">
@@ -796,7 +867,7 @@ footer {
     <!-- ============ HERO ============ -->
     <section class="hero">
         <div class="hero-copy">
-            <div class="hero-eyebrow">Diário do Torcedor · Vol. 01</div>
+            <div class="hero-eyebrow">cadeiranumerada.com.br · Diário do Torcedor</div>
             <h1>
                 O jogo acaba.<br>
                 A <em>memória</em> fica <span class="underline">guardada</span>.
@@ -815,8 +886,8 @@ footer {
             </div>
             <div class="hero-meta">
                 <span><strong>12</strong> clubes</span>
+                <span><strong>Copa 2026</strong> incluída</span>
                 <span><strong>Grátis</strong> pra sempre</span>
-                <span><strong>20s</strong> pra começar</span>
             </div>
         </div>
 
@@ -940,6 +1011,46 @@ footer {
         </div>
     </section>
 
+    <!-- ============ FEATURES GRID ============ -->
+    <section class="features">
+        <div class="features-head">
+            <div class="section-eyebrow">Mais que um caderno</div>
+            <h2>Tudo que <em>cabe</em> num diário de torcedor.</h2>
+        </div>
+        <div class="features-grid">
+            <div class="feature-cell highlight">
+                <span class="feature-tag"><span class="material-icons">emoji_events</span>Copa do Mundo 2026</span>
+                <h3>Catálogo da Copa, do primeiro jogo à final.</h3>
+                <p>Vai pra um jogo da Copa nos EUA, México ou Canadá? Marque presença, guarde o ingresso e veja o seu mundial — independente do clube que você torce.</p>
+            </div>
+            <div class="feature-cell">
+                <span class="feature-tag"><span class="material-icons">military_tech</span>Conquistas</span>
+                <h3>Cada marco virou um troféu.</h3>
+                <p>Primeiro clássico, primeira final, mil reais gastos, dez vitórias seguidas. O sistema desbloqueia conquistas conforme seu retrospecto cresce.</p>
+            </div>
+            <div class="feature-cell">
+                <span class="feature-tag"><span class="material-icons">group</span>Amigos</span>
+                <h3>Quem foi com você no estádio.</h3>
+                <p>Adicione torcedores pelo @username, marque companhia em cada jogo, descubra quais foram os jogos que vocês viveram juntos.</p>
+            </div>
+            <div class="feature-cell">
+                <span class="feature-tag"><span class="material-icons">badge</span>Carteirinha</span>
+                <h3>Sua identidade de torcedor.</h3>
+                <p>Uma credencial digital com o seu time, total de jogos, aproveitamento e desde quando você está catalogando — pronta pra compartilhar.</p>
+            </div>
+            <div class="feature-cell">
+                <span class="feature-tag"><span class="material-icons">savings</span>Gastos</span>
+                <h3>Quanto cada vitória te custou.</h3>
+                <p>Soma do que você pagou, média por jogo, jogo mais caro, ano mais caro. O carinho pelo time também tem extrato.</p>
+            </div>
+            <div class="feature-cell">
+                <span class="feature-tag"><span class="material-icons">insights</span>Retrospecto</span>
+                <h3>Aproveitamento por rival, por estádio, por setor.</h3>
+                <p>Quem mais te derrotou, qual setor te deu mais vitória, qual ano foi o melhor do seu retrospecto pessoal. Tudo cruzado num lugar só.</p>
+            </div>
+        </div>
+    </section>
+
     <!-- ============ DARK — MUSEU ============ -->
     <section class="dark-section">
         <div class="dark-section-inner">
@@ -1007,10 +1118,13 @@ footer {
             <span class="material-icons" style="font-size:1.1rem;">auto_stories</span>
             Abrir meu diário
         </a>
+        <div style="margin-top:2.25rem;font-family:'Oswald',sans-serif;font-size:0.72rem;letter-spacing:0.32em;text-transform:uppercase;color:var(--ink-mute);">
+            cadeiranumerada.com.br
+        </div>
     </section>
 
     <footer>
-        Arquibancada · Diário do Torcedor · © 2026
+        Cadeira Numerada · cadeiranumerada.com.br · © 2026
     </footer>
 
 <script>

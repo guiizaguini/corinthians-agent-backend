@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Meu Diário — Arquibancada</title>
+<title>Meu Diário — Cadeira Numerada</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
@@ -64,6 +64,45 @@
     --cinza-linha: var(--line);
     --cinza-divisa: var(--line-soft);
     --ink-line: var(--line);
+}
+
+/* TEMA COPA DO MUNDO — aplicado pra usuários sem time escolhido.
+   Estética de gramado + dourado de troféu, sem mexer em estrutura nenhuma. */
+body.worldcup-theme {
+    --bg-base: #053e2a;
+    --bg-card: #0a4f37;
+    --bg-card-2: #0f5b40;
+    --bg-elevated: #156749;
+    --ink: #f5efd7;
+    --ink-soft: #d8d0a8;
+    --ink-mute: #8a9483;
+    --line: #1a5c41;
+    --line-soft: #0d4730;
+    --shadow-sm: 0 2px 8px rgba(0,30,15,0.35);
+    --shadow-md: 0 8px 22px rgba(0,30,15,0.5);
+    --shadow-lg: 0 16px 40px rgba(0,30,15,0.6);
+
+    --paper: #053e2a;
+    --paper-soft: #0a4f37;
+    --paper-deep: #0f5b40;
+    --preto-card: #0a4f37;
+    --preto-card-2: #0f5b40;
+    --branco: #f5efd7;
+    --branco-suave: #d8d0a8;
+    --cinza-claro: #8a9483;
+    --cinza-medio: #6e7867;
+    --cinza-linha: #1a5c41;
+    --cinza-divisa: #0d4730;
+    --ink-line: #1a5c41;
+}
+/* Padrão sutil de hexágonos (bola de futebol) por cima do gradient existente */
+body.worldcup-theme::before {
+    background-image:
+        radial-gradient(ellipse 70% 50% at 85% -10%, var(--accent-soft) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 35% at -5% 110%, var(--accent-soft) 0%, transparent 55%),
+        radial-gradient(circle at 50% 50%, rgba(255,199,44,0.04) 0%, transparent 70%),
+        repeating-linear-gradient(60deg, transparent 0 40px, rgba(245,239,215,0.018) 40px 41px),
+        repeating-linear-gradient(-60deg, transparent 0 40px, rgba(245,239,215,0.018) 40px 41px);
 }
 
 /* TEMA LIGHT — clubes com identidade clara (Palmeiras, SPFC, Inter, Grêmio, etc) */
@@ -6434,7 +6473,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 <body>
     <header>
         <div class="brand-wrap">
-            <div class="brand" id="brand">Arquibancada</div>
+            <div class="brand" id="brand">Cadeira Numerada</div>
             <div class="brand-tagline" id="brandTagline">Diário do Torcedor</div>
         </div>
         <div class="user-info">
@@ -6528,7 +6567,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 <img class="cartao-logo" id="cartaoLogo" alt="" style="display:none;">
                 <div class="cartao-logo-fb" id="cartaoLogoFb" style="display:none;"></div>
                 <div class="cartao-header">
-                    <strong>Arquibancada</strong>
+                    <strong>Cadeira Numerada</strong>
                     <span>Sócio Oficial</span>
                 </div>
                 <div class="cartao-body">
@@ -7594,9 +7633,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             tagline.textContent = 'Meu Diário';
             document.title = 'Fiel — Meu Diário';
         } else {
-            brand.textContent = 'Arquibancada';
+            brand.textContent = 'Cadeira Numerada';
             tagline.textContent = 'Diário do Torcedor';
-            document.title = 'Meu Diário — Arquibancada';
+            document.title = 'Meu Diário — Cadeira Numerada';
         }
     }
 
@@ -7604,9 +7643,10 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const root = document.documentElement;
         const badge = document.getElementById('clubBadge');
 
-        // Light vs dark por clube
-        const themeMode = (club && CLUB_THEMES[club.slug]) || 'dark';
+        // Sem clube → tema Copa do Mundo. Com clube → light/dark conforme CLUB_THEMES.
+        const themeMode = club ? (CLUB_THEMES[club.slug] || 'dark') : 'worldcup';
         document.body.classList.toggle('light-theme', themeMode === 'light');
+        document.body.classList.toggle('worldcup-theme', themeMode === 'worldcup');
 
         // Slug do clube vai pro body — usado em overrides CSS (ex: vitória dourada do Corinthians)
         if (club && club.slug) {
@@ -7621,8 +7661,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         } else if (club && club.primary_color) {
             setAccentPalette(root, club.primary_color);
         } else {
-            // Sem clube: vinho como neutro elegante (igual landing)
-            setAccentPalette(root, '#6b1f2a');
+            // Sem clube: dourado de troféu (Copa do Mundo)
+            setAccentPalette(root, '#d4a437');
         }
 
         if (club && club.name) {
@@ -8950,12 +8990,12 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             return;
         }
         const url = `${window.location.origin}/?add=${encodeURIComponent(user.username)}`;
-        const text = `Me adiciona como amigo no Arquibancada: @${user.username}\n${url}`;
+        const text = `Me adiciona como amigo no Cadeira Numerada: @${user.username}\n${url}`;
 
         // Tenta Web Share API (mobile), senão clipboard
         if (navigator.share) {
             try {
-                await navigator.share({ title: 'Arquibancada', text, url });
+                await navigator.share({ title: 'Cadeira Numerada', text, url });
                 return;
             } catch (_) { /* usuário cancelou ou não suportado, cai pro clipboard */ }
         }
@@ -9167,7 +9207,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         ctx.textAlign = 'center';
         ctx.fillStyle = 'rgba(245,240,228,0.5)';
         ctx.font = '500 18px Oswald, sans-serif';
-        ctx.fillText('arquibancada · diário do torcedor', 540, cy0 + ch + 80);
+        ctx.fillText('cadeira numerada · diário do torcedor', 540, cy0 + ch + 80);
     }
 
     // Helpers de canvas
@@ -9285,7 +9325,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const author = (user.display_name || user.email?.split('@')[0] || 'TORCEDOR').toUpperCase();
         ctx.fillText(`— ${author}`, 540, footerY);
         ctx.font = '400 18px Oswald, sans-serif';
-        ctx.fillText('arquibancada.app', 540, footerY + 35);
+        ctx.fillText('cadeiranumerada.com.br', 540, footerY + 35);
     }
 
     document.getElementById('shareClose').addEventListener('click', () => {
@@ -9298,7 +9338,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     document.getElementById('shareDownload').addEventListener('click', () => {
         const canvas = document.getElementById('shareCanvas');
         const link = document.createElement('a');
-        link.download = `arquibancada-${Date.now()}.png`;
+        link.download = `cadeira-numerada-${Date.now()}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
     });
