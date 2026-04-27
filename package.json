@@ -9,6 +9,7 @@
     "dev": "node --watch src/server.js",
     "migrate:v2": "node scripts/migrate_v2.js",
     "migrate:v2:from-legacy": "node scripts/migrate_v2.js from-legacy",
+    "migrate:argentina": "node scripts/add_clubs_argentina.js",
     "seed:examples": "node scripts/run_fix_sql.js sql/seed_examples.sql",
     "seed:copa2026": "node scripts/run_fix_sql.js sql/seed_copa_2026.sql",
     "seed:copa2026:full": "node scripts/seed_copa_2026_full.mjs",
