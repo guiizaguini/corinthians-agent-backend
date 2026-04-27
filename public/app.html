@@ -66,52 +66,25 @@
     --ink-line: var(--line);
 }
 
-/* TEMA COPA DO MUNDO — aplicado pra usuários sem time escolhido.
-   Estética dos cards de bolão + ingressos WC: marrom dourado escuro,
-   accent ouro de troféu, faixa rainbow no topo. Sem mudar estrutura. */
-body.worldcup-theme {
-    --bg-base: #1a1000;
-    --bg-card: #251907;
-    --bg-card-2: #2f220c;
-    --bg-elevated: #3a2a10;
-    --ink: #f5e6a8;
-    --ink-soft: #d8c890;
-    --ink-mute: #998566;
-    --line: #3a2a10;
-    --line-soft: #251907;
-    --shadow-sm: 0 2px 8px rgba(20,10,0,0.4);
-    --shadow-md: 0 8px 22px rgba(20,10,0,0.55);
-    --shadow-lg: 0 16px 40px rgba(20,10,0,0.65);
-
-    --paper: #1a1000;
-    --paper-soft: #251907;
-    --paper-deep: #2f220c;
-    --preto-card: #251907;
-    --preto-card-2: #2f220c;
-    --branco: #f5e6a8;
-    --branco-suave: #d8c890;
-    --cinza-claro: #998566;
-    --cinza-medio: #7a6a52;
-    --cinza-linha: #3a2a10;
-    --cinza-divisa: #251907;
-    --ink-line: #3a2a10;
-}
-/* Mesmo pattern do bolão-hero: glow dourado + glow azul + listras 135° */
+/* TEMA COPA DO MUNDO — usuário sem time. Mesma estética dos ingressos WC:
+   fundo cream claro, cards brancos, accents COLORIDOS (rainbow). Aplicado
+   junto com .light-theme — só adiciona o flair colorido por cima. */
 body.worldcup-theme::before {
     background-image:
-        radial-gradient(circle at 90% 10%, rgba(212,165,32,0.20) 0%, transparent 45%),
-        radial-gradient(circle at 5% 90%, rgba(126,224,255,0.09) 0%, transparent 50%),
-        radial-gradient(ellipse 70% 50% at 50% 50%, rgba(255,201,58,0.04) 0%, transparent 65%),
-        repeating-linear-gradient(135deg, transparent 0 22px, rgba(255,215,128,0.04) 22px 23px) !important;
+        radial-gradient(ellipse 55% 40% at 100% 0%, rgba(230,57,70,0.10) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 38% at 0% 100%, rgba(123,44,191,0.10) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 30% at 75% 55%, rgba(67,97,238,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 35% 28% at 25% 35%, rgba(6,169,87,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 30% 22% at 90% 90%, rgba(255,122,0,0.06) 0%, transparent 60%) !important;
 }
-/* Faixa fixa de 6 cores da Copa no topo da janela (igual bolao-hero-stripes) */
+/* Faixa fixa de 6 cores da Copa no topo da janela (igual wc-stripes) */
 body.worldcup-theme::after {
     content: '';
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
+    height: 5px;
     z-index: 999;
     pointer-events: none;
     background: linear-gradient(90deg,
@@ -121,6 +94,22 @@ body.worldcup-theme::after {
         #06a957 50% 66.666%,
         #4361ee 66.666% 83.333%,
         #7b2cbf 83.333% 100%);
+}
+/* Linha embaixo do header vira rainbow (substitui o solid var(--accent)) */
+body.worldcup-theme header::after {
+    background: linear-gradient(90deg,
+        #e63946 0 16.666%,
+        #ff7a00 16.666% 33.333%,
+        #ffc93a 33.333% 50%,
+        #06a957 50% 66.666%,
+        #4361ee 66.666% 83.333%,
+        #7b2cbf 83.333% 100%) !important;
+    height: 3px !important;
+}
+/* Header transparente em vez do overlay preto (que ficaria estranho no tema light) */
+body.worldcup-theme header {
+    background: rgba(255,255,255,0.6) !important;
+    backdrop-filter: blur(8px);
 }
 
 /* TEMA LIGHT — clubes com identidade clara (Palmeiras, SPFC, Inter, Grêmio, etc) */
@@ -7662,8 +7651,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const badge = document.getElementById('clubBadge');
 
         // Sem clube → tema Copa do Mundo. Com clube → light/dark conforme CLUB_THEMES.
+        // worldcup usa light-theme como base (cream/white) + flair rainbow por cima.
         const themeMode = club ? (CLUB_THEMES[club.slug] || 'dark') : 'worldcup';
-        document.body.classList.toggle('light-theme', themeMode === 'light');
+        document.body.classList.toggle('light-theme', themeMode === 'light' || themeMode === 'worldcup');
         document.body.classList.toggle('worldcup-theme', themeMode === 'worldcup');
 
         // Slug do clube vai pro body — usado em overrides CSS (ex: vitória dourada do Corinthians)
@@ -7673,13 +7663,14 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             delete document.body.dataset.club;
         }
 
-        // Sem clube: tema Copa do Mundo (gold de troféu + paleta dos ingressos WC)
+        // Sem clube: tema Copa do Mundo (base light + accent gold de troféu).
+        // O resto da identidade Copa (rainbow stripes, glows coloridos) tá no CSS.
         if (themeMode === 'worldcup') {
             root.style.setProperty('--accent', '#d4a520');
-            root.style.setProperty('--accent-hover', '#f0c040');
-            root.style.setProperty('--accent-soft', 'rgba(212,165,32,0.18)');
-            root.style.setProperty('--accent-glow', 'rgba(212,165,32,0.35)');
-            root.style.setProperty('--accent-dark', '#8a6a14');
+            root.style.setProperty('--accent-hover', '#b88a18');
+            root.style.setProperty('--accent-soft', 'rgba(212,165,32,0.16)');
+            root.style.setProperty('--accent-glow', 'rgba(212,165,32,0.30)');
+            root.style.setProperty('--accent-dark', '#6a5310');
             root.style.setProperty('--accent-text', '#1a1000');
         } else if (club && club.slug === 'corinthians') {
             // Corinthians: dourado escuro tradicional
