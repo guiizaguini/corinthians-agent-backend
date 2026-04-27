@@ -5695,47 +5695,151 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     .bolao-stat-icon .material-icons { font-size: 1.1rem; }
     .bolao-stat-num { font-size: 1.3rem; }
     .bolao-stat-proximo .bolao-stat-num { font-size: 0.9rem; }
+    /* === DETALHE DO BOLÃO no mobile — descontainerizado.
+       Em vez de 5+ caixas empilhadas (head card / meus pontos block / sair /
+       ranking toggle card / filtros card), tudo vira conteúdo plano com
+       divisores 1px e ícones enxutos. === */
     .bolao-detail-head {
-        padding: 1rem 1.15rem;
-        border-radius: 14px;
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+        border-radius: 0;
+        padding: 0.4rem 0 1rem;
+        margin-bottom: 0.85rem;
         flex-direction: column;
-        gap: 0.75rem;
+        gap: 0.65rem;
         align-items: stretch;
+        border-bottom: 1px solid var(--wc-line);
     }
-    .bolao-detail-title { font-size: 1.2rem; }
+    .bolao-detail-eyebrow { font-size: 0.58rem; letter-spacing: 0.22em; margin-bottom: 0.15rem; }
+    .bolao-detail-eyebrow .material-icons { font-size: 0.85rem; }
+    .bolao-detail-title { font-size: 1.35rem; line-height: 1.05; }
+    .bolao-detail-desc { font-size: 0.82rem; margin-top: 0.3rem; }
+    /* Código mini inline — sem pílula amarela cheia */
+    .bolao-detail-code {
+        margin-top: 0.5rem;
+        background: transparent;
+        border: 0;
+        padding: 0;
+        gap: 0.4rem;
+    }
+    .bolao-code-label { font-size: 0.55rem; letter-spacing: 0.22em; }
+    .bolao-detail-code code {
+        font-size: 0.78rem;
+        background: rgba(212,165,32,0.12);
+        border: 1px dashed rgba(212,165,32,0.4);
+        padding: 0.15rem 0.5rem;
+        border-radius: 5px;
+        letter-spacing: 0.16em;
+    }
+    /* Linha "Meus pontos: VALOR" + ações como ícones discretos no canto */
     .bolao-detail-right {
-        flex-direction: column;
-        align-items: stretch;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
         width: 100%;
-        gap: 0.55rem;
+        gap: 0.65rem;
+        margin-top: 0.2rem;
     }
     .bolao-detail-mypoints {
-        padding: 0.7rem 1rem;
+        display: inline-flex;
+        flex-direction: row;
+        align-items: baseline;
+        gap: 0.5rem;
+        background: transparent;
+        color: var(--wc-ink);
+        padding: 0;
+        border-radius: 0;
         min-width: 0;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        gap: 0.75rem;
-        width: 100%;
+        width: auto;
+        flex: 0 0 auto;
+        box-shadow: none;
+        text-align: left;
     }
-    .bolao-mp-label { text-align: left; }
-    .bolao-mp-value { font-size: 1.8rem; margin-top: 0; line-height: 1; }
+    .bolao-mp-label {
+        color: var(--wc-ink-mute);
+        font-size: 0.58rem;
+        letter-spacing: 0.22em;
+        text-align: left;
+    }
+    .bolao-mp-value {
+        font-size: 1.5rem;
+        color: #1a1000;
+        margin-top: 0;
+        line-height: 1;
+    }
+    /* Sair / Excluir viram botões redondos só com ícone — sem texto */
     .bolao-detail-actions {
+        flex: 0 0 auto;
         flex-direction: row;
-        justify-content: stretch;
-        gap: 0.4rem;
-        width: 100%;
+        justify-content: flex-end;
+        gap: 0.35rem;
+        width: auto;
     }
     .bolao-leave-btn, .bolao-delete-btn {
-        flex: 1;
+        flex: 0 0 auto;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        font-size: 0;
+        letter-spacing: 0;
+        border-radius: 50%;
         justify-content: center;
-        padding: 0.6rem 0.55rem;
-        font-size: 0.6rem;
-        letter-spacing: 0.1em;
+        gap: 0;
     }
     .bolao-leave-btn .material-icons,
-    .bolao-delete-btn .material-icons { font-size: 0.95rem; }
+    .bolao-delete-btn .material-icons { font-size: 1.05rem; }
+
+    /* RANKING TOGGLE — vira linha simples com divisores 1px (sem card branco) */
+    .bolao-ranking-toggle {
+        background: transparent;
+        border: 0;
+        border-top: 1px solid var(--wc-line);
+        border-bottom: 1px solid var(--wc-line);
+        border-radius: 0;
+        padding: 0.85rem 0;
+        margin: 0 0 1rem;
+        font-size: 0.78rem;
+    }
+    .bolao-ranking-toggle .bolao-rank-toggle-count {
+        background: rgba(212,165,32,0.15);
+        border-color: transparent;
+        color: #a8791b;
+    }
+
+    /* FILTROS — sem caixa branca elevada, conteúdo solto */
+    .bolao-filtros {
+        background: transparent;
+        border: 0;
+        padding: 0;
+        margin-bottom: 1rem;
+        gap: 0.5rem;
+    }
+    .bolao-filtros-search,
+    .bolao-filtros-select {
+        background: var(--wc-card);
+        border-radius: 999px;
+        padding: 0.55rem 0.95rem;
+        border-width: 1px;
+    }
+    /* Chips com scroll horizontal sangrando até a borda da tela */
+    .bolao-filtros-chips {
+        gap: 0.3rem;
+        margin: 0 -1rem;
+        padding: 0 1rem 0.25rem;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+    }
+    .bolao-fase-chip { padding: 0.32rem 0.75rem; font-size: 0.62rem; }
+
+    /* JOGOS HEAD — divisor sutil em vez de bloco */
+    .bolao-jogos-head {
+        margin-bottom: 0.85rem;
+        padding-bottom: 0.55rem;
+        border-bottom: 1px solid var(--wc-line);
+    }
+    .bolao-jogos-head h3 { font-size: 0.85rem; letter-spacing: 0.18em; }
+    .bolao-jogos-stats { font-size: 0.65rem; }
     .bolao-list { grid-template-columns: 1fr; gap: 0.65rem; }
     .bolao-join-row { flex-direction: column; gap: 0.5rem; }
     .bolao-join-row input { font-size: 16px; /* evita zoom */ }
