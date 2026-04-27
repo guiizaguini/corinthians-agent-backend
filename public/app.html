@@ -247,6 +247,22 @@ header::after {
 }
 .btn-ghost:hover { border-color: var(--ink); color: var(--ink); background: var(--paper-soft); }
 
+/* Botão só com ícone (mesma proporção do bell, alinha no header) */
+.btn-ghost.btn-icon {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+}
+.btn-ghost.btn-icon .material-icons { font-size: 1.15rem; line-height: 1; }
+@media (max-width: 600px) {
+    .btn-ghost.btn-icon { width: 34px; height: 34px; }
+    .btn-ghost.btn-icon .material-icons { font-size: 1.05rem; }
+}
+
 /* Sino de notificações */
 .bell-btn {
     position: relative;
@@ -6493,7 +6509,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             <span id="appLangSlot"></span>
             <a href="/admin" class="btn-ghost" id="linkAdmin" data-i18n="app.admin" style="display:none;text-decoration:none;">Admin</a>
             <button class="btn-ghost" id="btnProfile" data-i18n="app.profile">Perfil</button>
-            <button class="btn-ghost" id="btnLogout" data-i18n="nav.signout">Sair</button>
+            <button class="btn-ghost btn-icon" id="btnLogout" data-i18n-attr="title:nav.signout, aria-label:nav.signout" title="Sair" aria-label="Sair">
+                <span class="material-icons" aria-hidden="true">logout</span>
+            </button>
         </div>
     </header>
 
