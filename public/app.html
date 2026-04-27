@@ -6455,8 +6455,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     .brand { font-size: 1.3rem; letter-spacing: 0.14em; }
     .brand-tagline { font-size: 0.56rem; letter-spacing: 0.22em; }
     .user-info { gap: 0.4rem; font-size: 0.78rem; width: 100%; justify-content: flex-end; }
-    /* "Olá, Nome" perde o "Olá," em telas pequenas pra economizar espaço */
-    .user-info > span:not(.club-badge):not(.bell-badge) { display: none; }
+    /* "Olá, Nome" perde o "Olá," em telas pequenas pra economizar espaço.
+       Exceção: #appLangSlot (container do dropdown de idioma — visível em mobile). */
+    .user-info > span:not(.club-badge):not(.bell-badge):not(#appLangSlot) { display: none; }
     .club-badge { display: none; }
     .btn-ghost {
         padding: 0.42rem 0.75rem;

@@ -6,11 +6,18 @@
 (function () {
     const STORAGE_KEY = 'cn_lang';
     const DEFAULT_LANG = 'pt';
+    // Cores oficiais de cada bandeira pra evitar dependência de emoji
+    // (Windows e alguns Androids antigos não renderizam flag emojis).
     const LANGS = {
-        pt: { code: 'pt', label: 'Português', short: 'PT', flag: '🇧🇷' },
-        en: { code: 'en', label: 'English',   short: 'EN', flag: '🇺🇸' },
-        es: { code: 'es', label: 'Español',   short: 'ES', flag: '🇪🇸' },
+        pt: { code: 'pt', label: 'Português', short: 'PT', country: 'Brasil',  bg: '#009c3b', fg: '#ffdf00' },
+        en: { code: 'en', label: 'English',   short: 'EN', country: 'USA',     bg: '#0a3161', fg: '#ffffff' },
+        es: { code: 'es', label: 'Español',   short: 'ES', country: 'España',  bg: '#aa151b', fg: '#ffc400' },
     };
+
+    function langBadge(lang) {
+        const l = LANGS[lang];
+        return `<span class="cn-lang-badge" style="background:${l.bg};color:${l.fg};" aria-hidden="true">${l.short}</span>`;
+    }
 
     const T = {
         pt: {
@@ -916,11 +923,10 @@
         const variant = opts.variant || 'paper'; // 'paper' (landing/auth) | 'dark' | 'light' (app)
         const wrap = document.createElement('div');
         wrap.className = `cn-lang cn-lang-${variant}`;
+        const cur = getLang();
         wrap.innerHTML = `
-            <button type="button" class="cn-lang-trigger" aria-haspopup="listbox" aria-expanded="false">
-                <span class="cn-lang-flag">${LANGS[getLang()].flag}</span>
-                <span class="cn-lang-short">${LANGS[getLang()].short}</span>
-                <span class="cn-lang-caret">▾</span>
+            <button type="button" class="cn-lang-trigger" aria-haspopup="listbox" aria-expanded="false" title="${LANGS[cur].country} · ${LANGS[cur].label}" aria-label="${LANGS[cur].label}">
+                ${langBadge(cur)}
             </button>
         `;
 
@@ -931,15 +937,14 @@
         menu.setAttribute('role', 'listbox');
         menu.hidden = true;
         menu.innerHTML = Object.values(LANGS).map(l => `
-            <li role="option" data-lang="${l.code}" ${l.code === getLang() ? 'aria-selected="true"' : ''}>
-                <span class="cn-lang-flag">${l.flag}</span>
-                <span>${l.label}</span>
+            <li role="option" data-lang="${l.code}" ${l.code === cur ? 'aria-selected="true"' : ''}>
+                ${langBadge(l.code)}
+                <span class="cn-lang-name">${l.label}</span>
+                <span class="cn-lang-country">${l.country}</span>
             </li>
         `).join('');
 
         const trigger = wrap.querySelector('.cn-lang-trigger');
-        const flagEl = wrap.querySelector('.cn-lang-trigger .cn-lang-flag');
-        const shortEl = wrap.querySelector('.cn-lang-short');
 
         function position() {
             const rect = trigger.getBoundingClientRect();
@@ -967,8 +972,10 @@
                 e.stopPropagation();
                 const lang = li.getAttribute('data-lang');
                 setLang(lang);
-                flagEl.textContent = LANGS[lang].flag;
-                shortEl.textContent = LANGS[lang].short;
+                // Atualiza o badge do trigger
+                trigger.innerHTML = langBadge(lang);
+                trigger.title = `${LANGS[lang].country} · ${LANGS[lang].label}`;
+                trigger.setAttribute('aria-label', LANGS[lang].label);
                 menu.querySelectorAll('li').forEach(x => x.removeAttribute('aria-selected'));
                 li.setAttribute('aria-selected', 'true');
                 close();
@@ -988,28 +995,45 @@
         style.id = 'cn-lang-styles';
         style.textContent = `
             .cn-lang { position: relative; font-family: 'Oswald', sans-serif; }
+            /* Trigger circular — mesma proporção do .bell-btn (38x38, 34x34 mobile) */
             .cn-lang-trigger {
-                display: inline-flex; align-items: center; gap: 0.4rem;
-                padding: 0.5rem 0.8rem; cursor: pointer;
+                display: inline-flex; align-items: center; justify-content: center;
+                width: 38px; height: 38px; padding: 0; cursor: pointer;
                 background: transparent; border: 1.5px solid currentColor;
-                font-family: inherit; font-size: 0.72rem; letter-spacing: 0.18em;
-                text-transform: uppercase; font-weight: 600; line-height: 1;
+                border-radius: 50%; line-height: 1;
                 color: inherit; transition: all 150ms;
             }
             .cn-lang-trigger:hover { background: rgba(0,0,0,0.06); }
             .cn-lang-paper .cn-lang-trigger:hover { background: rgba(20,20,20,0.06); }
             .cn-lang-dark .cn-lang-trigger:hover { background: rgba(255,255,255,0.08); }
-            .cn-lang-flag { font-size: 1rem; line-height: 1; }
-            .cn-lang-caret { font-size: 0.7rem; opacity: 0.7; }
+            @media (max-width: 680px) {
+                .cn-lang-trigger { width: 34px; height: 34px; }
+            }
+            /* Badge "PT/EN/ES" tinted nas cores da bandeira do país.
+               Substitui flag emoji (não renderiza em todo device). */
+            .cn-lang-badge {
+                display: inline-flex; align-items: center; justify-content: center;
+                width: 26px; height: 18px; border-radius: 4px;
+                font-family: 'Oswald', sans-serif; font-weight: 700;
+                font-size: 0.62rem; letter-spacing: 0.06em;
+                line-height: 1; padding: 0 3px;
+                box-shadow: 0 1px 0 rgba(0,0,0,0.15) inset, 0 1px 2px rgba(0,0,0,0.12);
+                flex-shrink: 0;
+            }
+            @media (max-width: 680px) {
+                .cn-lang-trigger .cn-lang-badge { width: 24px; height: 16px; font-size: 0.58rem; }
+            }
             /* Menu portado pro body via position: fixed — não fica preso em
                stacking context de pais (problema na landing/área logada). */
             .cn-lang-menu {
-                min-width: 180px; list-style: none; margin: 0; padding: 0.3rem 0;
+                min-width: 200px; list-style: none; margin: 0; padding: 0.3rem 0;
                 background: #fff; color: #141414;
                 border: 1px solid rgba(0,0,0,0.12);
+                border-radius: 8px;
                 box-shadow: 0 8px 24px rgba(0,0,0,0.22);
                 z-index: 2147483000; font-size: 0.85rem;
                 font-family: 'Oswald', sans-serif;
+                overflow: hidden;
             }
             .cn-lang-menu-dark {
                 background: #1a1a1a; color: #f5f0e4;
@@ -1017,16 +1041,25 @@
                 box-shadow: 0 8px 24px rgba(0,0,0,0.55);
             }
             .cn-lang-menu li {
-                display: flex; align-items: center; gap: 0.55rem;
-                padding: 0.55rem 0.95rem; cursor: pointer;
-                letter-spacing: 0.04em; text-transform: none; font-weight: 500;
+                display: flex; align-items: center; gap: 0.65rem;
+                padding: 0.6rem 0.95rem; cursor: pointer;
+                letter-spacing: 0.02em; text-transform: none; font-weight: 500;
             }
             .cn-lang-menu li:hover { background: rgba(0,0,0,0.06); }
             .cn-lang-menu-dark li:hover { background: rgba(255,255,255,0.08); }
             .cn-lang-menu li[aria-selected="true"] { font-weight: 700; }
             .cn-lang-menu li[aria-selected="true"]::after {
-                content: '✓'; margin-left: auto; opacity: 0.7;
+                content: '✓'; margin-left: auto; opacity: 0.7; font-weight: 700;
             }
+            .cn-lang-menu .cn-lang-name { line-height: 1.1; }
+            .cn-lang-menu .cn-lang-country {
+                font-size: 0.66rem;
+                letter-spacing: 0.14em;
+                text-transform: uppercase;
+                opacity: 0.5;
+                margin-left: 0.3rem;
+            }
+            .cn-lang-menu-dark .cn-lang-country { opacity: 0.55; }
         `;
         document.head.appendChild(style);
     }
