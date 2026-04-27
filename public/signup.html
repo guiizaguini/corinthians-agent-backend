@@ -3,59 +3,77 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Criar conta — Cadeira Numerada</title>
+<title data-i18n-title="meta.title">Criar conta — Cadeira Numerada</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles/auth.css">
+<style>
+    .auth-lang-bar { position: absolute; top: 1rem; right: 1rem; z-index: 5; }
+    @media (max-width: 600px) { .auth-lang-bar { top: 0.6rem; right: 0.6rem; } }
+</style>
 </head>
 <body>
+    <div class="auth-lang-bar" id="authLangBar"></div>
     <form class="card" id="signupForm" autocomplete="on">
         <div class="logo">Cadeira Numerada</div>
-        <div class="tagline">Diário do Torcedor</div>
-        <h1>Abrir o <em>diário</em>.</h1>
+        <div class="tagline" data-i18n="auth.tagline">Diário do Torcedor</div>
+        <h1>
+            <span data-i18n="auth.signup.title_pre">Abrir o </span><em data-i18n="auth.signup.title_em">diário</em><span data-i18n="auth.signup.title_post">.</span>
+        </h1>
 
-        <label for="display_name">Como te chamamos?</label>
+        <label for="display_name" data-i18n="auth.signup.name">Como te chamamos?</label>
         <input id="display_name" name="display_name" type="text" maxlength="80" autocomplete="name">
 
-        <label for="username">Username <span style="color:var(--vinho);">*</span></label>
+        <label for="username"><span data-i18n="auth.signup.username">Username</span> <span style="color:var(--vinho);">*</span></label>
         <input id="username" name="username" type="text" minlength="3" maxlength="30"
                pattern="[a-zA-Z0-9_.]{3,30}"
                autocomplete="username"
                autocapitalize="none"
                spellcheck="false"
+               data-i18n-attr="placeholder:auth.signup.username_ph"
                placeholder="ex: guizaguini ou gui_zaguini"
                required>
-        <div class="hint">3 a 30 caracteres · letras, números, ponto (.) ou underline (_) — sem espaços nem acentos</div>
+        <div class="hint" data-i18n="auth.signup.username_hint">3 a 30 caracteres · letras, números, ponto (.) ou underline (_) — sem espaços nem acentos</div>
 
-        <label for="email">Email</label>
+        <label for="email" data-i18n="auth.signup.email">Email</label>
         <input id="email" name="email" type="email" autocomplete="email" required>
 
-        <label for="password">Senha <span style="color:var(--ink-mute);font-weight:400;">(mínimo 8 caracteres)</span></label>
+        <label for="password"><span data-i18n="auth.signup.password">Senha</span> <span style="color:var(--ink-mute);font-weight:400;" data-i18n="auth.signup.password_hint">(mínimo 8 caracteres)</span></label>
         <input id="password" name="password" type="password" minlength="8" autocomplete="new-password" required>
 
-        <label for="password_confirm">Confirme a senha <span style="color:var(--vinho);">*</span></label>
+        <label for="password_confirm"><span data-i18n="auth.signup.password_confirm">Confirme a senha</span> <span style="color:var(--vinho);">*</span></label>
         <input id="password_confirm" name="password_confirm" type="password" minlength="8" autocomplete="new-password" required>
 
-        <label for="club">Pra qual time você torce?</label>
+        <label for="club" data-i18n="auth.signup.club">Pra qual time você torce?</label>
         <select id="club" name="club">
-            <option value="">— Prefiro não escolher agora —</option>
+            <option value="" data-i18n="auth.signup.club_none">— Prefiro não escolher agora —</option>
         </select>
-        <div class="hint">Dá pra trocar depois. Seu time define o tema visual e o catálogo de jogos.</div>
+        <div class="hint" data-i18n="auth.signup.club_hint">Dá pra trocar depois. Seu time define o tema visual e o catálogo de jogos.</div>
 
         <div class="error" id="err"></div>
 
-        <button type="submit" id="btn">Criar conta</button>
+        <button type="submit" id="btn" data-i18n="auth.signup.btn">Criar conta</button>
 
         <div class="link">
-            Já tem conta? <a href="/login">Entrar</a>
+            <span data-i18n="auth.signup.has_account">Já tem conta?</span> <a href="/login" data-i18n="auth.signup.signin">Entrar</a>
         </div>
     </form>
 
+<script src="/i18n.js"></script>
 <script>
     if (localStorage.getItem('fiel_token')) {
         window.location.replace('/app');
     }
+
+    const t = (k) => window.CN_I18N.t(k);
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const bar = document.getElementById('authLangBar');
+        if (bar && window.CN_I18N) {
+            bar.appendChild(window.CN_I18N.createLangDropdown({ variant: 'paper' }));
+        }
+    });
 
     const form = document.getElementById('signupForm');
     const errBox = document.getElementById('err');
@@ -95,7 +113,7 @@
         const v = usernameInput.value.trim();
         if (!v) { usernameInput.setCustomValidity(''); return; }
         if (!USERNAME_RE.test(v)) {
-            usernameInput.setCustomValidity('Use só letras, números, ponto (.) ou underline (_), 3 a 30 caracteres');
+            usernameInput.setCustomValidity(t('auth.signup.err_username_format'));
         } else {
             usernameInput.setCustomValidity('');
         }
@@ -106,7 +124,7 @@
     const passConfirm = document.getElementById('password_confirm');
     const checkPassMatch = () => {
         if (passConfirm.value && passInput.value !== passConfirm.value) {
-            passConfirm.setCustomValidity('As senhas não conferem');
+            passConfirm.setCustomValidity(t('auth.signup.err_password_match'));
         } else {
             passConfirm.setCustomValidity('');
         }
@@ -124,19 +142,19 @@
         const passwordConfirm = passConfirm.value;
 
         if (!USERNAME_RE.test(username)) {
-            errBox.textContent = 'Username inválido — use 3 a 30 caracteres (letras, números, . ou _)';
+            errBox.textContent = t('auth.signup.err_username_invalid');
             errBox.classList.add('show');
             return;
         }
         if (password !== passwordConfirm) {
-            errBox.textContent = 'As senhas não conferem.';
+            errBox.textContent = t('auth.signup.err_password_mismatch');
             errBox.classList.add('show');
             passConfirm.focus();
             return;
         }
 
         btn.disabled = true;
-        btn.textContent = 'Criando...';
+        btn.textContent = t('auth.signup.btn_loading');
 
         try {
             const res = await fetch('/auth/signup', {
@@ -153,11 +171,11 @@
             const data = await res.json();
             if (!res.ok) {
                 const msg = {
-                    email_already_registered: 'Esse email já tem conta',
-                    username_taken: 'Esse @username já está em uso, tenta outro',
-                    validation_failed: 'Confere os campos — senha 8+ chars, username 3-30 (letras/números/_/.)',
-                    club_not_found: 'Clube inválido',
-                }[data.error] || data.error || 'Erro ao criar conta';
+                    email_already_registered: t('auth.signup.err_email_taken'),
+                    username_taken: t('auth.signup.err_username_taken'),
+                    validation_failed: t('auth.signup.err_validation'),
+                    club_not_found: t('auth.signup.err_club'),
+                }[data.error] || data.error || t('auth.signup.err_generic');
                 throw new Error(msg);
             }
             localStorage.setItem('fiel_token', data.token);
@@ -167,7 +185,7 @@
             errBox.textContent = err.message;
             errBox.classList.add('show');
             btn.disabled = false;
-            btn.textContent = 'Criar conta';
+            btn.textContent = t('auth.signup.btn');
         }
     });
 </script>

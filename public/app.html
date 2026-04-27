@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Meu Diário — Cadeira Numerada</title>
+<title data-i18n-title="meta.title">Meu Diário — Cadeira Numerada</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
@@ -6481,18 +6481,19 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     <header>
         <div class="brand-wrap">
             <div class="brand" id="brand">Cadeira Numerada</div>
-            <div class="brand-tagline" id="brandTagline">Diário do Torcedor</div>
+            <div class="brand-tagline" id="brandTagline" data-i18n="app.tagline">Diário do Torcedor</div>
         </div>
         <div class="user-info">
             <span class="club-badge" id="clubBadge"></span>
-            <span>Olá, <strong id="userName">—</strong></span>
+            <span><span data-i18n="app.greeting">Olá</span>, <strong id="userName">—</strong></span>
             <button class="bell-btn" id="bellBtn" title="Notificações" aria-haspopup="true" aria-expanded="false">
                 <span class="material-icons">notifications</span>
                 <span class="bell-badge" id="bellBadge">0</span>
             </button>
-            <a href="/admin" class="btn-ghost" id="linkAdmin" style="display:none;text-decoration:none;">Admin</a>
-            <button class="btn-ghost" id="btnProfile">Perfil</button>
-            <button class="btn-ghost" id="btnLogout">Sair</button>
+            <span id="appLangSlot"></span>
+            <a href="/admin" class="btn-ghost" id="linkAdmin" data-i18n="app.admin" style="display:none;text-decoration:none;">Admin</a>
+            <button class="btn-ghost" id="btnProfile" data-i18n="app.profile">Perfil</button>
+            <button class="btn-ghost" id="btnLogout" data-i18n="nav.signout">Sair</button>
         </div>
     </header>
 
@@ -6841,19 +6842,19 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         </section>
 
         <section class="kpis" id="kpis" style="display:none;">
-            <div class="kpi"><div class="kpi-label">Jogos</div><div class="kpi-value" id="kpiJogos">0</div></div>
-            <div class="kpi"><div class="kpi-label">Vitórias</div><div class="kpi-value v" id="kpiV">0</div></div>
-            <div class="kpi"><div class="kpi-label">Empates</div><div class="kpi-value e" id="kpiE">0</div></div>
-            <div class="kpi"><div class="kpi-label">Derrotas</div><div class="kpi-value d" id="kpiD">0</div></div>
-            <div class="kpi"><div class="kpi-label">Aprov.</div><div class="kpi-value" id="kpiApr">—</div></div>
-            <div class="kpi"><div class="kpi-label">Gasto total</div><div class="kpi-value" id="kpiGasto">R$ 0</div></div>
+            <div class="kpi"><div class="kpi-label" data-i18n="app.kpi.games">Jogos</div><div class="kpi-value" id="kpiJogos">0</div></div>
+            <div class="kpi"><div class="kpi-label" data-i18n="app.kpi.wins">Vitórias</div><div class="kpi-value v" id="kpiV">0</div></div>
+            <div class="kpi"><div class="kpi-label" data-i18n="app.kpi.draws">Empates</div><div class="kpi-value e" id="kpiE">0</div></div>
+            <div class="kpi"><div class="kpi-label" data-i18n="app.kpi.losses">Derrotas</div><div class="kpi-value d" id="kpiD">0</div></div>
+            <div class="kpi"><div class="kpi-label" data-i18n="app.kpi.win_rate">Aprov.</div><div class="kpi-value" id="kpiApr">—</div></div>
+            <div class="kpi"><div class="kpi-label" data-i18n="app.kpi.spent">Gasto total</div><div class="kpi-value" id="kpiGasto">R$ 0</div></div>
         </section>
 
         <div class="tabs">
-            <button class="tab active" data-tab="catalog">Catálogo</button>
-            <button class="tab" data-tab="mine">Meus ingressos</button>
-            <button class="tab" data-tab="rede">Rede social</button>
-            <button class="tab" data-tab="copa">Copa do Mundo</button>
+            <button class="tab active" data-tab="catalog" data-i18n="app.tab.catalog">Catálogo</button>
+            <button class="tab" data-tab="mine" data-i18n="app.tab.mine">Meus ingressos</button>
+            <button class="tab" data-tab="rede" data-i18n="app.tab.friends">Rede social</button>
+            <button class="tab" data-tab="copa" data-i18n="app.tab.copa">Copa do Mundo</button>
         </div>
 
         <div class="tab-panel active" id="tabCatalog">
@@ -7234,7 +7235,17 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
     </main>
 
+<script src="/i18n.js"></script>
 <script>
+    const t = (k, vars) => window.CN_I18N ? window.CN_I18N.t(k, vars) : k;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const slot = document.getElementById('appLangSlot');
+        if (slot && window.CN_I18N) {
+            slot.appendChild(window.CN_I18N.createLangDropdown({ variant: 'dark' }));
+        }
+    });
+
     const MESES_ABREV = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
     const MESES_EXT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
     const DIAS_SEMANA_EXT = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
@@ -7646,6 +7657,17 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         }
     }
 
+    // Reaplica i18n quando o user muda de idioma (pra textos JS-rendered como KPIs vazios, listas, etc)
+    document.addEventListener('cn:langchange', () => {
+        // Re-renderiza views dependentes de t() — chamadas safe-no-op se ainda não carregaram dados
+        try { renderKpis && snapshot && renderKpis(); } catch (_) {}
+        try { renderCatalog && allGames && renderCatalog(); } catch (_) {}
+        try { renderMine && allGames && renderMine(); } catch (_) {}
+        if (typeof user !== 'undefined' && user && !user.club_id) {
+            try { renderNoClub(); } catch (_) {}
+        }
+    });
+
     function applyClubTheme(club) {
         const root = document.documentElement;
         const badge = document.getElementById('clubBadge');
@@ -7828,16 +7850,16 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         } catch (err) {
             console.error(err);
             document.getElementById('catalogList').innerHTML =
-                `<div class="empty">Erro ao carregar: ${err.message}</div>`;
+                `<div class="empty">${t('app.error.load')}: ${err.message}</div>`;
         }
     }
 
     function renderNoClub() {
         document.getElementById('kpis').style.display = 'none';
         document.getElementById('catalogList').innerHTML =
-            '<div class="empty">Escolhe seu time no Perfil pra ver o catálogo de jogos.</div>';
+            `<div class="empty">${t('app.empty.no_club_catalog')}</div>`;
         document.getElementById('mineList').innerHTML =
-            '<div class="empty">Seus ingressos aparecem aqui depois que você escolher um time.</div>';
+            `<div class="empty">${t('app.empty.no_club_mine')}</div>`;
     }
 
     function renderKpis() {
@@ -7957,7 +7979,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
         const container = document.getElementById('catalogList');
         if (!filtered.length) {
-            container.innerHTML = '<div class="empty">Nenhum jogo encontrado com esses filtros.</div>';
+            container.innerHTML = `<div class="empty">${t('app.empty.no_games')}</div>`;
             return;
         }
         container.innerHTML = filtered.map(renderGameRow).join('');
@@ -8089,7 +8111,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const mine = [...porId.values()].sort((a, b) => new Date(b.data) - new Date(a.data));
         const container = document.getElementById('mineList');
         if (!mine.length) {
-            container.innerHTML = '<div class="empty">Você ainda não marcou nenhum ingresso. Vai no catálogo e marque os jogos que você foi!</div>';
+            container.innerHTML = `<div class="empty">${t('app.empty.no_mine')}</div>`;
             return;
         }
         container.innerHTML = mine.map(renderIngresso).join('');
@@ -9007,7 +9029,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             return;
         }
         const url = `${window.location.origin}/?add=${encodeURIComponent(user.username)}`;
-        const text = `Me adiciona como amigo no Cadeira Numerada: @${user.username}\n${url}`;
+        const text = `${t('app.friends.invite_share')}: @${user.username}\n${url}`;
 
         // Tenta Web Share API (mobile), senão clipboard
         if (navigator.share) {

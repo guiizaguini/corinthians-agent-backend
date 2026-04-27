@@ -3,37 +3,54 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Entrar — Cadeira Numerada</title>
+<title data-i18n-title="meta.title">Entrar — Cadeira Numerada</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles/auth.css">
+<style>
+    .auth-lang-bar { position: absolute; top: 1rem; right: 1rem; z-index: 5; }
+    @media (max-width: 600px) { .auth-lang-bar { top: 0.6rem; right: 0.6rem; } }
+</style>
 </head>
 <body>
+    <div class="auth-lang-bar" id="authLangBar"></div>
     <form class="card" id="loginForm" autocomplete="on">
         <div class="logo">Cadeira Numerada</div>
-        <div class="tagline">Diário do Torcedor</div>
-        <h1>Bem-vindo de <em>volta</em>.</h1>
+        <div class="tagline" data-i18n="auth.tagline">Diário do Torcedor</div>
+        <h1>
+            <span data-i18n="auth.login.title_pre">Bem-vindo de </span><em data-i18n="auth.login.title_em">volta</em><span data-i18n="auth.login.title_post">.</span>
+        </h1>
 
-        <label for="email">Email</label>
+        <label for="email" data-i18n="auth.login.email">Email</label>
         <input id="email" name="email" type="email" autocomplete="email" required>
 
-        <label for="password">Senha</label>
+        <label for="password" data-i18n="auth.login.password">Senha</label>
         <input id="password" name="password" type="password" autocomplete="current-password" required>
 
         <div class="error" id="err"></div>
 
-        <button type="submit" id="btn">Entrar</button>
+        <button type="submit" id="btn" data-i18n="auth.login.btn">Entrar</button>
 
         <div class="link">
-            Não tem conta? <a href="/signup">Criar conta</a>
+            <span data-i18n="auth.login.no_account">Não tem conta?</span> <a href="/signup" data-i18n="auth.login.create">Criar conta</a>
         </div>
     </form>
 
+<script src="/i18n.js"></script>
 <script>
     if (localStorage.getItem('fiel_token')) {
         window.location.replace('/app');
     }
+
+    const t = (k) => window.CN_I18N.t(k);
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const bar = document.getElementById('authLangBar');
+        if (bar && window.CN_I18N) {
+            bar.appendChild(window.CN_I18N.createLangDropdown({ variant: 'paper' }));
+        }
+    });
 
     const form = document.getElementById('loginForm');
     const errBox = document.getElementById('err');
@@ -43,7 +60,7 @@
         e.preventDefault();
         errBox.classList.remove('show');
         btn.disabled = true;
-        btn.textContent = 'Entrando...';
+        btn.textContent = t('auth.login.btn_loading');
 
         try {
             const res = await fetch('/auth/login', {
@@ -58,8 +75,8 @@
             if (!res.ok) {
                 throw new Error(
                     data.error === 'invalid_credentials'
-                        ? 'Email ou senha incorretos'
-                        : data.error || 'Erro ao entrar'
+                        ? t('auth.login.err_invalid')
+                        : data.error || t('auth.login.err_generic')
                 );
             }
             localStorage.setItem('fiel_token', data.token);
@@ -69,7 +86,7 @@
             errBox.textContent = err.message;
             errBox.classList.add('show');
             btn.disabled = false;
-            btn.textContent = 'Entrar';
+            btn.textContent = t('auth.login.btn');
         }
     });
 </script>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cadeira Numerada — Diário do Torcedor</title>
+<title data-i18n-title="meta.title">Cadeira Numerada — Diário do Torcedor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
@@ -856,23 +856,23 @@ footer {
     <nav>
         <div class="brand-row">
             <span class="brand">Cadeira Numerada</span>
-            <span class="brand-mark">· Est. 2026</span>
+            <span class="brand-mark" data-i18n="landing.brand.mark">· Est. 2026</span>
         </div>
-        <div class="nav-links">
-            <a href="/login" class="btn btn-ghost">Entrar</a>
-            <a href="/signup" class="btn btn-primary">Criar conta</a>
+        <div class="nav-links" id="navLinks">
+            <a href="/login" class="btn btn-ghost" data-i18n="nav.signin">Entrar</a>
+            <a href="/signup" class="btn btn-primary" data-i18n="nav.signup">Criar conta</a>
         </div>
     </nav>
 
     <!-- ============ HERO ============ -->
     <section class="hero">
         <div class="hero-copy">
-            <div class="hero-eyebrow">cadeiranumerada.com.br · Diário do Torcedor</div>
-            <h1>
+            <div class="hero-eyebrow" data-i18n="landing.hero.eyebrow">cadeiranumerada.com.br · Diário do Torcedor</div>
+            <h1 data-i18n-html="landing.hero.h1_html">
                 O jogo acaba.<br>
                 A <em>memória</em> fica <span class="underline">guardada</span>.
             </h1>
-            <p class="lede">
+            <p class="lede" data-i18n="landing.hero.lede">
                 Um caderno pessoal dos jogos que você foi ao estádio.
                 Marque a presença, registre o setor, anote o que viveu.
                 Seu retrospecto, seu museu, seu time — do jeito que você construiu.
@@ -880,14 +880,14 @@ footer {
             <div class="hero-cta">
                 <a href="/signup" class="btn btn-primary">
                     <span class="material-icons" style="font-size:1rem;">arrow_forward</span>
-                    Abrir meu diário
+                    <span data-i18n="landing.hero.cta_primary">Abrir meu diário</span>
                 </a>
-                <a href="/login" class="btn btn-ghost">Já tenho conta</a>
+                <a href="/login" class="btn btn-ghost" data-i18n="nav.have_account">Já tenho conta</a>
             </div>
             <div class="hero-meta">
-                <span><strong>12</strong> clubes</span>
-                <span><strong>Copa 2026</strong> incluída</span>
-                <span><strong>Grátis</strong> pra sempre</span>
+                <span><strong>12</strong> <span data-i18n="landing.hero.meta_clubs">clubes</span></span>
+                <span><strong data-i18n="landing.hero.meta_copa">Copa 2026</strong> <span data-i18n="landing.hero.meta_copa_sub">incluída</span></span>
+                <span><strong data-i18n="landing.hero.meta_free">Grátis</strong> <span data-i18n="landing.hero.meta_free_sub">pra sempre</span></span>
             </div>
         </div>
 
@@ -957,15 +957,15 @@ footer {
     <section class="stats-bar">
         <div class="stat-cell">
             <div class="stat-value">124<em>+</em></div>
-            <div class="stat-label">Jogos já catalogados</div>
+            <div class="stat-label" data-i18n="landing.stats.games">Jogos já catalogados</div>
         </div>
         <div class="stat-cell">
             <div class="stat-value">12</div>
-            <div class="stat-label">Clubes no catálogo</div>
+            <div class="stat-label" data-i18n="landing.stats.clubs">Clubes no catálogo</div>
         </div>
         <div class="stat-cell">
-            <div class="stat-value"><em>1</em> museu</div>
-            <div class="stat-label">Por torcedor · personalizado</div>
+            <div class="stat-value" data-i18n-html="landing.stats.museum_html"><em>1</em> museu</div>
+            <div class="stat-label" data-i18n="landing.stats.museum_label">Por torcedor · personalizado</div>
         </div>
     </section>
 
@@ -973,10 +973,10 @@ footer {
     <section class="how">
         <div class="how-head">
             <div>
-                <div class="section-eyebrow">Como funciona</div>
-                <h2>Três passos.<br>Uma <em>vida inteira</em> de jogos.</h2>
+                <div class="section-eyebrow" data-i18n="landing.how.eyebrow">Como funciona</div>
+                <h2 data-i18n-html="landing.how.h2_html">Três passos.<br>Uma <em>vida inteira</em> de jogos.</h2>
             </div>
-            <aside>
+            <aside data-i18n="landing.how.aside">
                 Sem planilha, sem caderno úmido. Suas idas ao estádio organizadas num lugar só, pra você revisitar quando quiser.
             </aside>
         </div>
@@ -986,8 +986,8 @@ footer {
                 <div class="step-num">01</div>
                 <div class="step-icon"><span class="material-icons">person_add</span></div>
                 <div>
-                    <h3>Crie sua conta.</h3>
-                    <p>Email, senha e o time que você torce. Leva 20 segundos e já mostra o catálogo dos jogos dele.</p>
+                    <h3 data-i18n="landing.how.s1.title">Crie sua conta.</h3>
+                    <p data-i18n="landing.how.s1.desc">Email, senha e o time que você torce. Leva 20 segundos e já mostra o catálogo dos jogos dele.</p>
                 </div>
             </div>
 
@@ -995,8 +995,8 @@ footer {
                 <div class="step-num">02</div>
                 <div class="step-icon"><span class="material-icons">stadium</span></div>
                 <div>
-                    <h3>Marque os jogos que você foi.</h3>
-                    <p>Valor pago, setor, assento, observações. Cada presença vira um ingresso — e entra no seu retrospecto.</p>
+                    <h3 data-i18n="landing.how.s2.title">Marque os jogos que você foi.</h3>
+                    <p data-i18n="landing.how.s2.desc">Valor pago, setor, assento, observações. Cada presença vira um ingresso — e entra no seu retrospecto.</p>
                 </div>
             </div>
 
@@ -1004,8 +1004,8 @@ footer {
                 <div class="step-num">03</div>
                 <div class="step-icon"><span class="material-icons">auto_stories</span></div>
                 <div>
-                    <h3>Abra o diário quando quiser.</h3>
-                    <p>Aproveitamento, rival que mais te derrotou, quanto você gastou. E cada jogo guardado como memória.</p>
+                    <h3 data-i18n="landing.how.s3.title">Abra o diário quando quiser.</h3>
+                    <p data-i18n="landing.how.s3.desc">Aproveitamento, rival que mais te derrotou, quanto você gastou. E cada jogo guardado como memória.</p>
                 </div>
             </div>
         </div>
@@ -1014,39 +1014,39 @@ footer {
     <!-- ============ FEATURES GRID ============ -->
     <section class="features">
         <div class="features-head">
-            <div class="section-eyebrow">Mais que um caderno</div>
-            <h2>Tudo que <em>cabe</em> num diário de torcedor.</h2>
+            <div class="section-eyebrow" data-i18n="landing.feat.eyebrow">Mais que um caderno</div>
+            <h2 data-i18n-html="landing.feat.h2_html">Tudo que <em>cabe</em> num diário de torcedor.</h2>
         </div>
         <div class="features-grid">
             <div class="feature-cell highlight">
-                <span class="feature-tag"><span class="material-icons">emoji_events</span>Copa do Mundo 2026</span>
-                <h3>Catálogo da Copa, do primeiro jogo à final.</h3>
-                <p>Vai pra um jogo da Copa nos EUA, México ou Canadá? Marque presença, guarde o ingresso e veja o seu mundial — independente do clube que você torce.</p>
+                <span class="feature-tag"><span class="material-icons">emoji_events</span><span data-i18n="landing.feat.copa.tag">Copa do Mundo 2026</span></span>
+                <h3 data-i18n="landing.feat.copa.title">Catálogo da Copa, do primeiro jogo à final.</h3>
+                <p data-i18n="landing.feat.copa.desc">Vai pra um jogo da Copa nos EUA, México ou Canadá? Marque presença, guarde o ingresso e veja o seu mundial — independente do clube que você torce.</p>
             </div>
             <div class="feature-cell">
-                <span class="feature-tag"><span class="material-icons">military_tech</span>Conquistas</span>
-                <h3>Cada marco virou um troféu.</h3>
-                <p>Primeiro clássico, primeira final, mil reais gastos, dez vitórias seguidas. O sistema desbloqueia conquistas conforme seu retrospecto cresce.</p>
+                <span class="feature-tag"><span class="material-icons">military_tech</span><span data-i18n="landing.feat.ach.tag">Conquistas</span></span>
+                <h3 data-i18n="landing.feat.ach.title">Cada marco virou um troféu.</h3>
+                <p data-i18n="landing.feat.ach.desc">Primeiro clássico, primeira final, mil reais gastos, dez vitórias seguidas. O sistema desbloqueia conquistas conforme seu retrospecto cresce.</p>
             </div>
             <div class="feature-cell">
-                <span class="feature-tag"><span class="material-icons">group</span>Amigos</span>
-                <h3>Quem foi com você no estádio.</h3>
-                <p>Adicione torcedores pelo @username, marque companhia em cada jogo, descubra quais foram os jogos que vocês viveram juntos.</p>
+                <span class="feature-tag"><span class="material-icons">group</span><span data-i18n="landing.feat.friends.tag">Amigos</span></span>
+                <h3 data-i18n="landing.feat.friends.title">Quem foi com você no estádio.</h3>
+                <p data-i18n="landing.feat.friends.desc">Adicione torcedores pelo @username, marque companhia em cada jogo, descubra quais foram os jogos que vocês viveram juntos.</p>
             </div>
             <div class="feature-cell">
-                <span class="feature-tag"><span class="material-icons">badge</span>Carteirinha</span>
-                <h3>Sua identidade de torcedor.</h3>
-                <p>Uma credencial digital com o seu time, total de jogos, aproveitamento e desde quando você está catalogando — pronta pra compartilhar.</p>
+                <span class="feature-tag"><span class="material-icons">badge</span><span data-i18n="landing.feat.card.tag">Carteirinha</span></span>
+                <h3 data-i18n="landing.feat.card.title">Sua identidade de torcedor.</h3>
+                <p data-i18n="landing.feat.card.desc">Uma credencial digital com o seu time, total de jogos, aproveitamento e desde quando você está catalogando — pronta pra compartilhar.</p>
             </div>
             <div class="feature-cell">
-                <span class="feature-tag"><span class="material-icons">savings</span>Gastos</span>
-                <h3>Quanto cada vitória te custou.</h3>
-                <p>Soma do que você pagou, média por jogo, jogo mais caro, ano mais caro. O carinho pelo time também tem extrato.</p>
+                <span class="feature-tag"><span class="material-icons">savings</span><span data-i18n="landing.feat.spend.tag">Gastos</span></span>
+                <h3 data-i18n="landing.feat.spend.title">Quanto cada vitória te custou.</h3>
+                <p data-i18n="landing.feat.spend.desc">Soma do que você pagou, média por jogo, jogo mais caro, ano mais caro. O carinho pelo time também tem extrato.</p>
             </div>
             <div class="feature-cell">
-                <span class="feature-tag"><span class="material-icons">insights</span>Retrospecto</span>
-                <h3>Aproveitamento por rival, por estádio, por setor.</h3>
-                <p>Quem mais te derrotou, qual setor te deu mais vitória, qual ano foi o melhor do seu retrospecto pessoal. Tudo cruzado num lugar só.</p>
+                <span class="feature-tag"><span class="material-icons">insights</span><span data-i18n="landing.feat.stats.tag">Retrospecto</span></span>
+                <h3 data-i18n="landing.feat.stats.title">Aproveitamento por rival, por estádio, por setor.</h3>
+                <p data-i18n="landing.feat.stats.desc">Quem mais te derrotou, qual setor te deu mais vitória, qual ano foi o melhor do seu retrospecto pessoal. Tudo cruzado num lugar só.</p>
             </div>
         </div>
     </section>
@@ -1055,12 +1055,12 @@ footer {
     <section class="dark-section">
         <div class="dark-section-inner">
             <div>
-                <div class="section-eyebrow">O museu</div>
-                <h2>Cada jogo vira um <em>ingresso de verdade</em>.</h2>
-                <p>
+                <div class="section-eyebrow" data-i18n="landing.museum.eyebrow">O museu</div>
+                <h2 data-i18n-html="landing.museum.h2_html">Cada jogo vira um <em>ingresso de verdade</em>.</h2>
+                <p data-i18n="landing.museum.desc">
                     Papel amarelado, canhoto picotado, placar em fonte de estádio. Sua coleção vai crescendo jogo a jogo — e você pode revisitar cada um com detalhes, gols e o que você anotou.
                 </p>
-                <a href="/signup" class="btn btn-primary" style="margin-top:2rem;background:#c8a760;border-color:#c8a760;color:#141414;">
+                <a href="/signup" class="btn btn-primary" data-i18n="landing.museum.cta" style="margin-top:2rem;background:#c8a760;border-color:#c8a760;color:#141414;">
                     Começar minha coleção
                 </a>
             </div>
@@ -1091,9 +1091,9 @@ footer {
 
     <!-- ============ CLUBES ============ -->
     <section class="clubs">
-        <div class="section-eyebrow" style="justify-content:center;display:flex;">Catálogo pronto</div>
-        <h2>Pro seu time, o catálogo já está lá.</h2>
-        <p>12 clubes brasileiros com os jogos pré-cadastrados. Você só marca a presença.</p>
+        <div class="section-eyebrow" data-i18n="landing.clubs.eyebrow" style="justify-content:center;display:flex;">Catálogo pronto</div>
+        <h2 data-i18n="landing.clubs.h2">Pro seu time, o catálogo já está lá.</h2>
+        <p data-i18n="landing.clubs.desc">12 clubes brasileiros com os jogos pré-cadastrados. Você só marca a presença.</p>
         <div class="club-strip">
             <span class="club-chip cor">Corinthians</span>
             <span class="club-chip pal">Palmeiras</span>
@@ -1112,25 +1112,35 @@ footer {
 
     <!-- ============ FINAL CTA ============ -->
     <section class="final-cta">
-        <h2>Seu próximo jogo ainda<br>não <em>aconteceu</em>.</h2>
-        <p class="lede">Mas os que já aconteceram merecem um lugar pra viver.</p>
+        <h2 data-i18n-html="landing.final.h2_html">Seu próximo jogo ainda<br>não <em>aconteceu</em>.</h2>
+        <p class="lede" data-i18n="landing.final.lede">Mas os que já aconteceram merecem um lugar pra viver.</p>
         <a href="/signup" class="btn btn-primary">
             <span class="material-icons" style="font-size:1.1rem;">auto_stories</span>
-            Abrir meu diário
+            <span data-i18n="landing.hero.cta_primary">Abrir meu diário</span>
         </a>
         <div style="margin-top:2.25rem;font-family:'Oswald',sans-serif;font-size:0.72rem;letter-spacing:0.32em;text-transform:uppercase;color:var(--ink-mute);">
             cadeiranumerada.com.br
         </div>
     </section>
 
-    <footer>
+    <footer data-i18n="landing.footer">
         Cadeira Numerada · cadeiranumerada.com.br · © 2026
     </footer>
 
+<script src="/i18n.js"></script>
 <script>
     if (localStorage.getItem('fiel_token')) {
         window.location.replace('/app');
     }
+
+    // Dropdown de idioma na nav (lado dos botões)
+    document.addEventListener('DOMContentLoaded', () => {
+        const navLinks = document.getElementById('navLinks');
+        if (navLinks && window.CN_I18N) {
+            const dd = window.CN_I18N.createLangDropdown({ variant: 'paper' });
+            navLinks.insertBefore(dd, navLinks.firstChild);
+        }
+    });
 </script>
 </body>
 </html>
