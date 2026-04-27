@@ -3162,6 +3162,15 @@ body[data-club="corinthians"] .ingresso.d {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+/* Posts colab — dois ou mais nomes não cabem em uma linha (especialmente
+   em mobile). Deixa quebrar em multilinha em vez de cortar com "...". */
+.feed-item.is-shared .feed-author-name {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    line-height: 1.2;
+    word-break: break-word;
+}
 .feed-action {
     font-family: 'SN Pro','Oswald',sans-serif;
     font-size: 0.78rem;
