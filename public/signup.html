@@ -137,6 +137,8 @@
             }
             localStorage.setItem('fiel_token', data.token);
             localStorage.setItem('fiel_user', JSON.stringify(data.user));
+            // Se signup via Google E user nao escolheu clube agora → tour no /app
+            if (data.is_new && !data.user.club_id) sessionStorage.setItem('cn_show_welcome', '1');
             window.location.replace('/app');
         } catch (e) {
             errBox.textContent = e.message;

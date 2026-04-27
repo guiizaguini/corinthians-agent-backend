@@ -111,6 +111,8 @@
             }
             localStorage.setItem('fiel_token', data.token);
             localStorage.setItem('fiel_user', JSON.stringify(data.user));
+            // Se for primeira vez logando via Google → tour de boas-vindas no /app
+            if (data.is_new) sessionStorage.setItem('cn_show_welcome', '1');
             window.location.replace('/app');
         } catch (e) {
             errBox.textContent = e.message;

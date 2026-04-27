@@ -196,7 +196,9 @@ router.post('/google', async (req, res, next) => {
         }
 
         // 3) Não achou nem por sub nem por email → cria conta nova
+        let isNew = false;
         if (!user) {
+            isNew = true;
             let clubId = null;
             if (club_slug) {
                 clubId = await getClubIdBySlug(club_slug);
@@ -215,7 +217,10 @@ router.post('/google', async (req, res, next) => {
         }
 
         const token = signToken({ sub: user.id, email: user.email });
-        res.json({ token, user: publicUser(user) });
+        // is_new permite ao front decidir se mostra o tour/modal de boas-vindas
+        // (escolha de clube). Diferente de checar club_id === null pq pode existir
+        // user antigo sem clube que ja conhece o app.
+        res.json({ token, user: publicUser(user), is_new: isNew });
     } catch (err) { next(err); }
 });
 

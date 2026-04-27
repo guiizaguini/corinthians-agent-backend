@@ -2279,6 +2279,78 @@ body[data-club="corinthians"] .ingresso.d {
     font-family: 'Oswald', sans-serif;
 }
 
+/* ================================================================
+   Welcome modal — escolha de clube na 1ª vez via Google
+   ================================================================ */
+.welcome-modal { max-width: 520px; }
+.welcome-eyebrow {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+}
+/* Bloco info estilo Material UI: borda esquerda accent + ícone info */
+.welcome-info {
+    background: color-mix(in srgb, var(--accent) 6%, var(--paper-soft));
+    border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+    border-left: 3px solid var(--accent);
+    border-radius: 10px;
+    padding: 0.85rem 1rem 0.95rem;
+    margin: 0.5rem 0 1.4rem;
+}
+.welcome-info-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.65rem;
+}
+.welcome-info-head .material-icons { font-size: 1.05rem; color: var(--accent); }
+.welcome-info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+.welcome-info-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    font-family: 'SN Pro', 'Oswald', sans-serif;
+    font-size: 0.83rem;
+    line-height: 1.4;
+    color: var(--ink);
+}
+.welcome-info-bullet {
+    flex-shrink: 0;
+    font-size: 1.05rem !important;
+    color: var(--accent);
+    margin-top: 0.05rem;
+}
+.welcome-info-list li b { font-weight: 700; }
+.welcome-skip-hint {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.72rem;
+    color: var(--cinza-claro);
+    text-align: center;
+    margin-top: 0.85rem;
+    font-style: italic;
+}
+@media (max-width: 480px) {
+    .welcome-info { padding: 0.7rem 0.8rem; }
+    .welcome-info-list li { font-size: 0.78rem; }
+}
+
 .modal label {
     display: block;
     font-size: 0.68rem;
@@ -7135,6 +7207,52 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         </div>
     </div>
 
+    <!-- Modal: Boas-vindas (1ª vez via Google sem clube) -->
+    <div class="modal-overlay" id="welcomeModal">
+        <div class="modal welcome-modal">
+            <div class="welcome-eyebrow" data-i18n="welcome.eyebrow">Boas-vindas</div>
+            <h2 data-i18n="welcome.title">Escolha seu time do coração</h2>
+            <div class="meta" data-i18n="welcome.subtitle">Pra começar, conta pra gente pra qual time você torce.</div>
+
+            <!-- Bloco info estilo Material UI (info icon + lista) -->
+            <div class="welcome-info">
+                <div class="welcome-info-head">
+                    <span class="material-icons">info</span>
+                    <span data-i18n="welcome.info_title">O que muda quando você escolhe um time?</span>
+                </div>
+                <ul class="welcome-info-list">
+                    <li>
+                        <span class="material-icons welcome-info-bullet">palette</span>
+                        <span data-i18n-html="welcome.info_b1">O app fica nas <b>cores do seu clube</b> automaticamente.</span>
+                    </li>
+                    <li>
+                        <span class="material-icons welcome-info-bullet">stadium</span>
+                        <span data-i18n-html="welcome.info_b2">Aparece o <b>catálogo completo</b> de jogos do seu time, históricos e atuais — você marca quais foi.</span>
+                    </li>
+                    <li>
+                        <span class="material-icons welcome-info-bullet">emoji_events</span>
+                        <span data-i18n-html="welcome.info_b3">Desbloqueia <b>conquistas</b> conforme acumula presenças, vitórias e clássicos.</span>
+                    </li>
+                    <li>
+                        <span class="material-icons welcome-info-bullet">insights</span>
+                        <span data-i18n-html="welcome.info_b4">Estatísticas pessoais: aproveitamento, retrospecto contra cada adversário, etc.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <label for="welcomeClubSelect" data-i18n="welcome.club_label">Pra qual time você torce?</label>
+            <select id="welcomeClubSelect">
+                <option value="" data-i18n="welcome.club_placeholder">— Selecione seu time —</option>
+            </select>
+
+            <div class="modal-actions">
+                <button class="btn-secondary" id="welcomeSkipBtn" data-i18n="welcome.btn_skip">Pular por enquanto</button>
+                <button class="btn-primary" id="welcomeSaveBtn" data-i18n="welcome.btn_save">Confirmar</button>
+            </div>
+            <div class="welcome-skip-hint" data-i18n="welcome.skip_hint">Você pode escolher depois no Perfil.</div>
+        </div>
+    </div>
+
     <!-- Modal: Excluir conta (confirmação dupla) -->
     <div class="modal-overlay" id="deleteAccountModal">
         <div class="modal">
@@ -8497,6 +8615,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             // Verifica conquistas pendentes em background (não bloqueia o load)
             // Pequeno delay pra não competir com o reflow inicial
             setTimeout(checkPendingAchievements, 800);
+            // Mostra modal de boas-vindas se for 1ª vez via Google sem clube
+            // (flag setada no login.html / signup.html)
+            maybeShowWelcomeModal();
         } catch (err) {
             console.error(err);
             document.getElementById('catalogList').innerHTML =
@@ -9314,8 +9435,75 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 opt.textContent = c.name;
                 pClub.appendChild(opt);
             }
+            // Popula tambem o select do welcome modal (idempotente — só append novos)
+            const wSelect = document.getElementById('welcomeClubSelect');
+            if (wSelect && wSelect.options.length <= 1) {
+                for (const c of clubsList) {
+                    const opt = document.createElement('option');
+                    opt.value = c.slug;
+                    opt.textContent = c.name;
+                    wSelect.appendChild(opt);
+                }
+            }
         } catch (_) {}
     }
+
+    // ===============================================
+    // Welcome modal — 1ª vez logando via Google sem clube
+    // ===============================================
+    const welcomeModal = document.getElementById('welcomeModal');
+    const welcomeSelect = document.getElementById('welcomeClubSelect');
+
+    async function maybeShowWelcomeModal() {
+        // Flag setada no login.html / signup.html quando is_new = true
+        if (sessionStorage.getItem('cn_show_welcome') !== '1') return;
+        sessionStorage.removeItem('cn_show_welcome');
+        // Carrega clubes pra popular o select
+        await ensureClubsLoaded();
+        // Re-aplica i18n nas strings do modal recém renderizado
+        if (window.CN_I18N?.applyTranslations) window.CN_I18N.applyTranslations();
+        welcomeModal.classList.add('show');
+    }
+
+    document.getElementById('welcomeSkipBtn').addEventListener('click', () => {
+        welcomeModal.classList.remove('show');
+    });
+
+    document.getElementById('welcomeSaveBtn').addEventListener('click', async () => {
+        const slug = welcomeSelect.value || null;
+        const btn = document.getElementById('welcomeSaveBtn');
+        btn.disabled = true;
+        const originalLabel = btn.textContent;
+        btn.textContent = '…';
+        try {
+            // PATCH /auth/me com club_slug → backend resolve pra club_id
+            const res = await fetch('/auth/me', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ club_slug: slug }),
+            });
+            if (!res.ok) throw new Error('save_failed');
+            const data = await res.json();
+            // Atualiza estado local pra não precisar refresh
+            user = data.user;
+            localStorage.setItem('fiel_user', JSON.stringify(user));
+            welcomeModal.classList.remove('show');
+            // Recarrega o app pra aplicar tema do clube + catálogo novo
+            window.location.reload();
+        } catch (err) {
+            btn.disabled = false;
+            btn.textContent = originalLabel;
+            alert((window.CN_I18N?.t('app.error.save')) || 'Erro ao salvar');
+        }
+    });
+
+    // Fecha modal ao clicar fora (mesmo padrão dos outros)
+    welcomeModal.addEventListener('click', (e) => {
+        if (e.target.id === 'welcomeModal') welcomeModal.classList.remove('show');
+    });
 
     // O botão "Perfil" do topbar agora abre a VISTA de perfil (não mais o modal direto).
     // O modal de edição é acessível via botão "Editar" dentro da vista.
