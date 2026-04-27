@@ -311,7 +311,8 @@ router.get('/feed', async (req, res, next) => {
                         WHERE ac.attendance_id = a.id AND ac.status = 'CONFIRMED'
                     ), '[]'::json) AS companions,
                     NULL::varchar AS title, NULL::text AS body,
-                    NULL::boolean AS is_public
+                    NULL::boolean AS is_public,
+                    NULL::varchar AS achievement_id
                 FROM attendances a
                 JOIN users u ON u.id = a.user_id
                 LEFT JOIN clubs c ON c.id = u.club_id
