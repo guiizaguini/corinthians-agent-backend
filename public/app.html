@@ -67,42 +67,60 @@
 }
 
 /* TEMA COPA DO MUNDO — aplicado pra usuários sem time escolhido.
-   Estética de gramado + dourado de troféu, sem mexer em estrutura nenhuma. */
+   Estética dos cards de bolão + ingressos WC: marrom dourado escuro,
+   accent ouro de troféu, faixa rainbow no topo. Sem mudar estrutura. */
 body.worldcup-theme {
-    --bg-base: #053e2a;
-    --bg-card: #0a4f37;
-    --bg-card-2: #0f5b40;
-    --bg-elevated: #156749;
-    --ink: #f5efd7;
-    --ink-soft: #d8d0a8;
-    --ink-mute: #8a9483;
-    --line: #1a5c41;
-    --line-soft: #0d4730;
-    --shadow-sm: 0 2px 8px rgba(0,30,15,0.35);
-    --shadow-md: 0 8px 22px rgba(0,30,15,0.5);
-    --shadow-lg: 0 16px 40px rgba(0,30,15,0.6);
+    --bg-base: #1a1000;
+    --bg-card: #251907;
+    --bg-card-2: #2f220c;
+    --bg-elevated: #3a2a10;
+    --ink: #f5e6a8;
+    --ink-soft: #d8c890;
+    --ink-mute: #998566;
+    --line: #3a2a10;
+    --line-soft: #251907;
+    --shadow-sm: 0 2px 8px rgba(20,10,0,0.4);
+    --shadow-md: 0 8px 22px rgba(20,10,0,0.55);
+    --shadow-lg: 0 16px 40px rgba(20,10,0,0.65);
 
-    --paper: #053e2a;
-    --paper-soft: #0a4f37;
-    --paper-deep: #0f5b40;
-    --preto-card: #0a4f37;
-    --preto-card-2: #0f5b40;
-    --branco: #f5efd7;
-    --branco-suave: #d8d0a8;
-    --cinza-claro: #8a9483;
-    --cinza-medio: #6e7867;
-    --cinza-linha: #1a5c41;
-    --cinza-divisa: #0d4730;
-    --ink-line: #1a5c41;
+    --paper: #1a1000;
+    --paper-soft: #251907;
+    --paper-deep: #2f220c;
+    --preto-card: #251907;
+    --preto-card-2: #2f220c;
+    --branco: #f5e6a8;
+    --branco-suave: #d8c890;
+    --cinza-claro: #998566;
+    --cinza-medio: #7a6a52;
+    --cinza-linha: #3a2a10;
+    --cinza-divisa: #251907;
+    --ink-line: #3a2a10;
 }
-/* Padrão sutil de hexágonos (bola de futebol) por cima do gradient existente */
+/* Mesmo pattern do bolão-hero: glow dourado + glow azul + listras 135° */
 body.worldcup-theme::before {
     background-image:
-        radial-gradient(ellipse 70% 50% at 85% -10%, var(--accent-soft) 0%, transparent 55%),
-        radial-gradient(ellipse 50% 35% at -5% 110%, var(--accent-soft) 0%, transparent 55%),
-        radial-gradient(circle at 50% 50%, rgba(255,199,44,0.04) 0%, transparent 70%),
-        repeating-linear-gradient(60deg, transparent 0 40px, rgba(245,239,215,0.018) 40px 41px),
-        repeating-linear-gradient(-60deg, transparent 0 40px, rgba(245,239,215,0.018) 40px 41px);
+        radial-gradient(circle at 90% 10%, rgba(212,165,32,0.20) 0%, transparent 45%),
+        radial-gradient(circle at 5% 90%, rgba(126,224,255,0.09) 0%, transparent 50%),
+        radial-gradient(ellipse 70% 50% at 50% 50%, rgba(255,201,58,0.04) 0%, transparent 65%),
+        repeating-linear-gradient(135deg, transparent 0 22px, rgba(255,215,128,0.04) 22px 23px) !important;
+}
+/* Faixa fixa de 6 cores da Copa no topo da janela (igual bolao-hero-stripes) */
+body.worldcup-theme::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    z-index: 999;
+    pointer-events: none;
+    background: linear-gradient(90deg,
+        #e63946 0 16.666%,
+        #ff7a00 16.666% 33.333%,
+        #ffc93a 33.333% 50%,
+        #06a957 50% 66.666%,
+        #4361ee 66.666% 83.333%,
+        #7b2cbf 83.333% 100%);
 }
 
 /* TEMA LIGHT — clubes com identidade clara (Palmeiras, SPFC, Inter, Grêmio, etc) */
@@ -7655,14 +7673,22 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             delete document.body.dataset.club;
         }
 
-        // Corinthians: dourado escuro tradicional
-        if (club && club.slug === 'corinthians') {
+        // Sem clube: tema Copa do Mundo (gold de troféu + paleta dos ingressos WC)
+        if (themeMode === 'worldcup') {
+            root.style.setProperty('--accent', '#d4a520');
+            root.style.setProperty('--accent-hover', '#f0c040');
+            root.style.setProperty('--accent-soft', 'rgba(212,165,32,0.18)');
+            root.style.setProperty('--accent-glow', 'rgba(212,165,32,0.35)');
+            root.style.setProperty('--accent-dark', '#8a6a14');
+            root.style.setProperty('--accent-text', '#1a1000');
+        } else if (club && club.slug === 'corinthians') {
+            // Corinthians: dourado escuro tradicional
             setAccentPalette(root, '#7a6638');
         } else if (club && club.primary_color) {
             setAccentPalette(root, club.primary_color);
         } else {
-            // Sem clube: dourado de troféu (Copa do Mundo)
-            setAccentPalette(root, '#d4a437');
+            // Fallback (não deve cair aqui — sem clube já cai em worldcup)
+            setAccentPalette(root, '#6b1f2a');
         }
 
         if (club && club.name) {
