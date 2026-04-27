@@ -6,17 +6,18 @@
 (function () {
     const STORAGE_KEY = 'cn_lang';
     const DEFAULT_LANG = 'pt';
-    // Cores oficiais de cada bandeira pra evitar dependência de emoji
-    // (Windows e alguns Androids antigos não renderizam flag emojis).
+    // Reusa o mesmo CDN das seleções da Copa (flagcdn.com) — bandeiras PNG
+    // de verdade, com srcset 1x/2x/3x pra ficar nítido em retina.
     const LANGS = {
-        pt: { code: 'pt', label: 'Português', short: 'PT', country: 'Brasil',  bg: '#009c3b', fg: '#ffdf00' },
-        en: { code: 'en', label: 'English',   short: 'EN', country: 'USA',     bg: '#0a3161', fg: '#ffffff' },
-        es: { code: 'es', label: 'Español',   short: 'ES', country: 'España',  bg: '#aa151b', fg: '#ffc400' },
+        pt: { code: 'pt', label: 'Português', short: 'PT', country: 'Brasil',  iso: 'br' },
+        en: { code: 'en', label: 'English',   short: 'EN', country: 'USA',     iso: 'us' },
+        es: { code: 'es', label: 'Español',   short: 'ES', country: 'España',  iso: 'es' },
     };
 
-    function langBadge(lang) {
+    function langFlag(lang) {
         const l = LANGS[lang];
-        return `<span class="cn-lang-badge" style="background:${l.bg};color:${l.fg};" aria-hidden="true">${l.short}</span>`;
+        const srcset = `https://flagcdn.com/w80/${l.iso}.png 1x, https://flagcdn.com/w160/${l.iso}.png 2x, https://flagcdn.com/w320/${l.iso}.png 3x`;
+        return `<img class="cn-lang-flag" src="https://flagcdn.com/w80/${l.iso}.png" srcset="${srcset}" alt="${l.country}" loading="lazy">`;
     }
 
     const T = {
@@ -926,7 +927,7 @@
         const cur = getLang();
         wrap.innerHTML = `
             <button type="button" class="cn-lang-trigger" aria-haspopup="listbox" aria-expanded="false" title="${LANGS[cur].country} · ${LANGS[cur].label}" aria-label="${LANGS[cur].label}">
-                ${langBadge(cur)}
+                ${langFlag(cur)}
             </button>
         `;
 
@@ -938,7 +939,7 @@
         menu.hidden = true;
         menu.innerHTML = Object.values(LANGS).map(l => `
             <li role="option" data-lang="${l.code}" ${l.code === cur ? 'aria-selected="true"' : ''}>
-                ${langBadge(l.code)}
+                ${langFlag(l.code)}
                 <span class="cn-lang-name">${l.label}</span>
                 <span class="cn-lang-country">${l.country}</span>
             </li>
@@ -973,7 +974,7 @@
                 const lang = li.getAttribute('data-lang');
                 setLang(lang);
                 // Atualiza o badge do trigger
-                trigger.innerHTML = langBadge(lang);
+                trigger.innerHTML = langFlag(lang);
                 trigger.title = `${LANGS[lang].country} · ${LANGS[lang].label}`;
                 trigger.setAttribute('aria-label', LANGS[lang].label);
                 menu.querySelectorAll('li').forEach(x => x.removeAttribute('aria-selected'));
@@ -1009,20 +1010,22 @@
             @media (max-width: 680px) {
                 .cn-lang-trigger { width: 34px; height: 34px; }
             }
-            /* Badge "PT/EN/ES" tinted nas cores da bandeira do país.
-               Substitui flag emoji (não renderiza em todo device). */
-            .cn-lang-badge {
-                display: inline-flex; align-items: center; justify-content: center;
-                width: 26px; height: 18px; border-radius: 4px;
-                font-family: 'Oswald', sans-serif; font-weight: 700;
-                font-size: 0.62rem; letter-spacing: 0.06em;
-                line-height: 1; padding: 0 3px;
-                box-shadow: 0 1px 0 rgba(0,0,0,0.15) inset, 0 1px 2px rgba(0,0,0,0.12);
+            /* Bandeira PNG real (mesmo padrão das seleções da Copa via flagcdn).
+               Sem dependência de emoji — funciona em todo device. */
+            .cn-lang-flag {
+                width: 24px;
+                height: 16px;
+                object-fit: cover;
+                border-radius: 3px;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+                display: block;
                 flex-shrink: 0;
             }
+            .cn-lang-trigger .cn-lang-flag { width: 22px; height: 15px; }
             @media (max-width: 680px) {
-                .cn-lang-trigger .cn-lang-badge { width: 24px; height: 16px; font-size: 0.58rem; }
+                .cn-lang-trigger .cn-lang-flag { width: 20px; height: 14px; }
             }
+            .cn-lang-menu .cn-lang-flag { width: 26px; height: 18px; }
             /* Menu portado pro body via position: fixed — não fica preso em
                stacking context de pais (problema na landing/área logada). */
             .cn-lang-menu {
@@ -1048,8 +1051,21 @@
             .cn-lang-menu li:hover { background: rgba(0,0,0,0.06); }
             .cn-lang-menu-dark li:hover { background: rgba(255,255,255,0.08); }
             .cn-lang-menu li[aria-selected="true"] { font-weight: 700; }
+            /* Indicador da opção selecionada — Material Icon "radio_button_checked"
+               (bolinha preenchida no estilo radio button), em vez de "✓" */
             .cn-lang-menu li[aria-selected="true"]::after {
-                content: '✓'; margin-left: auto; opacity: 0.7; font-weight: 700;
+                content: 'radio_button_checked';
+                font-family: 'Material Icons';
+                font-size: 1.05rem;
+                font-weight: normal;
+                font-style: normal;
+                letter-spacing: 0;
+                text-transform: none;
+                margin-left: auto;
+                opacity: 0.85;
+                /* Render hint pra suavizar o ícone */
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
             }
             .cn-lang-menu .cn-lang-name { line-height: 1.1; }
             .cn-lang-menu .cn-lang-country {
