@@ -5836,11 +5836,33 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     .bolao-filtros-chips::-webkit-scrollbar { display: none; }
     .bolao-fase-chip { padding: 0.32rem 0.75rem; font-size: 0.62rem; flex-shrink: 0; }
 
-    /* Garantia anti-vazamento pra coluna de jogos no mobile —
-       se algum filho tiver largura inesperada, fica contido */
-    .bolao-jogos { overflow-x: hidden; }
+    /* Garantia anti-vazamento em todos os níveis no mobile.
+       Algum filho lá embaixo (palpite-row grid + ticket interno) estava
+       expandindo a coluna pra fora do viewport. Constraint em cada nível: */
+    #bolaoViewDetail,
+    .bolao-detail-layout,
+    .bolao-jogos,
+    #bolaoJogosList,
+    .bolao-section-cards { max-width: 100%; min-width: 0; overflow-x: hidden; }
     .bolao-jogos-head { min-width: 0; }
-    .bolao-jogos-head h3 { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    .bolao-jogos-head h3 {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    /* Cards individuais não podem ter min-content empurrando largura */
+    .wc-ticket, .bolao-ticket { max-width: 100%; min-width: 0; }
+    .bolao-palpite-row { max-width: 100%; min-width: 0; }
+    .bolao-palpite-team { min-width: 0; max-width: 100%; }
+    /* Section title: letter-spacing 0.25em em texto uppercase pode não
+       caber se for muito longo. Permite quebra. */
+    .wc-section-title {
+        flex-wrap: wrap;
+        min-width: 0;
+        letter-spacing: 0.18em;
+    }
+    .wc-section-title .wc-section-count { letter-spacing: 0.16em; }
 
     /* JOGOS HEAD — divisor sutil em vez de bloco */
     .bolao-jogos-head {
