@@ -249,6 +249,10 @@
             'app.album.compare_empty_get': 'Ele não tem nenhum repetido que você precisa.',
             'app.album.compare_empty_give': 'Você não tem repetidos que ele precise.',
             'app.album.compare_empty_both': 'Vocês 2 já completaram tudo!',
+            'app.album.compare_newuser_title': 'Você ainda não tem cromos marcados',
+            'app.album.compare_newuser_desc': 'Marque os cromos do seu álbum pra a gente saber quais trocas dá pra fechar com',
+            'app.album.compare_newuser_btn': 'Ir pro meu álbum',
+            'app.album.compare_newuser_hint': 'Enquanto isso, você pode ver tudo que ele tem repetido (clicando em "Ele me dá").',
             'app.btn.copy': 'Copiar',
 
             // ====== APP — MODAL: PERFIL ======
@@ -595,6 +599,10 @@
             'app.album.compare_empty_get': 'They have no duplicates that you need.',
             'app.album.compare_empty_give': 'You have no duplicates they need.',
             'app.album.compare_empty_both': 'You both completed everything!',
+            'app.album.compare_newuser_title': 'You haven\'t marked any stickers yet',
+            'app.album.compare_newuser_desc': 'Mark the stickers in your album so we can find the trades you can close with',
+            'app.album.compare_newuser_btn': 'Open my album',
+            'app.album.compare_newuser_hint': 'Meanwhile, you can see everything they have as duplicates (tap "They give").',
             'app.btn.copy': 'Copy',
 
             'app.profile.title': 'Edit profile',
@@ -934,6 +942,10 @@
             'app.album.compare_empty_get': 'No tiene repetidas que vos necesités.',
             'app.album.compare_empty_give': 'No tenés repetidas que le falten.',
             'app.album.compare_empty_both': '¡Los 2 ya completaron todo!',
+            'app.album.compare_newuser_title': 'Todavía no marcaste ninguna figurita',
+            'app.album.compare_newuser_desc': 'Marcá las figuritas de tu álbum para que veamos qué cambios podés cerrar con',
+            'app.album.compare_newuser_btn': 'Ir a mi álbum',
+            'app.album.compare_newuser_hint': 'Mientras tanto, podés ver todo lo que tiene repetido (tocá "Te da").',
             'app.btn.copy': 'Copiar',
 
             'app.profile.title': 'Editar perfil',

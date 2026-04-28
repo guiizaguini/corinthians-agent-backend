@@ -4587,6 +4587,71 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     font-style: italic;
     font-family: 'SN Pro', sans-serif;
 }
+/* Empty state especial: user logado sem álbum próprio */
+.album-compare-empty-newuser {
+    text-align: center;
+    padding: 2.5rem 1.5rem 1.5rem;
+}
+.album-compare-empty-newuser .material-icons {
+    font-size: 3rem;
+    color: #d4a520;
+    margin-bottom: 0.85rem;
+    opacity: 0.85;
+}
+.album-compare-empty-newuser h3 {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: var(--wc-ink);
+    margin: 0 0 0.6rem;
+}
+.album-compare-empty-newuser p {
+    font-family: 'SN Pro', sans-serif;
+    font-size: 0.92rem;
+    color: var(--wc-ink-mute);
+    line-height: 1.45;
+    margin: 0 auto 1.3rem;
+    max-width: 360px;
+}
+.album-compare-empty-newuser p strong {
+    color: var(--wc-ink);
+    font-weight: 700;
+}
+.album-compare-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.4rem !important;
+    background: linear-gradient(135deg, #d4a520, #a87f1e) !important;
+    border-color: #a87f1e !important;
+    color: #1a1000 !important;
+    font-family: 'Oswald', sans-serif !important;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(212,165,32,0.4);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.album-compare-cta:hover {
+    background: linear-gradient(135deg, #ffc93a, #d4a520) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(212,165,32,0.5);
+}
+.album-compare-cta .material-icons {
+    color: #1a1000 !important;
+    font-size: 1.1rem;
+    margin: 0 !important;
+}
+.album-compare-newuser-hint {
+    font-size: 0.78rem !important;
+    font-style: italic;
+    color: var(--wc-ink-mute) !important;
+    margin-top: 1rem !important;
+    max-width: 320px !important;
+}
 .album-compare-secao {
     margin-bottom: 1.2rem;
 }
@@ -14158,6 +14223,28 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             document.getElementById('albumCompareGiveBadge').textContent = data.matches_meus_pra_ele.length;
             document.getElementById('albumCompareBothMissBadge').textContent = data.ambos_faltam.length;
 
+            // EMPTY STATE: user logado não tem álbum próprio (zero cromos marcados)
+            // Sem isso, a comparação fica meio sem sentido.
+            if (s.meu_tenho === 0) {
+                list.innerHTML = `
+                    <div class="album-compare-empty-newuser">
+                        <span class="material-icons">collections_bookmark</span>
+                        <h3>${t('app.album.compare_newuser_title') || 'Você ainda não tem cromos marcados'}</h3>
+                        <p>${t('app.album.compare_newuser_desc') || 'Marque os cromos do seu álbum pra a gente saber quais trocas dá pra fechar com'} <strong>@${escapeHtml(data.friend.username)}</strong>.</p>
+                        <button class="btn-primary album-compare-cta" id="albumCompareGoToMine" type="button">
+                            <span class="material-icons">photo_library</span>
+                            ${t('app.album.compare_newuser_btn') || 'Ir pro meu álbum'}
+                        </button>
+                        <p class="album-compare-newuser-hint">${t('app.album.compare_newuser_hint') || 'Enquanto isso, você pode ver tudo que ele tem repetido (clicando em "Ele me dá").'}</p>
+                    </div>
+                `;
+                document.getElementById('albumCompareGoToMine').addEventListener('click', () => {
+                    document.getElementById('albumCompareModal').classList.remove('show');
+                    navigate('/album');
+                });
+                return;
+            }
+
             albumCompareRenderTab(albumCompareState.currentTab);
         } catch (e) {
             list.innerHTML = `<div class="album-compare-empty">Erro: ${escapeHtml(e.message)}</div>`;
@@ -14273,16 +14360,68 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const textEl = document.getElementById('albumShareText');
         linkEl.value = url;
 
-        // Texto pronto pra colar
+        // ===== Texto COMPLETO pra colar — agrupado por seleção =====
         const faltam = albumState.cromos.filter(c => c.quantidade === 0);
         const repetidos = albumState.cromos.filter(c => c.quantidade > 1);
-        const fmtList = (arr) => arr.slice(0, 12).map(c => c.code).join(', ') + (arr.length > 12 ? ` +${arr.length - 12}` : '');
+        const selById = Object.fromEntries(albumState.selecoes.map(s => [s.id, s]));
+
+        // Helper: agrupa cromos por seleção, na ordem do álbum
+        const agrupaPorSelecao = (cromos) => {
+            const porSel = new Map();
+            for (const c of cromos) {
+                const sel = selById[c.selecao_id];
+                if (!sel) continue;
+                if (!porSel.has(sel.id)) porSel.set(sel.id, { sel, items: [] });
+                porSel.get(sel.id).items.push(c);
+            }
+            // Ordena seleções pela ordem do catálogo (já vêm ordenadas em albumState.selecoes)
+            return albumState.selecoes
+                .filter(s => porSel.has(s.id))
+                .map(s => porSel.get(s.id));
+        };
+
+        // Monta linhas: "  Brasil: BRA-01, BRA-02, BRA-05" (ordenado pelo número do cromo)
+        const fmtSelecao = ({ sel, items }, withRepCount = false) => {
+            const sorted = [...items].sort((a, b) => a.ordem - b.ordem);
+            const codes = withRepCount
+                ? sorted.map(c => `${c.code} (×${c.quantidade})`).join(', ')
+                : sorted.map(c => c.code).join(', ');
+            return `  ${sel.name}: ${codes}`;
+        };
+
+        // Agrupa por GRUPO também pra ficar bem hierarquizado
+        const fmtSecao = (cromos, withRep = false) => {
+            const sels = agrupaPorSelecao(cromos);
+            // Sub-agrupa por grupo (A-L + ESPECIAL)
+            const porGrupo = new Map();
+            for (const item of sels) {
+                const g = item.sel.grupo || 'ESPECIAL';
+                if (!porGrupo.has(g)) porGrupo.set(g, []);
+                porGrupo.get(g).push(item);
+            }
+            const ordemGrupos = ['A','B','C','D','E','F','G','H','I','J','K','L','ESPECIAL'];
+            return ordemGrupos
+                .filter(g => porGrupo.has(g))
+                .map(g => {
+                    const head = g === 'ESPECIAL' ? '★ ESPECIAIS' : `GRUPO ${g}`;
+                    const linhas = porGrupo.get(g).map(item => fmtSelecao(item, withRep)).join('\n');
+                    return `${head}\n${linhas}`;
+                })
+                .join('\n\n');
+        };
+
+        const linhasFaltam = faltam.length ? fmtSecao(faltam) : '  —';
+        const linhasRep = repetidos.length ? fmtSecao(repetidos, true) : '  —';
 
         const texto = [
             t('app.album.share_text_header') || '🎴 Meu álbum da Copa 2026',
+            `@${user.username}`,
             '',
-            (t('app.album.share_text_falta') || '📋 Faltam') + ` (${faltam.length}): ${faltam.length ? fmtList(faltam) : '—'}`,
-            (t('app.album.share_text_rep') || '🔄 Repetidas') + ` (${repetidos.length}): ${repetidos.length ? fmtList(repetidos) : '—'}`,
+            `${t('app.album.share_text_falta') || '📋 FALTAM'} (${faltam.length}):`,
+            linhasFaltam,
+            '',
+            `${t('app.album.share_text_rep') || '🔄 REPETIDAS'} (${repetidos.length}):`,
+            linhasRep,
             '',
             (t('app.album.share_text_cta') || '🤝 Bora trocar?') + ' ' + url,
         ].join('\n');
