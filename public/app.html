@@ -3972,11 +3972,35 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     font-size: 1.25rem;
 }
 
+.album-share-link-block { margin-bottom: 1.2rem; }
+/* Bloco explicativo do link público — destaca como o match automático funciona */
+.album-share-link-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.8rem 0.9rem;
+    margin: 0.4rem 0 0.65rem;
+    background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+    border: 1px solid rgba(212,165,32,0.4);
+    border-left: 3px solid #d4a520;
+    border-radius: 10px;
+    font-family: 'SN Pro', sans-serif;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: #5a4810;
+}
+.album-share-link-info .material-icons {
+    color: #d4a520;
+    font-size: 1.15rem;
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+}
+.album-share-link-info strong { color: #1a1000; font-weight: 700; }
+
 .album-share-link-row {
     display: flex;
     gap: 0.5rem;
     align-items: center;
-    margin-bottom: 1rem;
 }
 .album-share-link-row input {
     flex: 1;
@@ -8312,13 +8336,13 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     <!-- Modal: Comparar álbum com amigo (vem de ?album=username) -->
     <div class="modal-overlay" id="albumCompareModal">
         <div class="modal album-compare-modal">
-            <header class="album-compare-head">
+            <div class="album-compare-head">
                 <div>
                     <div class="album-compare-eyebrow" data-i18n="app.album.compare_eyebrow">Comparação de álbuns</div>
                     <h2 id="albumCompareTitle">Você × —</h2>
                 </div>
                 <button class="bell-dropdown-close" id="albumCompareClose" type="button" aria-label="Fechar">×</button>
-            </header>
+            </div>
 
             <!-- Stats lado a lado -->
             <div class="album-compare-stats">
@@ -8382,13 +8406,19 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 <span data-i18n="app.album.share_download">Baixar imagem (.png)</span>
             </button>
 
-            <label data-i18n="app.album.share_link_label">Link público da sua lista</label>
-            <div class="album-share-link-row">
-                <input id="albumShareLink" type="text" readonly>
-                <button class="btn-secondary" id="albumShareCopy" type="button">
-                    <span class="material-icons">content_copy</span>
-                    <span data-i18n="app.btn.copy">Copiar</span>
-                </button>
+            <div class="album-share-link-block">
+                <label data-i18n="app.album.share_link_label">Link público da sua lista</label>
+                <div class="album-share-link-info">
+                    <span class="material-icons">auto_awesome</span>
+                    <span data-i18n-html="app.album.share_link_info">Quando alguém abre esse link <strong>já logado</strong> no Cadeira Numerada, o app <strong>cruza automaticamente</strong> as figurinhas: mostra <strong>quais ele te dá</strong> (repetidas dele que você falta) e <strong>quais você dá pra ele</strong> — pra fechar a troca em segundos. Se a pessoa não tiver conta ainda, o link convida ela a criar uma e o match acontece quando ela marcar os cromos dela.</span>
+                </div>
+                <div class="album-share-link-row">
+                    <input id="albumShareLink" type="text" readonly>
+                    <button class="btn-secondary" id="albumShareCopy" type="button">
+                        <span class="material-icons">content_copy</span>
+                        <span data-i18n="app.btn.copy">Copiar</span>
+                    </button>
+                </div>
             </div>
 
             <label data-i18n="app.album.share_text_label">Texto pronto pra colar (WhatsApp, etc)</label>
@@ -14104,11 +14134,11 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                     const flagUrl = s.flag_iso ? `https://flagcdn.com/w80/${s.flag_iso}.png` : '';
                     return `
                         <section class="album-secao">
-                            <header class="album-secao-head">
+                            <div class="album-secao-head">
                                 ${flagUrl ? `<img class="album-secao-flag" src="${flagUrl}" alt="" loading="lazy">` : `<span class="album-secao-flag-placeholder">${escapeHtml((s.code || '').slice(0,3))}</span>`}
                                 <span class="album-secao-name">${escapeHtml(s.name)}</span>
                                 <span class="album-secao-progress"><strong>${tenho}</strong> / ${total}</span>
-                            </header>
+                            </div>
                             <div class="album-cromos-grid">
                                 ${cromos.map(c => albumRenderCromo(c, s)).join('')}
                             </div>
@@ -14117,11 +14147,11 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 }).join('');
 
                 return `
-                    <header class="album-grupo-head ${isEspecial ? 'album-grupo-head-special' : ''}">
+                    <div class="album-grupo-head ${isEspecial ? 'album-grupo-head-special' : ''}">
                         <span class="album-grupo-head-letter">${isEspecial ? '★' : g}</span>
                         <span class="album-grupo-head-label">${escapeHtml(grupoLabel)}</span>
                         <span class="album-grupo-head-progress"><strong>${tenhoG}</strong> / ${totalG}</span>
-                    </header>
+                    </div>
                     ${selecoesHtml}
                 `;
             }).join('');
@@ -14351,11 +14381,11 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             const flagUrl = sel.flag_iso ? `https://flagcdn.com/w80/${sel.flag_iso}.png` : '';
             return `
                 <section class="album-compare-secao">
-                    <header class="album-compare-secao-head">
+                    <div class="album-compare-secao-head">
                         ${flagUrl ? `<img class="album-secao-flag" src="${flagUrl}" alt="" loading="lazy">` : `<span class="album-secao-flag-placeholder">${escapeHtml(sel.selecao_code.slice(0,3))}</span>`}
                         <span class="album-compare-secao-head-name">${escapeHtml(sel.selecao_name)}</span>
                         ${sel.grupo ? `<span class="album-compare-secao-head-grupo">GRUPO ${sel.grupo}</span>` : '<span class="album-compare-secao-head-grupo">★</span>'}
-                    </header>
+                    </div>
                     <div class="album-compare-cromos-grid">
                         ${items.map(c => {
                             const flagBg = c.flag_iso ? `https://flagcdn.com/w160/${c.flag_iso}.png` : '';
@@ -14532,36 +14562,40 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const CONTENT_W = W - PAD * 2;
         // Mini-cromo: 64×80 (proporção 4:5, número grande visível)
         const CW = 64, CH = 80, CGAP = 8;
-        const CPL = Math.floor((CONTENT_W + CGAP) / (CW + CGAP)); // cromos por linha
-        const HEADER_H = 280;
-        const STATS_H = 220;
+        const CPL = Math.floor((CONTENT_W + CGAP) / (CW + CGAP)); // cromos por linha (=13)
+        const HEADER_H = 245;     // y após username (cabeçalho topo)
+        const STATS_H = 240;      // card stats + progress + texto X/Y
+        const TITLE_H = 30;       // "FALTAM (n)"
         const GROUP_HEAD_H = 56;
-        const SEL_HEAD_H = 38;
+        const SEL_HEAD_H = 28;    // header da seleção (bandeira + nome)
+        const GROUP_GAP = 12;     // espaço entre grupos
         const SEL_MARGIN_BOT = 18;
         const FOOTER_H = 130;
-        // Limite navegador-safe: até ~16.000px funciona na maioria; acima
-        // disso o iOS Safari estoura. 14000 cabe ~970 cromos confortavelmente.
         const MAX_H = 14000;
 
-        // ================ CALCULA ALTURA NECESSÁRIA ================
-        let calcH = HEADER_H + STATS_H + 30;
+        // Helper: altura visual real do grid de cromos de uma seleção.
+        // Linhas vivas ocupam CH cada, separadas por CGAP entre elas.
+        // N linhas → N*CH + (N-1)*CGAP
+        const gridHeight = (n) => {
+            const lines = Math.ceil(n / CPL);
+            return lines * CH + (lines - 1) * CGAP;
+        };
+
+        // ================ CALCULA ALTURA NECESSÁRIA (precisa bater EXATO com render) ================
+        let calcH = HEADER_H + STATS_H;
         if (faltam.length === 0) {
             calcH += 100; // empty state
         } else {
-            calcH += 60; // título "FALTAM (n)"
+            calcH += TITLE_H;
             for (const [g, sels] of grupoEntries) {
                 calcH += GROUP_HEAD_H;
                 for (const { cromos } of sels) {
-                    calcH += SEL_HEAD_H;
-                    const lines = Math.ceil(cromos.length / CPL);
-                    calcH += lines * (CH + CGAP) + SEL_MARGIN_BOT;
+                    calcH += SEL_HEAD_H + gridHeight(cromos.length) + SEL_MARGIN_BOT;
                 }
-                calcH += 12;
+                calcH += GROUP_GAP;
             }
         }
         calcH += FOOTER_H;
-        // Nota: o flag de truncamento é detectado durante o render via
-        // `truncatedAt` (mais preciso que comparar calcH > MAX_H aqui)
         const H = Math.min(calcH, MAX_H);
 
         canvas.width = W;
@@ -14669,14 +14703,13 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             // Renderiza grupos
             let truncatedAt = null;
             for (const [g, sels] of grupoEntries) {
-                // Calcula altura desse grupo pra checar se cabe inteiro (sem cortar no meio)
-                let neededH = GROUP_HEAD_H + 12;
+                // Pré-calcula altura usando MESMA fórmula do calcH
+                let neededH = GROUP_HEAD_H;
                 for (const { cromos } of sels) {
-                    neededH += SEL_HEAD_H;
-                    neededH += Math.ceil(cromos.length / CPL) * (CH + CGAP) + SEL_MARGIN_BOT;
+                    neededH += SEL_HEAD_H + gridHeight(cromos.length) + SEL_MARGIN_BOT;
                 }
-                if (y + neededH > H - FOOTER_H - 30) {
-                    // Sem espaço pra esse grupo inteiro — registra e sai
+                neededH += GROUP_GAP;
+                if (y + neededH > H - FOOTER_H) {
                     truncatedAt = g;
                     break;
                 }
@@ -14737,23 +14770,21 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                     ctx.fillStyle = '#ff8a8a';
                     ctx.font = '500 14px Oswald, sans-serif';
                     ctx.fillText(`${cromos.length} faltam`, hx + nameW + 12, y);
-                    y += SEL_HEAD_H - 10;
+                    y += SEL_HEAD_H;
 
-                    // Grid de mini-cromos
-                    let col = 0;
-                    let lineY = y;
-                    for (const c of cromos) {
-                        const cx = sx + col * (CW + CGAP);
-                        drawMiniCromoFalta(ctx, cx, lineY, CW, CH, c.code, c.ordem);
-                        col++;
-                        if (col >= CPL) {
-                            col = 0;
-                            lineY += CH + CGAP;
-                        }
+                    // Grid de mini-cromos — render direto baseado em índice/linha
+                    // (mais previsível que mutar lineY no loop). Bate exato com gridHeight().
+                    const startY = y;
+                    for (let i = 0; i < cromos.length; i++) {
+                        const lineIdx = Math.floor(i / CPL);
+                        const colIdx = i % CPL;
+                        const cx = sx + colIdx * (CW + CGAP);
+                        const cy = startY + lineIdx * (CH + CGAP);
+                        drawMiniCromoFalta(ctx, cx, cy, CW, CH, cromos[i].code, cromos[i].ordem);
                     }
-                    y = lineY + (col > 0 ? CH + CGAP : 0) + SEL_MARGIN_BOT;
+                    y = startY + gridHeight(cromos.length) + SEL_MARGIN_BOT;
                 }
-                y += 12;
+                y += GROUP_GAP;
             }
 
             // Se truncou no meio dos grupos, mostra aviso ABAIXO do último
