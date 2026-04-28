@@ -14478,7 +14478,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const SEL_HEAD_H = 38;
         const SEL_MARGIN_BOT = 18;
         const FOOTER_H = 130;
-        const MAX_H = 6000;
+        // Limite navegador-safe: até ~16.000px funciona na maioria; acima
+        // disso o iOS Safari estoura. 14000 cabe ~970 cromos confortavelmente.
+        const MAX_H = 14000;
 
         // ================ CALCULA ALTURA NECESSÁRIA ================
         let calcH = HEADER_H + STATS_H + 30;
@@ -14497,7 +14499,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             }
         }
         calcH += FOOTER_H;
-        const truncated = calcH > MAX_H;
+        // Nota: o flag de truncamento é detectado durante o render via
+        // `truncatedAt` (mais preciso que comparar calcH > MAX_H aqui)
         const H = Math.min(calcH, MAX_H);
 
         canvas.width = W;
@@ -14603,8 +14606,19 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             y += 30;
 
             // Renderiza grupos
+            let truncatedAt = null;
             for (const [g, sels] of grupoEntries) {
-                if (y > H - FOOTER_H - 60) break; // sem espaço
+                // Calcula altura desse grupo pra checar se cabe inteiro (sem cortar no meio)
+                let neededH = GROUP_HEAD_H + 12;
+                for (const { cromos } of sels) {
+                    neededH += SEL_HEAD_H;
+                    neededH += Math.ceil(cromos.length / CPL) * (CH + CGAP) + SEL_MARGIN_BOT;
+                }
+                if (y + neededH > H - FOOTER_H - 30) {
+                    // Sem espaço pra esse grupo inteiro — registra e sai
+                    truncatedAt = g;
+                    break;
+                }
 
                 // Header de grupo (letra grande dourada)
                 const grupoLabel = g === 'ESPECIAL' ? '★ ESPECIAIS' : `GRUPO ${g}`;
@@ -14681,13 +14695,18 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 y += 12;
             }
 
-            // Se foi truncado, mostra aviso
-            if (truncated) {
-                ctx.fillStyle = 'rgba(245,230,168,0.6)';
-                ctx.font = '500 18px Oswald, sans-serif';
+            // Se truncou no meio dos grupos, mostra aviso ABAIXO do último
+            // grupo desenhado (não em cima)
+            if (truncatedAt) {
+                const grupoIdx = ordemGrupos.indexOf(truncatedAt);
+                const grupoLabel = truncatedAt === 'ESPECIAL' ? '★ Especiais'
+                    : `Grupo ${truncatedAt}` + (grupoIdx < ordemGrupos.length - 1 ? ' em diante' : '');
+                ctx.fillStyle = 'rgba(245,230,168,0.65)';
+                ctx.font = '600 18px Oswald, sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText('+ outros grupos no link →', W / 2, y);
-                y += 40;
+                // garante que cabe acima do footer
+                const msgY = Math.min(y + 24, H - FOOTER_H - 16);
+                ctx.fillText(`+ ${grupoLabel} — abra o link pra ver`, W / 2, msgY);
             }
         }
 
@@ -14758,14 +14777,90 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
     // (Helper roundRect já definido em outro lugar do arquivo — reusa o global)
 
-    // Download da imagem gerada
-    document.getElementById('albumShareDownload').addEventListener('click', () => {
+    /**
+     * Download da imagem gerada — mobile-friendly.
+     *
+     * Por que não usar toDataURL() + link.click()?
+     *  - iOS Safari NÃO honra o atributo `download` em links com data: URI
+     *  - dataURL de canvas grande (>5MB) trava o navegador no encode
+     *  - Em iOS o link só abre a imagem na MESMA aba (perde o álbum)
+     *
+     * Estratégia mobile-first:
+     *  1) Web Share API com arquivo (iOS 15+, Android Chrome) — abre share
+     *     sheet nativo, user salva nas Fotos ou manda direto pra alguém.
+     *  2) Fallback iOS: abre Blob URL em nova aba, user pressiona e segura
+     *     na imagem → "Salvar nas Fotos" do menu nativo
+     *  3) Fallback desktop/Android: <a download> com Blob URL
+     */
+    document.getElementById('albumShareDownload').addEventListener('click', async () => {
+        const btn = document.getElementById('albumShareDownload');
         const canvas = document.getElementById('albumShareCanvas');
-        const link = document.createElement('a');
         const username = (user.username || 'torcedor').replace(/[^a-z0-9]/gi, '');
-        link.download = `album-copa-${username}-${Date.now()}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
+        const filename = `album-copa-${username}.png`;
+        const originalLabel = btn.innerHTML;
+        const setBtnLabel = (label, icon = 'hourglass_top') =>
+            btn.innerHTML = `<span class="material-icons">${icon}</span><span>${label}</span>`;
+        btn.disabled = true;
+        setBtnLabel('Gerando...');
+
+        try {
+            // Encode pra blob (await em Promise wrapper de toBlob)
+            const blob = await new Promise((resolve, reject) => {
+                canvas.toBlob((b) => b ? resolve(b) : reject(new Error('toBlob falhou')), 'image/png');
+            });
+            const file = new File([blob], filename, { type: 'image/png' });
+
+            // 1) Web Share API com arquivo (best path mobile moderno)
+            const canShareFile = !!(navigator.canShare && navigator.canShare({ files: [file] }));
+            if (canShareFile) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Meu álbum da Copa 2026',
+                        text: 'Lista pra trocar — abra pra ver os faltantes',
+                    });
+                    return; // user concluiu o share
+                } catch (e) {
+                    if (e.name === 'AbortError') return; // user cancelou
+                    // outro erro → cai pro fallback abaixo
+                    console.warn('[share] falhou, usando fallback:', e.message);
+                }
+            }
+
+            // 2) Detecta iOS (Safari + WebKit) — fluxo diferente
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const url = URL.createObjectURL(blob);
+
+            if (isIOS) {
+                // Abre em nova aba — user faz "Salvar nas Fotos" pelo menu nativo
+                window.open(url, '_blank');
+                setBtnLabel('Pressione e segure pra salvar', 'info');
+                setTimeout(() => URL.revokeObjectURL(url), 60000);
+                setTimeout(() => btn.innerHTML = originalLabel, 4000);
+                return;
+            }
+
+            // 3) Desktop / Android — link download tradicional com Blob URL
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            setTimeout(() => URL.revokeObjectURL(url), 1500);
+        } catch (e) {
+            console.error('[album/share/download]', e);
+            alert('Erro ao gerar imagem: ' + e.message);
+        } finally {
+            // Restaura label após um delay (ou na hora se não for iOS)
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            if (!isIOS) {
+                btn.disabled = false;
+                btn.innerHTML = originalLabel;
+            } else {
+                setTimeout(() => { btn.disabled = false; }, 1000);
+            }
+        }
     });
     document.getElementById('albumShareClose').addEventListener('click', () => {
         document.getElementById('albumShareModal').classList.remove('show');
