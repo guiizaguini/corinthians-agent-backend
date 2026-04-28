@@ -11820,7 +11820,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             // Grupo X
             const grpMatch = fase.match(/Grupo\s+([A-L])/i);
             if (grpMatch) { addTo(`Grupo ${grpMatch[1].toUpperCase()}`, g); continue; }
-            if (/Oitavas de 32/i.test(fase)) { addTo('Oitavas de 32', g); continue; }
+            // Round of 32 (legacy: aceitamos "Oitavas de 32" tambem por compat)
+            if (/Round of 32|Oitavas de 32/i.test(fase)) { addTo('Round of 32', g); continue; }
             if (/Oitavas de Final/i.test(fase)) { addTo('Oitavas de Final', g); continue; }
             if (/Quartas/i.test(fase)) { addTo('Quartas de Final', g); continue; }
             if (/Semifinal/i.test(fase)) { addTo('Semifinais', g); continue; }
@@ -11833,7 +11834,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const ordem = [
             'Grupo A','Grupo B','Grupo C','Grupo D','Grupo E','Grupo F',
             'Grupo G','Grupo H','Grupo I','Grupo J','Grupo K','Grupo L',
-            'Oitavas de 32','Oitavas de Final','Quartas de Final','Semifinais','Disputa de 3º Lugar','Final',
+            'Round of 32','Oitavas de Final','Quartas de Final','Semifinais','Disputa de 3º Lugar','Final',
         ];
 
         const html = ordem
@@ -13597,7 +13598,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             const f = g.fase || '';
             const grpMatch = f.match(/Grupo\s+([A-L])/i);
             if (grpMatch) { addTo(`Grupo ${grpMatch[1].toUpperCase()}`, g); continue; }
-            if (/Oitavas\s+de\s+32/i.test(f)) { addTo('Oitavas de 32', g); continue; }
+            // Round of 32 (legacy: "Oitavas de 32" tambem aceito por compat)
+            if (/Round of 32|Oitavas\s+de\s+32/i.test(f)) { addTo('Round of 32', g); continue; }
             if (/Oitavas/i.test(f))           { addTo('Oitavas de Final', g); continue; }
             if (/Quartas/i.test(f))           { addTo('Quartas de Final', g); continue; }
             if (/Semifinal|Semi-final/i.test(f)) { addTo('Semifinais', g); continue; }
@@ -13608,7 +13610,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const ordem = [
             'Grupo A','Grupo B','Grupo C','Grupo D','Grupo E','Grupo F',
             'Grupo G','Grupo H','Grupo I','Grupo J','Grupo K','Grupo L',
-            'Oitavas de 32','Oitavas de Final','Quartas de Final','Semifinais','Disputa de 3º Lugar','Final',
+            'Round of 32','Oitavas de Final','Quartas de Final','Semifinais','Disputa de 3º Lugar','Final',
             'Outros',
         ];
         list.innerHTML = ordem

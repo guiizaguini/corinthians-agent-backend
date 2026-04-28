@@ -1,12 +1,12 @@
 /**
  * Seed do Álbum FIGURINHAS COPA 2026 (Panini).
  *
- * Estrutura REAL do álbum (conforme prints):
+ * Estrutura REAL do álbum (conforme prints + correção pelo Gabriel):
  *  - 12 grupos (A-L) com 4 seleções cada = 48 seleções
- *  - 20 cromos numerados (XXX-01 a XXX-20) por seleção
- *  - Categoria FWC History (FIFA World Cup): cromos especiais 9-19 (11 cromos)
+ *  - 20 cromos numerados (XXX-01 a XXX-20) por seleção = 960
+ *  - Categoria FWC History (FIFA World Cup): cromos 09-14 (6 cromos)
  *  - Categoria Coca-Cola: 14 cromos (CC-01 a CC-14)
- *  Total: 48*20 + 11 + 14 = 985 cromos
+ *  Total: 48*20 + 6 + 14 = 980 cromos
  *
  * Idempotente: ON CONFLICT (code) DO NOTHING. Pode rodar quantas vezes quiser
  * sem duplicar. Pra ATUALIZAR nomes/photos depois, faz UPDATE direto.
@@ -151,8 +151,7 @@ const GRUPOS = {
         }
 
         // ============== FWC History (FIFA World Cup History) ==============
-        // No álbum aparecem cromos 9-19 (11 cromos) — provavelmente "9 to 19"
-        // são cromos comemorativos de copas anteriores
+        // Cromos comemorativos de copas anteriores: códigos 9-14 (6 cromos)
         {
             const { rows } = await pool.query(`
                 INSERT INTO album_selecoes (code, name, flag_iso, grupo, ordem)
@@ -164,8 +163,8 @@ const GRUPOS = {
             `, [ordemSel++]);
             const fwcId = rows[0].id;
             selsTouched++;
-            // Cromos FWC-09 a FWC-19 (rara/legend)
-            for (let n = 9; n <= 19; n++) {
+            // Cromos FWC-09 a FWC-14 (rara/legend)
+            for (let n = 9; n <= 14; n++) {
                 const code = `FWC-${String(n).padStart(2, '0')}`;
                 const r = await pool.query(`
                     INSERT INTO album_cromos (code, selecao_id, ordem, tipo, nome, raridade)
