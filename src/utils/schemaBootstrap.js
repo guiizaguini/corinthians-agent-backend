@@ -55,6 +55,22 @@ export async function bootstrapSchema() {
                 ON users(google_sub) WHERE google_sub IS NOT NULL
         `);
 
+        // ====== user_notifications (sino — boas-vindas, sistema, etc) ======
+        await query(`
+            CREATE TABLE IF NOT EXISTS user_notifications (
+                id          SERIAL PRIMARY KEY,
+                user_id     INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                type        VARCHAR(40) NOT NULL,
+                payload     JSONB,
+                created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                seen_at     TIMESTAMPTZ
+            );
+        `);
+        await query(`
+            CREATE INDEX IF NOT EXISTS idx_user_notifications_unseen
+                ON user_notifications(user_id) WHERE seen_at IS NULL
+        `);
+
         _bootstrapDone = true;
         console.log('[schemaBootstrap] OK');
     } catch (e) {

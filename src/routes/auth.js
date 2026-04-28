@@ -5,6 +5,7 @@ import { OAuth2Client } from 'google-auth-library';
 import { query } from '../db/pool.js';
 import { signToken } from '../auth/jwt.js';
 import { requireUser } from '../middleware/authUser.js';
+import { createNotificationOnce } from '../utils/notifications.js';
 
 const router = express.Router();
 
@@ -122,6 +123,8 @@ router.post('/signup', async (req, res, next) => {
             [emailLc, hash, display_name ?? null, clubId, usernameLc]
         );
         const user = rows[0];
+        // Boas-vindas no sino (1 por user, idempotente)
+        createNotificationOnce(user.id, 'welcome').catch(() => {});
         const token = signToken({ sub: user.id, email: user.email });
         res.status(201).json({ token, user: publicUser(user) });
     } catch (err) { next(err); }
@@ -240,6 +243,8 @@ router.post('/google', async (req, res, next) => {
                 [emailLc, name || null, clubId, username, googleSub]
             );
             user = ins.rows[0];
+            // Boas-vindas no sino (1 por user, idempotente)
+            createNotificationOnce(user.id, 'welcome').catch(() => {});
         }
 
         const token = signToken({ sub: user.id, email: user.email });

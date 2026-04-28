@@ -8611,6 +8611,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 // Tem que ser AQUI antes do return — usuário sem clube não passa
                 // pelo resto do loadAll que tem outro maybeShowWelcomeModal().
                 maybeShowWelcomeModal();
+                // Notificações genéricas no sino também rodam pra user sem clube
+                setTimeout(checkPendingNotifications, 800);
                 return;
             }
 
@@ -8633,6 +8635,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             // Verifica conquistas pendentes em background (não bloqueia o load)
             // Pequeno delay pra não competir com o reflow inicial
             setTimeout(checkPendingAchievements, 800);
+            setTimeout(checkPendingNotifications, 900);
             // Mostra modal de boas-vindas se for 1ª vez via Google sem clube
             // (flag setada no login.html / signup.html)
             maybeShowWelcomeModal();
@@ -9476,10 +9479,15 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         // Flag setada no login.html / signup.html quando is_new = true
         if (sessionStorage.getItem('cn_show_welcome') !== '1') return;
         sessionStorage.removeItem('cn_show_welcome');
-        // Carrega clubes pra popular o select
+        await openWelcomeModalManual();
+    }
+
+    // Abre o modal manualmente (chamado pelo click no item welcome do sino)
+    async function openWelcomeModalManual() {
         await ensureClubsLoaded();
-        // Re-aplica i18n nas strings do modal recém renderizado
         if (window.CN_I18N?.applyTranslations) window.CN_I18N.applyTranslations();
+        // Pre-popula com o time atual se já tiver
+        if (user && user.club_slug) welcomeSelect.value = user.club_slug;
         welcomeModal.classList.add('show');
     }
 
@@ -11216,6 +11224,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     // pra que refresh da página NÃO re-mostre o mesmo toast.
     let achievementsPending = [];
     let achievementCheckInFlight = false;
+    // Notificações genéricas (welcome, system messages, etc)
+    let notificationsPending = [];
+    let notificationsCheckInFlight = false;
 
     function showAchievementToast(ach) {
         let stack = document.getElementById('achievementToastStack');
@@ -11265,6 +11276,21 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
      * - Após exibir os toasts, chama /toasted pra marcar persistentemente.
      * - NÃO marca como seen automaticamente — sino segura até o user clicar.
      */
+    async function checkPendingNotifications() {
+        if (notificationsCheckInFlight) return;
+        notificationsCheckInFlight = true;
+        try {
+            const res = await api('/me/notifications/pending');
+            notificationsPending = res.pending || [];
+            console.debug('[notifications] pending:', notificationsPending.length,
+                notificationsPending.map(n => n.type));
+            updateBell();
+            renderBellDropdown();
+        } catch (e) {
+            console.warn('[notifications] /pending falhou:', e.message);
+        } finally { notificationsCheckInFlight = false; }
+    }
+
     async function checkPendingAchievements() {
         if (achievementCheckInFlight) return;
         achievementCheckInFlight = true;
@@ -11291,9 +11317,47 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     // ===============================================
     // SINO — dropdown com pendentes (conquistas + amigos + companions)
     // ===============================================
+    // Mapping de tipo de notification → como renderizar (icon, title, desc, action)
+    function notificationDisplay(n) {
+        const t = window.CN_I18N?.t || ((k) => k);
+        if (n.type === 'welcome') {
+            return {
+                icon: 'celebration',
+                eyebrow: t('bell.welcome.eyebrow'),
+                title: t('bell.welcome.title'),
+                desc: t('bell.welcome.desc'),
+                action: 'welcome',
+            };
+        }
+        // Fallback genérico — system_message, etc
+        const payload = n.payload || {};
+        return {
+            icon: payload.icon || 'notifications',
+            eyebrow: payload.eyebrow || t('bell.system.eyebrow'),
+            title: payload.title || n.type,
+            desc: payload.desc || '',
+            action: 'notification',
+        };
+    }
+
     function renderBellDropdown() {
         const body = document.getElementById('bellDropdownBody');
         const items = [];
+
+        // 0) Notificações genéricas (welcome, system) — vêm primeiro pq são one-shot
+        for (const n of notificationsPending) {
+            const d = notificationDisplay(n);
+            items.push(`
+                <button type="button" class="bell-item" data-action="${escapeHtml(d.action)}" data-notif-id="${n.id}">
+                    <div class="bell-item-icon"><span class="material-icons">${escapeHtml(d.icon)}</span></div>
+                    <div class="bell-item-body">
+                        <div class="bell-item-eyebrow">${escapeHtml(d.eyebrow)}</div>
+                        <div class="bell-item-title">${escapeHtml(d.title)}</div>
+                        <div class="bell-item-desc">${escapeHtml(d.desc)}</div>
+                    </div>
+                </button>
+            `);
+        }
 
         // 1) Conquistas pendentes (mais raras primeiro)
         const rarityOrder = { platinum: 4, gold: 3, silver: 2, bronze: 1 };
@@ -11369,6 +11433,18 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                         const target = document.getElementById('incomingSection');
                         if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }, 150);
+                } else if (action === 'welcome') {
+                    // Reabre o modal de boas-vindas pra escolha de clube
+                    openWelcomeModalManual();
+                    // Marca como vista e limpa
+                    api('/me/notifications/seen', { method: 'POST' }).catch(() => {});
+                    notificationsPending = [];
+                    updateBell();
+                } else if (action === 'notification') {
+                    // Genérica — só marca como vista
+                    api('/me/notifications/seen', { method: 'POST' }).catch(() => {});
+                    notificationsPending = [];
+                    updateBell();
                 }
             });
         });
@@ -11422,7 +11498,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const friendReqs = friendsState.incoming?.length || 0;
         const companionReqs = friendsState.companion_requests_count || 0;
         const achievs = achievementsPending.length;
-        const count = friendReqs + companionReqs + achievs;
+        const notifs = notificationsPending.length;
+        const count = friendReqs + companionReqs + achievs + notifs;
         const bell = document.getElementById('bellBtn');
         const badge = document.getElementById('bellBadge');
         if (count > 0) {
@@ -11430,6 +11507,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             badge.classList.add('show');
             bell.classList.add('has-pending');
             const partes = [];
+            if (notifs) partes.push(`${notifs} ${notifs === 1 ? 'notificação' : 'notificações'}`);
             if (achievs) partes.push(`${achievs} ${achievs === 1 ? 'conquista nova' : 'conquistas novas'}`);
             if (friendReqs) partes.push(`${friendReqs} ${friendReqs === 1 ? 'pedido de amizade' : 'pedidos de amizade'}`);
             if (companionReqs) partes.push(`${companionReqs} ${companionReqs === 1 ? 'confirmação de companhia' : 'confirmações de companhia'}`);

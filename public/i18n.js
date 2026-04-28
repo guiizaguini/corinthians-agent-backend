@@ -200,6 +200,11 @@
             'welcome.btn_skip': 'Pular por enquanto',
             'welcome.btn_save': 'Confirmar',
             'welcome.skip_hint': 'Você pode escolher depois no Perfil.',
+            // Bell — items de notificação
+            'bell.welcome.eyebrow': 'Boas-vindas',
+            'bell.welcome.title': 'Bem-vindo ao Cadeira Numerada!',
+            'bell.welcome.desc': 'Toque pra escolher seu time e personalizar o app.',
+            'bell.system.eyebrow': 'Aviso',
 
             // ====== APP — MODAL: PERFIL ======
             'app.profile.title': 'Editar perfil',
@@ -496,6 +501,11 @@
             'welcome.btn_skip': 'Skip for now',
             'welcome.btn_save': 'Confirm',
             'welcome.skip_hint': 'You can pick later in Profile.',
+            // Bell — notification items
+            'bell.welcome.eyebrow': 'Welcome',
+            'bell.welcome.title': 'Welcome to Cadeira Numerada!',
+            'bell.welcome.desc': 'Tap to pick your club and personalize the app.',
+            'bell.system.eyebrow': 'Notice',
 
             'app.profile.title': 'Edit profile',
             'app.profile.desc': 'Update your name and the club you support.',
@@ -785,6 +795,11 @@
             'welcome.btn_skip': 'Saltar por ahora',
             'welcome.btn_save': 'Confirmar',
             'welcome.skip_hint': 'Podés elegir después en Perfil.',
+            // Bell — items de notificación
+            'bell.welcome.eyebrow': 'Bienvenida',
+            'bell.welcome.title': '¡Bienvenido a Cadeira Numerada!',
+            'bell.welcome.desc': 'Tocá para elegir tu club y personalizar la app.',
+            'bell.system.eyebrow': 'Aviso',
 
             'app.profile.title': 'Editar perfil',
             'app.profile.desc': 'Actualizá tu nombre y el club que hinchás.',

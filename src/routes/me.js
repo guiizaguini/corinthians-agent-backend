@@ -3,6 +3,7 @@ import { query } from '../db/pool.js';
 import { computeAchievements, ACHIEVEMENT_CATEGORIES, RARITY_INFO } from '../utils/achievements.js';
 import { cache } from '../utils/cache.js';
 import { bootstrapSchema } from '../utils/schemaBootstrap.js';
+import { listPendingNotifications, markAllNotificationsSeen } from '../utils/notifications.js';
 
 // Atalho legado — startup ja roda bootstrapSchema, mas em dev/test
 // pode ser que nao. Mantém como safety-net idempotente.
@@ -481,6 +482,29 @@ router.post('/achievements/toasted', async (req, res, next) => {
               AND from_bulk_sync = FALSE
         `, [req.user.id]);
         res.json({ marked_toasted: rowCount });
+    } catch (err) { next(err); }
+});
+
+// =============================================================
+// GET /me/notifications/pending — notificações genéricas pro sino
+// (boas-vindas, system messages, etc — separado de conquistas)
+// =============================================================
+router.get('/notifications/pending', async (req, res, next) => {
+    try {
+        await ensureUserAchievementsTable(); // bootstrap também cria user_notifications
+        const pending = await listPendingNotifications(req.user.id);
+        res.json({ pending });
+    } catch (err) { next(err); }
+});
+
+// =============================================================
+// POST /me/notifications/seen — marca todas como vistas
+// =============================================================
+router.post('/notifications/seen', async (req, res, next) => {
+    try {
+        await ensureUserAchievementsTable();
+        const marked = await markAllNotificationsSeen(req.user.id);
+        res.json({ marked_seen: marked });
     } catch (err) { next(err); }
 });
 
