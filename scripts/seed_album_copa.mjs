@@ -1,17 +1,18 @@
 /**
- * Seed inicial do Álbum da Copa 2026.
+ * Seed do Álbum FIGURINHAS COPA 2026 (Panini).
  *
- * Popula:
- *  - 48 seleções (todas as classificadas potenciais — pode dar update no grupo depois)
- *  - Pra cada seleção: 1 escudo + 18 cromos genéricos placeholder
+ * Estrutura REAL do álbum (conforme prints):
+ *  - 12 grupos (A-L) com 4 seleções cada = 48 seleções
+ *  - 20 cromos numerados (XXX-01 a XXX-20) por seleção
+ *  - Categoria FWC History (FIFA World Cup): cromos especiais 9-19 (11 cromos)
+ *  - Categoria Coca-Cola: 14 cromos (CC-01 a CC-14)
+ *  Total: 48*20 + 11 + 14 = 985 cromos
  *
- * Idempotente: usa ON CONFLICT (code) DO NOTHING — pode rodar quantas vezes quiser.
+ * Idempotente: ON CONFLICT (code) DO NOTHING. Pode rodar quantas vezes quiser
+ * sem duplicar. Pra ATUALIZAR nomes/photos depois, faz UPDATE direto.
  *
  * Uso:
  *   railway run node scripts/seed_album_copa.mjs
- *
- * Quando o user mandar os PNGs/nomes reais dos jogadores, cria outro script
- * (ou roda update direto no banco) pra preencher photo_url e nomes.
  */
 
 import 'dotenv/config';
@@ -23,124 +24,187 @@ if (process.env.DATABASE_URL && process.env.DATABASE_PUBLIC_URL) {
 }
 const { pool } = await import('../src/db/pool.js');
 
-// 48 seleções — code (ISO 3 letras FIFA), nome, flag_iso (flagcdn)
-const SELECOES = [
-    // Sul-América
-    ['BRA', 'Brasil',          'br'],
-    ['ARG', 'Argentina',       'ar'],
-    ['URU', 'Uruguai',         'uy'],
-    ['COL', 'Colômbia',        'co'],
-    ['EQU', 'Equador',         'ec'],
-    ['PAR', 'Paraguai',        'py'],
-    // Europa
-    ['ALE', 'Alemanha',        'de'],
-    ['FRA', 'França',          'fr'],
-    ['ESP', 'Espanha',         'es'],
-    ['POR', 'Portugal',        'pt'],
-    ['ITA', 'Itália',          'it'],
-    ['ING', 'Inglaterra',      'gb-eng'],
-    ['HOL', 'Holanda',         'nl'],
-    ['BEL', 'Bélgica',         'be'],
-    ['CRO', 'Croácia',         'hr'],
-    ['SUI', 'Suíça',           'ch'],
-    ['DIN', 'Dinamarca',       'dk'],
-    ['POL', 'Polônia',         'pl'],
-    ['SUE', 'Suécia',          'se'],
-    ['SER', 'Sérvia',          'rs'],
-    ['AUT', 'Áustria',         'at'],
-    ['UCR', 'Ucrânia',         'ua'],
-    ['REP', 'República Checa', 'cz'],
-    ['HUN', 'Hungria',         'hu'],
-    // CONCACAF (anfitriões + classificados)
-    ['MEX', 'México',          'mx'],
-    ['CAN', 'Canadá',          'ca'],
-    ['USA', 'Estados Unidos',  'us'],
-    ['CRC', 'Costa Rica',      'cr'],
-    ['JAM', 'Jamaica',         'jm'],
-    ['PAN', 'Panamá',          'pa'],
-    // África
-    ['MAR', 'Marrocos',        'ma'],
-    ['SEN', 'Senegal',         'sn'],
-    ['NGA', 'Nigéria',         'ng'],
-    ['EGI', 'Egito',           'eg'],
-    ['CIV', 'Costa do Marfim', 'ci'],
-    ['CMR', 'Camarões',        'cm'],
-    ['GHA', 'Gana',            'gh'],
-    ['ARG_ALG', 'Argélia',     'dz'],
-    // Ásia
-    ['JPN', 'Japão',           'jp'],
-    ['KOR', 'Coreia do Sul',   'kr'],
-    ['IRA', 'Irã',             'ir'],
-    ['ARA', 'Arábia Saudita',  'sa'],
-    ['QAT', 'Catar',           'qa'],
-    ['AUS', 'Austrália',       'au'],
-    ['UZB', 'Uzbequistão',     'uz'],
-    ['JOR', 'Jordânia',        'jo'],
-    // Oceania (geralmente 1 vaga)
-    ['NZL', 'Nova Zelândia',   'nz'],
-];
-
-// Posições genéricas pros placeholders dos jogadores (1 escudo + 18 jogadores)
-const POSICOES_BASE = [
-    { ord:  1, pos: 'GOL' }, { ord:  2, pos: 'GOL' }, { ord:  3, pos: 'GOL' },
-    { ord:  4, pos: 'ZAG' }, { ord:  5, pos: 'ZAG' }, { ord:  6, pos: 'ZAG' }, { ord:  7, pos: 'ZAG' },
-    { ord:  8, pos: 'LAT' }, { ord:  9, pos: 'LAT' },
-    { ord: 10, pos: 'MEI' }, { ord: 11, pos: 'MEI' }, { ord: 12, pos: 'MEI' }, { ord: 13, pos: 'MEI' },
-    { ord: 14, pos: 'ATA' }, { ord: 15, pos: 'ATA' }, { ord: 16, pos: 'ATA' }, { ord: 17, pos: 'ATA' }, { ord: 18, pos: 'ATA' },
-];
+// ============================================================
+// 12 grupos com 4 seleções cada — formato [code, name, flag_iso]
+// Ordem exata dos prints do álbum (Grupo A → L).
+// ============================================================
+const GRUPOS = {
+    A: [
+        ['MEX', 'México',          'mx'],
+        ['RSA', 'África do Sul',   'za'],
+        ['KOR', 'Coreia do Sul',   'kr'],
+        ['CZE', 'República Tcheca','cz'],
+    ],
+    B: [
+        ['CAN', 'Canadá',          'ca'],
+        ['BIH', 'Bósnia',          'ba'],
+        ['QAT', 'Catar',           'qa'],
+        ['SUI', 'Suíça',           'ch'],
+    ],
+    C: [
+        ['BRA', 'Brasil',          'br'],
+        ['MAR', 'Marrocos',        'ma'],
+        ['HAI', 'Haiti',           'ht'],
+        ['SCO', 'Escócia',         'gb-sct'],
+    ],
+    D: [
+        ['USA', 'Estados Unidos',  'us'],
+        ['PAR', 'Paraguai',        'py'],
+        ['AUS', 'Austrália',       'au'],
+        ['TUR', 'Turquia',         'tr'],
+    ],
+    E: [
+        ['GER', 'Alemanha',        'de'],
+        ['CUW', 'Curaçao',         'cw'],
+        ['CIV', 'Costa do Marfim', 'ci'],
+        ['ECU', 'Equador',         'ec'],
+    ],
+    F: [
+        ['NED', 'Holanda',         'nl'],
+        ['JPN', 'Japão',           'jp'],
+        ['SWE', 'Suécia',          'se'],
+        ['TUN', 'Tunísia',         'tn'],
+    ],
+    G: [
+        ['BEL', 'Bélgica',         'be'],
+        ['EGY', 'Egito',           'eg'],
+        ['IRN', 'Irã',             'ir'],
+        ['NZL', 'Nova Zelândia',   'nz'],
+    ],
+    H: [
+        ['ESP', 'Espanha',         'es'],
+        ['CPV', 'Cabo Verde',      'cv'],
+        ['KSA', 'Arábia Saudita',  'sa'],
+        ['URU', 'Uruguai',         'uy'],
+    ],
+    I: [
+        ['FRA', 'França',          'fr'],
+        ['SEN', 'Senegal',         'sn'],
+        ['IRQ', 'Iraque',          'iq'],
+        ['NOR', 'Noruega',         'no'],
+    ],
+    J: [
+        ['ARG', 'Argentina',       'ar'],
+        ['ALG', 'Argélia',         'dz'],
+        ['AUT', 'Áustria',         'at'],
+        ['JOR', 'Jordânia',        'jo'],
+    ],
+    K: [
+        ['POR', 'Portugal',        'pt'],
+        ['COD', 'Congo',           'cd'],
+        ['UZB', 'Uzbequistão',     'uz'],
+        ['COL', 'Colômbia',        'co'],
+    ],
+    L: [
+        ['ENG', 'Inglaterra',      'gb-eng'],
+        ['CRO', 'Croácia',         'hr'],
+        ['GHA', 'Gana',            'gh'],
+        ['PAN', 'Panamá',          'pa'],
+    ],
+};
 
 (async () => {
     try {
-        let selInseridas = 0, cromosInseridos = 0;
+        let selsTouched = 0, cromosInseridos = 0;
 
-        for (let i = 0; i < SELECOES.length; i++) {
-            const [code, name, flagIso] = SELECOES[i];
-            const ordem = i + 1;
+        // Limpa cromos da estrutura antiga (XXX-00 era "escudo" no seed v1).
+        // Hoje cada seleção tem só os 20 numerados — sem cromo 00.
+        const { rowCount: deleted00 } = await pool.query(`
+            DELETE FROM album_cromos WHERE code LIKE '%-00'
+        `);
+        if (deleted00) console.log(`[seed-album] Removidos ${deleted00} cromos antigos com sufixo -00 (escudos do seed v1)`);
 
+        // Ordem do álbum: Grupos A-L (1-48), depois FWC History (49), Coca-Cola (50)
+        let ordemSel = 1;
+
+        // ============== Grupos A-L ==============
+        for (const [letra, selecoes] of Object.entries(GRUPOS)) {
+            for (const [code, name, flagIso] of selecoes) {
+                // Insert/update da seleção
+                const { rows } = await pool.query(`
+                    INSERT INTO album_selecoes (code, name, flag_iso, grupo, ordem)
+                    VALUES ($1, $2, $3, $4, $5)
+                    ON CONFLICT (code) DO UPDATE SET
+                        name = EXCLUDED.name,
+                        flag_iso = EXCLUDED.flag_iso,
+                        grupo = EXCLUDED.grupo,
+                        ordem = EXCLUDED.ordem
+                    RETURNING id
+                `, [code, name, flagIso, letra, ordemSel++]);
+                const selecaoId = rows[0].id;
+                selsTouched++;
+
+                // 20 cromos numerados pra essa seleção
+                for (let n = 1; n <= 20; n++) {
+                    const cromoCode = `${code}-${String(n).padStart(2, '0')}`;
+                    // Nome placeholder — será atualizado depois com nome real do jogador
+                    const nomePlaceholder = `${name} #${n}`;
+                    const r = await pool.query(`
+                        INSERT INTO album_cromos (code, selecao_id, ordem, tipo, nome, raridade)
+                        VALUES ($1, $2, $3, 'jogador', $4, 'comum')
+                        ON CONFLICT (code) DO NOTHING
+                        RETURNING id
+                    `, [cromoCode, selecaoId, n, nomePlaceholder]);
+                    if (r.rows.length) cromosInseridos++;
+                }
+            }
+        }
+
+        // ============== FWC History (FIFA World Cup History) ==============
+        // No álbum aparecem cromos 9-19 (11 cromos) — provavelmente "9 to 19"
+        // são cromos comemorativos de copas anteriores
+        {
             const { rows } = await pool.query(`
-                INSERT INTO album_selecoes (code, name, flag_iso, ordem)
-                VALUES ($1, $2, $3, $4)
+                INSERT INTO album_selecoes (code, name, flag_iso, grupo, ordem)
+                VALUES ('FWC', 'FIFA World Cup History', NULL, NULL, $1)
                 ON CONFLICT (code) DO UPDATE SET
                     name = EXCLUDED.name,
-                    flag_iso = EXCLUDED.flag_iso,
                     ordem = EXCLUDED.ordem
-                RETURNING id, (xmax = 0) AS inserted
-            `, [code, name, flagIso, ordem]);
-            const selecaoId = rows[0].id;
-            if (rows[0].inserted) selInseridas++;
-
-            // Escudo (cromo #00)
-            const escudoCode = `${code}-00`;
-            const r1 = await pool.query(`
-                INSERT INTO album_cromos (code, selecao_id, ordem, tipo, nome, raridade)
-                VALUES ($1, $2, 0, 'escudo', $3, 'rara')
-                ON CONFLICT (code) DO NOTHING
                 RETURNING id
-            `, [escudoCode, selecaoId, `Escudo ${name}`]);
-            if (r1.rows.length) cromosInseridos++;
-
-            // 18 jogadores placeholder (preenche depois com nome real)
-            for (const p of POSICOES_BASE) {
-                const cromoCode = `${code}-${String(p.ord).padStart(2, '0')}`;
-                const nomePlaceholder = `${p.pos} #${p.ord} — ${name}`;
-                const r2 = await pool.query(`
-                    INSERT INTO album_cromos (code, selecao_id, ordem, tipo, nome, posicao, raridade)
-                    VALUES ($1, $2, $3, 'jogador', $4, $5, 'comum')
+            `, [ordemSel++]);
+            const fwcId = rows[0].id;
+            selsTouched++;
+            // Cromos FWC-09 a FWC-19 (rara/legend)
+            for (let n = 9; n <= 19; n++) {
+                const code = `FWC-${String(n).padStart(2, '0')}`;
+                const r = await pool.query(`
+                    INSERT INTO album_cromos (code, selecao_id, ordem, tipo, nome, raridade)
+                    VALUES ($1, $2, $3, 'legenda', $4, 'legend')
                     ON CONFLICT (code) DO NOTHING
                     RETURNING id
-                `, [cromoCode, selecaoId, p.ord, nomePlaceholder, p.pos]);
-                if (r2.rows.length) cromosInseridos++;
+                `, [code, fwcId, n, `FIFA World Cup History #${n}`]);
+                if (r.rows.length) cromosInseridos++;
             }
+        }
 
-            if ((i + 1) % 10 === 0) console.log(`[seed-album]  ${i + 1}/${SELECOES.length} seleções...`);
+        // ============== Coca-Cola (14 cromos especiais) ==============
+        {
+            const { rows } = await pool.query(`
+                INSERT INTO album_selecoes (code, name, flag_iso, grupo, ordem)
+                VALUES ('CCO', 'Figurinhas da Coca-Cola', NULL, NULL, $1)
+                ON CONFLICT (code) DO UPDATE SET
+                    name = EXCLUDED.name,
+                    ordem = EXCLUDED.ordem
+                RETURNING id
+            `, [ordemSel++]);
+            const ccoId = rows[0].id;
+            selsTouched++;
+            for (let n = 1; n <= 14; n++) {
+                const code = `CC-${String(n).padStart(2, '0')}`;
+                const r = await pool.query(`
+                    INSERT INTO album_cromos (code, selecao_id, ordem, tipo, nome, raridade)
+                    VALUES ($1, $2, $3, 'especial', $4, 'especial')
+                    ON CONFLICT (code) DO NOTHING
+                    RETURNING id
+                `, [code, ccoId, n, `Coca-Cola CC${n}`]);
+                if (r.rows.length) cromosInseridos++;
+            }
         }
 
         console.log('\n[seed-album] ============= RESUMO =============');
-        console.log(`  Seleções inseridas/atualizadas: ${SELECOES.length}`);
-        console.log(`  (Selecoes novas:                ${selInseridas})`);
-        console.log(`  Cromos novos:                   ${cromosInseridos}`);
+        console.log(`  Seleções inseridas/atualizadas: ${selsTouched}`);
+        console.log(`  Cromos novos inseridos:         ${cromosInseridos}`);
 
-        // Total final no banco
         const { rows: tot } = await pool.query(`
             SELECT COUNT(DISTINCT s.id)::int AS sels, COUNT(c.id)::int AS cromos
             FROM album_selecoes s LEFT JOIN album_cromos c ON c.selecao_id = s.id

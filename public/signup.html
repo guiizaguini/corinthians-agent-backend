@@ -69,8 +69,12 @@
 <script src="/i18n.js"></script>
 <script>
     if (localStorage.getItem('fiel_token')) {
-        const _q = new URLSearchParams(location.search).get('add');
-        window.location.replace(_q ? `/app?add=${encodeURIComponent(_q)}` : '/app');
+        const _qs = new URLSearchParams(location.search);
+        const _add = _qs.get('add');
+        const _album = _qs.get('album');
+        if (_add) window.location.replace(`/app?add=${encodeURIComponent(_add)}`);
+        else if (_album) window.location.replace(`/app?album=${encodeURIComponent(_album)}`);
+        else window.location.replace('/app');
     }
 
     const t = (k) => window.CN_I18N.t(k);
@@ -148,11 +152,14 @@
         }
     }
 
-    // Preserva ?add=username (deep link de adicionar amigo) ao redirecionar
+    // Preserva deep links (?add= ou ?album=) ao redirecionar
     function buildAppRedirect() {
         const qs = new URLSearchParams(location.search);
         const add = qs.get('add');
-        return add ? `/app?add=${encodeURIComponent(add)}` : '/app';
+        const album = qs.get('album');
+        if (add) return `/app?add=${encodeURIComponent(add)}`;
+        if (album) return `/app?album=${encodeURIComponent(album)}`;
+        return '/app';
     }
 
     const form = document.getElementById('signupForm');

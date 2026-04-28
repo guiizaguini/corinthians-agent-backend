@@ -3908,6 +3908,99 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     color: #fff;
 }
 
+/* Chips de GRUPO (A-L + ★Especial) — horizontais com scroll mobile */
+.album-grupo-chips {
+    display: flex;
+    gap: 0.35rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.2rem;
+    scrollbar-width: thin;
+}
+.album-grupo-chips::-webkit-scrollbar { height: 4px; }
+.album-grupo-chips::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 2px; }
+.album-grupo-chip {
+    background: var(--wc-card);
+    border: 1.5px solid var(--wc-line);
+    color: var(--wc-ink-mute);
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    padding: 0.45rem 0;
+    width: 38px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.12s;
+    flex-shrink: 0;
+    text-align: center;
+}
+.album-grupo-chip:hover { border-color: #3fa966; color: var(--wc-ink); }
+.album-grupo-chip.active {
+    background: linear-gradient(135deg, #3fa966, #267544);
+    border-color: #267544;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(63,169,102,0.35);
+}
+.album-grupo-chip-special {
+    width: auto;
+    padding-left: 0.55rem;
+    padding-right: 0.55rem;
+    color: #d4a520;
+}
+.album-grupo-chip-special.active {
+    background: linear-gradient(135deg, #d4a520, #a87f1e);
+    border-color: #a87f1e;
+    color: #fff;
+}
+
+/* Header do grupo (A-L) — destaca cada grupo do álbum visualmente */
+.album-grupo-head {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin: 1.6rem 0 1rem;
+    padding-bottom: 0.65rem;
+    border-bottom: 2px solid #3fa966;
+}
+.album-grupo-head:first-child { margin-top: 0; }
+.album-grupo-head-letter {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.6rem;
+    color: #fff;
+    background: linear-gradient(135deg, #3fa966, #267544);
+    width: 42px; height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 8px rgba(63,169,102,0.35);
+    flex-shrink: 0;
+}
+.album-grupo-head-label {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--wc-ink-mute);
+}
+.album-grupo-head-progress {
+    margin-left: auto;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+    color: var(--wc-ink);
+}
+.album-grupo-head-progress strong { color: #3fa966; }
+.album-grupo-head-special .album-grupo-head-letter {
+    background: linear-gradient(135deg, #d4a520, #a87f1e);
+    box-shadow: 0 3px 8px rgba(212,165,32,0.35);
+    font-size: 1.2rem;
+}
+.album-grupo-head-special { border-bottom-color: #d4a520; }
+.album-grupo-head-special .album-grupo-head-progress strong { color: #d4a520; }
+
 /* Lista de seleções (cada uma é uma seção com cromos) */
 .album-secao {
     margin-bottom: 1.6rem;
@@ -3929,6 +4022,21 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     box-shadow: 0 1px 3px rgba(0,0,0,0.15);
     flex-shrink: 0;
 }
+.album-secao-flag-placeholder {
+    width: 38px; height: 26px;
+    border-radius: 4px;
+    background: linear-gradient(135deg, #d4a520, #a87f1e);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.65rem;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
 .album-secao-name {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
@@ -3946,14 +4054,22 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 }
 .album-secao-progress strong { color: #3fa966; }
 
-/* Grid de cromos por seleção */
+/* Grid de cromos por seleção
+   Cromo álbum tem 20 itens — 4-5 por linha desktop, 4 por linha mobile */
 .album-cromos-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
     gap: 0.55rem;
 }
-@media (max-width: 480px) {
-    .album-cromos-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 0.4rem; }
+@media (max-width: 600px) {
+    /* Mobile: 4 cromos por linha (cabe 5 numa Galaxy S20+) */
+    .album-cromos-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.35rem;
+    }
+}
+@media (max-width: 380px) {
+    .album-cromos-grid { gap: 0.3rem; }
 }
 
 /* Card de cromo individual */
@@ -4102,6 +4218,272 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     color: var(--wc-ink-mute);
     font-style: italic;
     font-family: 'SN Pro', sans-serif;
+}
+
+/* ================================================================
+   COMPARAÇÃO ENTRE AMIGOS — modal full-screen
+   ================================================================ */
+.album-compare-modal {
+    max-width: 720px;
+    padding: 0 !important;
+    background: var(--wc-card) !important;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 92vh;
+}
+.album-compare-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.2rem 0.85rem;
+    border-bottom: 1px solid var(--wc-line);
+}
+.album-compare-head h2 {
+    margin: 0;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--wc-ink);
+}
+.album-compare-eyebrow {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.62rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #3fa966;
+    margin-bottom: 0.2rem;
+}
+
+.album-compare-stats {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 1rem 1.2rem;
+    background: linear-gradient(180deg, color-mix(in srgb, #3fa966 4%, var(--wc-card)), var(--wc-card));
+}
+.album-compare-side { text-align: center; min-width: 0; }
+.album-compare-side-label {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--wc-ink-mute);
+    margin-bottom: 0.25rem;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.album-compare-side-num {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: var(--wc-ink);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+}
+.album-compare-side-bar {
+    height: 8px;
+    background: rgba(0,0,0,0.08);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.album-compare-side-fill {
+    height: 100%;
+    transition: width 0.5s ease-out;
+    border-radius: 4px;
+}
+.album-compare-side-fill.me { background: linear-gradient(90deg, #3fa966, #5fcb86); }
+.album-compare-side-fill.them { background: linear-gradient(90deg, #5b8def, #8badff); }
+.album-compare-vs {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.15em;
+    color: var(--wc-ink-mute);
+    padding: 0.2rem 0.6rem;
+    border: 1.5px solid var(--wc-line);
+    border-radius: 999px;
+    background: var(--wc-card);
+}
+
+.album-compare-trades-highlight {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1rem;
+    background: linear-gradient(135deg, #d4a520, #f0c419);
+    color: #1a1a1a;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.92rem;
+    letter-spacing: 0.04em;
+}
+.album-compare-trades-highlight strong { font-size: 1.2rem; margin-right: 0.15rem; }
+.album-compare-trades-highlight .material-icons { font-size: 1.2rem; }
+
+.album-compare-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-bottom: 1px solid var(--wc-line);
+    background: var(--wc-card);
+}
+.album-compare-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    padding: 0.7rem 0.4rem;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--wc-ink-mute);
+    transition: all 0.15s;
+    position: relative;
+}
+.album-compare-tab:hover { color: var(--wc-ink); }
+.album-compare-tab.active {
+    color: #3fa966;
+    border-bottom-color: #3fa966;
+    background: color-mix(in srgb, #3fa966 5%, transparent);
+}
+.album-compare-tab .material-icons { font-size: 1.15rem; }
+.album-compare-tab-badge {
+    background: rgba(0,0,0,0.1);
+    color: var(--wc-ink);
+    font-size: 0.65rem;
+    padding: 0.05rem 0.4rem;
+    border-radius: 999px;
+    margin-top: 0.15rem;
+}
+.album-compare-tab.active .album-compare-tab-badge {
+    background: #3fa966;
+    color: #fff;
+}
+
+.album-compare-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem 1.2rem 1.5rem;
+    background: var(--wc-card);
+}
+.album-compare-empty {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--wc-ink-mute);
+    font-style: italic;
+    font-family: 'SN Pro', sans-serif;
+}
+.album-compare-secao {
+    margin-bottom: 1.2rem;
+}
+.album-compare-secao-head {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.45rem 0.7rem;
+    background: rgba(0,0,0,0.025);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+.album-compare-secao-head .album-secao-flag,
+.album-compare-secao-head .album-secao-flag-placeholder {
+    width: 30px; height: 20px;
+}
+.album-compare-secao-head-name {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--wc-ink);
+    flex: 1;
+}
+.album-compare-secao-head-grupo {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.65rem;
+    color: var(--wc-ink-mute);
+    letter-spacing: 0.1em;
+}
+.album-compare-cromos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+    gap: 0.45rem;
+}
+.album-compare-mini {
+    aspect-ratio: 3 / 4;
+    background: var(--wc-card);
+    border: 2px solid #3fa966;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+.album-compare-mini.give { border-color: #d4a520; }
+.album-compare-mini.both-miss { border-color: var(--wc-line); border-style: dashed; opacity: 0.7; }
+.album-compare-mini-foto {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem;
+    overflow: hidden;
+}
+.album-compare-mini-foto img.album-flag-bg {
+    width: 36px; height: 24px;
+    object-fit: cover;
+    border-radius: 3px;
+    opacity: 0.6;
+}
+.album-compare-mini-info {
+    background: rgba(0,0,0,0.85);
+    color: #fff;
+    padding: 0.25rem 0.3rem;
+    text-align: center;
+    font-family: 'Oswald', sans-serif;
+}
+.album-compare-mini-code {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+.album-compare-mini-rep-badge {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    background: #d4a520;
+    color: #1a1a1a;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.6rem;
+    padding: 0.1rem 0.35rem;
+    border-radius: 999px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+}
+
+/* Mobile compare modal */
+@media (max-width: 600px) {
+    .album-compare-modal {
+        max-width: 100%;
+        max-height: 100vh;
+        border-radius: 0 !important;
+    }
+    .album-compare-head h2 { font-size: 1.05rem; }
+    .album-compare-side-num { font-size: 1.15rem; }
+    .album-compare-tab { font-size: 0.62rem; padding: 0.6rem 0.2rem; }
+    .album-compare-tab .material-icons { font-size: 1rem; }
+    .album-compare-cromos-grid { grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 0.35rem; }
 }
 
 /* Copa view está em tema light, bolão também */
@@ -7594,6 +7976,63 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         </div>
     </div>
 
+    <!-- Modal: Comparar álbum com amigo (vem de ?album=username) -->
+    <div class="modal-overlay" id="albumCompareModal">
+        <div class="modal album-compare-modal">
+            <header class="album-compare-head">
+                <div>
+                    <div class="album-compare-eyebrow" data-i18n="app.album.compare_eyebrow">Comparação de álbuns</div>
+                    <h2 id="albumCompareTitle">Você × —</h2>
+                </div>
+                <button class="bell-dropdown-close" id="albumCompareClose" type="button" aria-label="Fechar">×</button>
+            </header>
+
+            <!-- Stats lado a lado -->
+            <div class="album-compare-stats">
+                <div class="album-compare-side">
+                    <div class="album-compare-side-label" data-i18n="app.album.compare_you">Você</div>
+                    <div class="album-compare-side-num" id="albumCompareMyNum">— / —</div>
+                    <div class="album-compare-side-bar"><div class="album-compare-side-fill me" id="albumCompareMyFill" style="width:0%;"></div></div>
+                </div>
+                <div class="album-compare-vs">VS</div>
+                <div class="album-compare-side">
+                    <div class="album-compare-side-label" id="albumCompareFriendName">@—</div>
+                    <div class="album-compare-side-num" id="albumCompareFriendNum">— / —</div>
+                    <div class="album-compare-side-bar"><div class="album-compare-side-fill them" id="albumCompareFriendFill" style="width:0%;"></div></div>
+                </div>
+            </div>
+
+            <!-- Highlight: trocas possíveis -->
+            <div class="album-compare-trades-highlight">
+                <span class="material-icons">swap_horiz</span>
+                <span><strong id="albumCompareTradesNum">0</strong> <span data-i18n="app.album.compare_trades">trocas possíveis</span></span>
+            </div>
+
+            <!-- Tabs -->
+            <div class="album-compare-tabs">
+                <button type="button" class="album-compare-tab active" data-tab="dele-pra-mim">
+                    <span class="material-icons">arrow_downward</span>
+                    <span data-i18n="app.album.compare_tab_get">Ele me dá</span>
+                    <span class="album-compare-tab-badge" id="albumCompareGetBadge">0</span>
+                </button>
+                <button type="button" class="album-compare-tab" data-tab="meus-pra-ele">
+                    <span class="material-icons">arrow_upward</span>
+                    <span data-i18n="app.album.compare_tab_give">Eu dou</span>
+                    <span class="album-compare-tab-badge" id="albumCompareGiveBadge">0</span>
+                </button>
+                <button type="button" class="album-compare-tab" data-tab="ambos-faltam">
+                    <span class="material-icons">help_outline</span>
+                    <span data-i18n="app.album.compare_tab_both_miss">Faltam pros 2</span>
+                    <span class="album-compare-tab-badge" id="albumCompareBothMissBadge">0</span>
+                </button>
+            </div>
+
+            <div id="albumCompareList" class="album-compare-list">
+                <div class="loading">Carregando...</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal: Compartilhar álbum (lista de troca) -->
     <div class="modal-overlay" id="albumShareModal">
         <div class="modal">
@@ -8285,6 +8724,23 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                         <button type="button" class="album-chip" data-filter="faltam" data-i18n="app.album.filter_faltam">Faltam</button>
                         <button type="button" class="album-chip" data-filter="tenho" data-i18n="app.album.filter_tenho">Tenho</button>
                         <button type="button" class="album-chip" data-filter="repetidos" data-i18n="app.album.filter_repetidos">Repetidos</button>
+                    </div>
+                    <!-- Filtro por GRUPO (A-L + Especiais) — chips horizontais com scroll mobile -->
+                    <div class="album-grupo-chips" id="albumGrupoChips">
+                        <button type="button" class="album-grupo-chip active" data-grupo="">Tudo</button>
+                        <button type="button" class="album-grupo-chip" data-grupo="A">A</button>
+                        <button type="button" class="album-grupo-chip" data-grupo="B">B</button>
+                        <button type="button" class="album-grupo-chip" data-grupo="C">C</button>
+                        <button type="button" class="album-grupo-chip" data-grupo="D">D</button>
+                        <button type="button" class="album-grupo-chip" data-grupo="E">E</button>
+                        <button type="button" class="album-grupo-chip" data-grupo="F">F</button>
+                        <button type="button" class="album-grupo-chip" data-grupo="G">G</button>
+                        <button type="button" class="album-grupo-chip" data-grupo="H">H</button>
+                        <button type="button" class="album-grupo-chip" data-grupo="I">I</button>
+                        <button type="button" class="album-grupo-chip" data-grupo="J">J</button>
+                        <button type="button" class="album-grupo-chip" data-grupo="K">K</button>
+                        <button type="button" class="album-grupo-chip" data-grupo="L">L</button>
+                        <button type="button" class="album-grupo-chip album-grupo-chip-special" data-grupo="ESPECIAL">★</button>
                     </div>
                 </section>
 
@@ -9099,8 +9555,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 maybeShowWelcomeModal();
                 // Notificações genéricas no sino também rodam pra user sem clube
                 setTimeout(checkPendingNotifications, 800);
-                // Deep link de adicionar amigo também
+                // Deep links também rodam pra user sem clube
                 handleAddDeepLink();
+                handleAlbumDeepLink();
                 return;
             }
 
@@ -9129,6 +9586,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             maybeShowWelcomeModal();
             // Deep link: /app?add=username → vai pra /rede e busca o user
             handleAddDeepLink();
+            // Deep link: /app?album=username → abre modal de comparação de álbum
+            handleAlbumDeepLink();
         } catch (err) {
             console.error(err);
             document.getElementById('catalogList').innerHTML =
@@ -13177,6 +13636,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         cromos: [],          // catálogo + qtde do user
         selecoes: [],        // catálogo de seleções
         filterTipo: 'all',   // 'all' | 'tenho' | 'faltam' | 'repetidos'
+        filterGrupo: '',     // '' (tudo) | 'A'..'L' | 'ESPECIAL' (FWC + Coca-Cola)
         filterSearch: '',
         loaded: false,
     };
@@ -13225,19 +13685,26 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const norm = (s) => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         const search = norm(albumState.filterSearch);
         const filterTipo = albumState.filterTipo;
+        const filterGrupo = albumState.filterGrupo;
 
         // Mapa selecao_id → seleção
         const selById = Object.fromEntries(albumState.selecoes.map(s => [s.id, s]));
 
         // Filtra cromos
         const filtered = albumState.cromos.filter(c => {
-            // Filtro por estado (tenho/faltam/repetidos)
+            const sel = selById[c.selecao_id];
+            // Filtro por GRUPO (A-L) ou ESPECIAL (FWC/Coca-Cola — sem grupo)
+            if (filterGrupo === 'ESPECIAL') {
+                if (sel?.grupo) return false; // não-especial tem grupo
+            } else if (filterGrupo) {
+                if (sel?.grupo !== filterGrupo) return false;
+            }
+            // Filtro por estado
             if (filterTipo === 'tenho' && c.quantidade === 0) return false;
             if (filterTipo === 'faltam' && c.quantidade > 0) return false;
             if (filterTipo === 'repetidos' && c.quantidade < 2) return false;
-            // Filtro por busca (nome do cromo OU nome da seleção)
+            // Filtro por busca (nome do cromo OU nome/code da seleção)
             if (search) {
-                const sel = selById[c.selecao_id];
                 const haystack = norm(c.nome) + ' ' + norm(sel?.name || '') + ' ' + norm(sel?.code || '');
                 if (!haystack.includes(search)) return false;
             }
@@ -13249,7 +13716,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             return;
         }
 
-        // Agrupa por seleção
+        // Agrupa cromos por seleção
         const porSelecao = new Map();
         for (const c of filtered) {
             const arr = porSelecao.get(c.selecao_id) || [];
@@ -13257,27 +13724,62 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             porSelecao.set(c.selecao_id, arr);
         }
 
-        // Render por seleção, na ordem do catálogo
-        const html = albumState.selecoes
-            .filter(s => porSelecao.has(s.id))
-            .map(s => {
-                const cromos = porSelecao.get(s.id);
-                // Stats da seção (do TOTAL, não filtrado)
-                const cromosTotais = albumState.cromos.filter(c => c.selecao_id === s.id);
-                const tenho = cromosTotais.filter(c => c.quantidade > 0).length;
-                const total = cromosTotais.length;
-                const flagUrl = s.flag_iso ? `https://flagcdn.com/w80/${s.flag_iso}.png` : '';
+        // Agrupa seleções por GRUPO (A, B, C... + 'ESPECIAL' pra FWC/Coca-Cola)
+        const porGrupo = new Map();
+        for (const s of albumState.selecoes) {
+            if (!porSelecao.has(s.id)) continue; // só seleções que têm cromos no filtro
+            const grupoKey = s.grupo || 'ESPECIAL';
+            const arr = porGrupo.get(grupoKey) || [];
+            arr.push(s);
+            porGrupo.set(grupoKey, arr);
+        }
+
+        // Ordem: A, B, C... L, depois ESPECIAL
+        const ordemGrupos = ['A','B','C','D','E','F','G','H','I','J','K','L','ESPECIAL'];
+
+        const html = ordemGrupos
+            .filter(g => porGrupo.has(g))
+            .map(g => {
+                const selecoes = porGrupo.get(g);
+                const isEspecial = g === 'ESPECIAL';
+                // Progress agregado do grupo (TODOS os cromos das seleções desse grupo)
+                let tenhoG = 0, totalG = 0;
+                for (const s of selecoes) {
+                    const cs = albumState.cromos.filter(c => c.selecao_id === s.id);
+                    totalG += cs.length;
+                    tenhoG += cs.filter(c => c.quantidade > 0).length;
+                }
+                const grupoLabel = isEspecial
+                    ? (t('app.album.grupo_special') || 'Especiais')
+                    : `${t('app.album.grupo') || 'Grupo'} ${g}`;
+
+                const selecoesHtml = selecoes.map(s => {
+                    const cromos = porSelecao.get(s.id);
+                    const cromosTotais = albumState.cromos.filter(c => c.selecao_id === s.id);
+                    const tenho = cromosTotais.filter(c => c.quantidade > 0).length;
+                    const total = cromosTotais.length;
+                    const flagUrl = s.flag_iso ? `https://flagcdn.com/w80/${s.flag_iso}.png` : '';
+                    return `
+                        <section class="album-secao">
+                            <header class="album-secao-head">
+                                ${flagUrl ? `<img class="album-secao-flag" src="${flagUrl}" alt="" loading="lazy">` : `<span class="album-secao-flag-placeholder">${escapeHtml((s.code || '').slice(0,3))}</span>`}
+                                <span class="album-secao-name">${escapeHtml(s.name)}</span>
+                                <span class="album-secao-progress"><strong>${tenho}</strong> / ${total}</span>
+                            </header>
+                            <div class="album-cromos-grid">
+                                ${cromos.map(c => albumRenderCromo(c, s)).join('')}
+                            </div>
+                        </section>
+                    `;
+                }).join('');
+
                 return `
-                    <section class="album-secao">
-                        <header class="album-secao-head">
-                            ${flagUrl ? `<img class="album-secao-flag" src="${flagUrl}" alt="" loading="lazy">` : ''}
-                            <span class="album-secao-name">${escapeHtml(s.name)}</span>
-                            <span class="album-secao-progress"><strong>${tenho}</strong> / ${total}</span>
-                        </header>
-                        <div class="album-cromos-grid">
-                            ${cromos.map(c => albumRenderCromo(c, s)).join('')}
-                        </div>
-                    </section>
+                    <header class="album-grupo-head ${isEspecial ? 'album-grupo-head-special' : ''}">
+                        <span class="album-grupo-head-letter">${isEspecial ? '★' : g}</span>
+                        <span class="album-grupo-head-label">${escapeHtml(grupoLabel)}</span>
+                        <span class="album-grupo-head-progress"><strong>${tenhoG}</strong> / ${totalG}</span>
+                    </header>
+                    ${selecoesHtml}
                 `;
             }).join('');
 
@@ -13388,7 +13890,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             albumRender();
         }, 200);
     });
-    // Filtro chips (estado)
+    // Filtro chips (estado: tenho/faltam/repetidos)
     document.querySelectorAll('#albumFilterChips .album-chip').forEach(chip => {
         chip.addEventListener('click', () => {
             document.querySelectorAll('#albumFilterChips .album-chip').forEach(c => c.classList.remove('active'));
@@ -13397,6 +13899,151 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             albumRender();
         });
     });
+    // Filtro grupo (A-L + Especial)
+    document.querySelectorAll('#albumGrupoChips .album-grupo-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            document.querySelectorAll('#albumGrupoChips .album-grupo-chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            albumState.filterGrupo = chip.dataset.grupo;
+            albumRender();
+        });
+    });
+
+    // ===============================================
+    // ÁLBUM — comparação com amigo (?album=username)
+    // ===============================================
+    const albumCompareState = { data: null, currentTab: 'dele-pra-mim' };
+
+    async function albumOpenCompare(username) {
+        const modal = document.getElementById('albumCompareModal');
+        const list = document.getElementById('albumCompareList');
+        document.getElementById('albumCompareTitle').textContent = `Você × @${username}`;
+        document.getElementById('albumCompareFriendName').textContent = `@${username}`;
+        list.innerHTML = `<div class="loading">${t('app.album.loading') || 'Carregando...'}</div>`;
+        modal.classList.add('show');
+        try {
+            const data = await api(`/album/compare/${encodeURIComponent(username)}`);
+            albumCompareState.data = data;
+            const friendName = data.friend.display_name || data.friend.username;
+            document.getElementById('albumCompareTitle').textContent = `Você × ${friendName}`;
+            document.getElementById('albumCompareFriendName').textContent = `@${data.friend.username}`;
+
+            // Stats
+            const s = data.stats;
+            document.getElementById('albumCompareMyNum').textContent = `${s.meu_tenho} / ${s.total} (${s.meu_pct}%)`;
+            document.getElementById('albumCompareMyFill').style.width = s.meu_pct + '%';
+            document.getElementById('albumCompareFriendNum').textContent = `${s.dele_tenho} / ${s.total} (${s.dele_pct}%)`;
+            document.getElementById('albumCompareFriendFill').style.width = s.dele_pct + '%';
+            document.getElementById('albumCompareTradesNum').textContent = s.trocas_possiveis;
+
+            // Badges nas tabs
+            document.getElementById('albumCompareGetBadge').textContent = data.matches_dele_pra_mim.length;
+            document.getElementById('albumCompareGiveBadge').textContent = data.matches_meus_pra_ele.length;
+            document.getElementById('albumCompareBothMissBadge').textContent = data.ambos_faltam.length;
+
+            albumCompareRenderTab(albumCompareState.currentTab);
+        } catch (e) {
+            list.innerHTML = `<div class="album-compare-empty">Erro: ${escapeHtml(e.message)}</div>`;
+        }
+    }
+
+    function albumCompareRenderTab(tab) {
+        const data = albumCompareState.data;
+        if (!data) return;
+        const list = document.getElementById('albumCompareList');
+        let cromos = [];
+        let emptyMsg = '';
+        let cssExtra = '';
+
+        if (tab === 'dele-pra-mim') {
+            cromos = data.matches_dele_pra_mim;
+            emptyMsg = t('app.album.compare_empty_get') || 'Ele não tem nenhum repetido que você precisa.';
+            cssExtra = '';
+        } else if (tab === 'meus-pra-ele') {
+            cromos = data.matches_meus_pra_ele;
+            emptyMsg = t('app.album.compare_empty_give') || 'Você não tem repetidos que ele precise.';
+            cssExtra = 'give';
+        } else if (tab === 'ambos-faltam') {
+            cromos = data.ambos_faltam;
+            emptyMsg = t('app.album.compare_empty_both') || 'Vocês 2 já completaram tudo!';
+            cssExtra = 'both-miss';
+        }
+
+        if (!cromos.length) {
+            list.innerHTML = `<div class="album-compare-empty">${escapeHtml(emptyMsg)}</div>`;
+            return;
+        }
+
+        // Agrupa por seleção
+        const porSel = new Map();
+        for (const c of cromos) {
+            const arr = porSel.get(c.selecao_id) || { sel: c, items: [] };
+            arr.items.push(c);
+            porSel.set(c.selecao_id, arr);
+        }
+
+        list.innerHTML = [...porSel.values()].map(({ sel, items }) => {
+            const flagUrl = sel.flag_iso ? `https://flagcdn.com/w80/${sel.flag_iso}.png` : '';
+            return `
+                <section class="album-compare-secao">
+                    <header class="album-compare-secao-head">
+                        ${flagUrl ? `<img class="album-secao-flag" src="${flagUrl}" alt="" loading="lazy">` : `<span class="album-secao-flag-placeholder">${escapeHtml(sel.selecao_code.slice(0,3))}</span>`}
+                        <span class="album-compare-secao-head-name">${escapeHtml(sel.selecao_name)}</span>
+                        ${sel.grupo ? `<span class="album-compare-secao-head-grupo">GRUPO ${sel.grupo}</span>` : '<span class="album-compare-secao-head-grupo">★</span>'}
+                    </header>
+                    <div class="album-compare-cromos-grid">
+                        ${items.map(c => {
+                            const flagBg = c.flag_iso ? `https://flagcdn.com/w160/${c.flag_iso}.png` : '';
+                            const repNum = c.dele_repetidas || c.minhas_repetidas;
+                            return `
+                                <div class="album-compare-mini ${cssExtra}">
+                                    <div class="album-compare-mini-foto">
+                                        ${flagBg ? `<img class="album-flag-bg" src="${flagBg}" alt="" loading="lazy">` : '<span class="material-icons" style="opacity:0.4;">stars</span>'}
+                                    </div>
+                                    ${repNum ? `<div class="album-compare-mini-rep-badge">×${repNum + 1}</div>` : ''}
+                                    <div class="album-compare-mini-info">
+                                        <div class="album-compare-mini-code">${escapeHtml(c.code)}</div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </section>
+            `;
+        }).join('');
+    }
+
+    // Tab switching
+    document.querySelectorAll('#albumCompareModal .album-compare-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('#albumCompareModal .album-compare-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            albumCompareState.currentTab = tab.dataset.tab;
+            albumCompareRenderTab(tab.dataset.tab);
+        });
+    });
+    document.getElementById('albumCompareClose').addEventListener('click', () => {
+        document.getElementById('albumCompareModal').classList.remove('show');
+    });
+    document.getElementById('albumCompareModal').addEventListener('click', (e) => {
+        if (e.target.id === 'albumCompareModal') document.getElementById('albumCompareModal').classList.remove('show');
+    });
+
+    /**
+     * Deep link /app?album=username — vem de quando alguém abriu o link
+     * compartilhado e está logado. Abre o modal de comparação.
+     * Limpa o param da URL pra não re-disparar em refresh.
+     */
+    function handleAlbumDeepLink() {
+        const qs = new URLSearchParams(location.search);
+        const albumUser = qs.get('album');
+        if (!albumUser) return;
+        qs.delete('album');
+        const newUrl = location.pathname + (qs.toString() ? '?' + qs.toString() : '') + location.hash;
+        history.replaceState(null, '', newUrl);
+        // Pequeno delay pra app render antes do modal
+        setTimeout(() => albumOpenCompare(albumUser), 300);
+    }
 
     // Compartilhar lista de troca
     document.getElementById('albumShareBtn').addEventListener('click', () => {

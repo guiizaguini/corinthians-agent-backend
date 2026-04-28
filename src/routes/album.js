@@ -171,4 +171,86 @@ router.get('/troca/:username', async (req, res, next) => {
     } catch (err) { next(err); }
 });
 
+// ====== GET /album/compare/:username ======
+// Compara MEU álbum com o de OUTRO user (precisa estar logado).
+// Retorna 4 buckets úteis pra trocar:
+//   - matches_dele_pra_mim: ele tem REPETIDO + eu FALTO  (ele me dá)
+//   - matches_meus_pra_ele: eu tenho REPETIDO + ele FALTA (eu dou)
+//   - ambos_faltam: nem eu nem ele temos (nada a fazer, mas mostrar)
+//   - ambos_tem: ambos completos (compartilhamento — bom de ver)
+//
+// Retorna também stats agregadas pra ranking comparativo.
+router.get('/compare/:username', requireUser, async (req, res, next) => {
+    try {
+        const username = String(req.params.username || '').toLowerCase().trim();
+        if (!username) return res.status(400).json({ error: 'invalid_username' });
+
+        const { rows: userRows } = await query(
+            'SELECT id, username, display_name FROM users WHERE LOWER(username) = $1',
+            [username]
+        );
+        const friend = userRows[0];
+        if (!friend) return res.status(404).json({ error: 'user_not_found' });
+        if (friend.id === req.user.id) return res.status(400).json({ error: 'cannot_compare_self' });
+
+        // Junta tudo numa só query — pra cada cromo, traz minha qty e a do amigo
+        const { rows } = await query(`
+            SELECT
+                c.id, c.code, c.selecao_id, c.ordem, c.tipo, c.nome, c.posicao,
+                c.raridade, c.photo_url,
+                s.code AS selecao_code, s.name AS selecao_name, s.flag_iso, s.grupo,
+                COALESCE(meu.quantidade, 0)   AS minha_quantidade,
+                COALESCE(dele.quantidade, 0)  AS dele_quantidade
+            FROM album_cromos c
+            JOIN album_selecoes s ON s.id = c.selecao_id
+            LEFT JOIN user_album_cromos meu  ON meu.cromo_id = c.id AND meu.user_id = $1
+            LEFT JOIN user_album_cromos dele ON dele.cromo_id = c.id AND dele.user_id = $2
+            ORDER BY s.ordem ASC, c.ordem ASC
+        `, [req.user.id, friend.id]);
+
+        const matchesDelePraMim = []; // ele rep, eu falto
+        const matchesMeusPraEle = []; // eu rep, ele falta
+        const ambosFaltam = [];
+        const ambosTem = [];
+
+        for (const r of rows) {
+            const myHas = r.minha_quantidade > 0;
+            const myRep = r.minha_quantidade > 1;
+            const hisHas = r.dele_quantidade > 0;
+            const hisRep = r.dele_quantidade > 1;
+
+            if (hisRep && !myHas) {
+                matchesDelePraMim.push({ ...r, dele_repetidas: r.dele_quantidade - 1 });
+            }
+            if (myRep && !hisHas) {
+                matchesMeusPraEle.push({ ...r, minhas_repetidas: r.minha_quantidade - 1 });
+            }
+            if (!myHas && !hisHas) ambosFaltam.push(r);
+            if (myHas && hisHas) ambosTem.push(r);
+        }
+
+        // Stats comparativas
+        const total = rows.length;
+        const myTenho = rows.filter(r => r.minha_quantidade > 0).length;
+        const hisTenho = rows.filter(r => r.dele_quantidade > 0).length;
+
+        res.json({
+            me: { id: req.user.id, username: req.user.email },  // só id pro front saber quem é
+            friend,
+            matches_dele_pra_mim: matchesDelePraMim, // figurinhas que ele me daria
+            matches_meus_pra_ele: matchesMeusPraEle, // figurinhas que eu daria pra ele
+            ambos_faltam: ambosFaltam,
+            ambos_tem: ambosTem,
+            stats: {
+                total,
+                meu_tenho: myTenho,
+                meu_pct: total ? Math.round(myTenho / total * 100) : 0,
+                dele_tenho: hisTenho,
+                dele_pct: total ? Math.round(hisTenho / total * 100) : 0,
+                trocas_possiveis: Math.min(matchesDelePraMim.length, matchesMeusPraEle.length),
+            },
+        });
+    } catch (err) { next(err); }
+});
+
 export default router;
