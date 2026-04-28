@@ -8607,6 +8607,10 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
             if (!user.club_id) {
                 renderNoClub();
+                // Mostra modal de boas-vindas se for 1ª vez via Google sem clube.
+                // Tem que ser AQUI antes do return — usuário sem clube não passa
+                // pelo resto do loadAll que tem outro maybeShowWelcomeModal().
+                maybeShowWelcomeModal();
                 return;
             }
 
