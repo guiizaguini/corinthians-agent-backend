@@ -7237,6 +7237,10 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                         <span class="material-icons welcome-info-bullet">insights</span>
                         <span data-i18n-html="welcome.info_b4">Estatísticas pessoais: aproveitamento, retrospecto contra cada adversário, etc.</span>
                     </li>
+                    <li>
+                        <span class="material-icons welcome-info-bullet">group_add</span>
+                        <span data-i18n-html="welcome.info_b5">Adicione <b>amigos</b>, veja a <b>coleção de jogos</b> deles, compare conquistas e o retrospecto de quem foi mais ao estádio.</span>
+                    </li>
                 </ul>
             </div>
 
@@ -7379,10 +7383,10 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     <!-- Modal: Share image -->
     <div class="modal-overlay" id="shareModal">
         <div class="modal modal-lg">
-            <h2>Pronto pra postar.</h2>
-            <div class="meta">Imagem 1080x1080 — formato post Instagram.</div>
+            <h2>Pronto pra compartilhar.</h2>
+            <div class="meta">Sua carteirinha em alta resolução.</div>
             <div class="share-canvas-wrap">
-                <canvas id="shareCanvas" width="1080" height="1080"></canvas>
+                <canvas id="shareCanvas" width="960" height="635"></canvas>
             </div>
             <div class="modal-actions">
                 <button class="btn-secondary" id="shareClose">Fechar</button>
@@ -8613,6 +8617,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 maybeShowWelcomeModal();
                 // Notificações genéricas no sino também rodam pra user sem clube
                 setTimeout(checkPendingNotifications, 800);
+                // Deep link de adicionar amigo também
+                handleAddDeepLink();
                 return;
             }
 
@@ -8639,6 +8645,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             // Mostra modal de boas-vindas se for 1ª vez via Google sem clube
             // (flag setada no login.html / signup.html)
             maybeShowWelcomeModal();
+            // Deep link: /app?add=username → vai pra /rede e busca o user
+            handleAddDeepLink();
         } catch (err) {
             console.error(err);
             document.getElementById('catalogList').innerHTML =
@@ -10061,18 +10069,15 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const ctx = canvas.getContext('2d');
         const accent = getAccentColor();
 
-        // BG escuro com glow do clube
-        ctx.fillStyle = '#0a0a0a';
-        ctx.fillRect(0, 0, 1080, 1080);
-        const grd = ctx.createRadialGradient(820, 200, 0, 540, 540, 700);
-        grd.addColorStop(0, accent + '40');
-        grd.addColorStop(1, 'transparent');
-        ctx.fillStyle = grd;
-        ctx.fillRect(0, 0, 1080, 1080);
+        // Canvas só com a carteirinha (sem fundo escuro, sem brand embaixo)
+        // Dimensões = card 880×555 + padding 40 em cada lado pra sombra não ser cortada.
+        const PAD = 40, cw = 880, ch = 555;
+        canvas.width = cw + PAD * 2;   // 960
+        canvas.height = ch + PAD * 2;  // 635
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Cartão horizontal (proporção credit card 1.586:1)
-        // Largura 880, altura 555, centralizado vertical, padding-top
-        const cx0 = 100, cy0 = 240, cw = 880, ch = 555;
+        // Cartão horizontal (proporção credit card 1.586:1) centralizado
+        const cx0 = PAD, cy0 = PAD;
         const radius = 28;
 
         // Sombra do cartão
@@ -10194,12 +10199,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         ctx.fillStyle = '#f5f0e4';
         ctx.font = 'bold 22px Oswald, sans-serif';
         ctx.fillText(`Nº ${String(user.id).padStart(4, '0')}`, cx0 + cw - 40, cy0 + ch - 40);
-
-        // Brand abaixo do cartão
-        ctx.textAlign = 'center';
-        ctx.fillStyle = 'rgba(245,240,228,0.5)';
-        ctx.font = '500 18px Oswald, sans-serif';
-        ctx.fillText('cadeira numerada · diário do torcedor', 540, cy0 + ch + 80);
+        // (Sem brand abaixo — exportamos só o card)
     }
 
     // Helpers de canvas
@@ -11691,6 +11691,40 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         } catch {
             sec.style.display = 'none';
         }
+    }
+
+    /**
+     * Processa o deep link /app?add=<username> — vem de quando alguém
+     * compartilhou o link de perfil (cartCompartilharPerfil monta esse URL).
+     * Navega pra /rede, preenche o input de busca e dispara a busca.
+     * Limpa o param da URL pra não re-disparar em refresh.
+     */
+    async function handleAddDeepLink() {
+        const qs = new URLSearchParams(location.search);
+        const addUser = qs.get('add');
+        if (!addUser) return;
+        // Limpa o param da URL (sem reload)
+        qs.delete('add');
+        const newUrl = location.pathname + (qs.toString() ? '?' + qs.toString() : '') + location.hash;
+        history.replaceState(null, '', newUrl);
+        // Navega pra /rede e popula a busca
+        navigate('/rede');
+        // Pequeno delay pra a tab carregar antes de mexer no input
+        setTimeout(() => {
+            const input = document.getElementById('redeSearch');
+            if (input) {
+                input.value = addUser;
+                searchUsers();
+                input.focus();
+                // Em mobile, abre a sidebar pra a busca ficar visível
+                const sidebar = document.getElementById('redeSidebar');
+                const toggleBtn = document.getElementById('redeToggle');
+                if (sidebar && toggleBtn && window.innerWidth <= 900 && !sidebar.classList.contains('open')) {
+                    sidebar.classList.add('open');
+                    toggleBtn.classList.add('open');
+                }
+            }
+        }, 200);
     }
 
     let searchTimer;

@@ -1136,8 +1136,20 @@ footer {
 
 <script src="/i18n.js"></script>
 <script>
+    // Deep link: /?add=username — repassa pra /app (logado) ou /login (não logado)
+    // pra que o front abra a busca já preenchida e adicione o amigo.
+    const _qs = new URLSearchParams(location.search);
+    const _addUser = _qs.get('add');
+
     if (localStorage.getItem('fiel_token')) {
-        window.location.replace('/app');
+        const target = _addUser
+            ? `/app?add=${encodeURIComponent(_addUser)}`
+            : '/app';
+        window.location.replace(target);
+    } else if (_addUser) {
+        // Não logado mas tem ?add — mantém o param pro fluxo voltar pra busca
+        // depois do login. login.html lê e repassa pro /app.
+        window.location.replace(`/login?add=${encodeURIComponent(_addUser)}`);
     }
 
     // Dropdown de idioma na nav (lado dos botões)

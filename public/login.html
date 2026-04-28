@@ -44,7 +44,8 @@
 <script src="/i18n.js"></script>
 <script>
     if (localStorage.getItem('fiel_token')) {
-        window.location.replace('/app');
+        const _q = new URLSearchParams(location.search).get('add');
+        window.location.replace(_q ? `/app?add=${encodeURIComponent(_q)}` : '/app');
     }
 
     const t = (k) => window.CN_I18N.t(k);
@@ -113,11 +114,18 @@
             localStorage.setItem('fiel_user', JSON.stringify(data.user));
             // Se for primeira vez logando via Google → tour de boas-vindas no /app
             if (data.is_new) sessionStorage.setItem('cn_show_welcome', '1');
-            window.location.replace('/app');
+            window.location.replace(buildAppRedirect());
         } catch (e) {
             errBox.textContent = e.message;
             errBox.classList.add('show');
         }
+    }
+
+    // Preserva query params (ex: ?add=username) ao redirecionar pra /app
+    function buildAppRedirect() {
+        const qs = new URLSearchParams(location.search);
+        const add = qs.get('add');
+        return add ? `/app?add=${encodeURIComponent(add)}` : '/app';
     }
 
     const form = document.getElementById('loginForm');
@@ -149,7 +157,7 @@
             }
             localStorage.setItem('fiel_token', data.token);
             localStorage.setItem('fiel_user', JSON.stringify(data.user));
-            window.location.replace('/app');
+            window.location.replace(buildAppRedirect());
         } catch (err) {
             errBox.textContent = err.message;
             errBox.classList.add('show');

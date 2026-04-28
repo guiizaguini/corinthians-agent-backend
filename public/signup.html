@@ -68,7 +68,8 @@
 <script src="/i18n.js"></script>
 <script>
     if (localStorage.getItem('fiel_token')) {
-        window.location.replace('/app');
+        const _q = new URLSearchParams(location.search).get('add');
+        window.location.replace(_q ? `/app?add=${encodeURIComponent(_q)}` : '/app');
     }
 
     const t = (k) => window.CN_I18N.t(k);
@@ -139,11 +140,18 @@
             localStorage.setItem('fiel_user', JSON.stringify(data.user));
             // Se signup via Google E user nao escolheu clube agora → tour no /app
             if (data.is_new && !data.user.club_id) sessionStorage.setItem('cn_show_welcome', '1');
-            window.location.replace('/app');
+            window.location.replace(buildAppRedirect());
         } catch (e) {
             errBox.textContent = e.message;
             errBox.classList.add('show');
         }
+    }
+
+    // Preserva ?add=username (deep link de adicionar amigo) ao redirecionar
+    function buildAppRedirect() {
+        const qs = new URLSearchParams(location.search);
+        const add = qs.get('add');
+        return add ? `/app?add=${encodeURIComponent(add)}` : '/app';
     }
 
     const form = document.getElementById('signupForm');
@@ -251,7 +259,10 @@
             }
             localStorage.setItem('fiel_token', data.token);
             localStorage.setItem('fiel_user', JSON.stringify(data.user));
-            window.location.replace('/app');
+            // Se signup tradicional E user nao escolheu clube → tour de boas-vindas
+            // (signup via Google ja eh tratado no handleGoogleCredential acima)
+            if (!data.user.club_id) sessionStorage.setItem('cn_show_welcome', '1');
+            window.location.replace(buildAppRedirect());
         } catch (err) {
             errBox.textContent = err.message;
             errBox.classList.add('show');

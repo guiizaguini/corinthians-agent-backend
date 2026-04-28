@@ -195,6 +195,7 @@
             'welcome.info_b2': 'Aparece o <b>catálogo completo</b> de jogos do seu time, históricos e atuais — você marca quais foi.',
             'welcome.info_b3': 'Desbloqueia <b>conquistas</b> conforme acumula presenças, vitórias e clássicos.',
             'welcome.info_b4': 'Estatísticas pessoais: aproveitamento, retrospecto contra cada adversário, etc.',
+            'welcome.info_b5': 'Adicione <b>amigos</b>, veja a <b>coleção de jogos</b> deles, compare conquistas e o retrospecto de quem foi mais ao estádio.',
             'welcome.club_label': 'Pra qual time você torce?',
             'welcome.club_placeholder': '— Selecione seu time —',
             'welcome.btn_skip': 'Pular por enquanto',
@@ -496,6 +497,7 @@
             'welcome.info_b2': 'You see the <b>full match catalogue</b> of your club, past and present — mark which ones you attended.',
             'welcome.info_b3': 'You unlock <b>achievements</b> as you log attendances, wins, derbies and more.',
             'welcome.info_b4': 'Personal stats: win rate, head-to-head against each rival, etc.',
+            'welcome.info_b5': 'Add <b>friends</b>, see their <b>match collection</b>, compare achievements and who has been to the stadium more.',
             'welcome.club_label': 'Which club do you support?',
             'welcome.club_placeholder': '— Select your club —',
             'welcome.btn_skip': 'Skip for now',
@@ -790,6 +792,7 @@
             'welcome.info_b2': 'Aparece el <b>catálogo completo</b> de partidos de tu club, históricos y actuales — marcás cuáles fuiste.',
             'welcome.info_b3': 'Desbloqueás <b>logros</b> a medida que sumás presencias, victorias y clásicos.',
             'welcome.info_b4': 'Estadísticas personales: rendimiento, historial contra cada rival, etc.',
+            'welcome.info_b5': 'Agregá <b>amigos</b>, mirá su <b>colección de partidos</b>, compará logros y quién fue más a la cancha.',
             'welcome.club_label': '¿A qué club hinchás?',
             'welcome.club_placeholder': '— Seleccioná tu club —',
             'welcome.btn_skip': 'Saltar por ahora',
@@ -983,7 +986,7 @@
         wrap.className = `cn-lang cn-lang-${variant}`;
         const cur = getLang();
         wrap.innerHTML = `
-            <button type="button" class="cn-lang-trigger" aria-haspopup="listbox" aria-expanded="false" title="${LANGS[cur].country} · ${LANGS[cur].label}" aria-label="${LANGS[cur].label}">
+            <button type="button" class="cn-lang-trigger" aria-haspopup="listbox" aria-expanded="false" title="${LANGS[cur].label}" aria-label="${LANGS[cur].label}">
                 ${langFlag(cur)}
             </button>
         `;
@@ -994,11 +997,11 @@
         menu.className = `cn-lang-menu cn-lang-menu-${variant}`;
         menu.setAttribute('role', 'listbox');
         menu.hidden = true;
+        // Sem rótulo de país — só bandeira + nome do idioma (Português / English / Español)
         menu.innerHTML = Object.values(LANGS).map(l => `
             <li role="option" data-lang="${l.code}" ${l.code === cur ? 'aria-selected="true"' : ''}>
                 ${langFlag(l.code)}
                 <span class="cn-lang-name">${l.label}</span>
-                <span class="cn-lang-country">${l.country}</span>
             </li>
         `).join('');
 
@@ -1008,8 +1011,16 @@
             const rect = trigger.getBoundingClientRect();
             menu.style.position = 'fixed';
             menu.style.top = (rect.bottom + 4) + 'px';
-            menu.style.right = Math.max(8, window.innerWidth - rect.right) + 'px';
-            menu.style.left = 'auto';
+            // Posiciona via LEFT (não via RIGHT) e clampa pra dentro da viewport.
+            // Antes usava RIGHT — se o trigger ficava perto da margem esquerda
+            // do mobile (header compacto), o menu vazava pra fora à esquerda.
+            const menuW = menu.offsetWidth || 220;
+            // Preferência: alinha borda direita do menu com a do trigger
+            let left = rect.right - menuW;
+            // Garante margem mínima das laterais da viewport
+            left = Math.max(8, Math.min(left, window.innerWidth - menuW - 8));
+            menu.style.left = left + 'px';
+            menu.style.right = 'auto';
         }
         function close() {
             menu.hidden = true;
@@ -1017,9 +1028,11 @@
         }
         function open() {
             if (!menu.parentNode) document.body.appendChild(menu);
-            position();
+            // Mostra primeiro, depois posiciona — assim offsetWidth retorna o
+            // valor real (não 0) e o clamp do position() funciona corretamente.
             menu.hidden = false;
             trigger.setAttribute('aria-expanded', 'true');
+            position();
         }
         trigger.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -1032,7 +1045,7 @@
                 setLang(lang);
                 // Atualiza o badge do trigger
                 trigger.innerHTML = langFlag(lang);
-                trigger.title = `${LANGS[lang].country} · ${LANGS[lang].label}`;
+                trigger.title = LANGS[lang].label;
                 trigger.setAttribute('aria-label', LANGS[lang].label);
                 menu.querySelectorAll('li').forEach(x => x.removeAttribute('aria-selected'));
                 li.setAttribute('aria-selected', 'true');
