@@ -35,8 +35,12 @@ const LoginSchema = z.object({
     password: z.string().min(1).max(120),
 });
 
+// Pra excluir conta o user prova identidade via SENHA (login tradicional)
+// OU via google_credential (re-auth do Google) se for conta google-only.
+// Schema aceita os dois — a rota valida que pelo menos um foi enviado.
 const DeleteMeSchema = z.object({
-    password: z.string().min(1).max(120),
+    password: z.string().min(1).max(120).optional(),
+    google_credential: z.string().min(20).max(4000).optional(),
     confirm: z.string().min(1).max(50), // user precisa digitar "EXCLUIR" pra confirmar
 });
 
@@ -46,12 +50,26 @@ async function getClubIdBySlug(slug) {
 }
 
 function publicUser(u) {
+    // Aceita tanto campos crus do banco (password_hash, google_sub) quanto
+    // booleanos pré-computados (has_password, has_google) — alguns SELECTs
+    // calculam direto no SQL pra não trazer o hash bruto pra a request.
+    const hasPassword = u.has_password !== undefined
+        ? !!u.has_password
+        : !!(u.password_hash && u.password_hash.length > 0);
+    const hasGoogle = u.has_google !== undefined
+        ? !!u.has_google
+        : !!u.google_sub;
     return {
         id: u.id,
         email: u.email,
         display_name: u.display_name,
         club_id: u.club_id,
         is_admin: u.is_admin ?? false,
+        // Indica método(s) de auth disponíveis — front usa pra decidir
+        // se mostra campo de senha ou botão "re-autenticar com Google"
+        // no fluxo de exclusão de conta.
+        has_password: hasPassword,
+        has_google: hasGoogle,
     };
 }
 
@@ -98,7 +116,9 @@ router.post('/signup', async (req, res, next) => {
         const { rows } = await query(
             `INSERT INTO users (email, password_hash, display_name, club_id, username)
              VALUES ($1, $2, $3, $4, $5)
-             RETURNING id, email, display_name, club_id, is_admin`,
+             RETURNING id, email, display_name, club_id, is_admin,
+                       (password_hash IS NOT NULL AND password_hash <> '') AS has_password,
+                       (google_sub IS NOT NULL) AS has_google`,
             [emailLc, hash, display_name ?? null, clubId, usernameLc]
         );
         const user = rows[0];
@@ -173,7 +193,9 @@ router.post('/google', async (req, res, next) => {
 
         // 1) Tenta achar por google_sub (já linkado anteriormente)
         let { rows } = await query(
-            `SELECT id, email, display_name, club_id, is_admin, google_sub
+            `SELECT id, email, display_name, club_id, is_admin, google_sub,
+                    (password_hash IS NOT NULL AND password_hash <> '') AS has_password,
+                    (google_sub IS NOT NULL) AS has_google
              FROM users WHERE google_sub = $1`,
             [googleSub]
         );
@@ -182,7 +204,9 @@ router.post('/google', async (req, res, next) => {
         // 2) Se não, tenta por email — linka conta existente
         if (!user) {
             const r = await query(
-                `SELECT id, email, display_name, club_id, is_admin, google_sub
+                `SELECT id, email, display_name, club_id, is_admin, google_sub,
+                        (password_hash IS NOT NULL AND password_hash <> '') AS has_password,
+                        (google_sub IS NOT NULL) AS has_google
                  FROM users WHERE email = $1`,
                 [emailLc]
             );
@@ -210,7 +234,9 @@ router.post('/google', async (req, res, next) => {
             const ins = await query(
                 `INSERT INTO users (email, password_hash, display_name, club_id, username, google_sub)
                  VALUES ($1, '', $2, $3, $4, $5)
-                 RETURNING id, email, display_name, club_id, is_admin`,
+                 RETURNING id, email, display_name, club_id, is_admin,
+                           (password_hash IS NOT NULL AND password_hash <> '') AS has_password,
+                           (google_sub IS NOT NULL) AS has_google`,
                 [emailLc, name || null, clubId, username, googleSub]
             );
             user = ins.rows[0];
@@ -237,7 +263,9 @@ router.post('/login', async (req, res, next) => {
         const emailLc = email.toLowerCase();
 
         const { rows } = await query(
-            `SELECT id, email, password_hash, display_name, club_id, is_admin
+            `SELECT id, email, password_hash, display_name, club_id, is_admin,
+                    (password_hash IS NOT NULL AND password_hash <> '') AS has_password,
+                    (google_sub IS NOT NULL) AS has_google
              FROM users WHERE email = $1`,
             [emailLc]
         );
@@ -259,6 +287,8 @@ router.get('/me', requireUser, async (req, res, next) => {
     try {
         const { rows } = await query(
             `SELECT u.id, u.email, u.username, u.display_name, u.club_id, u.is_admin, u.created_at,
+                    (u.password_hash IS NOT NULL AND u.password_hash <> '') AS has_password,
+                    (u.google_sub IS NOT NULL) AS has_google,
                     c.slug AS club_slug, c.name AS club_name, c.short_name AS club_short,
                     c.primary_color, c.secondary_color
              FROM users u
@@ -324,7 +354,9 @@ router.patch('/me', requireUser, async (req, res, next) => {
 
 // =============================================================
 // DELETE /auth/me — exclui a própria conta (irreversível)
-// Exige senha + confirmação textual ("EXCLUIR")
+// Exige confirmação textual "EXCLUIR" + UMA das duas:
+//   - password (login tradicional) → bcrypt.compare
+//   - google_credential (conta google-only) → verifyIdToken + sub bate
 // CASCADE apaga attendances, palpites, friendships, etc.
 // boloes.created_by vira NULL pra não derrubar bolões de outros membros.
 // =============================================================
@@ -334,22 +366,53 @@ router.delete('/me', requireUser, async (req, res, next) => {
         if (!parsed.success) {
             return res.status(400).json({ error: 'validation_failed' });
         }
-        const { password, confirm } = parsed.data;
+        const { password, google_credential, confirm } = parsed.data;
 
         if (confirm.trim().toUpperCase() !== 'EXCLUIR') {
             return res.status(400).json({ error: 'confirmation_mismatch' });
         }
 
-        // Verifica a senha antes de excluir
         const { rows } = await query(
-            'SELECT id, email, password_hash FROM users WHERE id = $1',
+            'SELECT id, email, password_hash, google_sub FROM users WHERE id = $1',
             [req.user.id]
         );
         const u = rows[0];
         if (!u) return res.status(404).json({ error: 'user_not_found' });
 
-        const ok = await bcrypt.compare(password, u.password_hash);
-        if (!ok) return res.status(401).json({ error: 'invalid_password' });
+        const hasPassword = !!(u.password_hash && u.password_hash.length > 0);
+        const hasGoogle = !!u.google_sub;
+
+        // Caminho A: confirmou via senha
+        if (password) {
+            if (!hasPassword) {
+                // user google-only mandou senha — recusa
+                return res.status(400).json({ error: 'no_password_set' });
+            }
+            const ok = await bcrypt.compare(password, u.password_hash);
+            if (!ok) return res.status(401).json({ error: 'invalid_password' });
+        }
+        // Caminho B: confirmou re-autenticando com Google
+        else if (google_credential) {
+            if (!hasGoogle) return res.status(400).json({ error: 'no_google_linked' });
+            if (!googleClient) return res.status(503).json({ error: 'google_auth_not_configured' });
+            try {
+                const ticket = await googleClient.verifyIdToken({
+                    idToken: google_credential,
+                    audience: googleAudiences.length === 1 ? googleAudiences[0] : googleAudiences,
+                });
+                const payload = ticket.getPayload();
+                if (payload.sub !== u.google_sub) {
+                    // Logou com OUTRA conta Google — recusa
+                    return res.status(401).json({ error: 'google_account_mismatch' });
+                }
+            } catch (_) {
+                return res.status(401).json({ error: 'invalid_google_token' });
+            }
+        }
+        // Nada → faltou prova de identidade
+        else {
+            return res.status(400).json({ error: 'auth_required' });
+        }
 
         await query('DELETE FROM users WHERE id = $1', [req.user.id]);
         res.json({ deleted: true });

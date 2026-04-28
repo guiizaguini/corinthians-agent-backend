@@ -7268,8 +7268,22 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             <label for="delConfirmText">Pra confirmar, digite <code style="background:#fff3f3;color:#a83232;padding:0.1rem 0.4rem;border-radius:4px;font-weight:700;">EXCLUIR</code></label>
             <input id="delConfirmText" type="text" maxlength="20" placeholder="EXCLUIR" autocomplete="off" autocapitalize="characters">
 
-            <label for="delPassword">Sua senha</label>
-            <input id="delPassword" type="password" maxlength="120" autocomplete="current-password" placeholder="Sua senha atual">
+            <!-- Caminho A: user com senha tradicional -->
+            <div id="delPasswordWrap">
+                <label for="delPassword">Sua senha</label>
+                <input id="delPassword" type="password" maxlength="120" autocomplete="current-password" placeholder="Sua senha atual">
+            </div>
+
+            <!-- Caminho B: user google-only — re-autentica via Google -->
+            <div id="delGoogleWrap" style="display:none;">
+                <label>Confirme sua identidade pelo Google</label>
+                <div id="delGoogleHint" style="font-size:0.78rem;color:var(--cinza-claro);margin-bottom:0.5rem;">Você criou a conta com Google. Re-autentique abaixo pra confirmar a exclusão.</div>
+                <div id="delGoogleSlot" style="margin:0.5rem 0;"></div>
+                <div id="delGoogleStatus" style="font-size:0.78rem;color:#3a8a3a;display:none;">
+                    <span class="material-icons" style="font-size:1rem;vertical-align:middle;">check_circle</span>
+                    <span data-i18n="del_account.google_ok">Identidade confirmada</span>
+                </div>
+            </div>
 
             <div class="error" id="delErr" style="display:none;color:#a83232;margin-top:0.5rem;font-size:0.85rem;"></div>
 
@@ -9524,23 +9538,96 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
     // ===============================================
     // EXCLUIR CONTA — modal com confirmação dupla
+    // Caminho A: senha (login tradicional)
+    // Caminho B: re-auth Google (conta google-only)
     // ===============================================
     const deleteAccountModal = document.getElementById('deleteAccountModal');
     const delConfirmText = document.getElementById('delConfirmText');
     const delPassword = document.getElementById('delPassword');
+    const delPasswordWrap = document.getElementById('delPasswordWrap');
+    const delGoogleWrap = document.getElementById('delGoogleWrap');
+    const delGoogleSlot = document.getElementById('delGoogleSlot');
+    const delGoogleStatus = document.getElementById('delGoogleStatus');
     const delConfirmBtn = document.getElementById('delConfirm');
     const delCancelBtn = document.getElementById('delCancel');
     const delErr = document.getElementById('delErr');
+    // Token Google capturado durante re-auth (caminho B). Reseta a cada open.
+    let delGoogleCredential = null;
+    let delGoogleButtonRendered = false;
+
+    function delModeIsGoogleOnly() {
+        // Sem senha cadastrada E tem Google linkado → único caminho é re-auth Google
+        return user && user.has_google && !user.has_password;
+    }
+
+    async function fetchGoogleClientId() {
+        try {
+            const r = await fetch('/config/public');
+            const j = await r.json();
+            return j.google_client_id || null;
+        } catch (_) { return null; }
+    }
+
+    async function renderDelGoogleButton() {
+        if (delGoogleButtonRendered) return;
+        // Garante que GIS já carregou
+        if (!window.google?.accounts?.id) {
+            // Carrega o script do Google Identity Services (mesmo do login)
+            await new Promise((resolve, reject) => {
+                if (document.querySelector('script[src*="accounts.google.com/gsi/client"]')) {
+                    return resolve();
+                }
+                const s = document.createElement('script');
+                s.src = 'https://accounts.google.com/gsi/client';
+                s.async = true; s.defer = true;
+                s.onload = resolve; s.onerror = reject;
+                document.head.appendChild(s);
+            });
+        }
+        const clientId = await fetchGoogleClientId();
+        if (!clientId) {
+            delGoogleSlot.innerHTML = '<div style="color:#a83232;font-size:0.78rem;">Google Auth não configurado.</div>';
+            return;
+        }
+        google.accounts.id.initialize({
+            client_id: clientId,
+            callback: (resp) => {
+                delGoogleCredential = resp.credential || null;
+                if (delGoogleCredential) {
+                    delGoogleSlot.style.display = 'none';
+                    delGoogleStatus.style.display = '';
+                    refreshDelBtn();
+                }
+            },
+        });
+        google.accounts.id.renderButton(delGoogleSlot, {
+            type: 'standard', theme: 'outline', size: 'large',
+            text: 'continue_with', shape: 'rectangular',
+            logo_alignment: 'left', width: 280,
+        });
+        delGoogleButtonRendered = true;
+    }
 
     function openDeleteAccountModal() {
         delConfirmText.value = '';
         delPassword.value = '';
+        delGoogleCredential = null;
         delErr.style.display = 'none';
         delErr.textContent = '';
         delConfirmBtn.disabled = true;
         delConfirmBtn.textContent = 'Excluir minha conta';
+        // Decide qual caminho mostrar
+        if (delModeIsGoogleOnly()) {
+            delPasswordWrap.style.display = 'none';
+            delGoogleWrap.style.display = '';
+            delGoogleSlot.style.display = '';
+            delGoogleStatus.style.display = 'none';
+            renderDelGoogleButton();
+        } else {
+            delPasswordWrap.style.display = '';
+            delGoogleWrap.style.display = 'none';
+        }
         deleteAccountModal.classList.add('show');
-        // foca o primeiro input depois da animação
         setTimeout(() => delConfirmText.focus(), 100);
     }
     function closeDeleteAccountModal() {
@@ -9553,11 +9640,13 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         if (e.target.id === 'deleteAccountModal') closeDeleteAccountModal();
     });
 
-    // Habilita o botão "Excluir" só quando os 2 campos estão válidos
+    // Habilita botão só quando confirmou textualmente E forneceu credencial
     function refreshDelBtn() {
         const okText = delConfirmText.value.trim().toUpperCase() === 'EXCLUIR';
-        const okPass = delPassword.value.length >= 1;
-        delConfirmBtn.disabled = !(okText && okPass);
+        const okAuth = delModeIsGoogleOnly()
+            ? !!delGoogleCredential
+            : delPassword.value.length >= 1;
+        delConfirmBtn.disabled = !(okText && okAuth);
     }
     delConfirmText.addEventListener('input', refreshDelBtn);
     delPassword.addEventListener('input', refreshDelBtn);
@@ -9567,29 +9656,43 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         delConfirmBtn.disabled = true;
         delConfirmBtn.textContent = 'Excluindo...';
         try {
+            const body = {
+                confirm: delConfirmText.value.trim().toUpperCase(),
+            };
+            if (delModeIsGoogleOnly()) {
+                body.google_credential = delGoogleCredential;
+            } else {
+                body.password = delPassword.value;
+            }
             await api('/auth/me', {
                 method: 'DELETE',
-                body: JSON.stringify({
-                    password: delPassword.value,
-                    confirm: delConfirmText.value.trim().toUpperCase(),
-                }),
+                body: JSON.stringify(body),
             });
-            // Limpa estado local e manda pro login
             localStorage.removeItem('fiel_token');
             localStorage.removeItem('fiel_user');
-            // Pequena msg final antes de redirect
             delConfirmBtn.textContent = 'Conta excluída';
             setTimeout(() => window.location.replace('/login'), 600);
         } catch (err) {
             const msg = {
                 invalid_password: 'Senha incorreta. Tenta de novo.',
+                invalid_google_token: 'Falha ao validar com Google. Tenta de novo.',
+                google_account_mismatch: 'Você logou com OUTRA conta Google. Use a mesma da sua conta aqui.',
+                no_password_set: 'Sua conta não tem senha — confirme via Google.',
+                no_google_linked: 'Sua conta não tem Google linkado — use a senha.',
                 confirmation_mismatch: 'Você precisa digitar EXCLUIR pra confirmar.',
-                validation_failed: 'Preenche os dois campos pra continuar.',
+                auth_required: 'Confirme via senha ou Google pra prosseguir.',
+                validation_failed: 'Preenche os campos pra continuar.',
             }[err.message] || ('Erro: ' + err.message);
             delErr.textContent = msg;
             delErr.style.display = '';
             delConfirmBtn.disabled = false;
             delConfirmBtn.textContent = 'Excluir minha conta';
+            // Se foi via Google, libera nova tentativa
+            if (delModeIsGoogleOnly()) {
+                delGoogleCredential = null;
+                delGoogleSlot.style.display = '';
+                delGoogleStatus.style.display = 'none';
+            }
         }
     });
 
