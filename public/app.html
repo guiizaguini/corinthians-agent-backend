@@ -3885,7 +3885,64 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     color: rgba(245,230,168,0.55);
     margin-top: 0.3rem;
 }
+/* Botão de compartilhar — fundo escuro elegante com accent dourado.
+   Combina melhor com o card de progresso escuro acima. */
 .album-share-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #0d0700 0%, #1a1000 100%) !important;
+    border: 1.5px solid #d4a520 !important;
+    color: #ffc93a !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    padding: 0.9rem 1rem !important;
+    font-family: 'Oswald', sans-serif !important;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,201,58,0.1);
+    transition: all 0.2s;
+    cursor: pointer;
+}
+.album-share-btn:hover {
+    background: linear-gradient(135deg, #1a1000 0%, #2a1d08 100%) !important;
+    border-color: #ffc93a !important;
+    color: #fff !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 22px rgba(212,165,32,0.35), inset 0 1px 0 rgba(255,201,58,0.18);
+}
+.album-share-btn .material-icons {
+    font-size: 1.2rem !important;
+    color: #ffc93a;
+    transition: color 0.2s;
+}
+.album-share-btn:hover .material-icons { color: #fff; }
+
+/* ================================================================
+   MODAL: COMPARTILHAR ÁLBUM (com canvas pra imagem download)
+   ================================================================ */
+.album-share-modal { max-width: 580px; }
+.album-share-preview-wrap {
+    background: #0a0700;
+    border-radius: 12px;
+    padding: 0.5rem;
+    margin: 0.85rem 0 1rem;
+    box-shadow: 0 8px 24px rgba(20,10,0,0.3);
+    overflow: hidden;
+    /* Limita altura do preview pra não ocupar tela inteira (canvas é 1080x1620) */
+    max-height: 380px;
+    overflow-y: auto;
+}
+.album-share-preview-wrap canvas {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+}
+.album-share-download-btn {
     width: 100%;
     background: linear-gradient(135deg, #d4a520, #a87f1e) !important;
     border-color: #a87f1e !important;
@@ -3893,19 +3950,72 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    padding: 0.85rem !important;
+    gap: 0.55rem;
+    padding: 0.95rem !important;
+    font-family: 'Oswald', sans-serif !important;
     font-weight: 700;
-    letter-spacing: 0.06em;
+    font-size: 0.9rem;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    box-shadow: 0 4px 14px rgba(212,165,32,0.3);
+    border-radius: 12px;
+    margin-bottom: 1.4rem;
+    box-shadow: 0 6px 18px rgba(212,165,32,0.4);
+    transition: all 0.2s;
 }
-.album-share-btn:hover {
+.album-share-download-btn:hover {
     background: linear-gradient(135deg, #ffc93a, #d4a520) !important;
     transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(212,165,32,0.45);
+    box-shadow: 0 8px 22px rgba(212,165,32,0.5);
 }
-.album-share-btn .material-icons { font-size: 1.1rem; color: #1a1000; }
+.album-share-download-btn .material-icons {
+    color: #1a1000 !important;
+    font-size: 1.25rem;
+}
+
+.album-share-link-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.album-share-link-row input {
+    flex: 1;
+    font-family: 'Oswald', monospace !important;
+    font-size: 0.82rem;
+    padding: 0.65rem 0.8rem !important;
+    background: var(--paper-soft) !important;
+    border: 1.5px solid var(--line) !important;
+    border-radius: 8px !important;
+    color: var(--ink) !important;
+}
+.album-share-link-row .btn-secondary {
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+.album-share-link-row .btn-secondary .material-icons { font-size: 1rem; }
+
+.album-share-modal textarea {
+    width: 100%;
+    font-family: 'SN Pro', sans-serif !important;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    resize: vertical;
+    padding: 0.75rem 0.85rem !important;
+    background: var(--paper-soft) !important;
+    border: 1.5px solid var(--line) !important;
+    border-radius: 8px !important;
+    color: var(--ink) !important;
+    margin-top: 0.4rem;
+    margin-bottom: 1rem;
+}
+
+.album-share-modal .modal-actions .material-icons {
+    font-size: 1rem;
+    margin-right: 0.3rem;
+    vertical-align: middle;
+}
 
 /* Filtros */
 .album-filters {
@@ -8132,26 +8242,36 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
     <!-- Modal: Compartilhar álbum (lista de troca) -->
     <div class="modal-overlay" id="albumShareModal">
-        <div class="modal">
+        <div class="modal album-share-modal">
             <h2 data-i18n="app.album.share_title">Lista pra trocar</h2>
             <div class="meta" data-i18n="app.album.share_meta">Cole esse link onde quiser. Quem abrir vê seus faltantes e repetidos pra fechar a troca.</div>
 
+            <!-- Preview do que vai virar imagem -->
+            <div class="album-share-preview-wrap">
+                <canvas id="albumShareCanvas" width="1080" height="1620"></canvas>
+            </div>
+
+            <button class="btn-primary album-share-download-btn" id="albumShareDownload" type="button">
+                <span class="material-icons">image</span>
+                <span data-i18n="app.album.share_download">Baixar imagem (.png)</span>
+            </button>
+
             <label data-i18n="app.album.share_link_label">Link público da sua lista</label>
-            <div style="display:flex;gap:0.5rem;align-items:center;">
-                <input id="albumShareLink" type="text" readonly style="flex:1;font-family:'Oswald',monospace;font-size:0.85rem;">
-                <button class="btn-secondary" id="albumShareCopy" type="button" style="white-space:nowrap;">
-                    <span class="material-icons" style="font-size:1rem;vertical-align:middle;">content_copy</span>
+            <div class="album-share-link-row">
+                <input id="albumShareLink" type="text" readonly>
+                <button class="btn-secondary" id="albumShareCopy" type="button">
+                    <span class="material-icons">content_copy</span>
                     <span data-i18n="app.btn.copy">Copiar</span>
                 </button>
             </div>
 
-            <label style="margin-top:1rem;" data-i18n="app.album.share_text_label">Texto pronto pra colar (WhatsApp, etc)</label>
-            <textarea id="albumShareText" readonly rows="5" style="width:100%;font-family:'SN Pro',sans-serif;font-size:0.85rem;line-height:1.4;resize:vertical;"></textarea>
+            <label data-i18n="app.album.share_text_label">Texto pronto pra colar (WhatsApp, etc)</label>
+            <textarea id="albumShareText" readonly rows="5"></textarea>
 
             <div class="modal-actions">
                 <button class="btn-secondary" id="albumShareClose" data-i18n="app.btn.close">Fechar</button>
                 <button class="btn-primary" id="albumShareCopyText" type="button">
-                    <span class="material-icons" style="font-size:1rem;vertical-align:middle;">content_copy</span>
+                    <span class="material-icons">content_copy</span>
                     <span data-i18n="app.album.share_copy_text">Copiar texto</span>
                 </button>
             </div>
@@ -14169,6 +14289,227 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         textEl.value = texto;
 
         document.getElementById('albumShareModal').classList.add('show');
+        // Renderiza a imagem no canvas (após modal ficar visível pra fontes carregarem direito)
+        setTimeout(() => albumRenderShareImage(), 100);
+    });
+
+    /**
+     * Desenha um PNG 1080×1620 (formato story IG) com o resumo da lista
+     * de troca: header escuro Copa, progresso, faltantes agrupados por
+     * grupo (A-L + Especiais), repetidas, footer com link.
+     * Reaproveita a vibe FIFA dourada do app.
+     */
+    async function albumRenderShareImage() {
+        const canvas = document.getElementById('albumShareCanvas');
+        const ctx = canvas.getContext('2d');
+        const W = 1080, H = 1620;
+        canvas.width = W; canvas.height = H;
+
+        // ================ Background ================
+        // Gradiente escuro Copa
+        const bg = ctx.createLinearGradient(0, 0, 0, H);
+        bg.addColorStop(0, '#1a1000');
+        bg.addColorStop(0.5, '#241808');
+        bg.addColorStop(1, '#0a0700');
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, W, H);
+
+        // Pattern radial dourado
+        const glow = ctx.createRadialGradient(W * 0.85, 100, 0, W * 0.5, 200, 800);
+        glow.addColorStop(0, 'rgba(212,165,32,0.18)');
+        glow.addColorStop(1, 'transparent');
+        ctx.fillStyle = glow;
+        ctx.fillRect(0, 0, W, H);
+
+        // Listras coloridas no topo (rainbow Copa)
+        const stripeH = 8;
+        const stripeColors = ['#e63946','#ff7a00','#ffc93a','#06a957','#4361ee','#7b2cbf'];
+        for (let i = 0; i < 6; i++) {
+            ctx.fillStyle = stripeColors[i];
+            ctx.fillRect((W / 6) * i, 0, W / 6, stripeH);
+        }
+
+        // ================ HEADER ================
+        let y = 70;
+        // Eyebrow
+        ctx.fillStyle = '#d4a520';
+        ctx.font = '700 24px Oswald, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('FIFA WORLD CUP 2026 · ÁLBUM', W / 2, y);
+        y += 50;
+        // Título
+        ctx.fillStyle = '#fff';
+        ctx.font = '800 56px Oswald, sans-serif';
+        ctx.fillText('LISTA PRA TROCAR', W / 2, y);
+        y += 60;
+        // Username
+        ctx.fillStyle = 'rgba(245,230,168,0.85)';
+        ctx.font = '500 30px Oswald, sans-serif';
+        ctx.fillText(`@${user.username || 'torcedor'}`, W / 2, y);
+        y += 50;
+
+        // ================ STATS ================
+        const total = albumState.cromos.length;
+        const tenho = albumState.cromos.filter(c => c.quantidade > 0).length;
+        const faltam = albumState.cromos.filter(c => c.quantidade === 0);
+        const repetidos = albumState.cromos.filter(c => c.quantidade > 1);
+        const pct = total ? Math.round(tenho / total * 100) : 0;
+
+        // Card de stats
+        const statsX = 80, statsW = W - 160, statsY = y, statsH = 120;
+        ctx.fillStyle = 'rgba(255,255,255,0.04)';
+        ctx.strokeStyle = 'rgba(212,165,32,0.3)';
+        ctx.lineWidth = 1.5;
+        roundRect(ctx, statsX, statsY, statsW, statsH, 14);
+        ctx.fill(); ctx.stroke();
+
+        // Texto stats — 3 colunas
+        const colW = statsW / 3;
+        const drawStat = (col, num, label, color) => {
+            const cx = statsX + colW * col + colW / 2;
+            ctx.fillStyle = color;
+            ctx.font = '700 44px Oswald, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(String(num), cx, statsY + 55);
+            ctx.fillStyle = 'rgba(245,230,168,0.6)';
+            ctx.font = '500 18px Oswald, sans-serif';
+            ctx.fillText(label, cx, statsY + 90);
+        };
+        drawStat(0, tenho, 'TENHO', '#fff');
+        drawStat(1, faltam.length, 'FALTAM', '#ff8a8a');
+        drawStat(2, repetidos.length, 'REPETIDAS', '#ffc93a');
+
+        y = statsY + statsH + 30;
+
+        // Progress bar
+        ctx.fillStyle = 'rgba(255,255,255,0.08)';
+        roundRect(ctx, statsX, y, statsW, 14, 7);
+        ctx.fill();
+        const pgrad = ctx.createLinearGradient(statsX, y, statsX + statsW, y);
+        pgrad.addColorStop(0, '#d4a520');
+        pgrad.addColorStop(1, '#ffc93a');
+        ctx.fillStyle = pgrad;
+        roundRect(ctx, statsX, y, statsW * (pct / 100), 14, 7);
+        ctx.fill();
+        y += 30;
+        ctx.fillStyle = '#ffc93a';
+        ctx.font = '700 26px Oswald, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${tenho} / ${total} · ${pct}%`, W / 2, y + 15);
+        y += 70;
+
+        // ================ LISTA DE FALTANTES POR GRUPO ================
+        const selById = Object.fromEntries(albumState.selecoes.map(s => [s.id, s]));
+        // Agrupa faltantes por grupo (com 'ESPECIAL' pra FWC/Coca-Cola)
+        const porGrupo = new Map();
+        for (const c of faltam) {
+            const sel = selById[c.selecao_id];
+            const g = sel?.grupo || 'ESPECIAL';
+            if (!porGrupo.has(g)) porGrupo.set(g, []);
+            porGrupo.get(g).push(c);
+        }
+
+        // Título da seção
+        ctx.fillStyle = '#fff';
+        ctx.font = '700 36px Oswald, sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(`📋 FALTAM (${faltam.length})`, statsX, y);
+        y += 40;
+
+        if (!faltam.length) {
+            ctx.fillStyle = '#ffc93a';
+            ctx.font = '500 28px Oswald, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('🏆 Álbum completo!', W / 2, y + 30);
+            y += 80;
+        } else {
+            // Render por grupo
+            const ordemGrupos = ['A','B','C','D','E','F','G','H','I','J','K','L','ESPECIAL'];
+            for (const g of ordemGrupos) {
+                if (!porGrupo.has(g)) continue;
+                if (y > H - 220) break; // sai se faltar espaço pro footer
+                const cromos = porGrupo.get(g);
+                const grupoLabel = g === 'ESPECIAL' ? '★ ESPECIAIS' : `GRUPO ${g}`;
+
+                // Pequeno header de grupo
+                ctx.fillStyle = '#d4a520';
+                ctx.font = '700 22px Oswald, sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText(grupoLabel, statsX, y);
+                ctx.fillStyle = 'rgba(245,230,168,0.45)';
+                ctx.font = '500 16px Oswald, sans-serif';
+                const countLabel = `(${cromos.length})`;
+                const labelWidth = ctx.measureText(grupoLabel).width;
+                ctx.fillText(countLabel, statsX + labelWidth + 12, y);
+                y += 8;
+                // Linha divisória
+                ctx.strokeStyle = 'rgba(212,165,32,0.25)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(statsX, y);
+                ctx.lineTo(statsX + statsW, y);
+                ctx.stroke();
+                y += 18;
+
+                // Lista de códigos em colunas (4 colunas)
+                ctx.font = '500 17px "Oswald", monospace';
+                ctx.textAlign = 'left';
+                ctx.fillStyle = '#fff';
+                const cols = 4;
+                const colWidth = statsW / cols;
+                let col = 0;
+                for (let i = 0; i < cromos.length; i++) {
+                    if (y > H - 160) {
+                        ctx.fillStyle = 'rgba(245,230,168,0.6)';
+                        ctx.fillText(`+${cromos.length - i} mais...`, statsX + col * colWidth, y);
+                        y += 24;
+                        break;
+                    }
+                    const cx = statsX + col * colWidth;
+                    ctx.fillStyle = '#fff';
+                    ctx.fillText(cromos[i].code, cx, y);
+                    col++;
+                    if (col >= cols) { col = 0; y += 24; }
+                }
+                if (col > 0) y += 24;
+                y += 12;
+            }
+        }
+
+        // ================ FOOTER ================
+        // Linha de separação
+        ctx.strokeStyle = 'rgba(212,165,32,0.3)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(statsX, H - 130);
+        ctx.lineTo(statsX + statsW, H - 130);
+        ctx.stroke();
+
+        // Brand
+        ctx.fillStyle = '#d4a520';
+        ctx.font = '700 22px Oswald, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('CADEIRA NUMERADA', W / 2, H - 90);
+        // CTA
+        ctx.fillStyle = '#fff';
+        ctx.font = '500 26px Oswald, sans-serif';
+        ctx.fillText('🤝 Bora trocar?', W / 2, H - 55);
+        // URL
+        ctx.fillStyle = 'rgba(245,230,168,0.7)';
+        ctx.font = '500 18px Oswald, monospace';
+        ctx.fillText(`cadeiranumerada.com.br/?album=${user.username || ''}`, W / 2, H - 25);
+    }
+
+    // (Helper roundRect já definido em outro lugar do arquivo — reusa o global)
+
+    // Download da imagem gerada
+    document.getElementById('albumShareDownload').addEventListener('click', () => {
+        const canvas = document.getElementById('albumShareCanvas');
+        const link = document.createElement('a');
+        const username = (user.username || 'torcedor').replace(/[^a-z0-9]/gi, '');
+        link.download = `album-copa-${username}-${Date.now()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
     });
     document.getElementById('albumShareClose').addEventListener('click', () => {
         document.getElementById('albumShareModal').classList.remove('show');
