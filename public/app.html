@@ -3942,6 +3942,30 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     display: block;
     border-radius: 8px;
 }
+/* Dica do WhatsApp — verde tipo notification toast */
+.album-share-whats-tip {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    padding: 0.75rem 0.9rem;
+    margin: 0 0 0.85rem;
+    background: linear-gradient(135deg, #e7f5e9 0%, #d8f0dd 100%);
+    border: 1px solid rgba(37,180,84,0.35);
+    border-left: 3px solid #25b454;
+    border-radius: 10px;
+    font-family: 'SN Pro', sans-serif;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: #1d4426;
+}
+.album-share-whats-tip .material-icons {
+    color: #25b454;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+}
+.album-share-whats-tip strong { color: #0c2f15; font-weight: 700; }
+
 .album-share-download-btn {
     width: 100%;
     background: linear-gradient(135deg, #d4a520, #a87f1e) !important;
@@ -8401,9 +8425,18 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 <canvas id="albumShareCanvas" width="1080" height="1620"></canvas>
             </div>
 
+            <!-- Dica visual: WhatsApp comprime fotos brutalmente. Mandar como Documento preserva. -->
+            <div class="album-share-whats-tip">
+                <span class="material-icons">tips_and_updates</span>
+                <div>
+                    <strong data-i18n="app.album.share_tip_title">Pra qualidade máxima no WhatsApp:</strong>
+                    <span data-i18n-html="app.album.share_tip_desc"> envie como <strong>Documento</strong> (não como Foto). O WhatsApp comprime fotos automaticamente — em modo Documento ela chega na mesma resolução do download.</span>
+                </div>
+            </div>
+
             <button class="btn-primary album-share-download-btn" id="albumShareDownload" type="button">
                 <span class="material-icons">image</span>
-                <span data-i18n="app.album.share_download">Baixar imagem (.png)</span>
+                <span data-i18n="app.album.share_download">Baixar imagem (.jpg)</span>
             </button>
 
             <div class="album-share-link-block">
@@ -14873,7 +14906,13 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     // (Helper roundRect já definido em outro lugar do arquivo — reusa o global)
 
     /**
-     * Download da imagem gerada — mobile-friendly.
+     * Download da imagem gerada — mobile-friendly + JPEG.
+     *
+     * Por que JPEG (não PNG)?
+     *  - WhatsApp recomprime fotos brutalmente em JPEG ~30-40%
+     *  - Se a imagem JÁ chega em JPEG 95%, a recompressão preserva mais detalhe
+     *  - Arquivo final é menor (~70% menos que PNG) → mais rápido de upload
+     *  - Pra qualidade ainda melhor, user envia como Documento (dica no UI)
      *
      * Por que não usar toDataURL() + link.click()?
      *  - iOS Safari NÃO honra o atributo `download` em links com data: URI
@@ -14891,7 +14930,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const btn = document.getElementById('albumShareDownload');
         const canvas = document.getElementById('albumShareCanvas');
         const username = (user.username || 'torcedor').replace(/[^a-z0-9]/gi, '');
-        const filename = `album-copa-${username}.png`;
+        const filename = `album-copa-${username}.jpg`;
         const originalLabel = btn.innerHTML;
         const setBtnLabel = (label, icon = 'hourglass_top') =>
             btn.innerHTML = `<span class="material-icons">${icon}</span><span>${label}</span>`;
@@ -14899,11 +14938,16 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         setBtnLabel('Gerando...');
 
         try {
-            // Encode pra blob (await em Promise wrapper de toBlob)
+            // Encode pra blob — JPEG 95% (vs PNG): aguenta melhor a recompressão
+            // do WhatsApp/Telegram/etc; arquivo ~70% menor; cores ainda nítidas.
             const blob = await new Promise((resolve, reject) => {
-                canvas.toBlob((b) => b ? resolve(b) : reject(new Error('toBlob falhou')), 'image/png');
+                canvas.toBlob(
+                    (b) => b ? resolve(b) : reject(new Error('toBlob falhou')),
+                    'image/jpeg',
+                    0.95
+                );
             });
-            const file = new File([blob], filename, { type: 'image/png' });
+            const file = new File([blob], filename, { type: 'image/jpeg' });
 
             // 1) Web Share API com arquivo (best path mobile moderno)
             const canShareFile = !!(navigator.canShare && navigator.canShare({ files: [file] }));
