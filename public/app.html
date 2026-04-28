@@ -14294,19 +14294,77 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     });
 
     /**
-     * Desenha um PNG 1080×1620 (formato story IG) com o resumo da lista
-     * de troca: header escuro Copa, progresso, faltantes agrupados por
-     * grupo (A-L + Especiais), repetidas, footer com link.
-     * Reaproveita a vibe FIFA dourada do app.
+     * Desenha um PNG com a lista de troca em formato VISUAL — mini-cards
+     * de cromos faltantes agrupados por seleção dentro de cada grupo.
+     * Altura é dinâmica baseada no conteúdo (até max 6000px).
      */
     async function albumRenderShareImage() {
         const canvas = document.getElementById('albumShareCanvas');
         const ctx = canvas.getContext('2d');
-        const W = 1080, H = 1620;
-        canvas.width = W; canvas.height = H;
 
-        // ================ Background ================
-        // Gradiente escuro Copa
+        // ================ DADOS ================
+        const total = albumState.cromos.length;
+        const tenho = albumState.cromos.filter(c => c.quantidade > 0).length;
+        const faltam = albumState.cromos.filter(c => c.quantidade === 0);
+        const repetidos = albumState.cromos.filter(c => c.quantidade > 1);
+        const pct = total ? Math.round(tenho / total * 100) : 0;
+
+        const selById = Object.fromEntries(albumState.selecoes.map(s => [s.id, s]));
+
+        // Agrupa faltantes: GRUPO → SELEÇÃO → cromos
+        const porGrupo = new Map();
+        for (const c of faltam) {
+            const sel = selById[c.selecao_id];
+            const g = sel?.grupo || 'ESPECIAL';
+            if (!porGrupo.has(g)) porGrupo.set(g, new Map());
+            const selMap = porGrupo.get(g);
+            if (!selMap.has(sel.id)) selMap.set(sel.id, { sel, cromos: [] });
+            selMap.get(sel.id).cromos.push(c);
+        }
+        const ordemGrupos = ['A','B','C','D','E','F','G','H','I','J','K','L','ESPECIAL'];
+        const grupoEntries = ordemGrupos
+            .filter(g => porGrupo.has(g))
+            .map(g => [g, [...porGrupo.get(g).values()]]);
+
+        // ================ LAYOUT CONFIG ================
+        const W = 1080;
+        const PAD = 50;
+        const CONTENT_W = W - PAD * 2;
+        // Mini-cromo: 64×80 (proporção 4:5, número grande visível)
+        const CW = 64, CH = 80, CGAP = 8;
+        const CPL = Math.floor((CONTENT_W + CGAP) / (CW + CGAP)); // cromos por linha
+        const HEADER_H = 280;
+        const STATS_H = 220;
+        const GROUP_HEAD_H = 56;
+        const SEL_HEAD_H = 38;
+        const SEL_MARGIN_BOT = 18;
+        const FOOTER_H = 130;
+        const MAX_H = 6000;
+
+        // ================ CALCULA ALTURA NECESSÁRIA ================
+        let calcH = HEADER_H + STATS_H + 30;
+        if (faltam.length === 0) {
+            calcH += 100; // empty state
+        } else {
+            calcH += 60; // título "FALTAM (n)"
+            for (const [g, sels] of grupoEntries) {
+                calcH += GROUP_HEAD_H;
+                for (const { cromos } of sels) {
+                    calcH += SEL_HEAD_H;
+                    const lines = Math.ceil(cromos.length / CPL);
+                    calcH += lines * (CH + CGAP) + SEL_MARGIN_BOT;
+                }
+                calcH += 12;
+            }
+        }
+        calcH += FOOTER_H;
+        const truncated = calcH > MAX_H;
+        const H = Math.min(calcH, MAX_H);
+
+        canvas.width = W;
+        canvas.height = H;
+
+        // ================ BACKGROUND ================
         const bg = ctx.createLinearGradient(0, 0, 0, H);
         bg.addColorStop(0, '#1a1000');
         bg.addColorStop(0.5, '#241808');
@@ -14314,191 +14372,250 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         ctx.fillStyle = bg;
         ctx.fillRect(0, 0, W, H);
 
-        // Pattern radial dourado
-        const glow = ctx.createRadialGradient(W * 0.85, 100, 0, W * 0.5, 200, 800);
-        glow.addColorStop(0, 'rgba(212,165,32,0.18)');
+        // Pattern radial dourado top
+        const glow = ctx.createRadialGradient(W * 0.85, 150, 0, W * 0.5, 250, 900);
+        glow.addColorStop(0, 'rgba(212,165,32,0.20)');
         glow.addColorStop(1, 'transparent');
         ctx.fillStyle = glow;
-        ctx.fillRect(0, 0, W, H);
+        ctx.fillRect(0, 0, W, Math.min(H, 800));
 
         // Listras coloridas no topo (rainbow Copa)
-        const stripeH = 8;
         const stripeColors = ['#e63946','#ff7a00','#ffc93a','#06a957','#4361ee','#7b2cbf'];
         for (let i = 0; i < 6; i++) {
             ctx.fillStyle = stripeColors[i];
-            ctx.fillRect((W / 6) * i, 0, W / 6, stripeH);
+            ctx.fillRect((W / 6) * i, 0, W / 6, 8);
         }
 
         // ================ HEADER ================
-        let y = 70;
-        // Eyebrow
+        let y = 80;
         ctx.fillStyle = '#d4a520';
         ctx.font = '700 24px Oswald, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('FIFA WORLD CUP 2026 · ÁLBUM', W / 2, y);
-        y += 50;
-        // Título
+        y += 55;
         ctx.fillStyle = '#fff';
-        ctx.font = '800 56px Oswald, sans-serif';
+        ctx.font = '800 58px Oswald, sans-serif';
         ctx.fillText('LISTA PRA TROCAR', W / 2, y);
         y += 60;
-        // Username
         ctx.fillStyle = 'rgba(245,230,168,0.85)';
         ctx.font = '500 30px Oswald, sans-serif';
         ctx.fillText(`@${user.username || 'torcedor'}`, W / 2, y);
         y += 50;
 
-        // ================ STATS ================
-        const total = albumState.cromos.length;
-        const tenho = albumState.cromos.filter(c => c.quantidade > 0).length;
-        const faltam = albumState.cromos.filter(c => c.quantidade === 0);
-        const repetidos = albumState.cromos.filter(c => c.quantidade > 1);
-        const pct = total ? Math.round(tenho / total * 100) : 0;
-
-        // Card de stats
-        const statsX = 80, statsW = W - 160, statsY = y, statsH = 120;
+        // ================ CARD STATS ================
+        const sx = PAD, sw = CONTENT_W;
+        const sy = y, sh = 130;
         ctx.fillStyle = 'rgba(255,255,255,0.04)';
         ctx.strokeStyle = 'rgba(212,165,32,0.3)';
         ctx.lineWidth = 1.5;
-        roundRect(ctx, statsX, statsY, statsW, statsH, 14);
+        roundRect(ctx, sx, sy, sw, sh, 14);
         ctx.fill(); ctx.stroke();
 
-        // Texto stats — 3 colunas
-        const colW = statsW / 3;
+        const colW = sw / 3;
         const drawStat = (col, num, label, color) => {
-            const cx = statsX + colW * col + colW / 2;
+            const cx = sx + colW * col + colW / 2;
             ctx.fillStyle = color;
-            ctx.font = '700 44px Oswald, sans-serif';
+            ctx.font = '700 46px Oswald, sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText(String(num), cx, statsY + 55);
+            ctx.textBaseline = 'alphabetic';
+            ctx.fillText(String(num), cx, sy + 60);
             ctx.fillStyle = 'rgba(245,230,168,0.6)';
             ctx.font = '500 18px Oswald, sans-serif';
-            ctx.fillText(label, cx, statsY + 90);
+            ctx.fillText(label, cx, sy + 100);
         };
         drawStat(0, tenho, 'TENHO', '#fff');
         drawStat(1, faltam.length, 'FALTAM', '#ff8a8a');
         drawStat(2, repetidos.length, 'REPETIDAS', '#ffc93a');
-
-        y = statsY + statsH + 30;
+        y = sy + sh + 25;
 
         // Progress bar
         ctx.fillStyle = 'rgba(255,255,255,0.08)';
-        roundRect(ctx, statsX, y, statsW, 14, 7);
+        roundRect(ctx, sx, y, sw, 14, 7);
         ctx.fill();
-        const pgrad = ctx.createLinearGradient(statsX, y, statsX + statsW, y);
+        const pgrad = ctx.createLinearGradient(sx, y, sx + sw, y);
         pgrad.addColorStop(0, '#d4a520');
         pgrad.addColorStop(1, '#ffc93a');
         ctx.fillStyle = pgrad;
-        roundRect(ctx, statsX, y, statsW * (pct / 100), 14, 7);
+        roundRect(ctx, sx, y, sw * (pct / 100), 14, 7);
         ctx.fill();
-        y += 30;
+        y += 35;
         ctx.fillStyle = '#ffc93a';
-        ctx.font = '700 26px Oswald, sans-serif';
+        ctx.font = '700 28px Oswald, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(`${tenho} / ${total} · ${pct}%`, W / 2, y + 15);
-        y += 70;
+        ctx.fillText(`${tenho} / ${total} · ${pct}%`, W / 2, y);
+        y += 50;
 
-        // ================ LISTA DE FALTANTES POR GRUPO ================
-        const selById = Object.fromEntries(albumState.selecoes.map(s => [s.id, s]));
-        // Agrupa faltantes por grupo (com 'ESPECIAL' pra FWC/Coca-Cola)
-        const porGrupo = new Map();
-        for (const c of faltam) {
-            const sel = selById[c.selecao_id];
-            const g = sel?.grupo || 'ESPECIAL';
-            if (!porGrupo.has(g)) porGrupo.set(g, []);
-            porGrupo.get(g).push(c);
-        }
-
-        // Título da seção
-        ctx.fillStyle = '#fff';
-        ctx.font = '700 36px Oswald, sans-serif';
-        ctx.textAlign = 'left';
-        ctx.fillText(`📋 FALTAM (${faltam.length})`, statsX, y);
-        y += 40;
-
+        // ================ FALTANTES (mini-cards visuais) ================
         if (!faltam.length) {
             ctx.fillStyle = '#ffc93a';
-            ctx.font = '500 28px Oswald, sans-serif';
+            ctx.font = '700 36px Oswald, sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText('🏆 Álbum completo!', W / 2, y + 30);
+            ctx.fillText('🏆 ÁLBUM COMPLETO!', W / 2, y + 40);
             y += 80;
         } else {
-            // Render por grupo
-            const ordemGrupos = ['A','B','C','D','E','F','G','H','I','J','K','L','ESPECIAL'];
-            for (const g of ordemGrupos) {
-                if (!porGrupo.has(g)) continue;
-                if (y > H - 220) break; // sai se faltar espaço pro footer
-                const cromos = porGrupo.get(g);
-                const grupoLabel = g === 'ESPECIAL' ? '★ ESPECIAIS' : `GRUPO ${g}`;
+            // Título da seção
+            ctx.fillStyle = '#fff';
+            ctx.font = '700 32px Oswald, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('FALTAM', sx, y);
+            ctx.fillStyle = '#ff8a8a';
+            ctx.font = '700 26px Oswald, sans-serif';
+            ctx.fillText(`(${faltam.length})`, sx + ctx.measureText('FALTAM').width + 14, y);
+            y += 30;
 
-                // Pequeno header de grupo
-                ctx.fillStyle = '#d4a520';
+            // Renderiza grupos
+            for (const [g, sels] of grupoEntries) {
+                if (y > H - FOOTER_H - 60) break; // sem espaço
+
+                // Header de grupo (letra grande dourada)
+                const grupoLabel = g === 'ESPECIAL' ? '★ ESPECIAIS' : `GRUPO ${g}`;
+                const isSpecial = g === 'ESPECIAL';
+
+                // Quadrado dourado com letra
+                const boxSize = 38;
+                const grad = isSpecial
+                    ? ctx.createLinearGradient(sx, y, sx + boxSize, y + boxSize)
+                    : ctx.createLinearGradient(sx, y, sx + boxSize, y + boxSize);
+                if (isSpecial) {
+                    grad.addColorStop(0, '#c084fc');
+                    grad.addColorStop(1, '#7c3aed');
+                } else {
+                    grad.addColorStop(0, '#ffc93a');
+                    grad.addColorStop(1, '#d4a520');
+                }
+                ctx.fillStyle = grad;
+                roundRect(ctx, sx, y, boxSize, boxSize, 8);
+                ctx.fill();
+                ctx.fillStyle = isSpecial ? '#fff' : '#1a1000';
+                ctx.font = '800 22px Oswald, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(isSpecial ? '★' : g, sx + boxSize/2, y + boxSize/2 + 2);
+
+                // Label do grupo
+                ctx.textBaseline = 'alphabetic';
+                ctx.fillStyle = '#fff';
                 ctx.font = '700 22px Oswald, sans-serif';
                 ctx.textAlign = 'left';
-                ctx.fillText(grupoLabel, statsX, y);
-                ctx.fillStyle = 'rgba(245,230,168,0.45)';
-                ctx.font = '500 16px Oswald, sans-serif';
-                const countLabel = `(${cromos.length})`;
-                const labelWidth = ctx.measureText(grupoLabel).width;
-                ctx.fillText(countLabel, statsX + labelWidth + 12, y);
-                y += 8;
-                // Linha divisória
-                ctx.strokeStyle = 'rgba(212,165,32,0.25)';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(statsX, y);
-                ctx.lineTo(statsX + statsW, y);
-                ctx.stroke();
-                y += 18;
+                ctx.fillText(grupoLabel.replace('★ ', ''), sx + boxSize + 14, y + boxSize/2 + 7);
 
-                // Lista de códigos em colunas (4 colunas)
-                ctx.font = '500 17px "Oswald", monospace';
-                ctx.textAlign = 'left';
-                ctx.fillStyle = '#fff';
-                const cols = 4;
-                const colWidth = statsW / cols;
-                let col = 0;
-                for (let i = 0; i < cromos.length; i++) {
-                    if (y > H - 160) {
-                        ctx.fillStyle = 'rgba(245,230,168,0.6)';
-                        ctx.fillText(`+${cromos.length - i} mais...`, statsX + col * colWidth, y);
-                        y += 24;
-                        break;
+                y += GROUP_HEAD_H;
+
+                // Pra cada seleção do grupo, renderiza header + grid de mini-cromos
+                for (const { sel, cromos } of sels) {
+                    if (y > H - FOOTER_H - 50) break;
+
+                    // Header da seleção: bandeira pequena + nome + count
+                    let hx = sx;
+                    if (sel.flag_iso) {
+                        try {
+                            const flagImg = await loadImage(`https://flagcdn.com/w80/${sel.flag_iso}.png`);
+                            ctx.drawImage(flagImg, hx, y - 12, 28, 19);
+                            hx += 36;
+                        } catch (_) {}
                     }
-                    const cx = statsX + col * colWidth;
-                    ctx.fillStyle = '#fff';
-                    ctx.fillText(cromos[i].code, cx, y);
-                    col++;
-                    if (col >= cols) { col = 0; y += 24; }
+                    ctx.fillStyle = 'rgba(245,230,168,0.9)';
+                    ctx.font = '700 18px Oswald, sans-serif';
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'alphabetic';
+                    ctx.fillText(sel.name.toUpperCase(), hx, y);
+                    const nameW = ctx.measureText(sel.name.toUpperCase()).width;
+                    ctx.fillStyle = '#ff8a8a';
+                    ctx.font = '500 14px Oswald, sans-serif';
+                    ctx.fillText(`${cromos.length} faltam`, hx + nameW + 12, y);
+                    y += SEL_HEAD_H - 10;
+
+                    // Grid de mini-cromos
+                    let col = 0;
+                    let lineY = y;
+                    for (const c of cromos) {
+                        const cx = sx + col * (CW + CGAP);
+                        drawMiniCromoFalta(ctx, cx, lineY, CW, CH, c.code, c.ordem);
+                        col++;
+                        if (col >= CPL) {
+                            col = 0;
+                            lineY += CH + CGAP;
+                        }
+                    }
+                    y = lineY + (col > 0 ? CH + CGAP : 0) + SEL_MARGIN_BOT;
                 }
-                if (col > 0) y += 24;
                 y += 12;
+            }
+
+            // Se foi truncado, mostra aviso
+            if (truncated) {
+                ctx.fillStyle = 'rgba(245,230,168,0.6)';
+                ctx.font = '500 18px Oswald, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('+ outros grupos no link →', W / 2, y);
+                y += 40;
             }
         }
 
         // ================ FOOTER ================
-        // Linha de separação
+        const footerY = H - FOOTER_H;
         ctx.strokeStyle = 'rgba(212,165,32,0.3)';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(statsX, H - 130);
-        ctx.lineTo(statsX + statsW, H - 130);
+        ctx.moveTo(sx, footerY);
+        ctx.lineTo(sx + sw, footerY);
         ctx.stroke();
 
-        // Brand
         ctx.fillStyle = '#d4a520';
-        ctx.font = '700 22px Oswald, sans-serif';
+        ctx.font = '700 24px Oswald, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('CADEIRA NUMERADA', W / 2, H - 90);
-        // CTA
+        ctx.textBaseline = 'alphabetic';
+        ctx.fillText('CADEIRA NUMERADA', W / 2, footerY + 40);
         ctx.fillStyle = '#fff';
-        ctx.font = '500 26px Oswald, sans-serif';
-        ctx.fillText('🤝 Bora trocar?', W / 2, H - 55);
-        // URL
+        ctx.font = '500 28px Oswald, sans-serif';
+        ctx.fillText('🤝 Bora trocar?', W / 2, footerY + 75);
         ctx.fillStyle = 'rgba(245,230,168,0.7)';
         ctx.font = '500 18px Oswald, monospace';
-        ctx.fillText(`cadeiranumerada.com.br/?album=${user.username || ''}`, W / 2, H - 25);
+        ctx.fillText(`cadeiranumerada.com.br/?album=${user.username || ''}`, W / 2, footerY + 105);
     }
+
+    /**
+     * Desenha um mini-cromo "falta" no canvas (igual visual dos cards do
+     * front, só que pequeno e com NÚMERO grande no centro pra ler de longe).
+     */
+    function drawMiniCromoFalta(ctx, x, y, w, h, code, numero) {
+        // Fundo gradiente escuro
+        const grd = ctx.createLinearGradient(x, y, x, y + h);
+        grd.addColorStop(0, '#241808');
+        grd.addColorStop(1, '#0a0700');
+        ctx.fillStyle = grd;
+        roundRect(ctx, x, y, w, h, 6);
+        ctx.fill();
+
+        // Borda dourada tracejada (estado "falta")
+        ctx.setLineDash([4, 3]);
+        ctx.strokeStyle = '#d4a520';
+        ctx.lineWidth = 1.5;
+        roundRect(ctx, x + 0.5, y + 0.5, w - 1, h - 1, 6);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Bar escura embaixo (info)
+        const infoH = 18;
+        ctx.fillStyle = '#0a0700';
+        roundRect(ctx, x, y + h - infoH, w, infoH, 0);
+        ctx.fill();
+
+        // Número GRANDE no centro (parte de cima do card)
+        ctx.fillStyle = '#ffc93a';
+        ctx.font = `800 ${Math.floor((h - infoH) * 0.6)}px Oswald, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(String(numero), x + w/2, y + (h - infoH)/2 + 2);
+
+        // Código pequeno na bar de baixo
+        ctx.fillStyle = '#d4a520';
+        ctx.font = '700 8px Oswald, monospace';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(code, x + w/2, y + h - infoH/2);
+    }
+
+    // (loadImage helper já está definido em outro lugar do arquivo — reusa)
 
     // (Helper roundRect já definido em outro lugar do arquivo — reusa o global)
 
