@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Álbum da Copa — Cadeira Numerada</title>
+<meta name="description" content="Veja a coleção da Copa 2026, descubra quais cromos faltam e feche trocas direto pelo Cadeira Numerada.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+    --gold: #d4a520;
+    --gold-soft: #ffc93a;
+    --gold-deep: #a87f1e;
+    --dark-1: #0a0700;
+    --dark-2: #1a1000;
+    --dark-3: #241808;
+    --dark-4: #3a2a10;
+    --ink: #f5e6a8;
+    --ink-soft: rgba(245,230,168,0.7);
+    --ink-mute: rgba(245,230,168,0.45);
+    --line: rgba(212,165,32,0.25);
+    --red: #e63946;
+    --orange: #ff7a00;
+    --yellow: #ffc93a;
+    --green: #06a957;
+    --blue: #4361ee;
+    --purple: #7b2cbf;
+}
+html, body { height: auto; min-height: 100%; }
+body {
+    font-family: 'Oswald', sans-serif;
+    background: linear-gradient(180deg, var(--dark-2) 0%, var(--dark-1) 100%);
+    color: var(--ink);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ================ TOPBAR ================ */
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.4rem;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, var(--dark-3) 0%, var(--dark-2) 100%);
+}
+.topbar-brand {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-decoration: none;
+}
+.topbar-brand-tagline {
+    display: block;
+    font-weight: 500;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    color: var(--ink-mute);
+    margin-top: 0.1rem;
+}
+.topbar-nav {
+    display: flex;
+    gap: 0.6rem;
+}
+.topbar-btn {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.55rem 0.95rem;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.15s;
+    cursor: pointer;
+    border: 1.5px solid var(--line);
+    background: transparent;
+    color: var(--ink-soft);
+}
+.topbar-btn:hover { border-color: var(--gold); color: var(--gold); }
+.topbar-btn-primary {
+    background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+    color: var(--dark-2);
+    border-color: var(--gold-deep);
+}
+.topbar-btn-primary:hover {
+    background: linear-gradient(135deg, var(--gold-soft), var(--gold));
+    color: var(--dark-1);
+}
+
+/* ================ HERO ================ */
+.hero {
+    position: relative;
+    overflow: hidden;
+    padding: 2.2rem 1.4rem 1.6rem;
+    background: linear-gradient(135deg, var(--dark-2) 0%, var(--dark-3) 50%, var(--dark-4) 100%);
+    box-shadow: inset 0 -1px 0 var(--line);
+    text-align: center;
+}
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 6px;
+    background: linear-gradient(90deg,
+        var(--red) 0% 16.66%, var(--orange) 16.66% 33.33%,
+        var(--yellow) 33.33% 50%, var(--green) 50% 66.66%,
+        var(--blue) 66.66% 83.33%, var(--purple) 83.33% 100%);
+}
+.hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at 90% 10%, rgba(212,165,32,0.18) 0%, transparent 45%),
+        radial-gradient(circle at 5% 85%, rgba(126,224,255,0.08) 0%, transparent 50%);
+    pointer-events: none;
+}
+.hero-content { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; }
+.hero-eyebrow {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.6rem;
+}
+.hero-username {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
+    color: #fff;
+    margin-bottom: 0.2rem;
+    text-shadow: 0 2px 16px rgba(0,0,0,0.4);
+}
+.hero-username em {
+    font-style: normal;
+    color: var(--gold);
+    text-shadow: 0 0 24px rgba(212,165,32,0.6);
+}
+.hero-displayname {
+    font-family: 'SN Pro', 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    margin-bottom: 1.4rem;
+}
+
+/* Card de progresso no hero */
+.hero-progress {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.1rem 1.2rem;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    max-width: 520px;
+    margin: 0 auto;
+}
+.hero-progress-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-bottom: 0.55rem;
+}
+.hero-progress-stats {
+    font-weight: 700;
+    color: var(--gold);
+    font-size: 1rem;
+    text-shadow: 0 0 12px rgba(212,165,32,0.4);
+}
+.hero-progress-bar {
+    height: 10px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.4);
+}
+.hero-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-soft));
+    box-shadow: 0 0 14px rgba(255,201,58,0.5);
+    transition: width 0.6s ease-out;
+}
+.hero-stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.7rem;
+    margin-top: 1rem;
+}
+.hero-stat {
+    text-align: center;
+    padding: 0.55rem 0.3rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+    border: 1px solid rgba(212,165,32,0.1);
+}
+.hero-stat-num {
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #fff;
+    line-height: 1;
+}
+.hero-stat-num.faltam { color: #ff8a8a; }
+.hero-stat-num.repetidas { color: var(--gold-soft); }
+.hero-stat-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-top: 0.25rem;
+}
+
+/* ================ CTA BLOCK ================ */
+.cta-block {
+    margin: 1.6rem auto;
+    max-width: 720px;
+    padding: 0 1.4rem;
+}
+.cta-card {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-deep) 100%);
+    border-radius: 16px;
+    padding: 1.5rem 1.4rem;
+    text-align: center;
+    color: var(--dark-2);
+    box-shadow: 0 12px 32px rgba(212,165,32,0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+    position: relative;
+    overflow: hidden;
+}
+.cta-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(135deg, transparent 0 22px, rgba(255,255,255,0.08) 22px 23px);
+    pointer-events: none;
+}
+.cta-card-content { position: relative; z-index: 1; }
+.cta-icon {
+    font-size: 2.4rem !important;
+    margin-bottom: 0.4rem;
+    color: var(--dark-1);
+}
+.cta-title {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--dark-1);
+    margin-bottom: 0.55rem;
+    line-height: 1.15;
+}
+.cta-desc {
+    font-family: 'SN Pro', 'Oswald', sans-serif;
+    font-size: 0.92rem;
+    color: rgba(10,7,0,0.85);
+    margin-bottom: 1.3rem;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.45;
+}
+.cta-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    max-width: 320px;
+    margin: 0 auto;
+}
+.cta-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.95rem 1.2rem;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-radius: 10px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 2px solid transparent;
+}
+.cta-btn-primary {
+    background: var(--dark-1);
+    color: var(--gold-soft);
+    border-color: var(--dark-1);
+}
+.cta-btn-primary:hover {
+    background: #000;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+}
+.cta-btn-secondary {
+    background: transparent;
+    color: var(--dark-1);
+    border-color: var(--dark-1);
+}
+.cta-btn-secondary:hover {
+    background: rgba(0,0,0,0.1);
+}
+.cta-btn .material-icons { font-size: 1.15rem; }
+
+/* ================ LISTAS DE CROMOS ================ */
+.list-section {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 1.4rem;
+}
+.list-title {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin: 2rem 0 1rem;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #fff;
+}
+.list-title-count {
+    background: var(--gold);
+    color: var(--dark-1);
+    font-size: 0.85rem;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    line-height: 1;
+}
+.list-title-count.faltam { background: #ff8a8a; }
+
+/* Header de seleção (mesmo estilo do app) */
+.sec-head {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.7rem 0.9rem 0.85rem;
+    background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
+    border-radius: 10px;
+    margin: 1.2rem 0 0.7rem;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+}
+.sec-head::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg,
+        var(--red) 0% 16.66%, var(--orange) 16.66% 33.33%,
+        var(--yellow) 33.33% 50%, var(--green) 50% 66.66%,
+        var(--blue) 66.66% 83.33%, var(--purple) 83.33% 100%);
+}
+.sec-flag {
+    width: 36px; height: 24px;
+    border-radius: 4px;
+    object-fit: cover;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    flex-shrink: 0;
+}
+.sec-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #fff;
+    flex: 1;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+.sec-grupo {
+    font-weight: 600;
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+}
+
+/* Grid de cromos */
+.cromos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    gap: 0.4rem;
+}
+@media (max-width: 480px) {
+    .cromos-grid { grid-template-columns: repeat(5, 1fr); }
+}
+.cromo-mini {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    border-radius: 8px;
+    background: linear-gradient(180deg, var(--dark-3), var(--dark-1));
+    border: 2px solid var(--gold);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.cromo-mini.falta {
+    border-style: dashed;
+    border-color: rgba(212,165,32,0.5);
+}
+.cromo-mini-num {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--gold-soft);
+}
+.cromo-mini-code {
+    background: var(--dark-1);
+    color: var(--gold);
+    text-align: center;
+    padding: 0.2rem 0.2rem;
+    font-size: 0.55rem;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    border-top: 1px solid rgba(212,165,32,0.2);
+}
+.cromo-mini-rep {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    background: var(--gold-soft);
+    color: var(--dark-1);
+    font-weight: 700;
+    font-size: 0.62rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 999px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* ================ EMPTY / LOADING ================ */
+.loading, .empty, .err {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--ink-mute);
+    font-style: italic;
+}
+.err { color: #ff8a8a; }
+
+/* ================ FOOTER ================ */
+.footer {
+    margin-top: 2.5rem;
+    padding: 1.6rem 1rem 2rem;
+    text-align: center;
+    border-top: 1px solid var(--line);
+    color: var(--ink-mute);
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+}
+.footer a { color: var(--gold); text-decoration: none; }
+
+/* Mobile */
+@media (max-width: 600px) {
+    .topbar { padding: 0.85rem 1rem; }
+    .topbar-brand { font-size: 0.85rem; letter-spacing: 0.12em; }
+    .topbar-btn { font-size: 0.7rem; padding: 0.45rem 0.7rem; letter-spacing: 0.06em; }
+    .hero { padding: 1.6rem 1rem 1.3rem; }
+    .cta-card { padding: 1.2rem 1rem; }
+    .cta-title { font-size: 1.15rem; }
+    .cta-desc { font-size: 0.85rem; }
+    .list-section { padding: 0 1rem; }
+    .list-title { font-size: 0.95rem; }
+    .sec-head { padding: 0.55rem 0.7rem 0.7rem; }
+    .sec-name { font-size: 0.82rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+    <a href="/" class="topbar-brand">
+        Cadeira Numerada
+        <span class="topbar-brand-tagline">Diário do Torcedor</span>
+    </a>
+    <nav class="topbar-nav" id="topbarNav">
+        <a href="/login" class="topbar-btn" id="navLogin">Entrar</a>
+        <a href="/signup" class="topbar-btn topbar-btn-primary" id="navSignup">Criar conta</a>
+    </nav>
+</header>
+
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-eyebrow">FIFA WORLD CUP 2026 · Lista de Troca</div>
+        <h1 class="hero-username" id="heroUsername">@—</h1>
+        <div class="hero-displayname" id="heroDisplayName">&nbsp;</div>
+
+        <div class="hero-progress">
+            <div class="hero-progress-label">
+                <span>Progresso</span>
+                <span class="hero-progress-stats" id="progressStats">— / —</span>
+            </div>
+            <div class="hero-progress-bar">
+                <div class="hero-progress-fill" id="progressFill" style="width:0%;"></div>
+            </div>
+            <div class="hero-stats-row">
+                <div class="hero-stat">
+                    <div class="hero-stat-num" id="statTenho">0</div>
+                    <div class="hero-stat-label">Tem</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-num faltam" id="statFaltam">0</div>
+                    <div class="hero-stat-label">Faltam</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-num repetidas" id="statRepetidas">0</div>
+                    <div class="hero-stat-label">Repetidas</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA pra criar conta / logar pra fazer match -->
+<div class="cta-block" id="ctaBlock">
+    <div class="cta-card">
+        <div class="cta-card-content">
+            <span class="material-icons cta-icon">swap_horiz</span>
+            <div class="cta-title" id="ctaTitle">Faça o match em 1 clique</div>
+            <p class="cta-desc" id="ctaDesc">Quando você cria conta e marca seus cromos, o Cadeira Numerada cruza automaticamente com a lista do <strong id="ctaUserStrong">@—</strong>: <strong>quais ele te dá</strong> e <strong>quais você dá pra ele</strong>. Sem zap perdido conferindo número por número.</p>
+            <div class="cta-actions">
+                <a href="/signup" class="cta-btn cta-btn-primary" id="ctaSignupBtn">
+                    <span class="material-icons">person_add</span>
+                    <span>Criar conta grátis</span>
+                </a>
+                <a href="/login" class="cta-btn cta-btn-secondary" id="ctaLoginBtn">
+                    Já tenho conta — Entrar
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lista REPETIDAS (ele tem pra trocar) -->
+<section class="list-section">
+    <h2 class="list-title">
+        <span class="material-icons" style="color:var(--gold-soft);">sync</span>
+        <span>Repetidas (pra trocar)</span>
+        <span class="list-title-count" id="repCount">0</span>
+    </h2>
+    <div id="repList"><div class="loading">Carregando...</div></div>
+</section>
+
+<!-- Lista FALTAM (ele precisa) -->
+<section class="list-section">
+    <h2 class="list-title">
+        <span class="material-icons" style="color:#ff8a8a;">favorite_border</span>
+        <span>Faltam pra ele</span>
+        <span class="list-title-count faltam" id="faltamCount">0</span>
+    </h2>
+    <div id="faltamList"><div class="loading">Carregando...</div></div>
+</section>
+
+<footer class="footer">
+    <div>Cadeira Numerada · Diário do Torcedor</div>
+    <div style="margin-top:0.4rem;"><a href="/">Voltar pra home</a></div>
+</footer>
+
+<script>
+(async function() {
+    // Pega username do path: /troca/<username>
+    const username = decodeURIComponent(location.pathname.replace(/^\/troca\//, '').replace(/\/$/, ''));
+    if (!username) {
+        location.replace('/');
+        return;
+    }
+
+    // Se já está logado, redireciona pra o app que abre a comparação automática
+    if (localStorage.getItem('fiel_token')) {
+        location.replace(`/app?album=${encodeURIComponent(username)}`);
+        return;
+    }
+
+    // Atualiza títulos com username
+    document.title = `@${username} — Lista de troca · Cadeira Numerada`;
+    document.getElementById('heroUsername').innerHTML = `@<em>${escapeHtml(username)}</em>`;
+    document.getElementById('ctaUserStrong').textContent = `@${username}`;
+    // CTAs preservam o username pra após signup voltar pro match
+    const albumQs = `?album=${encodeURIComponent(username)}`;
+    document.getElementById('navLogin').href = `/login${albumQs}`;
+    document.getElementById('navSignup').href = `/signup${albumQs}`;
+    document.getElementById('ctaSignupBtn').href = `/signup${albumQs}`;
+    document.getElementById('ctaLoginBtn').href = `/login${albumQs}`;
+
+    // Carrega dados públicos
+    try {
+        const res = await fetch(`/album/troca/${encodeURIComponent(username)}`);
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || 'Não foi possível carregar.');
+        }
+        const data = await res.json();
+        renderPagina(data, username);
+    } catch (err) {
+        const msg = err.message === 'user_not_found'
+            ? `Usuário @${escapeHtml(username)} não encontrado.`
+            : `Erro ao carregar: ${escapeHtml(err.message)}`;
+        document.getElementById('repList').innerHTML = `<div class="err">${msg}</div>`;
+        document.getElementById('faltamList').innerHTML = '';
+        document.getElementById('heroDisplayName').textContent = '';
+    }
+
+    function renderPagina(data, username) {
+        const u = data.user || {};
+        document.getElementById('heroDisplayName').textContent = u.display_name || '';
+
+        // Stats
+        const total = data.stats.total;
+        const tenho = data.stats.tenho;
+        const faltam = data.stats.faltantes;
+        const reps = data.stats.repetidos;
+        const pct = total ? Math.round(tenho / total * 100) : 0;
+        document.getElementById('statTenho').textContent = tenho;
+        document.getElementById('statFaltam').textContent = faltam;
+        document.getElementById('statRepetidas').textContent = reps;
+        document.getElementById('progressStats').textContent = `${tenho} / ${total} · ${pct}%`;
+        document.getElementById('progressFill').style.width = pct + '%';
+        document.getElementById('repCount').textContent = reps;
+        document.getElementById('faltamCount').textContent = faltam;
+
+        // Render listas (agrupadas por seleção)
+        document.getElementById('repList').innerHTML = renderListaCromos(data.repetidos, true);
+        document.getElementById('faltamList').innerHTML = renderListaCromos(data.faltantes, false);
+    }
+
+    function renderListaCromos(cromos, isRep) {
+        if (!cromos || !cromos.length) {
+            return `<div class="empty">${isRep ? 'Nenhuma repetida.' : 'Nada faltando — álbum completo!'}</div>`;
+        }
+        // Agrupa por selecao_id mantendo a ordem (já vem ordenado do backend)
+        const porSel = new Map();
+        for (const c of cromos) {
+            if (!porSel.has(c.selecao_id)) porSel.set(c.selecao_id, []);
+            porSel.get(c.selecao_id).push(c);
+        }
+        return [...porSel.values()].map(items => {
+            const c0 = items[0];
+            const flagUrl = c0.flag_iso ? `https://flagcdn.com/w80/${c0.flag_iso}.png` : '';
+            const flagHtml = flagUrl
+                ? `<img class="sec-flag" src="${flagUrl}" alt="" loading="lazy">`
+                : `<span class="sec-flag" style="background:linear-gradient(135deg,var(--gold),var(--gold-deep));display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.6rem;">${escapeHtml((c0.selecao_code || '').slice(0,3))}</span>`;
+            const grupoLabel = c0.grupo ? `GRUPO ${c0.grupo}` : '★';
+            const cromosHtml = items.map(c => {
+                const repBadge = isRep ? `<div class="cromo-mini-rep">×${c.repetidas + 1}</div>` : '';
+                return `
+                    <div class="cromo-mini ${isRep ? '' : 'falta'}">
+                        <div class="cromo-mini-num">${c.ordem}</div>
+                        <div class="cromo-mini-code">${escapeHtml(c.code)}</div>
+                        ${repBadge}
+                    </div>
+                `;
+            }).join('');
+            return `
+                <div class="sec">
+                    <div class="sec-head">
+                        ${flagHtml}
+                        <span class="sec-name">${escapeHtml(c0.selecao_name)}</span>
+                        <span class="sec-grupo">${escapeHtml(grupoLabel)}</span>
+                    </div>
+                    <div class="cromos-grid">${cromosHtml}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function escapeHtml(s) {
+        return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+})();
+</script>
+</body>
+</html>

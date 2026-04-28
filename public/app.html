@@ -14446,7 +14446,10 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             alert(t('app.album.share_need_username') || 'Defina um @username em Perfil pra compartilhar.');
             return;
         }
-        const url = `${window.location.origin}/?album=${encodeURIComponent(user.username)}`;
+        // Link público dedicado — visitantes veem a lista direto + CTA pra
+        // criar conta. Quem já tá logado abrindo esse link vai pro modal
+        // de comparação automática.
+        const url = `${window.location.origin}/troca/${encodeURIComponent(user.username)}`;
         const linkEl = document.getElementById('albumShareLink');
         const textEl = document.getElementById('albumShareText');
         linkEl.value = url;
@@ -14821,7 +14824,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         ctx.fillText('🤝 Bora trocar?', W / 2, footerY + 75);
         ctx.fillStyle = 'rgba(245,230,168,0.7)';
         ctx.font = '500 18px Oswald, monospace';
-        ctx.fillText(`cadeiranumerada.com.br/?album=${user.username || ''}`, W / 2, footerY + 105);
+        ctx.fillText(`cadeiranumerada.com.br/troca/${user.username || ''}`, W / 2, footerY + 105);
     }
 
     /**

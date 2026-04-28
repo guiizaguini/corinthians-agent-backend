@@ -1136,23 +1136,29 @@ footer {
 
 <script src="/i18n.js"></script>
 <script>
-    // Deep links suportados: /?add=username  e  /?album=username
-    // Os 2 repassam pra /app (logado) ou /login (não logado).
+    // Deep links suportados:
+    //   /?add=username   → adicionar amigo (precisa login)
+    //   /?album=username → LEGACY: redirect pra /troca/<username> (visitante
+    //                       vê a lista pública sem precisar logar)
     const _qs = new URLSearchParams(location.search);
     const _addUser = _qs.get('add');
     const _albumUser = _qs.get('album');
 
-    function _buildTargetWithParam(base) {
-        if (_addUser) return `${base}?add=${encodeURIComponent(_addUser)}`;
-        if (_albumUser) return `${base}?album=${encodeURIComponent(_albumUser)}`;
-        return base;
-    }
-
-    if (localStorage.getItem('fiel_token')) {
-        window.location.replace(_buildTargetWithParam('/app'));
-    } else if (_addUser || _albumUser) {
-        // Mantém o param pro fluxo voltar pra ação correta depois do login
-        window.location.replace(_buildTargetWithParam('/login'));
+    // Legacy: ?album= → /troca/ (mantém compat com links antigos compartilhados)
+    if (_albumUser) {
+        if (localStorage.getItem('fiel_token')) {
+            // Logado segue indo direto pro modal de comparação no /app
+            window.location.replace(`/app?album=${encodeURIComponent(_albumUser)}`);
+        } else {
+            // Visitante vai pra página pública dedicada
+            window.location.replace(`/troca/${encodeURIComponent(_albumUser)}`);
+        }
+    } else if (localStorage.getItem('fiel_token')) {
+        const target = _addUser ? `/app?add=${encodeURIComponent(_addUser)}` : '/app';
+        window.location.replace(target);
+    } else if (_addUser) {
+        // Não logado mas tem ?add — login.html lê e repassa pro /app
+        window.location.replace(`/login?add=${encodeURIComponent(_addUser)}`);
     }
 
     // Dropdown de idioma na nav (lado dos botões)

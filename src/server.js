@@ -74,6 +74,13 @@ app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public', 'admin.html'));
 });
 
+// Página pública de lista de troca de cromos do álbum (visitante sem login)
+// /troca/:username → renderiza HTML público com lista + CTA pra criar conta
+// (rota separada de /album/* da API REST pra não conflitar)
+app.get('/troca/:username', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'album-publico.html'));
+});
+
 // Legado (continua servindo o site antigo do Guilherme)
 app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public', 'dashboard.html'));
