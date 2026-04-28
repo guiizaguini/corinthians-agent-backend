@@ -380,32 +380,56 @@ router.get('/feed', async (req, res, next) => {
 
                 UNION ALL
 
-                -- Palpites de bolão da Copa (próprios + de amigos).
-                -- Limita aos últimos 30 dias e usa updated_at (bumpa quando edita).
-                -- Os campos gols_casa/visitante carregam o PALPITE da pessoa, não
-                -- o resultado real do jogo — o frontend interpreta conforme type.
-                -- O nome do bolão vai junto pro post poder dizer "no Bolão da Galera".
+                -- Palpites de bolão da Copa AGRUPADOS por (user, bolão).
+                -- Em vez de N posts (1 por palpite), 1 post por (user, bolão)
+                -- listando TODOS os palpites no body como JSON. Sem agrupar a
+                -- timeline ficaria flooded — usuário pode ter 100+ palpites em
+                -- 1 bolão e ainda estar em vários bolões.
+                -- title  → nome do bolão
+                -- body   → JSON: { bolao_id, count, palpites: [{...}] }
                 SELECT
                     'palpite' AS type,
-                    bp.id AS ref_id, bp.updated_at AS created_at,
+                    MIN(bp.id)::int AS ref_id,
+                    MAX(bp.updated_at) AS created_at,
                     u.id AS user_id, u.username, u.display_name,
                     c.name AS club_name, c.short_name AS club_short, c.primary_color,
-                    g.id AS game_id, g.data,
-                    g.time_casa, g.time_visitante,
-                    bp.gols_casa, bp.gols_visitante,
-                    NULL::varchar AS resultado, g.campeonato, g.estadio,
+                    NULL::int AS game_id, NULL::date AS data,
+                    NULL::varchar AS time_casa, NULL::varchar AS time_visitante,
+                    NULL::int AS gols_casa, NULL::int AS gols_visitante,
+                    NULL::varchar AS resultado, NULL::varchar AS campeonato,
+                    NULL::varchar AS estadio,
                     NULL::varchar AS setor,
                     '[]'::json AS companions,
-                    b.name AS title,                    -- reutiliza coluna title pro bolao_name
-                    NULL::text AS body, NULL::boolean AS is_public,
+                    b.name AS title,
+                    json_build_object(
+                        'bolao_id', b.id,
+                        'count', COUNT(bp.id),
+                        'palpites', json_agg(json_build_object(
+                            'game_id',         g.id,
+                            'time_casa',       g.time_casa,
+                            'time_visitante',  g.time_visitante,
+                            'data',            g.data,
+                            'gols_casa',       bp.gols_casa,
+                            'gols_visitante',  bp.gols_visitante,
+                            'fase',            g.fase,
+                            'campeonato',      g.campeonato,
+                            'gols_casa_real',  g.gols_casa,
+                            'gols_visitante_real', g.gols_visitante,
+                            'updated_at',      bp.updated_at
+                        ) ORDER BY bp.updated_at DESC)
+                    )::text AS body,
+                    NULL::boolean AS is_public,
                     NULL::varchar AS achievement_id
                 FROM bolao_palpites bp
                 JOIN users u ON u.id = bp.user_id
                 LEFT JOIN clubs c ON c.id = u.club_id
                 JOIN games g ON g.id = bp.game_id
-                LEFT JOIN boloes b ON b.id = bp.bolao_id
+                JOIN boloes b ON b.id = bp.bolao_id
                 WHERE bp.user_id IN (SELECT user_id FROM friend_ids)
                   AND bp.updated_at > NOW() - INTERVAL '30 days'
+                GROUP BY u.id, u.username, u.display_name,
+                         c.name, c.short_name, c.primary_color,
+                         b.id, b.name
              ) sub
              ORDER BY created_at DESC
              LIMIT $2`,

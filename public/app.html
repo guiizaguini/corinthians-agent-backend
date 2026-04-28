@@ -3325,54 +3325,170 @@ body[data-club="corinthians"] .ingresso.d {
 .feed-content.is-palpite {
     /* Mesmo enquadramento dos posts de "vai na Copa" */
 }
-.feed-palpite-score {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.55rem;
-    padding: 0.4rem 0.85rem;
-    background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
-    border: 1px solid #d4a520;
-    border-radius: 10px;
-    font-family: 'Oswald', sans-serif;
-    box-shadow: 0 2px 8px rgba(212,165,32,0.15);
-}
-.feed-palpite-x-label {
-    font-size: 0.62rem;
-    letter-spacing: 0.18em;
-    font-weight: 700;
-    color: #a8791b;
-    text-transform: uppercase;
-    margin-right: 0.15rem;
-}
-.feed-palpite-num {
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: #1a1000;
-    line-height: 1;
-    min-width: 1ch;
-    text-align: center;
-}
-.feed-palpite-x {
-    font-size: 0.95rem;
-    color: #a8791b;
-    font-weight: 700;
-}
 .feed-content-meta-bolao {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
     font-family: 'Oswald', sans-serif;
-    font-size: 0.7rem;
-    letter-spacing: 0.06em;
-    color: var(--ink-mute);
-    margin-top: 0.45rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    margin-top: 0.4rem;
     text-transform: uppercase;
     font-weight: 700;
+    padding: 0.3rem 0.6rem;
+    background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+    border: 1px solid #d4a520;
+    border-radius: 8px;
 }
 .feed-content-meta-bolao .material-icons {
-    font-size: 0.95rem;
+    font-size: 1rem;
+    color: #a8791b;
+}
+
+/* Dropdown trigger: "Ver palpites (N)" */
+.feed-palpite-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.7rem;
+    padding: 0.5rem 0.9rem;
+    background: var(--bg-card);
+    border: 1px solid var(--ink-line);
+    color: var(--ink);
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: all 150ms;
+}
+.feed-palpite-toggle:hover {
+    border-color: #d4a520;
+    background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+    color: #1a1000;
+}
+.feed-palpite-chev {
+    font-size: 1.15rem !important;
     color: #d4a520;
+    transition: transform 200ms;
+}
+.feed-palpite-toggle.is-open .feed-palpite-chev {
+    transform: rotate(180deg);
+}
+
+/* Lista expandida de palpites */
+.feed-palpite-list {
+    margin-top: 0.7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    background: rgba(255, 248, 225, 0.35);
+    border: 1px solid rgba(212, 165, 32, 0.3);
+    border-radius: 10px;
+    padding: 0.65rem;
+}
+.feed-palpite-list[hidden] { display: none; }
+
+.feed-palpite-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.55rem;
+    background: #fff;
+    border: 1px solid rgba(212, 165, 32, 0.25);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(212,165,32,0.08);
+    position: relative;
+}
+.feed-palpite-row-team {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-width: 0;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    color: var(--ink);
+    text-transform: uppercase;
+}
+.feed-palpite-row-team.home { justify-content: flex-end; text-align: right; }
+.feed-palpite-row-team.away { justify-content: flex-start; text-align: left; }
+.feed-palpite-row-team .feed-flag {
+    width: 22px;
+    height: 16px;
+    object-fit: cover;
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    flex-shrink: 0;
+}
+.feed-palpite-row-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+}
+.feed-palpite-row-score {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #1a1000;
+    background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    border: 1px solid rgba(212, 165, 32, 0.4);
+    min-width: 64px;
+    justify-content: center;
+}
+.feed-palpite-row-score.is-acerto {
+    background: linear-gradient(135deg, #e7f5e9 0%, #c8e8cf 100%);
+    border-color: #25b454;
+    color: #0c2f15;
+}
+.feed-palpite-row-score.is-erro {
+    background: linear-gradient(135deg, #fce8e8 0%, #f8d2d2 100%);
+    border-color: #c44545;
+    color: #4a1010;
+    opacity: 0.85;
+}
+.feed-palpite-row-x {
+    font-size: 0.8rem;
+    color: #a8791b;
+    opacity: 0.7;
+}
+.feed-palpite-row-real {
+    position: absolute;
+    bottom: -7px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    background: var(--ink);
+    color: #fff;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 700;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    white-space: nowrap;
+}
+
+/* Mobile: dimensões um pouco mais compactas */
+@media (max-width: 480px) {
+    .feed-palpite-row {
+        grid-template-columns: 1fr auto 1fr;
+        gap: 0.35rem;
+        padding: 0.35rem 0.4rem;
+    }
+    .feed-palpite-row-team { font-size: 0.7rem; }
+    .feed-palpite-row-team .feed-flag { width: 18px; height: 13px; }
+    .feed-palpite-row-score { font-size: 0.95rem; min-width: 54px; padding: 0.15rem 0.4rem; }
 }
 .feed-time {
     font-family: 'Oswald', sans-serif;
@@ -12770,22 +12886,81 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                         </div>
                     `;
                 } else if (item.type === 'palpite') {
-                    // Palpite de bolão da Copa — usa estética da Copa (bandeiras + placar do palpite)
-                    // gols_casa/visitante aqui são o PALPITE da pessoa, não o resultado real.
-                    const palpiteCasa = item.gols_casa != null ? item.gols_casa : '?';
-                    const palpiteVis  = item.gols_visitante != null ? item.gols_visitante : '?';
-                    const bolaoNome = item.title; // backend mete o nome do bolão em title
+                    // Palpite de bolão AGRUPADO por (user, bolão).
+                    // body é JSON: { bolao_id, count, palpites: [{game_id, time_casa, ..., gols_casa, gols_visitante, ...}] }
+                    let payload = null;
+                    try { payload = JSON.parse(item.body || '{}'); } catch (_) { payload = null; }
+                    const palpitesList = (payload && Array.isArray(payload.palpites)) ? payload.palpites : [];
+                    const count = (payload && payload.count) || palpitesList.length;
+                    const bolaoId = payload && payload.bolao_id;
+                    const bolaoNome = item.title || '';
+
+                    // Helper local: traduz nome de seleção via i18n
+                    const _tTeam = (n) => (window.CN_I18N && window.CN_I18N.tTeam) ? window.CN_I18N.tTeam(n) : (n || '');
+
+                    // Action line: singular vs plural
+                    const verbo = count === 1 ? 'palpitou um jogo da Copa' : `palpitou ${count} jogos da Copa`;
+                    actionLine = `<span class="material-icons">stadium</span> ${verbo}`;
+
+                    // Constrói linha de cada palpite no dropdown
+                    const palpiteRowsHtml = palpitesList.map(p => {
+                        const fCasaUrl = flagFor(p.time_casa);
+                        const fVisUrl  = flagFor(p.time_visitante);
+                        const fCasaImg = fCasaUrl
+                            ? `<img class="feed-flag" src="${fCasaUrl}" alt="" loading="lazy">`
+                            : `<span class="feed-flag tbd"></span>`;
+                        const fVisImg = fVisUrl
+                            ? `<img class="feed-flag" src="${fVisUrl}" alt="" loading="lazy">`
+                            : `<span class="feed-flag tbd"></span>`;
+                        const acertou = (p.gols_casa_real != null && p.gols_visitante_real != null)
+                            ? (p.gols_casa === p.gols_casa_real && p.gols_visitante === p.gols_visitante_real)
+                            : null;
+                        const placarCls = acertou === true ? 'is-acerto' : (acertou === false ? 'is-erro' : '');
+                        const realPlacarHtml = (p.gols_casa_real != null && p.gols_visitante_real != null)
+                            ? `<span class="feed-palpite-row-real" title="Resultado real">${escapeHtml(String(p.gols_casa_real))}×${escapeHtml(String(p.gols_visitante_real))}</span>`
+                            : '';
+                        return `
+                            <div class="feed-palpite-row">
+                                <div class="feed-palpite-row-team home">
+                                    ${fCasaImg}
+                                    <span class="feed-palpite-row-name">${escapeHtml(_tTeam(p.time_casa))}</span>
+                                </div>
+                                <div class="feed-palpite-row-score ${placarCls}">
+                                    <span>${escapeHtml(String(p.gols_casa))}</span>
+                                    <span class="feed-palpite-row-x">×</span>
+                                    <span>${escapeHtml(String(p.gols_visitante))}</span>
+                                </div>
+                                <div class="feed-palpite-row-team away">
+                                    <span class="feed-palpite-row-name">${escapeHtml(_tTeam(p.time_visitante))}</span>
+                                    ${fVisImg}
+                                </div>
+                                ${realPlacarHtml}
+                            </div>
+                        `;
+                    }).join('');
+
+                    // Dropdown só aparece se tem >0 palpites. Estado fechado por default.
+                    const dropdownHtml = palpitesList.length
+                        ? `
+                            <button type="button" class="feed-palpite-toggle" data-palpite-toggle="${item.ref_id}" aria-expanded="false">
+                                <span class="material-icons feed-palpite-chev">expand_more</span>
+                                <span class="feed-palpite-toggle-label">Ver palpites (${count})</span>
+                            </button>
+                            <div class="feed-palpite-list" id="feedPalpiteList-${item.ref_id}" hidden>
+                                ${palpiteRowsHtml}
+                            </div>
+                        `
+                        : '';
+
                     const bolaoLabel = bolaoNome
                         ? `<div class="feed-content-meta-bolao"><span class="material-icons">groups</span>${escapeHtml(bolaoNome)}</div>`
                         : '';
-                    const palpiteHtml = `<div class="feed-palpite-score"><span class="feed-palpite-x-label">PALPITE</span><span class="feed-palpite-num">${escapeHtml(String(palpiteCasa))}</span><span class="feed-palpite-x">×</span><span class="feed-palpite-num">${escapeHtml(String(palpiteVis))}</span></div>`;
-                    actionLine = `<span class="material-icons">stadium</span> palpitou um jogo da Copa`;
+
                     contentBlock = `
-                        <div class="feed-content is-copa is-palpite">
+                        <div class="feed-content is-copa is-palpite" ${bolaoId ? `data-bolao-id="${bolaoId}"` : ''}>
                             <div class="feed-content-fase">FIFA WORLD CUP 2026 · BOLÃO</div>
-                            <div class="feed-content-game">${gameTeams}</div>
-                            ${palpiteHtml}
                             ${bolaoLabel}
+                            ${dropdownHtml}
                         </div>
                     `;
                 } else if (item.type === 'note') {
@@ -12914,16 +13089,43 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 });
             });
 
+            // Toggle do dropdown de palpites (não propaga pro click do card)
+            list.querySelectorAll('[data-palpite-toggle]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const refId = btn.dataset.palpiteToggle;
+                    const target = document.getElementById(`feedPalpiteList-${refId}`);
+                    if (!target) return;
+                    const isOpen = !target.hidden;
+                    target.hidden = isOpen;
+                    btn.setAttribute('aria-expanded', String(!isOpen));
+                    btn.classList.toggle('is-open', !isOpen);
+                });
+            });
+
             list.querySelectorAll('.feed-item').forEach(el => {
                 el.addEventListener('click', (e) => {
-                    // Se clicou no botão de delete, ignora
+                    // Se clicou no botão de delete ou no toggle do dropdown, ignora
                     if (e.target.closest('[data-delete-note]')) return;
+                    if (e.target.closest('[data-palpite-toggle]')) return;
+                    if (e.target.closest('.feed-palpite-list')) return;
                     const type = el.dataset.type;
                     const friendId = parseInt(el.dataset.friendId);
                     const refId = parseInt(el.dataset.refId);
                     if (type === 'note') {
                         const noteData = (feed.find(f => f.type === 'note' && f.ref_id === refId));
                         if (noteData) openNoteView(noteData);
+                    } else if (type === 'palpite') {
+                        // Click no card de palpite navega pro bolão correspondente
+                        const palpiteEl = el.querySelector('.is-palpite[data-bolao-id]');
+                        const bolaoId = palpiteEl && palpiteEl.dataset.bolaoId;
+                        if (bolaoId) {
+                            navigate('/bolao/' + bolaoId);
+                        } else if (friendId === user.id) {
+                            navigate('/perfil');
+                        } else {
+                            openFriendCollection(friendId);
+                        }
                     } else {
                         // Post próprio: leva pro próprio Perfil (em vez de modal de "amigo" apontando pra si)
                         if (friendId === user.id) {
