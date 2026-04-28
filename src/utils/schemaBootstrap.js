@@ -71,6 +71,53 @@ export async function bootstrapSchema() {
                 ON user_notifications(user_id) WHERE seen_at IS NULL
         `);
 
+        // ====== ÁLBUM DA COPA 2026 (sazonal — pode dar drop quando acabar) ======
+        // album_selecoes: catálogo das 48 seleções (FIFA WC 2026)
+        await query(`
+            CREATE TABLE IF NOT EXISTS album_selecoes (
+                id           SERIAL PRIMARY KEY,
+                code         VARCHAR(8) UNIQUE NOT NULL,    -- ex 'BRA', 'ARG'
+                name         VARCHAR(60) NOT NULL,
+                flag_iso     VARCHAR(8),                    -- iso pra flagcdn (br, ar, gb-eng)
+                grupo        VARCHAR(2),                    -- A, B, C... (def. depois do sorteio)
+                ordem        INTEGER NOT NULL DEFAULT 0
+            );
+        `);
+        // album_cromos: catálogo dos cromos (escudo + jogadores) por seleção
+        await query(`
+            CREATE TABLE IF NOT EXISTS album_cromos (
+                id          SERIAL PRIMARY KEY,
+                code        VARCHAR(20) UNIQUE NOT NULL,    -- ex 'BRA-00' (escudo), 'BRA-01' (jogador #1)
+                selecao_id  INTEGER NOT NULL REFERENCES album_selecoes(id) ON DELETE CASCADE,
+                ordem       INTEGER NOT NULL DEFAULT 0,     -- 0 = escudo, 1..N = jogadores
+                tipo        VARCHAR(20) NOT NULL DEFAULT 'jogador'
+                            CHECK (tipo IN ('escudo','jogador','legenda','especial')),
+                nome        VARCHAR(80) NOT NULL,           -- nome do jogador ou 'Escudo'
+                posicao     VARCHAR(30),                    -- 'GOL', 'ZAG', 'MEI', 'ATA' (NULL pra escudo)
+                raridade    VARCHAR(20) NOT NULL DEFAULT 'comum'
+                            CHECK (raridade IN ('comum','rara','legend','especial')),
+                photo_url   VARCHAR(400)                    -- URL/caminho da foto (NULL = placeholder)
+            );
+        `);
+        await query(`
+            CREATE INDEX IF NOT EXISTS idx_album_cromos_selecao
+                ON album_cromos(selecao_id, ordem)
+        `);
+        // user_album_cromos: quantidade que CADA user tem de CADA cromo
+        await query(`
+            CREATE TABLE IF NOT EXISTS user_album_cromos (
+                user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                cromo_id   INTEGER NOT NULL REFERENCES album_cromos(id) ON DELETE CASCADE,
+                quantidade INTEGER NOT NULL DEFAULT 0 CHECK (quantidade >= 0),
+                updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                PRIMARY KEY (user_id, cromo_id)
+            );
+        `);
+        await query(`
+            CREATE INDEX IF NOT EXISTS idx_user_album_user
+                ON user_album_cromos(user_id) WHERE quantidade > 0
+        `);
+
         _bootstrapDone = true;
         console.log('[schemaBootstrap] OK');
     } catch (e) {

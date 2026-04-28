@@ -21,6 +21,7 @@ import socialRouter from './routes/social.js';
 import tournamentsRouter from './routes/tournaments.js';
 import adminRouter from './routes/admin.js';
 import bolaoRouter from './routes/bolao.js';
+import albumRouter from './routes/album.js';
 
 // Rotas legadas (v1 — continuam vivas durante a transição)
 import jogosRouter from './routes/jogos.js';
@@ -106,6 +107,9 @@ app.use('/notes', requireUser, notesRouter);
 app.use('/social', requireUser, socialRouter);
 app.use('/tournaments', requireUser, tournamentsRouter);
 app.use('/bolao', bolaoRouter);
+// Álbum da Copa 2026 (sazonal). /album/catalog e /album/troca/:username são públicos
+// (sem requireUser) — o resto é protegido dentro do router via requireUser.
+app.use('/album', albumRouter);
 app.use('/admin', requireUser, requireAdmin, adminRouter);
 
 // =============================================================

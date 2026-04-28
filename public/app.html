@@ -3717,6 +3717,393 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     flex-shrink: 0;
 }
 
+/* Variante "Álbum" — verde como o pano de fundo de um álbum vintage */
+.album-entry-btn {
+    background: linear-gradient(135deg, #1a1a1a 0%, #0a2a1a 100%);
+    border-color: #3fa966;
+    box-shadow: 0 6px 18px rgba(63,169,102,0.18);
+}
+.album-entry-btn:hover {
+    box-shadow: 0 10px 26px rgba(63,169,102,0.3), 0 0 0 3px rgba(63,169,102,0.18);
+}
+.album-entry-icon { background: linear-gradient(135deg, #3fa966, #267544); }
+.album-entry-btn .album-entry-icon .material-icons { color: #fff !important; }
+.album-entry-btn .bolao-entry-chevron { color: #3fa966 !important; }
+.album-entry-btn::after {
+    background-image: repeating-linear-gradient(135deg, transparent 0 22px, rgba(126,224,160,0.05) 22px 24px);
+}
+
+/* ================================================================
+   ÁLBUM DA COPA — tela completa
+   ================================================================ */
+#copaViewAlbum { color: var(--wc-ink); }
+
+.album-header {
+    background: linear-gradient(135deg, #fff 0%, var(--wc-card) 100%);
+    border: 1px solid var(--wc-line);
+    border-left: 4px solid #3fa966;
+    border-radius: 14px;
+    padding: 1.1rem 1.3rem;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.album-header-icon {
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #3fa966, #267544);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 14px rgba(63,169,102,0.35);
+}
+.album-header-icon .material-icons { color: #fff; font-size: 1.7rem; }
+.album-header-text { flex: 1; min-width: 0; }
+.album-header-eyebrow {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.62rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #3fa966;
+    margin-bottom: 0.2rem;
+}
+.album-header-title {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.4rem;
+    margin: 0 0 0.3rem;
+    color: var(--wc-ink);
+}
+.album-header-sub {
+    font-family: 'SN Pro', sans-serif;
+    font-size: 0.85rem;
+    color: var(--wc-ink-mute);
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Card de progresso */
+.album-progress-card {
+    background: var(--wc-card);
+    border: 1px solid var(--wc-line);
+    border-radius: 14px;
+    padding: 1.2rem;
+    margin-bottom: 1.2rem;
+}
+.album-progress-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--wc-ink);
+    margin-bottom: 0.55rem;
+}
+.album-progress-stats {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.95rem;
+    color: #3fa966;
+}
+.album-progress-bar {
+    height: 12px;
+    background: rgba(0,0,0,0.06);
+    border-radius: 6px;
+    overflow: hidden;
+}
+.album-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3fa966, #5fcb86);
+    border-radius: 6px;
+    transition: width 0.5s ease-out;
+    box-shadow: 0 0 12px rgba(63,169,102,0.4);
+}
+.album-stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.85rem;
+    margin: 1.1rem 0;
+}
+.album-stat {
+    text-align: center;
+    padding: 0.65rem 0.4rem;
+    background: rgba(0,0,0,0.025);
+    border-radius: 10px;
+}
+.album-stat-num {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: var(--wc-ink);
+    line-height: 1;
+}
+.album-stat-num.album-stat-faltam   { color: #cc3a3a; }
+.album-stat-num.album-stat-repetidos { color: #d4a520; }
+.album-stat-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--wc-ink-mute);
+    margin-top: 0.25rem;
+}
+.album-share-btn {
+    width: 100%;
+    background: #3fa966 !important;
+    border-color: #3fa966 !important;
+    color: #fff !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.85rem !important;
+}
+.album-share-btn:hover { background: #2f8852 !important; }
+.album-share-btn .material-icons { font-size: 1.1rem; }
+
+/* Filtros */
+.album-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+}
+.album-filter-search {
+    width: 100%;
+    padding: 0.7rem 0.95rem;
+    background: var(--wc-card);
+    border: 1.5px solid var(--wc-line);
+    border-radius: 10px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.9rem;
+    color: var(--wc-ink);
+}
+.album-filter-search:focus { border-color: #3fa966; outline: none; }
+.album-filter-chips {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+.album-chip {
+    background: var(--wc-card);
+    border: 1.5px solid var(--wc-line);
+    color: var(--wc-ink-mute);
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.album-chip:hover { border-color: #3fa966; color: var(--wc-ink); }
+.album-chip.active {
+    background: #3fa966;
+    border-color: #3fa966;
+    color: #fff;
+}
+
+/* Lista de seleções (cada uma é uma seção com cromos) */
+.album-secao {
+    margin-bottom: 1.6rem;
+}
+.album-secao-head {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.7rem 0.85rem;
+    background: var(--wc-card);
+    border: 1px solid var(--wc-line);
+    border-radius: 10px;
+    margin-bottom: 0.65rem;
+}
+.album-secao-flag {
+    width: 38px; height: 26px;
+    border-radius: 4px;
+    object-fit: cover;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    flex-shrink: 0;
+}
+.album-secao-name {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--wc-ink);
+    flex: 1;
+}
+.album-secao-progress {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.78rem;
+    color: var(--wc-ink-mute);
+    letter-spacing: 0.05em;
+}
+.album-secao-progress strong { color: #3fa966; }
+
+/* Grid de cromos por seleção */
+.album-cromos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 0.55rem;
+}
+@media (max-width: 480px) {
+    .album-cromos-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 0.4rem; }
+}
+
+/* Card de cromo individual */
+.album-cromo {
+    position: relative;
+    aspect-ratio: 3 / 4;       /* formato típico de figurinha */
+    background: var(--wc-card);
+    border: 2px dashed rgba(0,0,0,0.2);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.album-cromo:hover { border-color: #3fa966; transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.12); }
+/* Estado: tem o cromo (qtde >= 1) — borda sólida verde */
+.album-cromo.tenho {
+    border-style: solid;
+    border-color: #3fa966;
+    background: linear-gradient(180deg, #fff 0%, color-mix(in srgb, #3fa966 6%, var(--wc-card)) 100%);
+}
+/* Estado: repetidos (qtde >= 2) — borda dourada */
+.album-cromo.repetido {
+    border-color: #d4a520;
+    background: linear-gradient(180deg, #fff 0%, color-mix(in srgb, #d4a520 8%, var(--wc-card)) 100%);
+}
+/* Estado: falta (qtde 0) — opacidade reduzida */
+.album-cromo.falta {
+    opacity: 0.55;
+}
+
+.album-cromo-foto {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0.4rem;
+    position: relative;
+}
+.album-cromo-foto img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+/* Quando não tem foto, mostra a bandeira + ícone genérico */
+.album-cromo-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    color: var(--wc-ink-mute);
+}
+.album-cromo-placeholder img.album-flag-bg {
+    width: 50px; height: 35px;
+    object-fit: cover;
+    border-radius: 3px;
+    opacity: 0.45;
+}
+.album-cromo-placeholder .material-icons { font-size: 1.5rem; opacity: 0.4; }
+
+.album-cromo-info {
+    background: rgba(0,0,0,0.85);
+    color: #fff;
+    padding: 0.35rem 0.4rem;
+    text-align: center;
+    font-family: 'Oswald', sans-serif;
+}
+.album-cromo-code {
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.1;
+}
+.album-cromo-name {
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1.1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-top: 0.1rem;
+}
+
+/* Badge de quantidade no canto */
+.album-cromo-qty-badge {
+    position: absolute;
+    top: 0.35rem;
+    right: 0.35rem;
+    background: #d4a520;
+    color: #1a1a1a;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 999px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.album-cromo.tenho:not(.repetido) .album-cromo-qty-badge {
+    background: #3fa966;
+    color: #fff;
+}
+
+/* Controles +/− que aparecem sobre o cromo */
+.album-cromo-controls {
+    position: absolute;
+    bottom: 32px; /* fica acima do info bar */
+    left: 0; right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 0.35rem;
+    opacity: 0;
+    transition: opacity 0.15s;
+    pointer-events: none;
+}
+.album-cromo:hover .album-cromo-controls { opacity: 1; pointer-events: auto; }
+@media (hover: none) {
+    /* Mobile: sempre visíveis */
+    .album-cromo-controls { opacity: 1; pointer-events: auto; }
+}
+.album-cromo-btn {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.95);
+    border: 1.5px solid rgba(0,0,0,0.2);
+    color: var(--wc-ink);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: all 0.1s;
+}
+.album-cromo-btn:hover { transform: scale(1.1); }
+.album-cromo-btn:active { transform: scale(0.95); }
+.album-cromo-btn .material-icons { font-size: 1rem; }
+.album-cromo-btn.inc { background: #3fa966; color: #fff; border-color: #3fa966; }
+.album-cromo-btn.dec { background: #fff; }
+
+/* Empty state */
+.album-empty {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--wc-ink-mute);
+    font-style: italic;
+    font-family: 'SN Pro', sans-serif;
+}
+
 /* Copa view está em tema light, bolão também */
 #copaViewBolao { color: var(--wc-ink); }
 
@@ -7207,6 +7594,34 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         </div>
     </div>
 
+    <!-- Modal: Compartilhar álbum (lista de troca) -->
+    <div class="modal-overlay" id="albumShareModal">
+        <div class="modal">
+            <h2 data-i18n="app.album.share_title">Lista pra trocar</h2>
+            <div class="meta" data-i18n="app.album.share_meta">Cole esse link onde quiser. Quem abrir vê seus faltantes e repetidos pra fechar a troca.</div>
+
+            <label data-i18n="app.album.share_link_label">Link público da sua lista</label>
+            <div style="display:flex;gap:0.5rem;align-items:center;">
+                <input id="albumShareLink" type="text" readonly style="flex:1;font-family:'Oswald',monospace;font-size:0.85rem;">
+                <button class="btn-secondary" id="albumShareCopy" type="button" style="white-space:nowrap;">
+                    <span class="material-icons" style="font-size:1rem;vertical-align:middle;">content_copy</span>
+                    <span data-i18n="app.btn.copy">Copiar</span>
+                </button>
+            </div>
+
+            <label style="margin-top:1rem;" data-i18n="app.album.share_text_label">Texto pronto pra colar (WhatsApp, etc)</label>
+            <textarea id="albumShareText" readonly rows="5" style="width:100%;font-family:'SN Pro',sans-serif;font-size:0.85rem;line-height:1.4;resize:vertical;"></textarea>
+
+            <div class="modal-actions">
+                <button class="btn-secondary" id="albumShareClose" data-i18n="app.btn.close">Fechar</button>
+                <button class="btn-primary" id="albumShareCopyText" type="button">
+                    <span class="material-icons" style="font-size:1rem;vertical-align:middle;">content_copy</span>
+                    <span data-i18n="app.album.share_copy_text">Copiar texto</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal: Boas-vindas (1ª vez via Google sem clube) -->
     <div class="modal-overlay" id="welcomeModal">
         <div class="modal welcome-modal">
@@ -7807,7 +8222,74 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                     <span class="material-icons bolao-entry-chevron">chevron_right</span>
                 </button>
 
+                <button class="bolao-entry-btn album-entry-btn" id="btnAlbumEnter" type="button">
+                    <div class="bolao-entry-icon album-entry-icon"><span class="material-icons">collections_bookmark</span></div>
+                    <div class="bolao-entry-text">
+                        <div class="bolao-entry-title" data-i18n="app.album.entry_title">Meu álbum da Copa</div>
+                        <div class="bolao-entry-sub" data-i18n="app.album.entry_sub">Marque os cromos que tem · veja repetidos · troque com amigos</div>
+                    </div>
+                    <span class="material-icons bolao-entry-chevron">chevron_right</span>
+                </button>
+
                 <div id="copaList"><div class="loading" data-i18n="app.bolao.loading_jogos">Carregando jogos...</div></div>
+            </div>
+
+            <!-- VIEW: Álbum (lista de cromos + filtros + progress) -->
+            <div id="copaViewAlbum" style="display:none;">
+                <button class="bolao-back" id="btnAlbumBack" type="button">
+                    <span class="material-icons">arrow_back</span><span data-i18n="app.album.back">Voltar à Copa</span>
+                </button>
+
+                <section class="album-header">
+                    <div class="album-header-icon"><span class="material-icons">collections_bookmark</span></div>
+                    <div class="album-header-text">
+                        <div class="album-header-eyebrow" data-i18n="app.album.eyebrow">FIFA World Cup 2026 · Álbum</div>
+                        <h2 class="album-header-title" data-i18n="app.album.title">Meu álbum da Copa</h2>
+                        <p class="album-header-sub" data-i18n="app.album.subtitle">Marque os cromos que você tem. Veja faltantes e repetidos pra trocar com a galera.</p>
+                    </div>
+                </section>
+
+                <section class="album-progress-card">
+                    <div class="album-progress-label">
+                        <span data-i18n="app.album.progress">Progresso</span>
+                        <span class="album-progress-stats" id="albumProgressStats">— / —</span>
+                    </div>
+                    <div class="album-progress-bar">
+                        <div class="album-progress-fill" id="albumProgressFill" style="width:0%;"></div>
+                    </div>
+                    <div class="album-stats-row">
+                        <div class="album-stat">
+                            <div class="album-stat-num" id="albumStatTenho">0</div>
+                            <div class="album-stat-label" data-i18n="app.album.tenho">Tenho</div>
+                        </div>
+                        <div class="album-stat">
+                            <div class="album-stat-num album-stat-faltam" id="albumStatFaltam">0</div>
+                            <div class="album-stat-label" data-i18n="app.album.faltam">Faltam</div>
+                        </div>
+                        <div class="album-stat">
+                            <div class="album-stat-num album-stat-repetidos" id="albumStatRepetidos">0</div>
+                            <div class="album-stat-label" data-i18n="app.album.repetidos">Repetidos</div>
+                        </div>
+                    </div>
+                    <button class="btn-primary album-share-btn" id="albumShareBtn" type="button">
+                        <span class="material-icons">share</span>
+                        <span data-i18n="app.album.share">Compartilhar minha lista de troca</span>
+                    </button>
+                </section>
+
+                <!-- Filtros -->
+                <section class="album-filters">
+                    <input type="search" id="albumFilterSearch" class="album-filter-search" placeholder="Buscar seleção ou cromo..." data-i18n-attr="placeholder:app.album.search_ph" autocomplete="off">
+                    <div class="album-filter-chips" id="albumFilterChips">
+                        <button type="button" class="album-chip active" data-filter="all" data-i18n="app.album.filter_all">Todos</button>
+                        <button type="button" class="album-chip" data-filter="faltam" data-i18n="app.album.filter_faltam">Faltam</button>
+                        <button type="button" class="album-chip" data-filter="tenho" data-i18n="app.album.filter_tenho">Tenho</button>
+                        <button type="button" class="album-chip" data-filter="repetidos" data-i18n="app.album.filter_repetidos">Repetidos</button>
+                    </div>
+                </section>
+
+                <!-- Lista de seleções com cromos -->
+                <div id="albumList"><div class="loading" data-i18n="app.album.loading">Carregando álbum...</div></div>
             </div>
 
             <!-- VIEW: bolão (Meus Bolões ou detalhe) -->
@@ -11939,8 +12421,12 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
     function bolaoShowView(view) {
         bolaoState.view = view;
+        // Sub-views da aba Copa: default | bolao(meus|detail) | album
+        const isAlbum = view === 'album';
+        const isBolao = view === 'meus' || view === 'detail';
         document.getElementById('copaViewDefault').style.display = (view === 'default') ? '' : 'none';
-        document.getElementById('copaViewBolao').style.display = (view === 'default') ? 'none' : '';
+        document.getElementById('copaViewBolao').style.display = isBolao ? '' : 'none';
+        document.getElementById('copaViewAlbum').style.display = isAlbum ? '' : 'none';
         document.getElementById('bolaoViewMeus').style.display = (view === 'meus') ? '' : 'none';
         document.getElementById('bolaoViewDetail').style.display = (view === 'detail') ? '' : 'none';
     }
@@ -12684,6 +13170,286 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         }
     }
 
+    // ===============================================
+    // ÁLBUM DA COPA — controle de cromos
+    // ===============================================
+    const albumState = {
+        cromos: [],          // catálogo + qtde do user
+        selecoes: [],        // catálogo de seleções
+        filterTipo: 'all',   // 'all' | 'tenho' | 'faltam' | 'repetidos'
+        filterSearch: '',
+        loaded: false,
+    };
+
+    async function albumOpen() {
+        bolaoShowView('album');
+        if (!albumState.loaded) await albumLoad();
+        else albumRender();
+    }
+
+    async function albumLoad() {
+        const list = document.getElementById('albumList');
+        list.innerHTML = `<div class="loading">${t('app.album.loading') || 'Carregando álbum...'}</div>`;
+        try {
+            const [cat, mine] = await Promise.all([
+                fetch('/album/catalog').then(r => r.json()),
+                api('/album/me'),
+            ]);
+            albumState.selecoes = cat.selecoes || [];
+            albumState.cromos = mine.cromos || [];
+            albumState.loaded = true;
+            albumUpdateStats(mine.stats);
+            albumRender();
+        } catch (e) {
+            list.innerHTML = `<div class="empty">Erro: ${escapeHtml(e.message)}</div>`;
+        }
+    }
+
+    function albumUpdateStats(stats) {
+        if (!stats) {
+            // Recomputa do estado local
+            const total = albumState.cromos.length;
+            const tenho = albumState.cromos.filter(c => c.quantidade > 0).length;
+            const repetidos = albumState.cromos.reduce((a, c) => a + Math.max(0, c.quantidade - 1), 0);
+            stats = { total, tenho, faltam: total - tenho, repetidos, pct: total ? Math.round(tenho / total * 100) : 0 };
+        }
+        document.getElementById('albumProgressStats').textContent = `${stats.tenho} / ${stats.total} (${stats.pct}%)`;
+        document.getElementById('albumProgressFill').style.width = stats.pct + '%';
+        document.getElementById('albumStatTenho').textContent = stats.tenho;
+        document.getElementById('albumStatFaltam').textContent = stats.faltam;
+        document.getElementById('albumStatRepetidos').textContent = stats.repetidos;
+    }
+
+    function albumRender() {
+        const list = document.getElementById('albumList');
+        const norm = (s) => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        const search = norm(albumState.filterSearch);
+        const filterTipo = albumState.filterTipo;
+
+        // Mapa selecao_id → seleção
+        const selById = Object.fromEntries(albumState.selecoes.map(s => [s.id, s]));
+
+        // Filtra cromos
+        const filtered = albumState.cromos.filter(c => {
+            // Filtro por estado (tenho/faltam/repetidos)
+            if (filterTipo === 'tenho' && c.quantidade === 0) return false;
+            if (filterTipo === 'faltam' && c.quantidade > 0) return false;
+            if (filterTipo === 'repetidos' && c.quantidade < 2) return false;
+            // Filtro por busca (nome do cromo OU nome da seleção)
+            if (search) {
+                const sel = selById[c.selecao_id];
+                const haystack = norm(c.nome) + ' ' + norm(sel?.name || '') + ' ' + norm(sel?.code || '');
+                if (!haystack.includes(search)) return false;
+            }
+            return true;
+        });
+
+        if (!filtered.length) {
+            list.innerHTML = `<div class="album-empty">${t('app.album.empty_filter') || 'Nenhum cromo com esses filtros.'}</div>`;
+            return;
+        }
+
+        // Agrupa por seleção
+        const porSelecao = new Map();
+        for (const c of filtered) {
+            const arr = porSelecao.get(c.selecao_id) || [];
+            arr.push(c);
+            porSelecao.set(c.selecao_id, arr);
+        }
+
+        // Render por seleção, na ordem do catálogo
+        const html = albumState.selecoes
+            .filter(s => porSelecao.has(s.id))
+            .map(s => {
+                const cromos = porSelecao.get(s.id);
+                // Stats da seção (do TOTAL, não filtrado)
+                const cromosTotais = albumState.cromos.filter(c => c.selecao_id === s.id);
+                const tenho = cromosTotais.filter(c => c.quantidade > 0).length;
+                const total = cromosTotais.length;
+                const flagUrl = s.flag_iso ? `https://flagcdn.com/w80/${s.flag_iso}.png` : '';
+                return `
+                    <section class="album-secao">
+                        <header class="album-secao-head">
+                            ${flagUrl ? `<img class="album-secao-flag" src="${flagUrl}" alt="" loading="lazy">` : ''}
+                            <span class="album-secao-name">${escapeHtml(s.name)}</span>
+                            <span class="album-secao-progress"><strong>${tenho}</strong> / ${total}</span>
+                        </header>
+                        <div class="album-cromos-grid">
+                            ${cromos.map(c => albumRenderCromo(c, s)).join('')}
+                        </div>
+                    </section>
+                `;
+            }).join('');
+
+        list.innerHTML = html;
+
+        // Wire up controles +/− e click no cromo
+        list.querySelectorAll('.album-cromo').forEach(el => {
+            const cromoId = parseInt(el.dataset.cromoId);
+            el.querySelector('.album-cromo-btn.inc')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                albumIncCromo(cromoId);
+            });
+            el.querySelector('.album-cromo-btn.dec')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                albumDecCromo(cromoId);
+            });
+            // Click no card alterna entre tenho/não tenho (toggle 0 ↔ 1)
+            el.addEventListener('click', () => {
+                const c = albumState.cromos.find(x => x.id === cromoId);
+                if (!c) return;
+                if (c.quantidade === 0) albumIncCromo(cromoId);
+                else albumSetCromo(cromoId, 0);
+            });
+        });
+    }
+
+    function albumRenderCromo(c, selecao) {
+        const qty = c.quantidade || 0;
+        const classes = ['album-cromo'];
+        if (qty === 0) classes.push('falta');
+        else if (qty >= 2) { classes.push('tenho', 'repetido'); }
+        else classes.push('tenho');
+
+        const flagUrl = selecao?.flag_iso ? `https://flagcdn.com/w160/${selecao.flag_iso}.png` : '';
+        const fotoHtml = c.photo_url
+            ? `<img src="${escapeHtml(c.photo_url)}" alt="${escapeHtml(c.nome)}" loading="lazy">`
+            : `<div class="album-cromo-placeholder">
+                   ${flagUrl ? `<img class="album-flag-bg" src="${flagUrl}" alt="" loading="lazy">` : ''}
+                   <span class="material-icons">${c.tipo === 'escudo' ? 'shield' : 'person'}</span>
+               </div>`;
+
+        const qtyBadge = qty > 0
+            ? `<div class="album-cromo-qty-badge">${qty > 1 ? '×' + qty : '✓'}</div>`
+            : '';
+
+        return `
+            <div class="${classes.join(' ')}" data-cromo-id="${c.id}" title="${escapeHtml(c.nome)} — ${escapeHtml(c.code)}">
+                <div class="album-cromo-foto">${fotoHtml}</div>
+                ${qtyBadge}
+                <div class="album-cromo-controls">
+                    <button type="button" class="album-cromo-btn dec" title="Tirar 1"${qty === 0 ? ' disabled style="opacity:0.4;"' : ''}><span class="material-icons">remove</span></button>
+                    <button type="button" class="album-cromo-btn inc" title="Adicionar 1"><span class="material-icons">add</span></button>
+                </div>
+                <div class="album-cromo-info">
+                    <div class="album-cromo-code">${escapeHtml(c.code)}</div>
+                    <div class="album-cromo-name">${escapeHtml(c.posicao ? `${c.posicao} · ${c.nome.split(' — ')[0]}` : c.nome)}</div>
+                </div>
+            </div>
+        `;
+    }
+
+    async function albumIncCromo(cromoId) {
+        try {
+            const res = await api(`/album/me/cromo/${cromoId}/inc`, { method: 'POST' });
+            const c = albumState.cromos.find(x => x.id === cromoId);
+            if (c) c.quantidade = res.quantidade;
+            albumUpdateStats();
+            albumRender();
+        } catch (e) { /* silencioso */ }
+    }
+    async function albumDecCromo(cromoId) {
+        try {
+            const res = await api(`/album/me/cromo/${cromoId}/dec`, { method: 'POST' });
+            const c = albumState.cromos.find(x => x.id === cromoId);
+            if (c) c.quantidade = res.quantidade;
+            albumUpdateStats();
+            albumRender();
+        } catch (e) { /* silencioso */ }
+    }
+    async function albumSetCromo(cromoId, qty) {
+        try {
+            await api(`/album/me/cromo/${cromoId}`, {
+                method: 'PUT',
+                body: JSON.stringify({ quantidade: qty }),
+            });
+            const c = albumState.cromos.find(x => x.id === cromoId);
+            if (c) c.quantidade = qty;
+            albumUpdateStats();
+            albumRender();
+        } catch (e) { /* silencioso */ }
+    }
+
+    // ========= Eventos do álbum =========
+    document.getElementById('btnAlbumEnter').addEventListener('click', () => {
+        navigate('/album');
+    });
+    document.getElementById('btnAlbumBack').addEventListener('click', () => {
+        if (history.length > 1) history.back();
+        else navigate('/copa');
+    });
+
+    // Filtro busca (debounced)
+    let albumSearchTimer;
+    document.getElementById('albumFilterSearch').addEventListener('input', (e) => {
+        clearTimeout(albumSearchTimer);
+        albumSearchTimer = setTimeout(() => {
+            albumState.filterSearch = e.target.value;
+            albumRender();
+        }, 200);
+    });
+    // Filtro chips (estado)
+    document.querySelectorAll('#albumFilterChips .album-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            document.querySelectorAll('#albumFilterChips .album-chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            albumState.filterTipo = chip.dataset.filter;
+            albumRender();
+        });
+    });
+
+    // Compartilhar lista de troca
+    document.getElementById('albumShareBtn').addEventListener('click', () => {
+        if (!user.username) {
+            alert(t('app.album.share_need_username') || 'Defina um @username em Perfil pra compartilhar.');
+            return;
+        }
+        const url = `${window.location.origin}/?album=${encodeURIComponent(user.username)}`;
+        const linkEl = document.getElementById('albumShareLink');
+        const textEl = document.getElementById('albumShareText');
+        linkEl.value = url;
+
+        // Texto pronto pra colar
+        const faltam = albumState.cromos.filter(c => c.quantidade === 0);
+        const repetidos = albumState.cromos.filter(c => c.quantidade > 1);
+        const fmtList = (arr) => arr.slice(0, 12).map(c => c.code).join(', ') + (arr.length > 12 ? ` +${arr.length - 12}` : '');
+
+        const texto = [
+            t('app.album.share_text_header') || '🎴 Meu álbum da Copa 2026',
+            '',
+            (t('app.album.share_text_falta') || '📋 Faltam') + ` (${faltam.length}): ${faltam.length ? fmtList(faltam) : '—'}`,
+            (t('app.album.share_text_rep') || '🔄 Repetidas') + ` (${repetidos.length}): ${repetidos.length ? fmtList(repetidos) : '—'}`,
+            '',
+            (t('app.album.share_text_cta') || '🤝 Bora trocar?') + ' ' + url,
+        ].join('\n');
+        textEl.value = texto;
+
+        document.getElementById('albumShareModal').classList.add('show');
+    });
+    document.getElementById('albumShareClose').addEventListener('click', () => {
+        document.getElementById('albumShareModal').classList.remove('show');
+    });
+    document.getElementById('albumShareModal').addEventListener('click', (e) => {
+        if (e.target.id === 'albumShareModal') document.getElementById('albumShareModal').classList.remove('show');
+    });
+    document.getElementById('albumShareCopy').addEventListener('click', async () => {
+        try {
+            await navigator.clipboard.writeText(document.getElementById('albumShareLink').value);
+            const btn = document.getElementById('albumShareCopy');
+            const old = btn.innerHTML;
+            btn.innerHTML = '<span class="material-icons" style="font-size:1rem;vertical-align:middle;">check</span> ' + (t('app.album.copied') || 'Copiado');
+            setTimeout(() => btn.innerHTML = old, 1500);
+        } catch (_) {}
+    });
+    document.getElementById('albumShareCopyText').addEventListener('click', async () => {
+        try {
+            await navigator.clipboard.writeText(document.getElementById('albumShareText').value);
+            const btn = document.getElementById('albumShareCopyText');
+            btn.innerHTML = '<span class="material-icons" style="font-size:1rem;vertical-align:middle;">check</span> ' + (t('app.album.copied') || 'Copiado');
+            setTimeout(() => btn.innerHTML = '<span class="material-icons" style="font-size:1rem;vertical-align:middle;">content_copy</span> ' + (t('app.album.share_copy_text') || 'Copiar texto'), 1500);
+        } catch (_) {}
+    });
+
     // ========= Eventos do bolão =========
     document.getElementById('btnBolaoEnter').addEventListener('click', () => {
         navigate('/bolao');
@@ -12922,6 +13688,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         { pattern: /^\/perfil\/?$/i,        handler: () => showPerfilView() },
         { pattern: /^\/bolao\/?$/i,         handler: () => { activateTab('copa'); bolaoShowView('meus'); bolaoLoadMeus(); } },
         { pattern: /^\/bolao\/(\d+)\/?$/i,  handler: (m) => { activateTab('copa'); bolaoOpenDetail(parseInt(m[1])); } },
+        { pattern: /^\/album\/?$/i,         handler: () => { activateTab('copa'); albumOpen(); } },
     ];
 
     let _routerSuppress = false;
