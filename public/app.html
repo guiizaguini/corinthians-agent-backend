@@ -3725,6 +3725,329 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     background: linear-gradient(135deg, #d4a520, #a87f1e) !important;
 }
 
+/* Variante "Chaveamento" — azul/roxo (estilo bracket) */
+.bracket-entry-btn {
+    border-color: #4361ee !important;
+    box-shadow: 0 6px 18px rgba(67,97,238,0.18) !important;
+}
+.bracket-entry-btn:hover {
+    box-shadow: 0 10px 26px rgba(67,97,238,0.3), 0 0 0 3px rgba(67,97,238,0.18) !important;
+}
+.bracket-entry-icon {
+    background: linear-gradient(135deg, #4361ee, #2540a8) !important;
+}
+.bracket-entry-btn .bracket-entry-icon .material-icons { color: #fff !important; }
+.bracket-entry-btn .bolao-entry-chevron { color: #4361ee !important; }
+.bracket-entry-btn::after {
+    background-image: repeating-linear-gradient(135deg, transparent 0 22px, rgba(126,160,255,0.05) 22px 24px) !important;
+}
+
+/* ================================================================
+   CHAVEAMENTO DA COPA — visual escuro FIFA com cards de jogo
+   ================================================================ */
+#copaViewBracket { color: var(--wc-ink); }
+
+.bracket-header {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    padding: 1.4rem 1.5rem 1.5rem;
+    margin-bottom: 1.4rem;
+    background: linear-gradient(135deg, #1a1000 0%, #2a1d08 50%, #3a2a10 100%);
+    box-shadow: 0 12px 32px rgba(20,10,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
+    color: #f5e6a8;
+}
+.bracket-header-stripes {
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 6px;
+    display: flex;
+    z-index: 1;
+}
+.bracket-header-stripes > i { flex: 1; height: 100%; }
+.bracket-header-stripes > :nth-child(1) { background: var(--wc-red, #e63946); }
+.bracket-header-stripes > :nth-child(2) { background: var(--wc-orange, #ff7a00); }
+.bracket-header-stripes > :nth-child(3) { background: var(--wc-yellow, #ffc93a); }
+.bracket-header-stripes > :nth-child(4) { background: var(--wc-green, #06a957); }
+.bracket-header-stripes > :nth-child(5) { background: var(--wc-blue, #4361ee); }
+.bracket-header-stripes > :nth-child(6) { background: var(--wc-purple, #7b2cbf); }
+.bracket-header-pattern {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+        radial-gradient(circle at 90% 10%, rgba(212,165,32,0.22) 0%, transparent 45%),
+        radial-gradient(circle at 5% 85%, rgba(126,224,255,0.10) 0%, transparent 50%),
+        repeating-linear-gradient(135deg, transparent 0 22px, rgba(255,215,128,0.04) 22px 23px);
+}
+.bracket-header-content { position: relative; z-index: 2; max-width: 720px; }
+.bracket-header-eyebrow {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.65rem;
+    letter-spacing: 0.28em;
+    color: #d4a520;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+}
+.bracket-header-title {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.25rem, 2.6vw, 1.7rem);
+    color: #fff;
+    text-transform: uppercase;
+    margin: 0 0 0.4rem;
+    line-height: 1.05;
+    text-shadow: 0 2px 16px rgba(0,0,0,0.4);
+}
+.bracket-header-title em {
+    font-style: normal;
+    color: #d4a520;
+    text-shadow: 0 0 24px rgba(212,165,32,0.6);
+}
+.bracket-header-sub {
+    font-family: 'SN Pro', 'Oswald', sans-serif;
+    font-size: 0.85rem;
+    color: rgba(245,230,168,0.7);
+    margin: 0;
+    line-height: 1.4;
+    max-width: 540px;
+}
+
+/* Chips de fase */
+.bracket-fase-chips {
+    display: flex;
+    gap: 0.4rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.3rem;
+    margin-bottom: 1.2rem;
+    scrollbar-width: thin;
+}
+.bracket-fase-chip {
+    background: var(--wc-card);
+    border: 1.5px solid var(--wc-line);
+    color: var(--wc-ink-mute);
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.5rem 0.95rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+.bracket-fase-chip:hover { border-color: #d4a520; color: var(--wc-ink); }
+.bracket-fase-chip.active {
+    background: linear-gradient(135deg, #d4a520, #a87f1e);
+    border-color: #a87f1e;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(212,165,32,0.35);
+}
+
+/* Header de fase (Round 32, Oitavas, etc) */
+.bracket-fase-secao {
+    margin-bottom: 1.6rem;
+}
+.bracket-fase-head {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin: 1.6rem 0 1rem;
+}
+.bracket-fase-head:first-child { margin-top: 0.5rem; }
+.bracket-fase-head-badge {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    color: #1a1000;
+    background: linear-gradient(135deg, #ffc93a, #d4a520);
+    padding: 0.4rem 0.85rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 14px rgba(212,165,32,0.4);
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+.bracket-fase-head-label {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--wc-ink-mute);
+}
+
+/* Grid de jogos por fase */
+.bracket-jogos-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+}
+@media (min-width: 760px) {
+    .bracket-jogos-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* Card de jogo individual */
+.bracket-jogo {
+    background: linear-gradient(135deg, #1a1000 0%, #241808 100%);
+    border: 1.5px solid rgba(212,165,32,0.25);
+    border-radius: 12px;
+    padding: 0.85rem 0.95rem;
+    color: #f5e6a8;
+    box-shadow: 0 3px 10px rgba(20,10,0,0.25);
+    overflow: hidden;
+}
+.bracket-jogo-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    padding-bottom: 0.55rem;
+    margin-bottom: 0.7rem;
+    border-bottom: 1px solid rgba(212,165,32,0.18);
+}
+.bracket-jogo-num {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #d4a520;
+}
+.bracket-jogo-data {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    color: rgba(245,230,168,0.65);
+}
+.bracket-jogo-meta {
+    font-family: 'SN Pro', sans-serif;
+    font-size: 0.7rem;
+    color: rgba(245,230,168,0.55);
+    margin-top: 0.45rem;
+    line-height: 1.3;
+}
+
+/* Slots dos times (casa × visitante) */
+.bracket-slot {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.4rem 0;
+    min-height: 32px;
+}
+.bracket-slot + .bracket-vs + .bracket-slot { margin-top: 0; }
+.bracket-vs {
+    text-align: center;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.62rem;
+    letter-spacing: 0.22em;
+    color: rgba(245,230,168,0.45);
+    margin: 0.15rem 0;
+}
+
+/* Time definido (1 bandeira + nome) */
+.bracket-team-defined {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    width: 100%;
+}
+.bracket-team-defined img {
+    width: 28px; height: 19px;
+    object-fit: cover;
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    flex-shrink: 0;
+}
+.bracket-team-defined span {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+/* Slot de candidatos (várias bandeiras) */
+.bracket-team-candidates {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    width: 100%;
+    flex-wrap: wrap;
+}
+.bracket-candidates-label {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #d4a520;
+    background: rgba(212,165,32,0.12);
+    padding: 0.18rem 0.5rem;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+.bracket-candidates-flags {
+    display: flex;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+}
+.bracket-candidate-flag {
+    width: 22px; height: 15px;
+    object-fit: cover;
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    cursor: help;
+}
+/* Variant "vencedor de jogo X" — texto cinza com badge do número */
+.bracket-team-wait {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(245,230,168,0.6);
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    width: 100%;
+}
+.bracket-team-wait .material-icons {
+    font-size: 1.1rem;
+    color: rgba(212,165,32,0.6);
+}
+.bracket-team-wait-badge {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    color: #d4a520;
+    background: rgba(212,165,32,0.15);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    letter-spacing: 0.08em;
+}
+
+/* Empty state */
+.bracket-empty {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--wc-ink-mute);
+    font-style: italic;
+}
+
+@media (max-width: 480px) {
+    .bracket-jogo { padding: 0.7rem 0.8rem; }
+    .bracket-team-defined span { font-size: 0.85rem; }
+    .bracket-candidate-flag { width: 20px; height: 14px; }
+    .bracket-fase-head-badge { font-size: 0.85rem; padding: 0.35rem 0.7rem; }
+}
+
 /* ================================================================
    ÁLBUM DA COPA — visual FIFA dourado (consistente com o bolão)
    ================================================================ */
@@ -9076,7 +9399,47 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                     <span class="material-icons bolao-entry-chevron">chevron_right</span>
                 </button>
 
+                <button class="bolao-entry-btn bracket-entry-btn" id="btnBracketEnter" type="button">
+                    <div class="bolao-entry-icon bracket-entry-icon"><span class="material-icons">account_tree</span></div>
+                    <div class="bolao-entry-text">
+                        <div class="bolao-entry-title" data-i18n="app.bracket.entry_title">Chaveamento da Copa</div>
+                        <div class="bolao-entry-sub" data-i18n="app.bracket.entry_sub">Veja a tabela completa do mata-mata · 32 → 16 → quartas → semis → final</div>
+                    </div>
+                    <span class="material-icons bolao-entry-chevron">chevron_right</span>
+                </button>
+
                 <div id="copaList"><div class="loading" data-i18n="app.bolao.loading_jogos">Carregando jogos...</div></div>
+            </div>
+
+            <!-- VIEW: Chaveamento (mata-mata visual) -->
+            <div id="copaViewBracket" style="display:none;">
+                <button class="bolao-back" id="btnBracketBack" type="button">
+                    <span class="material-icons">arrow_back</span><span data-i18n="app.bolao.back">Voltar à Copa</span>
+                </button>
+
+                <section class="bracket-header">
+                    <div class="bracket-header-stripes" aria-hidden="true">
+                        <i></i><i></i><i></i><i></i><i></i><i></i>
+                    </div>
+                    <div class="bracket-header-pattern" aria-hidden="true"></div>
+                    <div class="bracket-header-content">
+                        <div class="bracket-header-eyebrow" data-i18n="app.bracket.eyebrow">FIFA WORLD CUP 2026 · Mata-mata</div>
+                        <h2 class="bracket-header-title" data-i18n-html="app.bracket.title_html">Chaveamento <em>da Copa</em></h2>
+                        <p class="bracket-header-sub" data-i18n="app.bracket.subtitle">32 jogos eliminatórios até a final no MetLife Stadium. Cada slot mostra as bandeiras dos times que podem chegar ali.</p>
+                    </div>
+                </section>
+
+                <!-- Filtros de fase -->
+                <div class="bracket-fase-chips" id="bracketFaseChips">
+                    <button type="button" class="bracket-fase-chip active" data-fase="all" data-i18n="app.bracket.fase_all">Tudo</button>
+                    <button type="button" class="bracket-fase-chip" data-fase="r32" data-i18n="app.bracket.fase_r32">Round 32</button>
+                    <button type="button" class="bracket-fase-chip" data-fase="r16" data-i18n="app.bracket.fase_r16">Oitavas</button>
+                    <button type="button" class="bracket-fase-chip" data-fase="quartas" data-i18n="app.bracket.fase_quartas">Quartas</button>
+                    <button type="button" class="bracket-fase-chip" data-fase="semis" data-i18n="app.bracket.fase_semis">Semis</button>
+                    <button type="button" class="bracket-fase-chip" data-fase="final" data-i18n="app.bracket.fase_final">Final</button>
+                </div>
+
+                <div id="bracketList"><div class="loading">Carregando chaveamento...</div></div>
             </div>
 
             <!-- VIEW: Álbum (lista de cromos + filtros + progress) -->
@@ -13287,12 +13650,14 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
     function bolaoShowView(view) {
         bolaoState.view = view;
-        // Sub-views da aba Copa: default | bolao(meus|detail) | album
+        // Sub-views da aba Copa: default | bolao(meus|detail) | album | bracket
         const isAlbum = view === 'album';
+        const isBracket = view === 'bracket';
         const isBolao = view === 'meus' || view === 'detail';
         document.getElementById('copaViewDefault').style.display = (view === 'default') ? '' : 'none';
         document.getElementById('copaViewBolao').style.display = isBolao ? '' : 'none';
         document.getElementById('copaViewAlbum').style.display = isAlbum ? '' : 'none';
+        document.getElementById('copaViewBracket').style.display = isBracket ? '' : 'none';
         document.getElementById('bolaoViewMeus').style.display = (view === 'meus') ? '' : 'none';
         document.getElementById('bolaoViewDetail').style.display = (view === 'detail') ? '' : 'none';
     }
@@ -15027,6 +15392,259 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         } catch (_) {}
     });
 
+    // ===============================================
+    // CHAVEAMENTO DA COPA — bracket completo do mata-mata
+    // ===============================================
+    const bracketState = {
+        loaded: false,
+        filterFase: 'all',  // 'all' | 'r32' | 'r16' | 'quartas' | 'semis' | 'final'
+        // Mapa selecaoNome → flag_iso (vem de /album/catalog ou flagFor)
+        selecoesPorGrupo: {}, // { 'A': [{name, iso}, ...], 'B': [...] }
+        gameByNum: {},        // { 73: {casa, vis, fase, ...} }  pra resolver "Vencedor jogo X"
+    };
+
+    async function bracketOpen() {
+        bolaoShowView('bracket');
+        if (!bracketState.loaded) await bracketLoad();
+        else bracketRender();
+    }
+
+    async function bracketLoad() {
+        const list = document.getElementById('bracketList');
+        list.innerHTML = `<div class="loading">Carregando chaveamento...</div>`;
+        try {
+            // Carrega catálogo do álbum pra ter mapping de seleções por grupo
+            // (mesmo dado que o álbum, evita duplicar)
+            const cat = await fetch('/album/catalog').then(r => r.json()).catch(() => ({ selecoes: [] }));
+            // Agrupa seleções por letra do grupo
+            const byGrupo = {};
+            for (const s of cat.selecoes || []) {
+                if (!s.grupo) continue;
+                if (!byGrupo[s.grupo]) byGrupo[s.grupo] = [];
+                byGrupo[s.grupo].push({ name: s.name, iso: s.flag_iso, code: s.code });
+            }
+            bracketState.selecoesPorGrupo = byGrupo;
+
+            // Mapeia jogos por número FIFA (extrai do campo `fase` tipo "Round of 32 · Jogo 73")
+            // copaGames já vem do loadAll() — usa direto
+            const byNum = {};
+            for (const g of (copaGames || [])) {
+                const m = (g.fase || '').match(/Jogo\s+(\d+)/i);
+                if (m) byNum[parseInt(m[1])] = g;
+            }
+            bracketState.gameByNum = byNum;
+
+            bracketState.loaded = true;
+            bracketRender();
+        } catch (e) {
+            list.innerHTML = `<div class="bracket-empty">Erro: ${escapeHtml(e.message)}</div>`;
+        }
+    }
+
+    /**
+     * Detecta o tipo de slot e retorna o HTML apropriado.
+     * Tipos suportados:
+     *  - "Brasil"               → time definido (1 bandeira + nome)
+     *  - "1º Grupo A"           → 4 candidatos (bandeiras dos times do grupo)
+     *  - "2º Grupo C"           → idem
+     *  - "3º A/B/C/D/F"         → bandeiras dos times dos N grupos listados
+     *  - "Vencedor jogo 73"     → "Vencedor M73" + opcional "(time × time)"
+     *  - "Perdedor jogo 101"    → "Perdedor M101"
+     *  - "A definir (UEFA Path X)" → "A definir" sem bandeiras
+     */
+    function bracketRenderSlot(slotText) {
+        if (!slotText) return '<div class="bracket-team-wait"><span class="material-icons">help_outline</span><span>—</span></div>';
+        const txt = String(slotText).trim();
+
+        // 1º/2º Grupo X
+        let m = txt.match(/^([12])º\s+Grupo\s+([A-L])$/i);
+        if (m) {
+            const pos = m[1], grupo = m[2].toUpperCase();
+            const times = bracketState.selecoesPorGrupo[grupo] || [];
+            return `
+                <div class="bracket-team-candidates">
+                    <span class="bracket-candidates-label">${pos}º · Grupo ${grupo}</span>
+                    <span class="bracket-candidates-flags">
+                        ${times.map(t => `<img class="bracket-candidate-flag" src="https://flagcdn.com/w40/${t.iso}.png" alt="${escapeHtml(t.name)}" title="${escapeHtml(t.name)}" loading="lazy">`).join('')}
+                    </span>
+                </div>
+            `;
+        }
+
+        // 3º A/B/C/D/F (lista de grupos separados por /)
+        m = txt.match(/^3º\s+([A-L](?:\/[A-L])+)$/i);
+        if (m) {
+            const grupos = m[1].toUpperCase().split('/');
+            const times = grupos.flatMap(g => bracketState.selecoesPorGrupo[g] || []);
+            return `
+                <div class="bracket-team-candidates">
+                    <span class="bracket-candidates-label">3º · ${grupos.join('/')}</span>
+                    <span class="bracket-candidates-flags">
+                        ${times.map(t => `<img class="bracket-candidate-flag" src="https://flagcdn.com/w40/${t.iso}.png" alt="${escapeHtml(t.name)}" title="${escapeHtml(t.name)}" loading="lazy">`).join('')}
+                    </span>
+                </div>
+            `;
+        }
+
+        // Vencedor / Perdedor jogo X
+        m = txt.match(/^(Vencedor|Perdedor)\s+jogo\s+(\d+)$/i);
+        if (m) {
+            const tipo = m[1].toLowerCase() === 'vencedor' ? 'Venc.' : 'Perd.';
+            const num = m[2];
+            const icon = m[1].toLowerCase() === 'vencedor' ? 'trending_up' : 'trending_down';
+            return `
+                <div class="bracket-team-wait">
+                    <span class="material-icons">${icon}</span>
+                    <span>${tipo}</span>
+                    <span class="bracket-team-wait-badge">M${num}</span>
+                </div>
+            `;
+        }
+
+        // "A definir (UEFA Path X)" → label simples
+        if (/A\s+definir/i.test(txt)) {
+            return `
+                <div class="bracket-team-wait">
+                    <span class="material-icons">hourglass_empty</span>
+                    <span>${escapeHtml(txt)}</span>
+                </div>
+            `;
+        }
+
+        // Time definido — usa flagFor() pra pegar a bandeira
+        const flagUrl = flagFor(txt);
+        if (flagUrl) {
+            return `
+                <div class="bracket-team-defined">
+                    <img src="${flagUrl}" alt="" loading="lazy">
+                    <span>${escapeHtml(txt)}</span>
+                </div>
+            `;
+        }
+        // Fallback sem bandeira
+        return `<div class="bracket-team-defined"><span>${escapeHtml(txt)}</span></div>`;
+    }
+
+    function bracketRender() {
+        const list = document.getElementById('bracketList');
+        const games = copaGames || [];
+        const filterFase = bracketState.filterFase;
+
+        // Categoriza jogos pela fase (igual o agrupamento do bolão)
+        const matchers = {
+            r32:     /Round of 32|Oitavas\s+de\s+32/i,
+            r16:     /Oitavas de Final/i,
+            quartas: /Quartas/i,
+            semis:   /Semifinal|Semi-final/i,
+            final:   /^Final$|Disputa|Third Place/i,  // inclui 3º lugar
+        };
+
+        // Cria buckets ordenados
+        const buckets = [
+            { key: 'r32',     label: 'Round of 32', sublabel: '16 jogos' },
+            { key: 'r16',     label: 'Oitavas de Final', sublabel: '8 jogos' },
+            { key: 'quartas', label: 'Quartas de Final', sublabel: '4 jogos' },
+            { key: 'semis',   label: 'Semifinais', sublabel: '2 jogos' },
+            { key: 'final',   label: 'Final + 3º Lugar', sublabel: '2 jogos' },
+        ];
+
+        // Distribui jogos nos buckets
+        const byBucket = {};
+        for (const b of buckets) byBucket[b.key] = [];
+        for (const g of games) {
+            const f = g.fase || '';
+            for (const b of buckets) {
+                if (matchers[b.key].test(f)) {
+                    byBucket[b.key].push(g);
+                    break;
+                }
+            }
+        }
+
+        // Ordena cada bucket por data + horário
+        for (const k of Object.keys(byBucket)) {
+            byBucket[k].sort((a, b) => {
+                const da = (a.data || '').localeCompare(b.data || '');
+                if (da !== 0) return da;
+                return (a.horario || '').localeCompare(b.horario || '');
+            });
+        }
+
+        // Filtra buckets se chip ativo
+        const visibleBuckets = filterFase === 'all'
+            ? buckets
+            : buckets.filter(b => b.key === filterFase);
+
+        if (!visibleBuckets.some(b => byBucket[b.key].length)) {
+            list.innerHTML = `<div class="bracket-empty">Nenhum jogo encontrado.</div>`;
+            return;
+        }
+
+        list.innerHTML = visibleBuckets.map(b => {
+            const jogos = byBucket[b.key];
+            if (!jogos.length) return '';
+            return `
+                <section class="bracket-fase-secao">
+                    <div class="bracket-fase-head">
+                        <span class="bracket-fase-head-badge">${escapeHtml(b.label)}</span>
+                        <span class="bracket-fase-head-label">${escapeHtml(b.sublabel)}</span>
+                    </div>
+                    <div class="bracket-jogos-grid">
+                        ${jogos.map(g => bracketRenderJogo(g)).join('')}
+                    </div>
+                </section>
+            `;
+        }).join('');
+    }
+
+    function bracketRenderJogo(g) {
+        // Extrai número FIFA da fase (ex "Round of 32 · Jogo 73" → 73)
+        const numMatch = (g.fase || '').match(/Jogo\s+(\d+)/i);
+        const num = numMatch ? `M${numMatch[1]}` : '';
+
+        // Data formatada
+        const dt = g.data ? new Date(g.data) : null;
+        let dataLabel = '—';
+        if (dt) {
+            const dia = String(dt.getUTCDate()).padStart(2, '0');
+            const mes = MESES_ABREV[dt.getUTCMonth()];
+            dataLabel = `${dia} ${mes}${g.horario ? ` · ${g.horario}` : ''}`;
+        }
+
+        // Estádio (curto)
+        const estadio = g.estadio ? g.estadio.split('(')[0].trim() : '';
+
+        return `
+            <article class="bracket-jogo">
+                <header class="bracket-jogo-head">
+                    <span class="bracket-jogo-num">${escapeHtml(num)}</span>
+                    <span class="bracket-jogo-data">${escapeHtml(dataLabel)}</span>
+                </header>
+                <div class="bracket-slot">${bracketRenderSlot(g.time_casa)}</div>
+                <div class="bracket-vs">VS</div>
+                <div class="bracket-slot">${bracketRenderSlot(g.time_visitante)}</div>
+                ${estadio ? `<div class="bracket-jogo-meta">📍 ${escapeHtml(estadio)}</div>` : ''}
+            </article>
+        `;
+    }
+
+    // ========= Eventos do chaveamento =========
+    document.getElementById('btnBracketEnter').addEventListener('click', () => {
+        navigate('/copa/chaveamento');
+    });
+    document.getElementById('btnBracketBack').addEventListener('click', () => {
+        if (history.length > 1) history.back();
+        else navigate('/copa');
+    });
+    document.querySelectorAll('#bracketFaseChips .bracket-fase-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            document.querySelectorAll('#bracketFaseChips .bracket-fase-chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            bracketState.filterFase = chip.dataset.fase;
+            bracketRender();
+        });
+    });
+
     // ========= Eventos do bolão =========
     document.getElementById('btnBolaoEnter').addEventListener('click', () => {
         navigate('/bolao');
@@ -15266,6 +15884,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         { pattern: /^\/bolao\/?$/i,         handler: () => { activateTab('copa'); bolaoShowView('meus'); bolaoLoadMeus(); } },
         { pattern: /^\/bolao\/(\d+)\/?$/i,  handler: (m) => { activateTab('copa'); bolaoOpenDetail(parseInt(m[1])); } },
         { pattern: /^\/album\/?$/i,         handler: () => { activateTab('copa'); albumOpen(); } },
+        { pattern: /^\/copa\/chaveamento\/?$/i, handler: () => { activateTab('copa'); bracketOpen(); } },
     ];
 
     let _routerSuppress = false;
@@ -15277,11 +15896,17 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             hidePerfilView();
         }
         // Se a rota não for /bolao*, reseta a vista do bolão pra default
-        if (!/^\/bolao/i.test(path)) {
+        // Quando sai pra rota fora da Copa, reseta sub-views (bolao/album/bracket)
+        // pra evitar que voltar mostre a tela errada.
+        const isCopaSubroute = /^\/(bolao|album|copa\/chaveamento)/i.test(path);
+        if (!isCopaSubroute) {
             const copaBolaoEl = document.getElementById('copaViewBolao');
-            if (copaBolaoEl && copaBolaoEl.style.display !== 'none') {
-                bolaoShowView('default');
-            }
+            const copaAlbumEl = document.getElementById('copaViewAlbum');
+            const copaBracketEl = document.getElementById('copaViewBracket');
+            const algumAberto = (copaBolaoEl && copaBolaoEl.style.display !== 'none')
+                || (copaAlbumEl && copaAlbumEl.style.display !== 'none')
+                || (copaBracketEl && copaBracketEl.style.display !== 'none');
+            if (algumAberto) bolaoShowView('default');
         }
         for (const r of ROUTES) {
             const m = path.match(r.pattern);
