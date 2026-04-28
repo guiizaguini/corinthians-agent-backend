@@ -3320,6 +3320,60 @@ body[data-club="corinthians"] .ingresso.d {
     font-size: 0.95rem;
     color: var(--accent);
 }
+
+/* ===== Feed: post de PALPITE de bolão (style "tipo Copa") ===== */
+.feed-content.is-palpite {
+    /* Mesmo enquadramento dos posts de "vai na Copa" */
+}
+.feed-palpite-score {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.55rem;
+    padding: 0.4rem 0.85rem;
+    background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+    border: 1px solid #d4a520;
+    border-radius: 10px;
+    font-family: 'Oswald', sans-serif;
+    box-shadow: 0 2px 8px rgba(212,165,32,0.15);
+}
+.feed-palpite-x-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    font-weight: 700;
+    color: #a8791b;
+    text-transform: uppercase;
+    margin-right: 0.15rem;
+}
+.feed-palpite-num {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #1a1000;
+    line-height: 1;
+    min-width: 1ch;
+    text-align: center;
+}
+.feed-palpite-x {
+    font-size: 0.95rem;
+    color: #a8791b;
+    font-weight: 700;
+}
+.feed-content-meta-bolao {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    color: var(--ink-mute);
+    margin-top: 0.45rem;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+.feed-content-meta-bolao .material-icons {
+    font-size: 0.95rem;
+    color: #d4a520;
+}
 .feed-time {
     font-family: 'Oswald', sans-serif;
     font-weight: 500;
@@ -4329,7 +4383,13 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 /* ================================================================
    MODAL: COMPARTILHAR ÁLBUM (com canvas pra imagem download)
    ================================================================ */
-.album-share-modal { max-width: 580px; }
+.album-share-modal {
+    max-width: 580px;
+    /* Garante que o scroll interno do modal funciona em qualquer tamanho de viewport.
+       overscroll-behavior evita rubber-band do iOS sequestrar o scroll da página. */
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
 .album-share-preview-wrap {
     background: #0a0700;
     border-radius: 12px;
@@ -4340,6 +4400,23 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     /* Limita altura do preview pra não ocupar tela inteira (canvas é 1080x1620) */
     max-height: 380px;
     overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+/* No mobile, kill o scroll interno do preview — ele "rouba" o gesto de touch
+   do scroll do modal e quebra UX. Deixa o canvas inteiro inline e que o
+   modal scrolle como um todo. */
+@media (max-width: 768px) {
+    .album-share-preview-wrap {
+        max-height: none;
+        overflow-y: visible;
+    }
+    .album-share-modal {
+        /* dvh é o "dynamic viewport height" — cresce/encolhe com o address bar
+           do mobile, evitando o modal cortar embaixo quando barra do navegador
+           recolhe. Fallback pra 90vh em browsers antigos via cascata. */
+        max-height: 92dvh;
+    }
 }
 .album-share-preview-wrap canvas {
     width: 100%;
@@ -6247,6 +6324,15 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     white-space: nowrap;
     max-width: 100%;
 }
+/* No desktop, deixa quebrar em 2 linhas (mais legivel que "COREIA DO...") */
+@media (min-width: 720px) {
+    .bolao-saved-team-name {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+        word-break: break-word;
+    }
+}
 .bolao-saved-score {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
@@ -6374,6 +6460,18 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    line-height: 1.15;
+}
+/* No desktop dá pra deixar o nome quebrar em 2 linhas pra evitar
+   "COREIA DO ..." truncado. No mobile mantém ellipsis pra não estourar layout. */
+@media (min-width: 720px) {
+    .bolao-palpite-team-name {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+        word-break: break-word;
+        hyphens: auto;
+    }
 }
 .bolao-palpite-team .wc-flag {
     flex-shrink: 0;
@@ -12671,6 +12769,25 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                             </div>
                         </div>
                     `;
+                } else if (item.type === 'palpite') {
+                    // Palpite de bolão da Copa — usa estética da Copa (bandeiras + placar do palpite)
+                    // gols_casa/visitante aqui são o PALPITE da pessoa, não o resultado real.
+                    const palpiteCasa = item.gols_casa != null ? item.gols_casa : '?';
+                    const palpiteVis  = item.gols_visitante != null ? item.gols_visitante : '?';
+                    const bolaoNome = item.title; // backend mete o nome do bolão em title
+                    const bolaoLabel = bolaoNome
+                        ? `<div class="feed-content-meta-bolao"><span class="material-icons">groups</span>${escapeHtml(bolaoNome)}</div>`
+                        : '';
+                    const palpiteHtml = `<div class="feed-palpite-score"><span class="feed-palpite-x-label">PALPITE</span><span class="feed-palpite-num">${escapeHtml(String(palpiteCasa))}</span><span class="feed-palpite-x">×</span><span class="feed-palpite-num">${escapeHtml(String(palpiteVis))}</span></div>`;
+                    actionLine = `<span class="material-icons">stadium</span> palpitou um jogo da Copa`;
+                    contentBlock = `
+                        <div class="feed-content is-copa is-palpite">
+                            <div class="feed-content-fase">FIFA WORLD CUP 2026 · BOLÃO</div>
+                            <div class="feed-content-game">${gameTeams}</div>
+                            ${palpiteHtml}
+                            ${bolaoLabel}
+                        </div>
+                    `;
                 } else if (item.type === 'note') {
                     actionLine = `<span class="material-icons">edit_note</span> publicou uma nota`;
                     const titleHtml = item.title ? `<div class="feed-content-title">${escapeHtml(item.title)}</div>` : '';
@@ -14180,22 +14297,35 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             return `<img class="wc-flag" src="${url}" alt="" loading="lazy">`;
         };
 
+        // Helpers de i18n (com fallback se i18n.js não carregou ainda)
+        const I = (typeof window !== 'undefined' && window.CN_I18N) || null;
+        const tt = (k, vars) => I ? I.t(k, vars) : k;
+        const tTeam = (n) => I && I.tTeam ? I.tTeam(n) : n;
+        const tFase = (f) => I && I.tFase ? I.tFase(f) : f;
+        const locale = I && I.getLocale ? I.getLocale() : 'pt-BR';
+
         const temResultado = g.gols_casa_real != null && g.gols_visitante_real != null;
         const jaPalpitou = g.palpite_casa != null;
         const travarInputs = g.travado || temResultado;
 
         const dt = new Date(g.data);
         const dia = String(dt.getUTCDate()).padStart(2, '0');
-        const mes = MESES_ABREV[dt.getUTCMonth()];
+        // Mês/weekday agora respeitam o idioma (toLocaleDateString)
+        const mes = dt.toLocaleDateString(locale, { month: 'short', timeZone: 'UTC' }).replace('.','').toUpperCase();
         const ano = dt.getUTCFullYear();
-        const weekday = dt.toLocaleDateString('pt-BR', { weekday: 'short', timeZone: 'UTC' }).replace('.','').toUpperCase();
+        const weekday = dt.toLocaleDateString(locale, { weekday: 'short', timeZone: 'UTC' }).replace('.','').toUpperCase();
 
-        const fase = (g.fase || g.campeonato || 'Jogo').toUpperCase();
-        const isFinal = fase.trim() === 'FINAL';
-        const isKnockout = /OITAVAS|QUARTAS|SEMIFINAL|DISPUTA|FINAL|ROUND/i.test(fase);
+        // Fase traduzida (Grupo A · Rodada 1 → Group A · Round 1, etc.)
+        const fase = tFase(g.fase || g.campeonato || 'Jogo').toUpperCase();
+        const isFinal = /^(FINAL|FINAL.?)$/i.test(fase.trim());
+        const isKnockout = /OITAVAS|QUARTAS|SEMIFINAL|DISPUTA|FINAL|ROUND|OCTAV|CUARTOS|SEMIS|TERCER|TREINTA/i.test(fase);
 
-        const teamCasaTbd = /definir/i.test(g.time_casa);
-        const teamVisTbd = /definir/i.test(g.time_visitante);
+        const teamCasaTbd = /definir|tbd/i.test(g.time_casa);
+        const teamVisTbd = /definir|tbd/i.test(g.time_visitante);
+
+        // Nome traduzido pra exibição (mantém g.time_casa pro aria/escape original)
+        const nomeCasa = tTeam(g.time_casa);
+        const nomeVis = tTeam(g.time_visitante);
 
         // Classes do card (mesmas da Copa + variantes bolão)
         const ticketClasses = ['wc-ticket', 'bolao-ticket'];
@@ -14221,17 +14351,17 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const valA = g.palpite_visitante != null ? g.palpite_visitante : '';
         const palpiteBlock = `
             <div class="bolao-palpite-block ${travarInputs ? 'locked' : ''}">
-                <div class="bolao-palpite-label">Seu palpite</div>
+                <div class="bolao-palpite-label">${escapeHtml(tt('app.bolao.palpite_label'))}</div>
                 <div class="bolao-palpite-row">
                     <div class="bolao-palpite-team home ${teamCasaTbd ? 'tbd' : ''}">
                         ${flagHtml(fCasa)}
-                        <span class="bolao-palpite-team-name">${escapeHtml(g.time_casa)}</span>
+                        <span class="bolao-palpite-team-name">${escapeHtml(nomeCasa)}</span>
                     </div>
-                    <input type="number" min="0" max="20" class="bolao-palpite-input home" value="${valH}" ${travarInputs ? 'disabled' : ''} inputmode="numeric" placeholder="—" aria-label="Palpite ${escapeHtml(g.time_casa)}">
+                    <input type="number" min="0" max="20" class="bolao-palpite-input home" value="${valH}" ${travarInputs ? 'disabled' : ''} inputmode="numeric" placeholder="—" aria-label="${escapeHtml(tt('app.bolao.palpite_label'))} ${escapeHtml(nomeCasa)}">
                     <span class="bolao-palpite-x">×</span>
-                    <input type="number" min="0" max="20" class="bolao-palpite-input away" value="${valA}" ${travarInputs ? 'disabled' : ''} inputmode="numeric" placeholder="—" aria-label="Palpite ${escapeHtml(g.time_visitante)}">
+                    <input type="number" min="0" max="20" class="bolao-palpite-input away" value="${valA}" ${travarInputs ? 'disabled' : ''} inputmode="numeric" placeholder="—" aria-label="${escapeHtml(tt('app.bolao.palpite_label'))} ${escapeHtml(nomeVis)}">
                     <div class="bolao-palpite-team away ${teamVisTbd ? 'tbd' : ''}">
-                        <span class="bolao-palpite-team-name">${escapeHtml(g.time_visitante)}</span>
+                        <span class="bolao-palpite-team-name">${escapeHtml(nomeVis)}</span>
                         ${flagHtml(fVis)}
                     </div>
                 </div>
@@ -14249,21 +14379,21 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                     bolaoState.pontos
                 );
             } else {
-                detalhe = { pts: 0, motivo: 'Você não palpitou', icone: 'block', classe: 'sem-palpite' };
+                detalhe = { pts: 0, motivo: tt('app.bolao.motivo_sem_palpite'), icone: 'block', classe: 'sem-palpite' };
             }
             const earnedCls = detalhe.pts > 0 ? 'v' : 'z';
             realBlock = `
                 <div class="bolao-real-block">
                     <div class="bolao-real-top">
                         <div class="bolao-real-score">
-                            <span class="bolao-real-label">Resultado</span>
+                            <span class="bolao-real-label">${escapeHtml(tt('app.bolao.real_result_label'))}</span>
                             <div class="bolao-real-value">${g.gols_casa_real}<span class="bolao-real-x">×</span>${g.gols_visitante_real}</div>
                         </div>
-                        <span class="bolao-earned-pill ${earnedCls}">${detalhe.pts > 0 ? '+' + detalhe.pts : '0'} pts</span>
+                        <span class="bolao-earned-pill ${earnedCls}">${detalhe.pts > 0 ? '+' + detalhe.pts : '0'} ${escapeHtml(tt('app.bolao.pts_suffix'))}</span>
                     </div>
                     <div class="bolao-real-motivo motivo-${detalhe.classe}">
                         <span class="material-icons">${detalhe.icone}</span>
-                        <span class="motivo-texto">${detalhe.motivo}</span>
+                        <span class="motivo-texto">${escapeHtml(detalhe.motivo)}</span>
                     </div>
                 </div>
             `;
@@ -14275,9 +14405,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             // Nada — o realBlock acima já mostra pontos
             footerRight = '';
         } else if (g.travado) {
-            footerRight = `<span class="bolao-foot-msg"><span class="material-icons">lock</span>Palpites fechados</span>`;
+            footerRight = `<span class="bolao-foot-msg"><span class="material-icons">lock</span>${escapeHtml(tt('app.bolao.closed_msg'))}</span>`;
         } else {
-            footerRight = `<button class="bolao-jogo-save" type="button" disabled>Salvar</button>`;
+            footerRight = `<button class="bolao-jogo-save" type="button" disabled>${escapeHtml(tt('app.bolao.save_btn'))}</button>`;
         }
 
         // Overlay verde quando palpitado (e não finalizado ainda) — fica sempre visível.
@@ -14285,11 +14415,11 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const overlayHtml = (jaPalpitou && !temResultado)
             ? `<div class="bolao-saved-overlay">
                   <div class="bolao-saved-content">
-                      <div class="bolao-saved-check-mini"><span class="material-icons">check_circle</span><span>Palpite salvo</span></div>
+                      <div class="bolao-saved-check-mini"><span class="material-icons">check_circle</span><span>${escapeHtml(tt('app.bolao.saved_label'))}</span></div>
                       <div class="bolao-saved-match">
                           <div class="bolao-saved-team">
                               ${flagHtml(fCasa)}
-                              <span class="bolao-saved-team-name">${escapeHtml(g.time_casa)}</span>
+                              <span class="bolao-saved-team-name">${escapeHtml(nomeCasa)}</span>
                           </div>
                           <div class="bolao-saved-score">
                               <span>${escapeHtml(String(g.palpite_casa))}</span>
@@ -14298,12 +14428,12 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                           </div>
                           <div class="bolao-saved-team">
                               ${flagHtml(fVis)}
-                              <span class="bolao-saved-team-name">${escapeHtml(g.time_visitante)}</span>
+                              <span class="bolao-saved-team-name">${escapeHtml(nomeVis)}</span>
                           </div>
                       </div>
-                      <button type="button" class="bolao-saved-edit" data-action="edit" title="Editar palpite">
+                      <button type="button" class="bolao-saved-edit" data-action="edit" title="${escapeHtml(tt('app.bolao.edit_btn'))}">
                           <span class="material-icons">edit</span>
-                          Editar
+                          ${escapeHtml(tt('app.bolao.edit_btn'))}
                       </button>
                   </div>
               </div>`
@@ -14342,21 +14472,22 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
     // Retorna { pts, motivo, icone, classe } pra mostrar no card
     function calcularPontosDetalhado(pH, pA, rH, rA, pts) {
+        const _t = (k) => (window.CN_I18N && window.CN_I18N.t) ? window.CN_I18N.t(k) : k;
         if (pH === rH && pA === rA) {
-            return { pts: pts.PLACAR_EXATO, motivo: 'Placar exato', icone: 'auto_awesome', classe: 'exato' };
+            return { pts: pts.PLACAR_EXATO, motivo: _t('app.bolao.motivo_exato'), icone: 'auto_awesome', classe: 'exato' };
         }
         if (pH === pA && rH === rA) {
-            return { pts: pts.EMPATE_CORRETO, motivo: 'Empate correto', icone: 'handshake', classe: 'empate' };
+            return { pts: pts.EMPATE_CORRETO, motivo: _t('app.bolao.motivo_empate'), icone: 'handshake', classe: 'empate' };
         }
         const pSaldo = pH - pA;
         const rSaldo = rH - rA;
         if (Math.sign(pSaldo) === Math.sign(rSaldo) && pSaldo === rSaldo) {
-            return { pts: pts.VENCEDOR_E_SALDO, motivo: 'Vencedor + saldo certo', icone: 'trending_up', classe: 'saldo' };
+            return { pts: pts.VENCEDOR_E_SALDO, motivo: _t('app.bolao.motivo_saldo'), icone: 'trending_up', classe: 'saldo' };
         }
         if (Math.sign(pSaldo) === Math.sign(rSaldo)) {
-            return { pts: pts.VENCEDOR, motivo: 'Acertou só o vencedor', icone: 'check_circle', classe: 'vencedor' };
+            return { pts: pts.VENCEDOR, motivo: _t('app.bolao.motivo_vencedor'), icone: 'check_circle', classe: 'vencedor' };
         }
-        return { pts: 0, motivo: 'Errou o palpite', icone: 'close', classe: 'errou' };
+        return { pts: 0, motivo: _t('app.bolao.motivo_errou'), icone: 'close', classe: 'errou' };
     }
 
     // Retorna o "status" da amizade entre mim e outro user_id:

@@ -377,6 +377,35 @@ router.get('/feed', async (req, res, next) => {
                 WHERE ua.from_bulk_sync = FALSE
                   AND ua.unlocked_at > NOW() - INTERVAL '30 days'
                   AND ua.user_id IN (SELECT user_id FROM friend_ids)
+
+                UNION ALL
+
+                -- Palpites de bolão da Copa (próprios + de amigos).
+                -- Limita aos últimos 30 dias e usa updated_at (bumpa quando edita).
+                -- Os campos gols_casa/visitante carregam o PALPITE da pessoa, não
+                -- o resultado real do jogo — o frontend interpreta conforme type.
+                -- O nome do bolão vai junto pro post poder dizer "no Bolão da Galera".
+                SELECT
+                    'palpite' AS type,
+                    bp.id AS ref_id, bp.updated_at AS created_at,
+                    u.id AS user_id, u.username, u.display_name,
+                    c.name AS club_name, c.short_name AS club_short, c.primary_color,
+                    g.id AS game_id, g.data,
+                    g.time_casa, g.time_visitante,
+                    bp.gols_casa, bp.gols_visitante,
+                    NULL::varchar AS resultado, g.campeonato, g.estadio,
+                    NULL::varchar AS setor,
+                    '[]'::json AS companions,
+                    b.name AS title,                    -- reutiliza coluna title pro bolao_name
+                    NULL::text AS body, NULL::boolean AS is_public,
+                    NULL::varchar AS achievement_id
+                FROM bolao_palpites bp
+                JOIN users u ON u.id = bp.user_id
+                LEFT JOIN clubs c ON c.id = u.club_id
+                JOIN games g ON g.id = bp.game_id
+                LEFT JOIN boloes b ON b.id = bp.bolao_id
+                WHERE bp.user_id IN (SELECT user_id FROM friend_ids)
+                  AND bp.updated_at > NOW() - INTERVAL '30 days'
              ) sub
              ORDER BY created_at DESC
              LIMIT $2`,

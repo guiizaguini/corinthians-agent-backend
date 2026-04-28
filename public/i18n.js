@@ -411,6 +411,31 @@
             'app.bolao.created_copy': 'Copiar código',
             'app.bolao.created_open': 'Abrir bolão',
             'app.bolao.leave_confirm': 'Sair do bolão "{title}"?\n\nSeus palpites serão removidos. Pra voltar, você precisa do código de convite.',
+            // Card de jogo do bolão (palpite)
+            'app.bolao.palpite_label': 'Seu palpite',
+            'app.bolao.save_btn': 'Salvar',
+            'app.bolao.saved_label': 'Palpite salvo',
+            'app.bolao.edit_btn': 'Editar',
+            'app.bolao.closed_msg': 'Palpites fechados',
+            'app.bolao.real_result_label': 'Resultado',
+            'app.bolao.fase_grupo_rodada': 'Grupo {grupo} · Rodada {rodada}',
+            'app.bolao.fase_grupo': 'Grupo {grupo}',
+            'app.bolao.fase_oitavas_32': 'Round of 32',
+            'app.bolao.fase_oitavas': 'Oitavas de Final',
+            'app.bolao.fase_quartas': 'Quartas de Final',
+            'app.bolao.fase_semis': 'Semifinal',
+            'app.bolao.fase_terceiro': 'Disputa de 3º Lugar',
+            'app.bolao.fase_final': 'Final',
+            // Texto de pontuação
+            'app.bolao.motivo_exato': 'Placar exato',
+            'app.bolao.motivo_empate': 'Empate correto',
+            'app.bolao.motivo_saldo': 'Vencedor + saldo certo',
+            'app.bolao.motivo_vencedor': 'Acertou só o vencedor',
+            'app.bolao.motivo_errou': 'Errou o palpite',
+            'app.bolao.motivo_sem_palpite': 'Você não palpitou',
+            'app.bolao.pts_suffix': 'pts',
+            // Feed: ação de palpitar (item type='palpite')
+            'app.feed.action.palpitou_copa': 'palpitou um jogo da Copa',
         },
 
         en: {
@@ -789,6 +814,28 @@
             'app.bolao.created_copy': 'Copy code',
             'app.bolao.created_open': 'Open pool',
             'app.bolao.leave_confirm': 'Leave pool "{title}"?\n\nYour predictions will be removed. To rejoin, you need the invite code.',
+            'app.bolao.palpite_label': 'Your prediction',
+            'app.bolao.save_btn': 'Save',
+            'app.bolao.saved_label': 'Prediction saved',
+            'app.bolao.edit_btn': 'Edit',
+            'app.bolao.closed_msg': 'Predictions closed',
+            'app.bolao.real_result_label': 'Result',
+            'app.bolao.fase_grupo_rodada': 'Group {grupo} · Round {rodada}',
+            'app.bolao.fase_grupo': 'Group {grupo}',
+            'app.bolao.fase_oitavas_32': 'Round of 32',
+            'app.bolao.fase_oitavas': 'Round of 16',
+            'app.bolao.fase_quartas': 'Quarter-finals',
+            'app.bolao.fase_semis': 'Semi-finals',
+            'app.bolao.fase_terceiro': 'Third-place play-off',
+            'app.bolao.fase_final': 'Final',
+            'app.bolao.motivo_exato': 'Exact score',
+            'app.bolao.motivo_empate': 'Correct draw',
+            'app.bolao.motivo_saldo': 'Winner + correct goal difference',
+            'app.bolao.motivo_vencedor': 'Got the winner only',
+            'app.bolao.motivo_errou': 'Wrong prediction',
+            'app.bolao.motivo_sem_palpite': 'You did not predict',
+            'app.bolao.pts_suffix': 'pts',
+            'app.feed.action.palpitou_copa': 'predicted a World Cup match',
         },
 
         es: {
@@ -1167,6 +1214,28 @@
             'app.bolao.created_copy': 'Copiar código',
             'app.bolao.created_open': 'Abrir quiniela',
             'app.bolao.leave_confirm': '¿Salir de la quiniela "{title}"?\n\nTus pronósticos se van a borrar. Para volver, necesitás el código de invitación.',
+            'app.bolao.palpite_label': 'Tu pronóstico',
+            'app.bolao.save_btn': 'Guardar',
+            'app.bolao.saved_label': 'Pronóstico guardado',
+            'app.bolao.edit_btn': 'Editar',
+            'app.bolao.closed_msg': 'Pronósticos cerrados',
+            'app.bolao.real_result_label': 'Resultado',
+            'app.bolao.fase_grupo_rodada': 'Grupo {grupo} · Jornada {rodada}',
+            'app.bolao.fase_grupo': 'Grupo {grupo}',
+            'app.bolao.fase_oitavas_32': 'Treintaidosavos de Final',
+            'app.bolao.fase_oitavas': 'Octavos de Final',
+            'app.bolao.fase_quartas': 'Cuartos de Final',
+            'app.bolao.fase_semis': 'Semifinales',
+            'app.bolao.fase_terceiro': 'Por el Tercer Puesto',
+            'app.bolao.fase_final': 'Final',
+            'app.bolao.motivo_exato': 'Resultado exacto',
+            'app.bolao.motivo_empate': 'Empate correcto',
+            'app.bolao.motivo_saldo': 'Ganador + diferencia',
+            'app.bolao.motivo_vencedor': 'Solo el ganador',
+            'app.bolao.motivo_errou': 'Pronóstico errado',
+            'app.bolao.motivo_sem_palpite': 'No pronosticaste',
+            'app.bolao.pts_suffix': 'pts',
+            'app.feed.action.palpitou_copa': 'pronosticó un partido del Mundial',
         },
     };
 
@@ -1399,6 +1468,122 @@
         document.head.appendChild(style);
     }
 
+    // ============================================================
+    // Tradução de nomes de seleções (Copa do Mundo 2026)
+    // PT é a fonte (banco guarda em PT) → mapa só pra EN/ES.
+    // ============================================================
+    const TEAMS_TRANSLATIONS = {
+        'México':           { en: 'Mexico',         es: 'México' },
+        'Coreia do Sul':    { en: 'South Korea',    es: 'Corea del Sur' },
+        'África do Sul':    { en: 'South Africa',   es: 'Sudáfrica' },
+        'República Tcheca': { en: 'Czech Republic', es: 'Chequia' },
+        'Canadá':           { en: 'Canada',         es: 'Canadá' },
+        'Bósnia':           { en: 'Bosnia',         es: 'Bosnia' },
+        'Catar':            { en: 'Qatar',          es: 'Catar' },
+        'Suíça':            { en: 'Switzerland',    es: 'Suiza' },
+        'Brasil':           { en: 'Brazil',         es: 'Brasil' },
+        'Marrocos':         { en: 'Morocco',        es: 'Marruecos' },
+        'Haiti':            { en: 'Haiti',          es: 'Haití' },
+        'Escócia':          { en: 'Scotland',       es: 'Escocia' },
+        'Estados Unidos':   { en: 'United States',  es: 'Estados Unidos' },
+        'Paraguai':         { en: 'Paraguay',       es: 'Paraguay' },
+        'Austrália':        { en: 'Australia',      es: 'Australia' },
+        'Turquia':          { en: 'Türkiye',        es: 'Turquía' },
+        'Alemanha':         { en: 'Germany',        es: 'Alemania' },
+        'Curaçao':          { en: 'Curaçao',        es: 'Curazao' },
+        'Costa do Marfim':  { en: 'Côte d\'Ivoire', es: 'Costa de Marfil' },
+        'Equador':          { en: 'Ecuador',        es: 'Ecuador' },
+        'Holanda':          { en: 'Netherlands',    es: 'Países Bajos' },
+        'Japão':            { en: 'Japan',          es: 'Japón' },
+        'Suécia':           { en: 'Sweden',         es: 'Suecia' },
+        'Tunísia':          { en: 'Tunisia',        es: 'Túnez' },
+        'Bélgica':          { en: 'Belgium',        es: 'Bélgica' },
+        'Egito':            { en: 'Egypt',          es: 'Egipto' },
+        'Irã':              { en: 'Iran',           es: 'Irán' },
+        'Nova Zelândia':    { en: 'New Zealand',    es: 'Nueva Zelanda' },
+        'Espanha':          { en: 'Spain',          es: 'España' },
+        'Cabo Verde':       { en: 'Cape Verde',     es: 'Cabo Verde' },
+        'Arábia Saudita':   { en: 'Saudi Arabia',   es: 'Arabia Saudí' },
+        'Uruguai':          { en: 'Uruguay',        es: 'Uruguay' },
+        'França':           { en: 'France',         es: 'Francia' },
+        'Senegal':          { en: 'Senegal',        es: 'Senegal' },
+        'Iraque':           { en: 'Iraq',           es: 'Irak' },
+        'Noruega':          { en: 'Norway',         es: 'Noruega' },
+        'Argentina':        { en: 'Argentina',      es: 'Argentina' },
+        'Argélia':          { en: 'Algeria',        es: 'Argelia' },
+        'Áustria':          { en: 'Austria',        es: 'Austria' },
+        'Jordânia':         { en: 'Jordan',         es: 'Jordania' },
+        'Portugal':         { en: 'Portugal',       es: 'Portugal' },
+        'Congo':            { en: 'DR Congo',       es: 'RD del Congo' },
+        'Uzbequistão':      { en: 'Uzbekistan',     es: 'Uzbekistán' },
+        'Colômbia':         { en: 'Colombia',       es: 'Colombia' },
+        'Inglaterra':       { en: 'England',        es: 'Inglaterra' },
+        'Croácia':          { en: 'Croatia',        es: 'Croacia' },
+        'Gana':             { en: 'Ghana',          es: 'Ghana' },
+        'Panamá':           { en: 'Panama',         es: 'Panamá' },
+    };
+
+    // Traduz nome de seleção pro idioma corrente. Caso especial pra placeholders
+    // tipo "1º Grupo X", "Vencedor jogo N", "3º A/B/C/D" e "A definir".
+    function tTeam(name) {
+        if (!name) return '';
+        const lang = getLang();
+        if (lang === 'pt') return name;
+
+        const direct = TEAMS_TRANSLATIONS[name];
+        if (direct && direct[lang]) return direct[lang];
+
+        // Placeholders comuns no chaveamento e fase de grupos:
+        let m = name.match(/^([12])º\s+Grupo\s+([A-L])$/i);
+        if (m) {
+            const ord = lang === 'en'
+                ? (m[1] === '1' ? '1st' : '2nd')
+                : (m[1] === '1' ? '1°' : '2°');
+            const grupo = lang === 'en' ? 'Group' : 'Grupo';
+            return `${ord} ${grupo} ${m[2].toUpperCase()}`;
+        }
+        m = name.match(/^3º\s+(.+)$/i);
+        if (m) {
+            const ord = lang === 'en' ? '3rd' : '3°';
+            return `${ord} ${m[1]}`;
+        }
+        m = name.match(/^Vencedor\s+jogo\s+(\d+)$/i);
+        if (m) {
+            const venc = lang === 'en' ? 'Winner of match' : 'Ganador del partido';
+            return `${venc} ${m[1]}`;
+        }
+        if (/^a\s+definir$/i.test(name)) {
+            return lang === 'en' ? 'TBD' : 'A definir';
+        }
+        return name;
+    }
+
+    // Traduz fase do bolão. Aceita variações tipo "Grupo A - Rodada 1",
+    // "Grupo A · Rodada 1", "Oitavas de Final", "Round of 32", etc.
+    function tFase(rawFase) {
+        const f = (rawFase || '').toString().trim();
+        if (!f) return f;
+        let m = f.match(/grupo\s+([a-l])\s*[·\-]\s*rodada\s+(\d+)/i);
+        if (m) return t('app.bolao.fase_grupo_rodada', { grupo: m[1].toUpperCase(), rodada: m[2] });
+        m = f.match(/^grupo\s+([a-l])$/i);
+        if (m) return t('app.bolao.fase_grupo', { grupo: m[1].toUpperCase() });
+        if (/oitavas.*32|round\s*of\s*32|treintaidosavos/i.test(f)) return t('app.bolao.fase_oitavas_32');
+        if (/oitavas|round\s*of\s*16|octavos/i.test(f)) return t('app.bolao.fase_oitavas');
+        if (/quartas|quarter|cuartos/i.test(f)) return t('app.bolao.fase_quartas');
+        if (/semi/i.test(f)) return t('app.bolao.fase_semis');
+        if (/disputa.*3|3.*lugar|third.*place|tercer.*puesto/i.test(f)) return t('app.bolao.fase_terceiro');
+        if (/^final$/i.test(f)) return t('app.bolao.fase_final');
+        return f;
+    }
+
+    // Locale BCP-47 do idioma corrente (pra Date.toLocaleDateString)
+    function getLocale() {
+        const lang = getLang();
+        if (lang === 'en') return 'en-US';
+        if (lang === 'es') return 'es-ES';
+        return 'pt-BR';
+    }
+
     // Aplica tradução assim que possível
     function init() {
         injectStyles();
@@ -1411,5 +1596,5 @@
         init();
     }
 
-    window.CN_I18N = { t, getLang, setLang, applyTranslations, createLangDropdown, LANGS };
+    window.CN_I18N = { t, getLang, setLang, applyTranslations, createLangDropdown, LANGS, tTeam, tFase, getLocale };
 })();
