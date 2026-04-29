@@ -186,6 +186,19 @@
             'app.kpi.spent': 'Gasto',
             'app.kpi.no_data': 'Marca seu primeiro jogo pra ver suas estatísticas aqui.',
 
+            // ====== APP — CATALOG / CROSS-CLUB SEARCH ======
+            'app.catalog.search_ph': 'Buscar rival, campeonato, estádio...',
+            'app.catalog.all_years': 'Todos os anos',
+            'app.catalog.only_mine': 'Só os que fui',
+            'app.catalog.loading': 'Carregando jogos...',
+            'app.catalog.cross_club_btn': 'Marcar jogo de outro clube',
+            'app.cross_club.title': 'Marcar jogo de outro clube',
+            'app.cross_club.meta': 'Pesquise pelo nome do time pra achar o jogo onde você esteve, mesmo que não seja do seu clube.',
+            'app.cross_club.search_ph': 'Ex: Flamengo, São Paulo, Maracanã...',
+            'app.cross_club.empty_initial': 'Comece digitando o nome de um time pra ver os jogos.',
+            'app.cross_club.no_results': 'Nenhum jogo encontrado.',
+            'app.cross_club.loading': 'Buscando...',
+
             // ====== APP — COMMON ======
             'app.empty.no_club_catalog': 'Escolhe seu time no Perfil pra ver o catálogo de jogos.',
             'app.empty.no_club_mine': 'Seus ingressos aparecem aqui depois que você escolher um time.',
@@ -597,6 +610,18 @@
             'app.kpi.spent': 'Spent',
             'app.kpi.no_data': 'Mark your first match to see your stats here.',
 
+            'app.catalog.search_ph': 'Search opponent, competition, stadium...',
+            'app.catalog.all_years': 'All years',
+            'app.catalog.only_mine': 'Only ones I attended',
+            'app.catalog.loading': 'Loading matches...',
+            'app.catalog.cross_club_btn': 'Mark a game from another club',
+            'app.cross_club.title': 'Mark a game from another club',
+            'app.cross_club.meta': 'Search by team name to find a game you attended, even if it is not your club.',
+            'app.cross_club.search_ph': 'e.g. Flamengo, Sao Paulo, Maracana...',
+            'app.cross_club.empty_initial': 'Start typing a team name to see matches.',
+            'app.cross_club.no_results': 'No matches found.',
+            'app.cross_club.loading': 'Searching...',
+
             'app.empty.no_club_catalog': 'Pick your club in Profile to see the match catalogue.',
             'app.empty.no_club_mine': 'Your tickets show up here once you pick a club.',
             'app.empty.no_games': 'No matches found.',
@@ -996,6 +1021,18 @@
             'app.kpi.win_rate': 'Rendimiento',
             'app.kpi.spent': 'Gastado',
             'app.kpi.no_data': 'Marcá tu primer partido para ver tus estadísticas acá.',
+
+            'app.catalog.search_ph': 'Buscar rival, campeonato, estadio...',
+            'app.catalog.all_years': 'Todos los años',
+            'app.catalog.only_mine': 'Solo a los que fui',
+            'app.catalog.loading': 'Cargando partidos...',
+            'app.catalog.cross_club_btn': 'Marcar partido de otro club',
+            'app.cross_club.title': 'Marcar partido de otro club',
+            'app.cross_club.meta': 'Buscá por nombre del equipo para encontrar el partido al que fuiste, aunque no sea de tu club.',
+            'app.cross_club.search_ph': 'Ej: Boca, River, Maracaná...',
+            'app.cross_club.empty_initial': 'Empezá escribiendo el nombre de un equipo para ver los partidos.',
+            'app.cross_club.no_results': 'No se encontraron partidos.',
+            'app.cross_club.loading': 'Buscando...',
 
             'app.empty.no_club_catalog': 'Elegí tu club en Perfil para ver el catálogo de partidos.',
             'app.empty.no_club_mine': 'Tus tickets aparecen acá cuando elijas un club.',

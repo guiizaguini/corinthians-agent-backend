@@ -922,6 +922,177 @@ main {
 }
 .filter-bar input:focus, .filter-bar select:focus { border-color: var(--accent); }
 
+/* ==== Cross-club search button + modal ==== */
+.btn-cross-club {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    border: 1.5px dashed var(--ink-line);
+    color: var(--ink-soft);
+    padding: 0.6rem 1rem;
+    border-radius: 12px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    transition: all 150ms;
+}
+.btn-cross-club:hover {
+    border-style: solid;
+    border-color: var(--accent);
+    color: var(--ink);
+    background: var(--accent-soft);
+}
+.btn-cross-club .material-icons { font-size: 1.05rem; color: var(--accent); }
+
+.cross-club-modal { max-width: 560px; }
+.cross-club-search-wrap {
+    position: relative;
+    margin: 1rem 0 0.85rem;
+}
+.cross-club-search-wrap .cross-club-search-icon {
+    position: absolute;
+    left: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink-soft);
+    font-size: 1.2rem;
+    pointer-events: none;
+}
+.cross-club-search-wrap input {
+    width: 100%;
+    padding: 0.85rem 0.95rem 0.85rem 2.5rem;
+    border-radius: 12px;
+    border: 1.5px solid var(--ink-line);
+    background: var(--paper-soft);
+    color: var(--ink);
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    box-sizing: border-box;
+}
+.cross-club-search-wrap input:focus { border-color: var(--accent); }
+
+.cross-club-results {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 50vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-right: 0.25rem;
+}
+.cross-club-empty,
+.cross-club-loading {
+    text-align: center;
+    color: var(--ink-soft);
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+    padding: 1.5rem 0.5rem;
+}
+
+.cross-club-result {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0.85rem;
+    background: var(--paper-soft);
+    border: 1px solid var(--ink-line);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 150ms;
+}
+.cross-club-result:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+.cross-club-result-date {
+    flex-shrink: 0;
+    text-align: center;
+    width: 50px;
+    font-family: 'Oswald', sans-serif;
+}
+.cross-club-result-date .day {
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--ink);
+}
+.cross-club-result-date .mon {
+    font-size: 0.65rem;
+    letter-spacing: 0.16em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    margin-top: 0.15rem;
+}
+.cross-club-result-info { flex: 1; min-width: 0; }
+.cross-club-result-teams {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.2;
+}
+.cross-club-result-meta {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+    margin-top: 0.2rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+.cross-club-result-catalog {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.cross-club-result-catalog .material-icons { font-size: 0.8rem; }
+.cross-club-result-status {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-card-2);
+}
+.cross-club-result-status.ok {
+    background: rgba(37,180,84,0.15);
+    color: #25b454;
+}
+.cross-club-result-status.ok .material-icons { color: #25b454; }
+.cross-club-result-status .material-icons { font-size: 1.1rem; color: var(--ink-soft); }
+
+@media (max-width: 480px) {
+    .cross-club-result { padding: 0.6rem 0.65rem; gap: 0.55rem; }
+    .cross-club-result-date { width: 42px; }
+    .cross-club-result-date .day { font-size: 1.2rem; }
+    .cross-club-result-teams { font-size: 0.85rem; }
+}
+
 .checkbox-wrap {
     display: inline-flex;
     align-items: center;
@@ -3326,36 +3497,42 @@ body[data-club="corinthians"] .ingresso.d {
     /* Mesmo enquadramento dos posts de "vai na Copa" */
 }
 .feed-content-meta-bolao {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.4rem;
     font-family: 'Oswald', sans-serif;
     font-size: 0.78rem;
     letter-spacing: 0.04em;
-    color: var(--ink);
+    /* Fundo claro independente do tema → texto escuro hardcodado */
+    color: #1a1000;
     margin-top: 0.4rem;
     text-transform: uppercase;
     font-weight: 700;
-    padding: 0.3rem 0.6rem;
+    padding: 0.4rem 0.7rem;
     background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
     border: 1px solid #d4a520;
     border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
 }
 .feed-content-meta-bolao .material-icons {
     font-size: 1rem;
     color: #a8791b;
+    flex-shrink: 0;
 }
 
 /* Dropdown trigger: "Ver palpites (N)" */
 .feed-palpite-toggle {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 0.35rem;
-    margin-top: 0.7rem;
-    padding: 0.5rem 0.9rem;
-    background: var(--bg-card);
-    border: 1px solid var(--ink-line);
-    color: var(--ink);
+    justify-content: flex-start;
+    gap: 0.5rem;
+    margin-top: 0.55rem;
+    padding: 0.55rem 0.85rem;
+    /* Contraste com a area is-copa (cream): botão branco com texto escuro */
+    background: #fff;
+    border: 1.5px solid #d4a520;
+    color: #1a1000;
     border-radius: 10px;
     cursor: pointer;
     font-family: 'Oswald', sans-serif;
@@ -3364,11 +3541,18 @@ body[data-club="corinthians"] .ingresso.d {
     letter-spacing: 0.06em;
     text-transform: uppercase;
     transition: all 150ms;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: 0 2px 6px rgba(212,165,32,0.12);
 }
 .feed-palpite-toggle:hover {
-    border-color: #d4a520;
     background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
-    color: #1a1000;
+    border-color: #a8791b;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(212,165,32,0.22);
+}
+.feed-palpite-toggle.is-open {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffe9a8 100%);
 }
 .feed-palpite-chev {
     font-size: 1.15rem !important;
@@ -3403,6 +3587,8 @@ body[data-club="corinthians"] .ingresso.d {
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(212,165,32,0.08);
     position: relative;
+    /* Força texto escuro mesmo em tema dark — fundo aqui é claro/creme */
+    color: #1a1000;
 }
 .feed-palpite-row-team {
     display: flex;
@@ -3412,7 +3598,7 @@ body[data-club="corinthians"] .ingresso.d {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
     font-size: 0.78rem;
-    color: var(--ink);
+    color: #1a1000; /* não usa var(--ink) — fundo é claro independente do tema */
     text-transform: uppercase;
 }
 .feed-palpite-row-team.home { justify-content: flex-end; text-align: right; }
@@ -9033,6 +9219,27 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         </div>
     </div>
 
+    <!-- Modal: Buscar jogo em outro clube (cross-club search) -->
+    <div class="modal-overlay" id="crossClubModal">
+        <div class="modal cross-club-modal">
+            <h2 data-i18n="app.cross_club.title">Marcar jogo de outro clube</h2>
+            <div class="meta" data-i18n="app.cross_club.meta">Pesquise pelo nome do time pra achar o jogo onde você esteve, mesmo que não seja do seu clube.</div>
+
+            <div class="cross-club-search-wrap">
+                <span class="material-icons cross-club-search-icon">search</span>
+                <input type="search" id="crossClubInput" placeholder="Ex: Flamengo, São Paulo, Maracanã..." data-i18n-attr="placeholder:app.cross_club.search_ph" autocomplete="off">
+            </div>
+
+            <div id="crossClubResults" class="cross-club-results">
+                <div class="cross-club-empty" data-i18n="app.cross_club.empty_initial">Comece digitando o nome de um time pra ver os jogos.</div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-secondary" id="crossClubClose" data-i18n="app.btn.close">Fechar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal: Compartilhar álbum (lista de troca) -->
     <div class="modal-overlay" id="albumShareModal">
         <div class="modal album-share-modal">
@@ -9499,11 +9706,16 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
         <div class="tab-panel active" id="tabCatalog">
             <div class="filter-bar">
-                <input type="search" id="search" placeholder="Buscar rival, campeonato, estádio...">
-                <select id="filterYear"><option value="">Todos os anos</option></select>
-                <label class="checkbox-wrap"><input type="checkbox" id="onlyMine"> Só os que fui</label>
+                <input type="search" id="search" placeholder="Buscar rival, campeonato, estádio..." data-i18n-attr="placeholder:app.catalog.search_ph">
+                <select id="filterYear"><option value="" data-i18n="app.catalog.all_years">Todos os anos</option></select>
+                <label class="checkbox-wrap"><input type="checkbox" id="onlyMine"> <span data-i18n="app.catalog.only_mine">Só os que fui</span></label>
             </div>
-            <div id="catalogList" class="games-grid"><div class="loading">Carregando jogos...</div></div>
+            <!-- Atalho pra marcar jogo de outro clube (ex: Pal-torcedor foi num Fla x Cor) -->
+            <button class="btn-cross-club" id="crossClubOpenBtn" type="button" title="Marca presença em jogo que não é do seu clube">
+                <span class="material-icons">add_circle_outline</span>
+                <span data-i18n="app.catalog.cross_club_btn">Marcar jogo de outro clube</span>
+            </button>
+            <div id="catalogList" class="games-grid"><div class="loading" data-i18n="app.catalog.loading">Carregando jogos...</div></div>
         </div>
 
         <div class="tab-panel" id="tabMine">
@@ -10596,6 +10808,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     let snapshot = null;
     let editingGame = null;
     let clubsList = [];
+    // Cache de jogos achados via cross-club search — pra openModal achar
+    // a row sem precisar de outro fetch quando user clica num resultado.
+    const crossClubCache = new Map();
 
     // ===============================================
     // Load
@@ -11293,9 +11508,21 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
     function openModal(gameId) {
         // Procura em allGames (clube do user) OU copaGames (Copa do Mundo)
+        // OU crossClubCache (resultado de cross-club search). Se nada achar,
+        // tenta fetch direto via /games/:id como fallback.
         const game = allGames.find(g => g.id === gameId)
-                  || (copaGames || []).find(g => g.id === gameId);
-        if (!game) return;
+                  || (copaGames || []).find(g => g.id === gameId)
+                  || crossClubCache.get(gameId);
+        if (!game) {
+            // Fallback async: busca o jogo e re-abre o modal
+            api(`/games/${gameId}`).then(g => {
+                if (g) {
+                    crossClubCache.set(g.id, g);
+                    openModal(g.id);
+                }
+            }).catch(err => alert('Erro: ' + err.message));
+            return;
+        }
         editingGame = game;
 
         document.getElementById('modalTitle').textContent = `${game.time_casa} × ${game.time_visitante}`;
@@ -15789,6 +16016,113 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     });
     document.getElementById('albumShareModal').addEventListener('click', (e) => {
         if (e.target.id === 'albumShareModal') document.getElementById('albumShareModal').classList.remove('show');
+    });
+
+    // ============================================================
+    // CROSS-CLUB SEARCH (marcar jogo de outro clube)
+    // ============================================================
+    let _crossClubDebounce = null;
+    let _crossClubReqSeq = 0;
+
+    function openCrossClubModal() {
+        document.getElementById('crossClubModal').classList.add('show');
+        const input = document.getElementById('crossClubInput');
+        input.value = '';
+        document.getElementById('crossClubResults').innerHTML =
+            `<div class="cross-club-empty">${escapeHtml(t('app.cross_club.empty_initial'))}</div>`;
+        // Pequeno delay pro modal aparecer antes de focar (anima melhor)
+        setTimeout(() => input.focus(), 100);
+    }
+
+    function closeCrossClubModal() {
+        document.getElementById('crossClubModal').classList.remove('show');
+    }
+
+    async function crossClubSearch(q) {
+        const list = document.getElementById('crossClubResults');
+        if (!q || q.trim().length < 2) {
+            list.innerHTML = `<div class="cross-club-empty">${escapeHtml(t('app.cross_club.empty_initial'))}</div>`;
+            return;
+        }
+        list.innerHTML = `<div class="cross-club-loading">${escapeHtml(t('app.cross_club.loading') || 'Buscando...')}</div>`;
+        const seq = ++_crossClubReqSeq;
+        try {
+            const url = `/games/search?include_other_clubs=1&q=${encodeURIComponent(q)}`;
+            const data = await api(url);
+            // Resposta atrasada de uma busca anterior — descarta
+            if (seq !== _crossClubReqSeq) return;
+            const games = data.games || [];
+            if (!games.length) {
+                list.innerHTML = `<div class="cross-club-empty">${escapeHtml(t('app.cross_club.no_results') || 'Nenhum jogo encontrado.')}</div>`;
+                return;
+            }
+            // Cacheia tudo pra openModal achar quando user clicar
+            for (const g of games) crossClubCache.set(g.id, g);
+            list.innerHTML = games.map(crossClubRenderResult).join('');
+            list.querySelectorAll('.cross-club-result').forEach(el => {
+                el.addEventListener('click', () => {
+                    const id = parseInt(el.dataset.gameId);
+                    closeCrossClubModal();
+                    openModal(id);
+                });
+            });
+        } catch (err) {
+            if (seq !== _crossClubReqSeq) return;
+            list.innerHTML = `<div class="cross-club-empty">${escapeHtml('Erro: ' + err.message)}</div>`;
+        }
+    }
+
+    function crossClubRenderResult(g) {
+        const dt = new Date(g.data);
+        const dia = String(dt.getUTCDate()).padStart(2, '0');
+        const mes = MESES_ABREV[dt.getUTCMonth()];
+        const ano = dt.getUTCFullYear();
+        const isCopa = g.catalog_is_tournament || /Copa do Mundo/i.test(g.campeonato || '');
+        const teams = `${escapeHtml(g.time_casa)} × ${escapeHtml(g.time_visitante)}`;
+        const placar = (g.gols_casa != null && g.gols_visitante != null)
+            ? ` · ${g.gols_casa}×${g.gols_visitante}`
+            : '';
+        const catalogTag = !isCopa
+            ? `<span class="cross-club-result-catalog"><span class="material-icons">shield</span>${escapeHtml(g.catalog_club_short || g.catalog_club_name || '')}</span>`
+            : `<span class="cross-club-result-catalog"><span class="material-icons">emoji_events</span>FIFA WC 2026</span>`;
+        const venue = g.estadio ? ` · ${escapeHtml(g.estadio)}` : '';
+        const statusOk = g.attendance_id && g.status_presenca === 'PRESENTE';
+        const statusEl = statusOk
+            ? `<div class="cross-club-result-status ok" title="Você já marcou presença"><span class="material-icons">check</span></div>`
+            : `<div class="cross-club-result-status" title="Click pra marcar"><span class="material-icons">add</span></div>`;
+        return `
+            <div class="cross-club-result" data-game-id="${g.id}">
+                <div class="cross-club-result-date">
+                    <div class="day">${dia}</div>
+                    <div class="mon">${escapeHtml(mes)} ${ano}</div>
+                </div>
+                <div class="cross-club-result-info">
+                    <div class="cross-club-result-teams">${teams}</div>
+                    <div class="cross-club-result-meta">
+                        ${catalogTag}<span>${escapeHtml(g.campeonato || '—')}${placar}${venue}</span>
+                    </div>
+                </div>
+                ${statusEl}
+            </div>
+        `;
+    }
+
+    document.getElementById('crossClubOpenBtn')?.addEventListener('click', openCrossClubModal);
+    document.getElementById('crossClubClose')?.addEventListener('click', closeCrossClubModal);
+    document.getElementById('crossClubModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'crossClubModal') closeCrossClubModal();
+    });
+    document.getElementById('crossClubInput')?.addEventListener('input', (e) => {
+        clearTimeout(_crossClubDebounce);
+        _crossClubDebounce = setTimeout(() => crossClubSearch(e.target.value), 300);
+    });
+    // Enter força busca imediata (flush do debounce)
+    document.getElementById('crossClubInput')?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            clearTimeout(_crossClubDebounce);
+            crossClubSearch(e.target.value);
+        }
     });
     document.getElementById('albumShareCopy').addEventListener('click', async () => {
         try {

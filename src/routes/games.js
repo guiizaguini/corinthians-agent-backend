@@ -102,19 +102,98 @@ router.get('/', async (req, res, next) => {
 });
 
 // =============================================================
+// GET /games/search?q=...&include_other_clubs=1
+// Busca com escopo configuravel:
+//  - default: filtra pelo clube do user (mesmo escopo do catalogo)
+//  - include_other_clubs=1: ignora club_id e busca em todos os clubes
+//    (pra um Pal-torcedor achar um jogo do Fla x Cor que ele foi).
+// Retorna ate 50 jogos com info do "catalogo de origem" (nome do clube
+// que possui a row) + status de presenca do user (se tiver).
+// Dedup logico: Cor x Pal existe em 2 rows; mostra a mais relevante:
+//  1) onde o user ja tem attendance > 2) clube do user > 3) qualquer
+// =============================================================
+router.get('/search', async (req, res, next) => {
+    try {
+        const q = String(req.query.q || '').trim();
+        if (q.length < 2) return res.json({ count: 0, games: [] });
+        const includeOther = req.query.include_other_clubs === '1' || req.query.include_other_clubs === 'true';
+        const like = `%${q}%`;
+
+        const conds = [`(unaccent(g.time_casa) ILIKE unaccent($1) OR unaccent(g.time_visitante) ILIKE unaccent($1) OR unaccent(g.campeonato) ILIKE unaccent($1) OR unaccent(g.estadio) ILIKE unaccent($1))`];
+        const params = [like];
+
+        if (!includeOther) {
+            params.push(req.user.club_id);
+            conds.push(`g.club_id = $${params.length}`);
+        }
+
+        params.push(req.user.id);
+        const userIdx = params.length;
+
+        const sql = `
+            SELECT
+                g.id, g.data, g.dia_semana, g.time_casa, g.time_visitante,
+                g.mando, g.campeonato, g.genero, g.estadio,
+                g.gols_casa, g.gols_visitante, g.resultado,
+                g.foi_classico, g.teve_penal, g.fase, g.titulo_conquistado,
+                g.autores_gols, g.gols_texto, g.publico_total,
+                g.club_id AS catalog_club_id,
+                cl.name AS catalog_club_name,
+                cl.short_name AS catalog_club_short,
+                cl.is_tournament AS catalog_is_tournament,
+                a.id AS attendance_id, a.status AS status_presenca,
+                a.setor, a.assento, a.valor_pago, a.observacoes
+            FROM games g
+            JOIN clubs cl ON cl.id = g.club_id
+            LEFT JOIN attendances a ON a.game_id = g.id AND a.user_id = $${userIdx}
+            WHERE ${conds.join(' AND ')}
+            ORDER BY g.data DESC, g.id DESC
+            LIMIT 200
+        `;
+        const { rows } = await query(sql, params);
+
+        // Dedup por (data, time_casa, time_visitante, genero) — Cor x Pal duplicado
+        // entre 2 catalogos vira 1 resultado. Prioridade: attendance > meu clube > qualquer.
+        const seen = new Map();
+        for (const g of rows) {
+            const key = `${g.data}|${g.time_casa}|${g.time_visitante}|${g.genero || ''}`;
+            const prev = seen.get(key);
+            if (!prev) { seen.set(key, g); continue; }
+            // Atual tem attendance e o anterior nao? Troca.
+            if (g.attendance_id && !prev.attendance_id) { seen.set(key, g); continue; }
+            if (!g.attendance_id && prev.attendance_id) continue;
+            // Senao, prefere catalogo do clube do user
+            if (g.catalog_club_id === req.user.club_id && prev.catalog_club_id !== req.user.club_id) {
+                seen.set(key, g);
+            }
+        }
+
+        const out = [...seen.values()].slice(0, 50);
+        res.json({ count: out.length, games: out });
+    } catch (err) { next(err); }
+});
+
+// =============================================================
 // GET /games/:id
+// Sem filtro de club_id — qualquer user logado consegue ver qualquer
+// jogo (pra suportar cross-club search). canUserAttendGame ainda
+// valida no POST /attendances.
 // =============================================================
 router.get('/:id', async (req, res, next) => {
     try {
         const { rows } = await query(
             `SELECT
                 g.*,
+                cl.name AS catalog_club_name,
+                cl.short_name AS catalog_club_short,
+                cl.is_tournament AS catalog_is_tournament,
                 a.id AS attendance_id, a.status AS status_presenca,
                 a.setor, a.assento, a.valor_pago, a.observacoes
              FROM games g
+             JOIN clubs cl ON cl.id = g.club_id
              LEFT JOIN attendances a ON a.game_id = g.id AND a.user_id = $1
-             WHERE g.id = $2 AND g.club_id = $3`,
-            [req.user.id, req.params.id, req.user.club_id]
+             WHERE g.id = $2`,
+            [req.user.id, req.params.id]
         );
         if (!rows.length) return res.status(404).json({ error: 'game_not_found' });
         res.json(rows[0]);

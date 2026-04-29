@@ -70,13 +70,13 @@ async function syncCompanions(attendanceId, ownerUserId, companionIds) {
     }
 }
 
-async function canUserAttendGame(gameId, userClubId) {
-    // Permite: game do clube do user OU de qualquer tournament (Copa, etc)
+async function canUserAttendGame(gameId /* , userClubId */) {
+    // Permite marcar presenca em QUALQUER jogo do catalogo (cross-club).
+    // Caso de uso: torcedor do Pal foi num Fla x Cor — usa o /games/search
+    // pra achar e marca aqui. So valida que o jogo existe (anti-orfao).
     const { rows } = await query(
-        `SELECT 1 FROM games g
-         JOIN clubs c ON c.id = g.club_id
-         WHERE g.id = $1 AND (c.id = $2 OR c.is_tournament = TRUE)`,
-        [gameId, userClubId]
+        `SELECT 1 FROM games WHERE id = $1`,
+        [gameId]
     );
     return rows.length > 0;
 }
