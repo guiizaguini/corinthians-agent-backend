@@ -11246,13 +11246,25 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             `<div class="empty">${t('app.empty.no_club_mine')}</div>`;
     }
 
+    // Decide se a barra superior (KPIs/carteirinha) deveria estar visivel.
+    // Default: so quando catalogo ou meus-ingressos estao ativos. Quando o user
+    // ta no perfil, copa, rede, feed etc, mantem escondida pra nao duplicar.
+    function topBarShouldShow() {
+        // Perfil aberto? Esconde tudo pra nao duplicar a barra.
+        const perfilEl = document.getElementById('perfilView');
+        if (perfilEl && perfilEl.style.display !== 'none') return false;
+        const activeTab = document.querySelector('.tab.active')?.dataset.tab;
+        return activeTab === 'catalog' || activeTab === 'mine';
+    }
+
     function renderKpis() {
         const g = snapshot.geral || {};
-        if (!g.jogos) {
-            document.getElementById('kpis').style.display = 'none';
+        const kpisEl = document.getElementById('kpis');
+        if (!g.jogos || !topBarShouldShow()) {
+            kpisEl.style.display = 'none';
             return;
         }
-        document.getElementById('kpis').style.display = '';
+        kpisEl.style.display = '';
         document.getElementById('kpiJogos').textContent = g.jogos;
         document.getElementById('kpiV').textContent = g.vitorias || 0;
         document.getElementById('kpiE').textContent = g.empates || 0;
@@ -12372,10 +12384,19 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 body: JSON.stringify({ count_all_games: newVal }),
             });
             user.count_all_games = !!updated.count_all_games;
-            // Refaz o snapshot pra dashboard refletir os novos numeros
+            // Refaz o snapshot pra refletir os novos numeros (dashboard E perfil)
             try {
                 snapshot = await api('/me/snapshot');
+                // renderKpis ja respeita topBarShouldShow (nao mostra a barra
+                // duplicada quando perfilView ta aberto). Mas precisa rodar pra
+                // ATUALIZAR os textos caso o user feche o perfil depois.
                 renderKpis();
+                // Se o user ta no perfil, renderiza os KPIs DELE (dentro do view)
+                const perfilEl = document.getElementById('perfilView');
+                if (perfilEl && perfilEl.style.display !== 'none') {
+                    renderPerfilHero();
+                    loadPerfilAchievements();
+                }
             } catch (_) { /* nao bloqueia o toggle */ }
         } catch (err) {
             // Reverte o toggle em caso de erro
@@ -12562,7 +12583,12 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const name = (user.display_name || user.email?.split('@')[0] || 'Torcedor').toUpperCase();
         const club = user.club_name ? user.club_name.toUpperCase() : 'SEM CLUBE';
 
-        document.getElementById('cartBar').style.display = '';
+        // Mesma logica de topBarShouldShow: se o user ta no perfil ou outra
+        // view que nao usa a barra, NAO mostra (evita duplicacao). Mas continua
+        // populando os dados do modal-cheia abaixo, ja que ele pode ser aberto
+        // de qualquer view (ex: pelo botao no proprio perfil).
+        const cartBarEl = document.getElementById('cartBar');
+        cartBarEl.style.display = topBarShouldShow() ? '' : 'none';
         document.getElementById('cartAvatar').textContent = initials;
         document.getElementById('cartNum').textContent = `SÓCIO ${num}`;
         document.getElementById('cartName').textContent = name;
