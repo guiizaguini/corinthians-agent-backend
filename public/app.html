@@ -7214,10 +7214,15 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     position: sticky;
     top: 1rem;
     max-height: calc(100vh - 2rem);
-    overflow: hidden;
+    /* Permite scroll interno: ranking + regras + tabela dos grupos juntos */
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
     display: flex;
     flex-direction: column;
 }
+.bolao-ranking::-webkit-scrollbar { width: 6px; }
+.bolao-ranking::-webkit-scrollbar-thumb { background: rgba(212,165,32,0.35); border-radius: 3px; }
 .bolao-ranking h3 {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
@@ -7530,6 +7535,133 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     color: #a8791b;
     font-size: 0.9rem;
     margin-right: 0.2rem;
+}
+
+/* ===== Tabela dos Grupos da Copa (dentro do aside do ranking) ===== */
+.bolao-grupos {
+    border-top: 1px dashed var(--wc-line);
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+}
+.bolao-grupos-head {
+    padding: 0.85rem 1.2rem 0.5rem;
+}
+.bolao-grupos-head h3 {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: #1a1000;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+.bolao-grupos-head h3 .material-icons {
+    font-size: 1rem;
+    color: #d4a520;
+}
+#bolaoGruposList { padding: 0 1rem 1rem; display: flex; flex-direction: column; gap: 0.85rem; }
+
+.bolao-grupo-card {
+    background: linear-gradient(180deg, #ffffff 0%, #fdfaf0 100%);
+    border: 1px solid var(--wc-line);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(20,15,10,0.05);
+}
+.bolao-grupo-card-head {
+    padding: 0.45rem 0.75rem;
+    background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+    border-bottom: 1px solid #d4a520;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #1a1000;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.bolao-grupo-card-head .grupo-letra {
+    background: #d4a520;
+    color: #1a1000;
+    width: 18px; height: 18px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+.bolao-grupo-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Oswald', sans-serif;
+}
+.bolao-grupo-table thead th {
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #6a5530;
+    font-weight: 700;
+    padding: 0.4rem 0.3rem;
+    text-align: center;
+    background: rgba(212, 165, 32, 0.06);
+    border-bottom: 1px solid rgba(212,165,32,0.2);
+    white-space: nowrap;
+}
+.bolao-grupo-table thead th.col-time { text-align: left; padding-left: 0.5rem; }
+.bolao-grupo-table tbody td {
+    font-size: 0.74rem;
+    color: #1a1000;
+    padding: 0.4rem 0.25rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(20,15,10,0.05);
+    white-space: nowrap;
+}
+.bolao-grupo-table tbody tr:last-child td { border-bottom: none; }
+.bolao-grupo-table tbody td.col-time {
+    text-align: left;
+    padding-left: 0.5rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 0.7rem;
+}
+/* Top 2 (vagas oitavas direto) — fundo verde sutil */
+.bolao-grupo-table tbody tr.qualifica td { background: rgba(37, 180, 84, 0.08); }
+.bolao-grupo-table tbody tr.qualifica td:first-child { box-shadow: inset 3px 0 0 #25b454; }
+/* Top 3 (zona repescagem) — fundo amarelo sutil */
+.bolao-grupo-table tbody tr.repescagem td { background: rgba(212, 165, 32, 0.08); }
+.bolao-grupo-table tbody tr.repescagem td:first-child { box-shadow: inset 3px 0 0 #d4a520; }
+.bolao-grupo-table .col-pos {
+    width: 18px;
+    color: #6a5530;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+.bolao-grupo-table .grupo-flag {
+    width: 16px; height: 12px;
+    object-fit: cover;
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    vertical-align: middle;
+    margin-right: 0.4rem;
+}
+.bolao-grupo-table tbody td.col-pts {
+    font-weight: 700;
+    color: #1a1000;
+    background: rgba(212, 165, 32, 0.05);
+}
+/* Mobile-friendly: tabela mais compacta em telas estreitas */
+@media (max-width: 480px) {
+    .bolao-grupo-table thead th { font-size: 0.5rem; padding: 0.3rem 0.2rem; }
+    .bolao-grupo-table tbody td { font-size: 0.66rem; padding: 0.3rem 0.18rem; }
+    .bolao-grupo-table tbody td.col-time { font-size: 0.62rem; }
+    .bolao-grupo-table .grupo-flag { width: 14px; height: 10px; margin-right: 0.25rem; }
 }
 
 /* Toggle mobile do ranking */
@@ -10602,7 +10734,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                             <div id="bolaoJogosList"><div class="loading" data-i18n="app.bolao.loading_jogos">Carregando jogos...</div></div>
                         </section>
 
-                        <!-- Ranking -->
+                        <!-- Ranking + Tabela dos Grupos da Copa -->
                         <aside class="bolao-ranking" id="bolaoRanking">
                             <h3><span class="material-icons">emoji_events</span> <span data-i18n="app.bolao.ranking_title">Ranking</span></h3>
                             <div id="bolaoRankingList"><div class="loading" data-i18n="app.bolao.loading">Carregando...</div></div>
@@ -10619,6 +10751,14 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                                     <li><b data-i18n="app.bolao.regras_empate">Empate correto</b><span><em id="ptsEmpate">5</em> <span data-i18n="app.bolao.regras_pts">pts</span></span></li>
                                 </ul>
                             </details>
+
+                            <!-- Tabela dos grupos da Copa — atualiza conforme admin lanca resultados -->
+                            <section class="bolao-grupos">
+                                <header class="bolao-grupos-head">
+                                    <h3><span class="material-icons">table_chart</span> <span data-i18n="app.bolao.grupos_title">Grupos da Copa</span></h3>
+                                </header>
+                                <div id="bolaoGruposList"><div class="loading" data-i18n="app.bolao.grupos_loading">Carregando tabela...</div></div>
+                            </section>
                         </aside>
                     </div>
                 </div>
@@ -14980,12 +15120,86 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             document.getElementById('ptsVencedor').textContent = bolaoState.pontos.VENCEDOR;
             document.getElementById('ptsEmpate').textContent = bolaoState.pontos.EMPATE_CORRETO;
 
-            // Carrega jogos + ranking em paralelo
-            await Promise.all([bolaoLoadJogos(id), bolaoLoadRanking(id)]);
+            // Carrega jogos + ranking + tabela dos grupos em paralelo
+            await Promise.all([
+                bolaoLoadJogos(id),
+                bolaoLoadRanking(id),
+                bolaoLoadGruposTabela(),
+            ]);
         } catch (err) {
             alert('Erro ao carregar bolão: ' + err.message);
             bolaoShowView('meus');
         }
+    }
+
+    // ============================================================
+    // Tabela dos Grupos da Copa — atualiza com base nos resultados
+    // que o admin lanca em /admin/games. Render compacto no aside.
+    // ============================================================
+    async function bolaoLoadGruposTabela() {
+        const list = document.getElementById('bolaoGruposList');
+        if (!list) return;
+        try {
+            const data = await api('/tournaments/copa-do-mundo-2026/standings');
+            const groups = data.groups || {};
+            const letras = Object.keys(groups).sort();
+            if (!letras.length) {
+                list.innerHTML = `<div class="empty">${escapeHtml(t('app.bolao.grupos_empty') || 'Nenhum grupo carregado.')}</div>`;
+                return;
+            }
+            list.innerHTML = letras.map(letra => bolaoRenderGrupo(letra, groups[letra])).join('');
+        } catch (err) {
+            list.innerHTML = `<div class="empty">Erro: ${escapeHtml(err.message)}</div>`;
+        }
+    }
+
+    function bolaoRenderGrupo(letra, times) {
+        // Top 2 = qualifica direto pra mata-mata; 3o = repescagem (8 melhores
+        // 3os colocados avancam); 4o = eliminado.
+        const rows = (times || []).map(time => {
+            const cls = time.pos <= 2 ? 'qualifica' : (time.pos === 3 ? 'repescagem' : '');
+            const flagUrl = time.flag_iso ? `https://flagcdn.com/w40/${time.flag_iso}.png` : '';
+            const flagHtml = flagUrl
+                ? `<img class="grupo-flag" src="${flagUrl}" alt="" loading="lazy">`
+                : '';
+            const nomeTraduzido = (window.CN_I18N && window.CN_I18N.tTeam)
+                ? window.CN_I18N.tTeam(time.name) : time.name;
+            return `
+                <tr class="${cls}">
+                    <td class="col-pos">${time.pos}</td>
+                    <td class="col-time">${flagHtml}${escapeHtml(nomeTraduzido)}</td>
+                    <td>${time.pj}</td>
+                    <td>${time.v}</td>
+                    <td>${time.e}</td>
+                    <td>${time.d}</td>
+                    <td>${time.sg > 0 ? '+' : ''}${time.sg}</td>
+                    <td class="col-pts">${time.pts}</td>
+                </tr>
+            `;
+        }).join('');
+        return `
+            <article class="bolao-grupo-card">
+                <header class="bolao-grupo-card-head">
+                    <span class="grupo-letra">${escapeHtml(letra)}</span>
+                    <span data-i18n="app.bolao.grupos_card_label">Grupo ${escapeHtml(letra)}</span>
+                </header>
+                <table class="bolao-grupo-table">
+                    <thead>
+                        <tr>
+                            <th class="col-pos">#</th>
+                            <th class="col-time" data-i18n="app.bolao.grupos_th_team">Equipe</th>
+                            <th title="Partidas Jogadas">PJ</th>
+                            <th title="Vitórias">V</th>
+                            <th title="Empates">E</th>
+                            <th title="Derrotas">D</th>
+                            <th title="Saldo de Gols">SG</th>
+                            <th class="col-pts" title="Pontos">Pts</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            </article>
+        `;
     }
 
     async function bolaoLoadJogos(id) {
