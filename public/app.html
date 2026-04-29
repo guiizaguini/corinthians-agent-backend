@@ -9440,8 +9440,12 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
            CSS e os filhos (toggle, sidebar, feed) pegam soh largura do
            conteudo, deixando espaco vazio na direita. */
         align-items: stretch;
+        width: 100%;
     }
-    .rede-toggle { display: inline-flex; order: 1; }
+    /* display: flex (em vez de inline-flex) + width: 100% explicito —
+       inline-flex tem comportamento ambiguo quando esta dentro de flex
+       column com stretch. Forca a estiquar pra largura cheia. */
+    .rede-toggle { display: flex; width: 100%; order: 1; }
     /* Quando aberta, o toggle "encosta" no painel: bordas inferiores planas,
        sombra desce. Vira um único componente acordeão. */
     .rede-toggle.open {
@@ -9468,9 +9472,18 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         overflow-y: visible;
         max-height: none;
         position: static;
+        /* Width 100% explicito + box-sizing pra padding nao puxar largura
+           pra fora. Sem esses dois, alguma combinacao herdada (display
+           none, position static) pode deixar o painel mais estreito. */
+        width: 100%;
+        box-sizing: border-box;
     }
     .rede-sidebar.open { display: flex; }
-    .rede-main { order: 3; margin-top: 0.5rem; }
+    .rede-main {
+        order: 3;
+        margin-top: 0.5rem;
+        width: 100%;
+    }
     /* Search bar dentro do painel: mantém ritmo */
     .rede-search-bar { margin-bottom: 0.25rem; margin-top: 0; }
     /* Cada .rede-section vira uma "linha" do painel, separada por divisor
