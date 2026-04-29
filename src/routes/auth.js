@@ -361,13 +361,15 @@ router.patch('/me', requireUser, async (req, res, next) => {
                        COALESCE(count_all_games, FALSE) AS count_all_games`,
             values
         );
-        // Invalida cache de snapshot/achievements pra refletir a mudança imediata
-        // (countAll afeta os totais — sem invalidar, dashboard mostra estado antigo)
+        // Invalida cache de snapshot pra refletir a mudança imediata
+        // (count_all_games afeta jogos_outros_times — sem invalidar, dashboard
+        // mostra estado antigo). Conquistas usam apenas jogos do clube e nao
+        // sao afetadas pelo flag, mas invalidamos por seguranca em mudancas
+        // de display_name/club_slug/username tambem.
         const { cache } = await import('../utils/cache.js');
-        cache.invalidate(`snapshot:${req.user.id}:${req.user.club_id || 'noclub'}:club`);
-        cache.invalidate(`snapshot:${req.user.id}:${req.user.club_id || 'noclub'}:all`);
-        cache.invalidate(`achievements:${req.user.id}:${req.user.club_id}:club`);
-        cache.invalidate(`achievements:${req.user.id}:${req.user.club_id}:all`);
+        cache.invalidatePrefix(`snapshot:${req.user.id}`);
+        cache.invalidatePrefix(`achievements:${req.user.id}`);
+        cache.invalidatePrefix(`games:${req.user.id}`);
         res.json({ user: rows[0] });
     } catch (err) { next(err); }
 });

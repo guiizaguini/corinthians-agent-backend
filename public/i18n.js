@@ -184,6 +184,7 @@
             'app.kpi.losses': 'Derrotas',
             'app.kpi.win_rate': 'Aproveitamento',
             'app.kpi.spent': 'Gasto',
+            'app.kpi.others': 'Outros times',
             'app.kpi.no_data': 'Marca seu primeiro jogo pra ver suas estatísticas aqui.',
 
             // ====== APP — CATALOG / CROSS-CLUB SEARCH ======
@@ -626,6 +627,7 @@
             'app.kpi.losses': 'Losses',
             'app.kpi.win_rate': 'Win rate',
             'app.kpi.spent': 'Spent',
+            'app.kpi.others': 'Other clubs',
             'app.kpi.no_data': 'Mark your first match to see your stats here.',
 
             'app.catalog.search_ph': 'Search opponent, competition, stadium...',
@@ -1054,6 +1056,7 @@
             'app.kpi.losses': 'Derrotas',
             'app.kpi.win_rate': 'Rendimiento',
             'app.kpi.spent': 'Gastado',
+            'app.kpi.others': 'Otros clubes',
             'app.kpi.no_data': 'Marcá tu primer partido para ver tus estadísticas acá.',
 
             'app.catalog.search_ph': 'Buscar rival, campeonato, estadio...',

@@ -16,18 +16,16 @@ const ensureUserAchievementsTable = bootstrapSchema;
  */
 const router = express.Router();
 
-// Compartilha os filtros "jogos que o user efetivamente foi".
-// user_id é $1; club_id é $2 quando count_all=false, NULL+ignorado quando true.
-// CLUB_AND é injetado por router pra alternar entre "só o meu time" (default)
-// e "qualquer attendance" (count_all_games=true via opt-in no perfil).
-function whereJogosPresente(countAll) {
-    return `
-        a.user_id = $1
-        AND a.status = 'PRESENTE'
-        ${countAll ? '' : 'AND g.club_id = $2'}
-        AND g.resultado IS NOT NULL
-    `;
-}
+// Filtros padrão pra "jogos que o user efetivamente foi" — SEMPRE limitado
+// ao clube do user (V/E/D/aproveitamento só fazem sentido pro time do user).
+// Cross-club games (Pal-torcedor que foi num Fla x Cor) ficam num contador
+// separado `jogos_outros_times`, calculado apenas quando count_all_games=true.
+const WHERE_PRESENTE = `
+    a.user_id = $1
+    AND a.status = 'PRESENTE'
+    AND g.club_id = $2
+    AND g.resultado IS NOT NULL
+`;
 
 // =============================================================
 // GET /me/snapshot — tudo que o dashboard precisa, numa chamada só
@@ -36,18 +34,11 @@ router.get('/snapshot', async (req, res, next) => {
     try {
         const uid = req.user.id;
         const cid = req.user.club_id;
-        const countAll = req.user.count_all_games === true;
 
-        // Se countAll: stats incluem TODAS as attendances (Pal torcedor que foi
-        // num Fla x Cor entra na contagem). Default (false): só jogos do clube
-        // do user. JOIN clubs c continua sendo "clube do GAME row" — mas as
-        // estatisticas de mando/gols-pro/contra ficam relativas a c (do dono
-        // da row), o que e fuzzy pra games sem o clube do user. Trade-off
-        // aceitavel pra opt-in.
-        const CLUB_FILTER_AND = countAll ? '' : 'AND g.club_id = $2';
-        const WHERE_PRESENTE = whereJogosPresente(countAll);
-
-        const cacheKey = `snapshot:${uid}:${cid || 'noclub'}:${countAll ? 'all' : 'club'}`;
+        // Cache simples — snapshot agora SEMPRE inclui os 2 grupos (clube +
+        // outros times). O frontend decide o que renderizar com base no
+        // user.count_all_games. Sem precisar de cache separado por flag.
+        const cacheKey = `snapshot:${uid}:${cid || 'noclub'}`;
         const cached = cache.get(cacheKey);
         if (cached) return res.json(cached);
 
@@ -64,6 +55,7 @@ router.get('/snapshot', async (req, res, next) => {
             classicos,
             all_games,
             club_info,
+            jogos_outros_times,
         ] = await Promise.all([
             query(`
                 SELECT
@@ -160,7 +152,7 @@ router.get('/snapshot', async (req, res, next) => {
                 FROM attendances a
                 JOIN games g ON g.id = a.game_id
                 WHERE a.user_id = $1 AND a.status = 'PRESENTE'
-                  ${CLUB_FILTER_AND} AND g.resultado IS NOT NULL
+                  AND g.club_id = $2 AND g.resultado IS NOT NULL
                 GROUP BY g.estadio
                 ORDER BY jogos DESC
             `, [uid, cid]),
@@ -175,7 +167,7 @@ router.get('/snapshot', async (req, res, next) => {
                     ROUND(AVG(a.valor_pago) FILTER (WHERE a.valor_pago > 0), 2) AS ticket_medio
                 FROM attendances a
                 JOIN games g ON g.id = a.game_id
-                WHERE a.user_id = $1 AND a.status = 'PRESENTE' ${CLUB_FILTER_AND}
+                WHERE a.user_id = $1 AND a.status = 'PRESENTE' AND g.club_id = $2
                   AND a.setor IS NOT NULL AND a.setor <> ''
                 GROUP BY a.setor
                 ORDER BY jogos DESC
@@ -191,7 +183,7 @@ router.get('/snapshot', async (req, res, next) => {
                 FROM attendances a
                 JOIN games g ON g.id = a.game_id
                 JOIN clubs c ON c.id = g.club_id
-                WHERE a.user_id = $1 ${CLUB_FILTER_AND} AND c.is_tournament = FALSE
+                WHERE a.user_id = $1 AND g.club_id = $2 AND c.is_tournament = FALSE
             `, [uid, cid]),
 
             query(`
@@ -204,7 +196,7 @@ router.get('/snapshot', async (req, res, next) => {
                     MAX(a.valor_pago) AS ingresso_mais_caro
                 FROM attendances a
                 JOIN games g ON g.id = a.game_id
-                WHERE a.user_id = $1 ${CLUB_FILTER_AND}
+                WHERE a.user_id = $1 AND g.club_id = $2
                   AND a.valor_pago IS NOT NULL AND a.valor_pago > 0
                 GROUP BY ano
                 ORDER BY ano
@@ -220,7 +212,7 @@ router.get('/snapshot', async (req, res, next) => {
                 FROM attendances a
                 JOIN games g ON g.id = a.game_id
                 JOIN clubs c ON c.id = g.club_id
-                WHERE a.user_id = $1 AND a.status = 'PRESENTE' ${CLUB_FILTER_AND}
+                WHERE a.user_id = $1 AND a.status = 'PRESENTE' AND g.club_id = $2
                   AND g.resultado = 'V' AND g.gols_casa IS NOT NULL
                 ORDER BY ABS(g.gols_casa - g.gols_visitante) DESC, g.data DESC
                 LIMIT 10
@@ -234,7 +226,7 @@ router.get('/snapshot', async (req, res, next) => {
                 FROM attendances a
                 JOIN games g ON g.id = a.game_id
                 JOIN clubs c ON c.id = g.club_id
-                WHERE a.user_id = $1 AND a.status = 'PRESENTE' ${CLUB_FILTER_AND}
+                WHERE a.user_id = $1 AND a.status = 'PRESENTE' AND g.club_id = $2
                   AND g.foi_classico = TRUE
                 ORDER BY g.data DESC
             `, [uid, cid]),
@@ -254,7 +246,7 @@ router.get('/snapshot', async (req, res, next) => {
                 FROM attendances a
                 JOIN games g ON g.id = a.game_id
                 JOIN clubs c ON c.id = g.club_id
-                WHERE a.user_id = $1 ${CLUB_FILTER_AND}
+                WHERE a.user_id = $1 AND g.club_id = $2
                 ORDER BY g.data DESC
             `, [uid, cid]),
 
@@ -263,10 +255,35 @@ router.get('/snapshot', async (req, res, next) => {
                  FROM clubs WHERE id = $1`,
                 [cid]
             ),
+
+            // Jogos de OUTROS times (attendances PRESENTE em jogos cujo club_id
+            // <> meu club_id E nao e tournament). Cross-club tracking — counts
+            // sempre, mas o frontend so renderiza quando count_all_games=true.
+            // Retorna o array de jogos pra eventual listagem separada.
+            query(`
+                SELECT
+                    g.id, g.data, g.time_casa, g.time_visitante,
+                    g.gols_casa, g.gols_visitante, g.resultado,
+                    g.campeonato, g.estadio,
+                    a.status AS status_presenca,
+                    a.setor, a.valor_pago,
+                    cl.name AS catalog_club_name, cl.short_name AS catalog_club_short
+                FROM attendances a
+                JOIN games g ON g.id = a.game_id
+                JOIN clubs cl ON cl.id = g.club_id
+                WHERE a.user_id = $1
+                  AND a.status = 'PRESENTE'
+                  AND g.club_id <> $2
+                  AND cl.is_tournament = FALSE
+                ORDER BY g.data DESC
+            `, [uid, cid]),
         ]);
 
         const g = geral.rows[0] ?? {};
         g.saldo_gols = (parseInt(g.gols_pro) || 0) - (parseInt(g.gols_contra) || 0);
+        // Cross-club: jogos onde o user marcou presenca mas o time dele nao jogou.
+        // Sempre calcula, frontend so exibe quando count_all_games=true.
+        g.jogos_outros_times = jogos_outros_times.rows.length;
 
         const payload = {
             club: club_info.rows[0] ?? null,
@@ -288,6 +305,7 @@ router.get('/snapshot', async (req, res, next) => {
             top_goleadas: top_goleadas.rows,
             classicos: classicos.rows,
             jogos: all_games.rows,
+            jogos_outros_times: jogos_outros_times.rows,
             ts: new Date().toISOString(),
         };
         cache.set(cacheKey, payload, 5 * 60 * 1000); // 5 minutos
@@ -297,10 +315,11 @@ router.get('/snapshot', async (req, res, next) => {
 
 // Helper: monta o objeto `stats` que o catálogo de conquistas consome.
 // Extraído pra ser reusado pelos endpoints /achievements e /achievements/pending.
-// countAll=true mantém o opt-in cross-club do snapshot consistente nas conquistas
-// (sem isso, conquistas usam só games do clube e desencontrariam do dashboard).
-async function fetchUserStats(uid, cid, countAll = false) {
-    const CLUB_AND = countAll ? '' : 'AND g.club_id = $2';
+// Conquistas SEMPRE usam apenas jogos do clube do user (V/E/D/aproveitamento
+// só fazem sentido pro time dele). Cross-club nao influencia conquistas pra
+// nao distorcer (Pal-torcedor que foi num Cor x Fla nao deve ganhar conquista
+// "X vitorias do Cor"). countAll é ignorado aqui de proposito.
+async function fetchUserStats(uid, cid /* , countAll = false */) {
     const [agg, notas, amigos, companions] = await Promise.all([
         query(`
             SELECT
@@ -320,7 +339,7 @@ async function fetchUserStats(uid, cid, countAll = false) {
             JOIN games g ON g.id = a.game_id
             WHERE a.user_id = $1
               AND a.status = 'PRESENTE'
-              ${CLUB_AND}
+              AND g.club_id = $2
               AND g.resultado IS NOT NULL
         `, [uid, cid]),
         query('SELECT COUNT(*)::int AS n FROM notes WHERE user_id = $1', [uid]),
@@ -399,11 +418,11 @@ router.get('/achievements', async (req, res, next) => {
             });
         }
 
-        const cacheKey = `achievements:${uid}:${cid}:${req.user.count_all_games ? 'all' : 'club'}`;
+        const cacheKey = `achievements:${uid}:${cid}`;
         const cached = cache.get(cacheKey);
         if (cached) return res.json(cached);
 
-        const stats = await fetchUserStats(uid, cid, req.user.count_all_games === true);
+        const stats = await fetchUserStats(uid, cid);
         const achievements = computeAchievements(stats);
 
         // Sincroniza unlocks no DB (silently — esse endpoint não é a porta de
@@ -430,16 +449,13 @@ router.get('/achievements/pending', async (req, res, next) => {
         if (!cid) return res.json({ pending: [] });
 
         // Recomputa do zero (não usa cache pra captar unlocks novos)
-        const stats = await fetchUserStats(uid, cid, req.user.count_all_games === true);
+        const stats = await fetchUserStats(uid, cid);
         const achievements = computeAchievements(stats);
         const newIds = await syncUnlockedAchievements(uid, achievements);
 
         // Se houve novos unlocks, invalida o cache de /achievements pra perfil
         // não mostrar estado antigo na próxima abertura
-        if (newIds.length) {
-            cache.invalidate(`achievements:${uid}:${cid}:club`);
-            cache.invalidate(`achievements:${uid}:${cid}:all`);
-        }
+        if (newIds.length) cache.invalidate(`achievements:${uid}:${cid}`);
 
         // Lista todas as desbloqueadas ainda não vistas (não só as recém criadas)
         // - seen_at IS NULL → ainda no sino (badge persiste)

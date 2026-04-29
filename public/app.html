@@ -10015,6 +10015,11 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             <div class="kpi"><div class="kpi-label" data-i18n="app.kpi.losses">Derrotas</div><div class="kpi-value d" id="kpiD">0</div></div>
             <div class="kpi"><div class="kpi-label" data-i18n="app.kpi.win_rate">Aprov.</div><div class="kpi-value" id="kpiApr">—</div></div>
             <div class="kpi"><div class="kpi-label" data-i18n="app.kpi.spent">Gasto total</div><div class="kpi-value" id="kpiGasto">R$ 0</div></div>
+            <!-- KPI cross-club: visivel SO quando count_all_games=true e jogos_outros_times > 0 -->
+            <div class="kpi" id="kpiOutrosWrap" style="display:none;">
+                <div class="kpi-label" data-i18n="app.kpi.others">Outros times</div>
+                <div class="kpi-value" id="kpiOutros">0</div>
+            </div>
         </section>
 
         <div class="tabs">
@@ -10153,6 +10158,10 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 <div class="kpi"><div class="kpi-label">Derrotas</div><div class="kpi-value d" id="perfilKpiD">0</div></div>
                 <div class="kpi"><div class="kpi-label">Aprov.</div><div class="kpi-value" id="perfilKpiApr">—</div></div>
                 <div class="kpi"><div class="kpi-label">Conquistas</div><div class="kpi-value" id="perfilKpiConq">0</div></div>
+                <div class="kpi" id="perfilKpiOutrosWrap" style="display:none;">
+                    <div class="kpi-label" data-i18n="app.kpi.others">Outros times</div>
+                    <div class="kpi-value" id="perfilKpiOutros">0</div>
+                </div>
             </section>
 
             <!-- Preferencias do user -->
@@ -11272,6 +11281,15 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         document.getElementById('kpiApr').textContent = g.aproveitamento_pct != null ? `${g.aproveitamento_pct}%` : '—';
         const gasto = snapshot.gastos?.total?.gasto_total || 0;
         document.getElementById('kpiGasto').textContent = `R$ ${Number(gasto).toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:0})}`;
+        // KPI de outros times: aparece apenas se opt-in e tem >= 1 jogo cross-club
+        const outros = g.jogos_outros_times || 0;
+        const outrosWrap = document.getElementById('kpiOutrosWrap');
+        if (user.count_all_games && outros > 0) {
+            outrosWrap.style.display = '';
+            document.getElementById('kpiOutros').textContent = outros;
+        } else {
+            outrosWrap.style.display = 'none';
+        }
     }
 
     function populateYears() {
@@ -12444,6 +12462,16 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             document.getElementById('perfilKpiE').textContent = g.empates || 0;
             document.getElementById('perfilKpiD').textContent = g.derrotas || 0;
             document.getElementById('perfilKpiApr').textContent = g.aproveitamento_pct != null ? g.aproveitamento_pct + '%' : '—';
+            const outros = g.jogos_outros_times || 0;
+            const outrosWrap = document.getElementById('perfilKpiOutrosWrap');
+            if (outrosWrap) {
+                if (user.count_all_games && outros > 0) {
+                    outrosWrap.style.display = '';
+                    document.getElementById('perfilKpiOutros').textContent = outros;
+                } else {
+                    outrosWrap.style.display = 'none';
+                }
+            }
         }
     }
 
