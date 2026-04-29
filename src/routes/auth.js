@@ -29,6 +29,7 @@ const UpdateMeSchema = z.object({
     display_name: z.string().min(1).max(80).optional(),
     club_slug: z.string().min(1).max(40).nullable().optional(),
     username: z.string().regex(/^[a-z0-9_.]{3,30}$/i, 'use letras/números/_/., 3 a 30').nullable().optional(),
+    count_all_games: z.boolean().optional(),
 });
 
 const LoginSchema = z.object({
@@ -294,6 +295,7 @@ router.get('/me', requireUser, async (req, res, next) => {
             `SELECT u.id, u.email, u.username, u.display_name, u.club_id, u.is_admin, u.created_at,
                     (u.password_hash IS NOT NULL AND u.password_hash <> '') AS has_password,
                     (u.google_sub IS NOT NULL) AS has_google,
+                    COALESCE(u.count_all_games, FALSE) AS count_all_games,
                     c.slug AS club_slug, c.name AS club_name, c.short_name AS club_short,
                     c.primary_color, c.secondary_color
              FROM users u
@@ -314,10 +316,15 @@ router.patch('/me', requireUser, async (req, res, next) => {
         if (!parsed.success) {
             return res.status(400).json({ error: 'validation_failed' });
         }
-        const { display_name, club_slug, username } = parsed.data;
+        const { display_name, club_slug, username, count_all_games } = parsed.data;
 
         const fields = [];
         const values = [];
+
+        if (count_all_games !== undefined) {
+            values.push(count_all_games);
+            fields.push(`count_all_games = $${values.length}`);
+        }
 
         if (display_name !== undefined) {
             values.push(display_name);
@@ -350,9 +357,17 @@ router.patch('/me', requireUser, async (req, res, next) => {
         const { rows } = await query(
             `UPDATE users SET ${fields.join(', ')}
              WHERE id = $${values.length}
-             RETURNING id, email, username, display_name, club_id, is_admin`,
+             RETURNING id, email, username, display_name, club_id, is_admin,
+                       COALESCE(count_all_games, FALSE) AS count_all_games`,
             values
         );
+        // Invalida cache de snapshot/achievements pra refletir a mudança imediata
+        // (countAll afeta os totais — sem invalidar, dashboard mostra estado antigo)
+        const { cache } = await import('../utils/cache.js');
+        cache.invalidate(`snapshot:${req.user.id}:${req.user.club_id || 'noclub'}:club`);
+        cache.invalidate(`snapshot:${req.user.id}:${req.user.club_id || 'noclub'}:all`);
+        cache.invalidate(`achievements:${req.user.id}:${req.user.club_id}:club`);
+        cache.invalidate(`achievements:${req.user.id}:${req.user.club_id}:all`);
         res.json({ user: rows[0] });
     } catch (err) { next(err); }
 });

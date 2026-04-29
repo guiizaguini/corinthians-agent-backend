@@ -972,7 +972,11 @@ main {
     flex-shrink: 0;
     pointer-events: none;
 }
-.cross-club-search-wrap input {
+/* Especificidade alta pra vencer .modal input (linha ~2549 abaixo) que
+   tem (0,1,1) e ganharia por estar later no file. .modal .cross-club...
+   eh (0,2,1) e bate. */
+.cross-club-search-wrap input,
+.modal .cross-club-search-wrap input {
     flex: 1;
     min-width: 0;
     /* Sem border/bg proprios — herdam visualmente do wrap. Sem padding-left */
@@ -983,7 +987,11 @@ main {
     font-family: 'Oswald', sans-serif;
     font-size: 0.9rem;
     outline: none;
+    width: auto;
+    border-radius: 0;
+    box-shadow: none;
 }
+.modal .cross-club-search-wrap input:focus { border: none; box-shadow: none; }
 /* Remove o "X" nativo de input[type=search] no Chrome/Edge — fica feio
    sobreposto e a UI ja tem o close do modal pra abandonar a busca */
 .cross-club-search-wrap input[type="search"]::-webkit-search-cancel-button {
@@ -8319,6 +8327,86 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
    =============================================================== */
 #perfilView { position: relative; }
 
+/* Preferências (toggles) */
+.perfil-prefs {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--ink-line);
+}
+.perfil-pref-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.15rem;
+    background: var(--paper-soft);
+    border: 1px solid var(--ink-line);
+    border-radius: 12px;
+    margin-top: 0.5rem;
+}
+.perfil-pref-info { flex: 1; min-width: 0; }
+.perfil-pref-title {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.3rem;
+}
+.perfil-pref-desc {
+    font-family: 'SN Pro', sans-serif;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    line-height: 1.45;
+}
+/* Switch toggle (estilo iOS-ish) */
+.perfil-pref-switch {
+    position: relative;
+    width: 50px;
+    height: 28px;
+    flex-shrink: 0;
+    cursor: pointer;
+    user-select: none;
+}
+.perfil-pref-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+.perfil-pref-slider {
+    position: absolute;
+    inset: 0;
+    background: var(--bg-card-2);
+    border: 1.5px solid var(--ink-line);
+    border-radius: 999px;
+    transition: all 200ms;
+}
+.perfil-pref-slider::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border-radius: 50%;
+    transition: all 200ms;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+.perfil-pref-switch input:checked ~ .perfil-pref-slider {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+.perfil-pref-switch input:checked ~ .perfil-pref-slider::before {
+    left: 24px;
+}
+
+@media (max-width: 600px) {
+    .perfil-pref-row { flex-direction: row; align-items: center; gap: 0.75rem; padding: 0.85rem 0.95rem; }
+    .perfil-pref-title { font-size: 0.88rem; }
+    .perfil-pref-desc { font-size: 0.76rem; }
+}
+
 /* Zona perigosa — exclusão de conta */
 .perfil-danger-zone {
     margin-top: 2.5rem;
@@ -10033,6 +10121,23 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 <div class="kpi"><div class="kpi-label">Derrotas</div><div class="kpi-value d" id="perfilKpiD">0</div></div>
                 <div class="kpi"><div class="kpi-label">Aprov.</div><div class="kpi-value" id="perfilKpiApr">—</div></div>
                 <div class="kpi"><div class="kpi-label">Conquistas</div><div class="kpi-value" id="perfilKpiConq">0</div></div>
+            </section>
+
+            <!-- Preferencias do user -->
+            <section class="perfil-prefs">
+                <header class="perfil-section-head">
+                    <h3><span class="material-icons">tune</span><span data-i18n="app.perfil.prefs_title">Preferências</span></h3>
+                </header>
+                <div class="perfil-pref-row">
+                    <div class="perfil-pref-info">
+                        <div class="perfil-pref-title" data-i18n="app.perfil.pref_count_all_title">Contar todas as partidas que fui</div>
+                        <div class="perfil-pref-desc" data-i18n="app.perfil.pref_count_all_desc">Inclui jogos onde seu time não jogou (ex: torcedor do Palmeiras que foi num Flamengo × Corinthians) nas suas estatísticas. Por padrão, só seu time conta.</div>
+                    </div>
+                    <label class="perfil-pref-switch">
+                        <input type="checkbox" id="prefCountAllGames">
+                        <span class="perfil-pref-slider"></span>
+                    </label>
+                </div>
             </section>
 
             <!-- Conquistas -->
@@ -12212,8 +12317,33 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
         renderPerfilHero();
         loadPerfilAchievements();
+        // Sincroniza toggle de "contar todas as partidas" com o valor atual
+        const prefToggle = document.getElementById('prefCountAllGames');
+        if (prefToggle) prefToggle.checked = !!user.count_all_games;
         window.scrollTo({ top: 0, behavior: 'instant' });
     }
+
+    // Toggle: contar todas as partidas (cross-club opt-in)
+    document.getElementById('prefCountAllGames')?.addEventListener('change', async (e) => {
+        const newVal = !!e.target.checked;
+        const oldVal = user.count_all_games;
+        try {
+            const { user: updated } = await api('/auth/me', {
+                method: 'PATCH',
+                body: JSON.stringify({ count_all_games: newVal }),
+            });
+            user.count_all_games = !!updated.count_all_games;
+            // Refaz o snapshot pra dashboard refletir os novos numeros
+            try {
+                snapshot = await api('/me/snapshot');
+                renderKpis();
+            } catch (_) { /* nao bloqueia o toggle */ }
+        } catch (err) {
+            // Reverte o toggle em caso de erro
+            e.target.checked = oldVal;
+            alert('Erro ao salvar preferência: ' + err.message);
+        }
+    });
 
     function hidePerfilView() {
         document.getElementById('perfilView').style.display = 'none';

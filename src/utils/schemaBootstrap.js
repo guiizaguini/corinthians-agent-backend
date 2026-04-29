@@ -55,6 +55,15 @@ export async function bootstrapSchema() {
                 ON users(google_sub) WHERE google_sub IS NOT NULL
         `);
 
+        // ====== users.count_all_games (opt-in pra stats cross-club) ======
+        // Default FALSE = só conta jogos do clube do user (comportamento legacy).
+        // Quando TRUE, snapshot conta TODAS as attendances PRESENTE — incluindo
+        // jogos de outros clubes (ex: Pal-torcedor que foi num Fla x Cor).
+        await query(`
+            ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS count_all_games BOOLEAN NOT NULL DEFAULT FALSE
+        `);
+
         // ====== user_notifications (sino — boas-vindas, sistema, etc) ======
         await query(`
             CREATE TABLE IF NOT EXISTS user_notifications (

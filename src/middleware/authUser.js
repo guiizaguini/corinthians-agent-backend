@@ -20,7 +20,8 @@ export async function requireUser(req, res, next) {
         }
 
         const { rows } = await query(
-            `SELECT id, email, display_name, club_id, is_admin
+            `SELECT id, email, display_name, club_id, is_admin,
+                    COALESCE(count_all_games, FALSE) AS count_all_games
              FROM users WHERE id = $1`,
             [payload.sub]
         );
