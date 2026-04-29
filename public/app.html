@@ -950,40 +950,46 @@ main {
 .btn-cross-club .material-icons { font-size: 1.05rem; color: var(--accent); }
 
 .cross-club-modal { max-width: 560px; }
+/* Flex layout: lupa e input sao 2 flex-items lado a lado. Gap controla
+   o respiro de uma vez, sem position:absolute confundindo padding. */
 .cross-club-search-wrap {
-    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
     margin: 1rem 0 0.85rem;
+    padding: 0 0.95rem;
+    border: 1.5px solid var(--ink-line);
+    border-radius: 12px;
+    background: var(--paper-soft);
+    transition: border-color 150ms;
+}
+.cross-club-search-wrap:focus-within {
+    border-color: var(--accent);
 }
 .cross-club-search-wrap .cross-club-search-icon {
-    position: absolute;
-    left: 0.95rem;
-    top: 50%;
-    transform: translateY(-50%);
     color: var(--ink-soft);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
+    flex-shrink: 0;
     pointer-events: none;
-    z-index: 1;
 }
 .cross-club-search-wrap input {
-    width: 100%;
-    /* Padding-left maior pra dar respiro entre lupa e o texto digitado */
-    padding: 0.85rem 0.95rem 0.85rem 2.95rem;
-    border-radius: 12px;
-    border: 1.5px solid var(--ink-line);
-    background: var(--paper-soft);
+    flex: 1;
+    min-width: 0;
+    /* Sem border/bg proprios — herdam visualmente do wrap. Sem padding-left */
+    border: none;
+    background: transparent;
     color: var(--ink);
+    padding: 0.85rem 0;
     font-family: 'Oswald', sans-serif;
     font-size: 0.9rem;
     outline: none;
-    box-sizing: border-box;
 }
 /* Remove o "X" nativo de input[type=search] no Chrome/Edge — fica feio
-   sobreposto e a UI já tem o close do modal pra abandonar a busca */
+   sobreposto e a UI ja tem o close do modal pra abandonar a busca */
 .cross-club-search-wrap input[type="search"]::-webkit-search-cancel-button {
     -webkit-appearance: none;
     appearance: none;
 }
-.cross-club-search-wrap input:focus { border-color: var(--accent); }
 
 .cross-club-results {
     display: flex;
