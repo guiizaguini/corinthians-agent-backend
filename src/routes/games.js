@@ -30,8 +30,15 @@ router.get('/', async (req, res, next) => {
             if (cached) return res.json(cached);
         }
 
-        const conds = ['g.club_id = $1'];
-        const params = [req.user.club_id];
+        // $1 = club_id do user; $2 = user_id. Inclui no catalogo:
+        //  (a) jogos do clube do user (catalogo padrao)
+        //  (b) jogos cross-club que o user MARCOU presenca (pra aparecer
+        //      em meus-ingressos mesmo nao sendo do clube dele).
+        // Cross-club games sao marcados com is_cross_club=true pro frontend
+        // filtrar do catalogo principal mas mostrar em meus-ingressos.
+        const conds = [`(g.club_id = $1 OR EXISTS (SELECT 1 FROM attendances ax WHERE ax.game_id = g.id AND ax.user_id = $2))`];
+        const params = [req.user.club_id, req.user.id];
+        const userIdx = 2;
 
         if (ano)        { params.push(parseInt(ano));     conds.push(`EXTRACT(YEAR FROM g.data) = $${params.length}`); }
         if (rival)      { params.push(`%${rival}%`);      conds.push(`(unaccent(g.time_visitante) ILIKE unaccent($${params.length}) OR unaccent(g.time_casa) ILIKE unaccent($${params.length}))`); }
@@ -43,8 +50,6 @@ router.get('/', async (req, res, next) => {
         }
 
         const ord = order === 'asc' ? 'ASC' : 'DESC';
-        params.push(req.user.id); // pra LEFT JOIN attendances
-        const userIdx = params.length;
 
         params.push(Math.min(parseInt(limit), 1000));
         params.push(parseInt(offset));
@@ -56,6 +61,9 @@ router.get('/', async (req, res, next) => {
                 g.gols_casa, g.gols_visitante, g.resultado,
                 g.foi_classico, g.teve_penal, g.fase, g.titulo_conquistado,
                 g.autores_gols, g.gols_texto, g.publico_total,
+                (g.club_id <> $1) AS is_cross_club,
+                cl.name AS catalog_club_name,
+                cl.short_name AS catalog_club_short,
                 a.id           AS attendance_id,
                 a.status       AS status_presenca,
                 a.setor        AS setor,
@@ -79,6 +87,7 @@ router.get('/', async (req, res, next) => {
                     ELSE g.time_casa || ' x ' || g.time_visitante
                 END AS adversario
             FROM games g
+            JOIN clubs cl ON cl.id = g.club_id
             LEFT JOIN attendances a
               ON a.game_id = g.id AND a.user_id = $${userIdx}
             WHERE ${conds.join(' AND ')}
@@ -87,12 +96,17 @@ router.get('/', async (req, res, next) => {
         `;
         const { rows } = await query(sql, params);
 
+        // Count usa os mesmos params ate o userIdx (sem limit/offset)
+        // Como user_id agora ta em $2, slice ate userIdx (2) nao basta — precisamos
+        // tambem dos params dos filtros opcionais (ano, rival, etc), exceto os
+        // 2 ultimos que sao limit/offset.
+        const countParams = params.slice(0, params.length - 2);
         const { rows: countRows } = await query(
             `SELECT COUNT(*)::int AS total
              FROM games g
              LEFT JOIN attendances a ON a.game_id = g.id AND a.user_id = $${userIdx}
              WHERE ${conds.join(' AND ')}`,
-            params.slice(0, userIdx)
+            countParams
         );
 
         const payload = { total: countRows[0].total, count: rows.length, games: rows };

@@ -1589,6 +1589,24 @@ body[data-club="corinthians"] .ingresso.d {
     font-size: 9px;
     font-weight: 700;
 }
+/* Tag de "OUTRO CLUBE" — ingresso cross-club marcado pelo user */
+.ingresso-cross-tag {
+    padding: 3px 8px;
+    background: #fff8e1;
+    color: #a8791b;
+    border: 1px solid #d4a520;
+    border-radius: 999px;
+    letter-spacing: 0.12em;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-right: 4px;
+}
+/* Ingresso cross-club inteiro — tonalidade levemente diferente pra
+   reforcar visualmente que nao eh do time do user */
+.ingresso.cross-club {
+    border-left: 3px solid #d4a520;
+}
 
 .confronto-google {
     display: flex;
@@ -11382,6 +11400,10 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const onlyMine = document.getElementById('onlyMine').checked;
 
         const filtered = allGames.filter(g => {
+            // Cross-club: o /games agora retorna jogos atendidos fora do clube
+            // do user pra alimentar 'meus ingressos'. Aqui no catalogo principal
+            // a gente esconde — catalogo continua sendo so do time do user.
+            if (g.is_cross_club) return false;
             if (year && new Date(g.data).getFullYear() != year) return false;
             if (onlyMine && !(g.attendance_id && g.status_presenca === 'PRESENTE')) return false;
             if (search) {
@@ -11421,11 +11443,13 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const resultadoPt = g.resultado === 'V' ? 'VITÓRIA' : g.resultado === 'E' ? 'EMPATE' : g.resultado === 'D' ? 'DERROTA' : '—';
 
         const mando = g.mando === 'MANDANTE' ? 'CASA' : g.mando === 'VISITANTE' ? 'FORA' : 'NEUTRO';
+        const isCrossClub = !!g.is_cross_club;
         const classes = [
             'ingresso',
             resClass,
             isPres ? '' : 'ausente',
             isCopa ? 'copa' : '',
+            isCrossClub ? 'cross-club' : '',
         ].filter(Boolean).join(' ');
 
         const placarCasa = g.gols_casa != null ? g.gols_casa : '';
@@ -11448,9 +11472,14 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const flagCasa = renderTeamMark(g.time_casa);
         const flagVis = renderTeamMark(g.time_visitante);
 
+        // Tag visual quando o ingresso eh de outro clube (cross-club). Ajuda
+        // o user a entender que aquele V/E/D nao reflete o time dele.
+        const crossClubTag = isCrossClub
+            ? `<span class="ingresso-cross-tag" title="Jogo de outro clube — não conta pra V/E/D do seu time">OUTRO CLUBE</span>`
+            : '';
         const corpoTopoConteudo = isCopa
             ? `<span>FIFA WORLD CUP 2026${g.fase ? ' · ' + escapeHtml(g.fase) : ''}</span><img class="wc-fifa-logo" src="/logos/fifa-2026.png" alt="FIFA 2026">`
-            : `<span>INGRESSO · ${escapeHtml(g.campeonato || 'AMISTOSO')}${g.fase ? ' · ' + escapeHtml(g.fase) : ''}</span>${g.foi_classico ? '<span class="classico-tag">CLÁSSICO</span>' : ''}`;
+            : `<span>INGRESSO · ${escapeHtml(g.campeonato || 'AMISTOSO')}${g.fase ? ' · ' + escapeHtml(g.fase) : ''}</span>${crossClubTag}${g.foi_classico ? '<span class="classico-tag">CLÁSSICO</span>' : ''}`;
 
         return `
             <article class="${classes}" data-id="${g.id}" title="Clique pra ver detalhes">
