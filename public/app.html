@@ -7204,6 +7204,14 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 }
 .bolao-foot-msg .material-icons { font-size: 0.9rem; }
 
+/* ===== Coluna direita do detalhe (ranking + tabela dos grupos) ===== */
+.bolao-side-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    min-width: 0;
+}
+
 /* ===== Ranking ===== */
 .bolao-ranking {
     background: linear-gradient(180deg, #ffffff 0%, #fdfaf0 100%);
@@ -7211,18 +7219,14 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     border-radius: 16px;
     padding: 0;
     box-shadow: 0 6px 18px rgba(20,15,10,0.08);
+    /* Sticky no topo da viewport — fica visivel enquanto user rola jogos */
     position: sticky;
     top: 1rem;
     max-height: calc(100vh - 2rem);
-    /* Permite scroll interno: ranking + regras + tabela dos grupos juntos */
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
 }
-.bolao-ranking::-webkit-scrollbar { width: 6px; }
-.bolao-ranking::-webkit-scrollbar-thumb { background: rgba(212,165,32,0.35); border-radius: 3px; }
 .bolao-ranking h3 {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
@@ -7537,15 +7541,35 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     margin-right: 0.2rem;
 }
 
-/* ===== Tabela dos Grupos da Copa (dentro do aside do ranking) ===== */
+/* ===== Tabela dos Grupos da Copa (bloco independente abaixo do ranking) ===== */
 .bolao-grupos {
-    border-top: 1px dashed var(--wc-line);
-    background: #fff;
+    background: linear-gradient(180deg, #ffffff 0%, #fdfaf0 100%);
+    border: 1px solid var(--wc-line);
+    border-radius: 16px;
+    padding: 0;
+    box-shadow: 0 6px 18px rgba(20,15,10,0.08);
+    overflow: hidden;
     display: flex;
     flex-direction: column;
+    /* Stripe colorido no topo igual outros cards da Copa */
+    position: relative;
+}
+.bolao-grupos::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg,
+        var(--wc-red, #dc2626) 0%, var(--wc-red, #dc2626) 16.66%,
+        var(--wc-orange, #f59e0b) 16.66%, var(--wc-orange, #f59e0b) 33.33%,
+        var(--wc-yellow, #eab308) 33.33%, var(--wc-yellow, #eab308) 50%,
+        var(--wc-green, #16a34a) 50%, var(--wc-green, #16a34a) 66.66%,
+        var(--wc-blue, #2563eb) 66.66%, var(--wc-blue, #2563eb) 83.33%,
+        var(--wc-purple, #9333ea) 83.33%, var(--wc-purple, #9333ea) 100%
+    );
 }
 .bolao-grupos-head {
-    padding: 0.85rem 1.2rem 0.5rem;
+    padding: 1.05rem 1.2rem 0.5rem;
 }
 .bolao-grupos-head h3 {
     font-family: 'Oswald', sans-serif;
@@ -8085,13 +8109,19 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         flex-direction: column;
         gap: 1rem;
     }
+    /* Side col vira contiguo do layout (nao mais coluna) */
+    .bolao-side-col {
+        display: contents;
+    }
     .bolao-ranking {
         position: static;
         display: none;
         max-height: none;
-        order: 1;  /* acima dos jogos */
+        order: 1;  /* acima dos jogos quando aberto */
     }
     .bolao-jogos { order: 2; }
+    /* Tabela dos grupos sempre visivel apos os jogos no mobile */
+    .bolao-grupos { order: 3; }
     .bolao-ranking.open { display: flex; flex-direction: column; }
     .bolao-ranking-toggle { display: inline-flex; }
 }
@@ -10734,32 +10764,34 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                             <div id="bolaoJogosList"><div class="loading" data-i18n="app.bolao.loading_jogos">Carregando jogos...</div></div>
                         </section>
 
-                        <!-- Ranking + Tabela dos Grupos da Copa -->
-                        <aside class="bolao-ranking" id="bolaoRanking">
-                            <h3><span class="material-icons">emoji_events</span> <span data-i18n="app.bolao.ranking_title">Ranking</span></h3>
-                            <div id="bolaoRankingList"><div class="loading" data-i18n="app.bolao.loading">Carregando...</div></div>
-                            <details class="bolao-regras">
-                                <summary>
-                                    <span class="material-icons">rule</span>
-                                    <span class="bolao-regras-title" data-i18n="app.bolao.regras_title">Como pontua</span>
-                                    <span class="material-icons bolao-regras-chev">expand_more</span>
-                                </summary>
-                                <ul>
-                                    <li><b data-i18n="app.bolao.regras_exato">Placar exato</b><span><em id="ptsExato">15</em> <span data-i18n="app.bolao.regras_pts">pts</span></span></li>
-                                    <li><b data-i18n="app.bolao.regras_saldo">Vencedor + saldo</b><span><em id="ptsSaldo">10</em> <span data-i18n="app.bolao.regras_pts">pts</span></span></li>
-                                    <li><b data-i18n="app.bolao.regras_vencedor">Só vencedor</b><span><em id="ptsVencedor">7</em> <span data-i18n="app.bolao.regras_pts">pts</span></span></li>
-                                    <li><b data-i18n="app.bolao.regras_empate">Empate correto</b><span><em id="ptsEmpate">5</em> <span data-i18n="app.bolao.regras_pts">pts</span></span></li>
-                                </ul>
-                            </details>
+                        <!-- Coluna direita: ranking sticky no topo + tabela dos grupos abaixo (rola com a pagina) -->
+                        <div class="bolao-side-col">
+                            <aside class="bolao-ranking" id="bolaoRanking">
+                                <h3><span class="material-icons">emoji_events</span> <span data-i18n="app.bolao.ranking_title">Ranking</span></h3>
+                                <div id="bolaoRankingList"><div class="loading" data-i18n="app.bolao.loading">Carregando...</div></div>
+                                <details class="bolao-regras">
+                                    <summary>
+                                        <span class="material-icons">rule</span>
+                                        <span class="bolao-regras-title" data-i18n="app.bolao.regras_title">Como pontua</span>
+                                        <span class="material-icons bolao-regras-chev">expand_more</span>
+                                    </summary>
+                                    <ul>
+                                        <li><b data-i18n="app.bolao.regras_exato">Placar exato</b><span><em id="ptsExato">15</em> <span data-i18n="app.bolao.regras_pts">pts</span></span></li>
+                                        <li><b data-i18n="app.bolao.regras_saldo">Vencedor + saldo</b><span><em id="ptsSaldo">10</em> <span data-i18n="app.bolao.regras_pts">pts</span></span></li>
+                                        <li><b data-i18n="app.bolao.regras_vencedor">Só vencedor</b><span><em id="ptsVencedor">7</em> <span data-i18n="app.bolao.regras_pts">pts</span></span></li>
+                                        <li><b data-i18n="app.bolao.regras_empate">Empate correto</b><span><em id="ptsEmpate">5</em> <span data-i18n="app.bolao.regras_pts">pts</span></span></li>
+                                    </ul>
+                                </details>
+                            </aside>
 
-                            <!-- Tabela dos grupos da Copa — atualiza conforme admin lanca resultados -->
-                            <section class="bolao-grupos">
+                            <!-- Tabela dos grupos — bloco independente abaixo do ranking, rola junto com a pagina -->
+                            <section class="bolao-grupos" id="bolaoGruposCard">
                                 <header class="bolao-grupos-head">
                                     <h3><span class="material-icons">table_chart</span> <span data-i18n="app.bolao.grupos_title">Grupos da Copa</span></h3>
                                 </header>
                                 <div id="bolaoGruposList"><div class="loading" data-i18n="app.bolao.grupos_loading">Carregando tabela...</div></div>
                             </section>
-                        </aside>
+                        </div>
                     </div>
                 </div>
             </div>
