@@ -8125,10 +8125,15 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     .bolao-back:hover { color: var(--wc-ink); background: transparent; border: 0; }
     .bolao-back .material-icons { font-size: 1.1rem; }
 
-    /* Vira flex column com order pra poder colocar painel ACIMA dos jogos */
+    /* Vira flex column com order pra poder colocar painel ACIMA dos jogos.
+       align-items: stretch eh CRITICO — sobrescreve o 'flex-start' do
+       desktop pra que ranking/grupos/jogos peguem 100% da largura.
+       Sem isso, eles encolhiam pra largura do conteudo, deixando espaco
+       vazio na direita. */
     .bolao-detail-layout {
         display: flex;
         flex-direction: column;
+        align-items: stretch;
         gap: 1rem;
     }
     /* Side col vira contiguo do layout (nao mais coluna) */
