@@ -7693,12 +7693,19 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     .bolao-grupo-table .grupo-flag { width: 14px; height: 10px; margin-right: 0.25rem; }
 }
 
+/* Container dos toggles mobile (ranking + grupos) */
+.bolao-mobile-toggles {
+    display: none;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.85rem;
+}
+
 /* Toggle mobile do ranking */
 .bolao-ranking-toggle {
     display: none;
     width: 100%;
     padding: 0.75rem 1rem;
-    margin-bottom: 0.75rem;
     background: var(--wc-card);
     border: 1px solid var(--wc-line);
     color: var(--wc-ink);
@@ -7711,6 +7718,11 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     text-transform: uppercase;
     align-items: center;
     gap: 0.5rem;
+    transition: background 150ms, border-color 150ms;
+}
+.bolao-ranking-toggle:hover {
+    border-color: #d4a520;
+    background: #fff8e1;
 }
 .bolao-ranking-toggle .material-icons { font-size: 1.05rem; color: #d4a520; }
 .bolao-ranking-toggle .bolao-rank-chevron {
@@ -8108,7 +8120,21 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
 /* Mobile layout bolão */
 @media (max-width: 900px) {
-    /* Vira flex column com order pra poder colocar o ranking ACIMA dos jogos */
+    /* Back button discreto — sem pilula chamativa, soh seta + texto pequeno */
+    .bolao-back {
+        background: transparent;
+        border: 0;
+        padding: 0.35rem 0;
+        margin-bottom: 0.85rem;
+        font-size: 0.7rem;
+        letter-spacing: 0.16em;
+        color: var(--wc-ink-mute);
+        gap: 0.3rem;
+    }
+    .bolao-back:hover { color: var(--wc-ink); background: transparent; border: 0; }
+    .bolao-back .material-icons { font-size: 1.1rem; }
+
+    /* Vira flex column com order pra poder colocar painel ACIMA dos jogos */
     .bolao-detail-layout {
         display: flex;
         flex-direction: column;
@@ -8125,9 +8151,16 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         order: 1;  /* acima dos jogos quando aberto */
     }
     .bolao-jogos { order: 2; }
-    /* Tabela dos grupos sempre visivel apos os jogos no mobile */
-    .bolao-grupos { order: 3; }
+    /* Tabela dos grupos no mobile fica colap\u00edvel — escondida por padrao,
+       abre clicando no toggle. order=1 pra ficar junto do ranking quando aberta. */
+    .bolao-grupos {
+        order: 1;
+        display: none;
+    }
+    .bolao-grupos.open { display: flex; }
+    .bolao-grupos-head { display: none; }  /* titulo redundante no mobile (ja tem o toggle) */
     .bolao-ranking.open { display: flex; flex-direction: column; }
+    .bolao-mobile-toggles { display: flex; }
     .bolao-ranking-toggle { display: inline-flex; }
 }
 @media (max-width: 680px) {
@@ -8184,43 +8217,48 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         border-radius: 5px;
         letter-spacing: 0.16em;
     }
-    /* Linha "Meus pontos: VALOR" + ações como ícones discretos no canto */
+    /* Linha de pontos + acoes — mais limpa.
+       Esquerda: chip dourado com 'PONTOS · 0' (mesma linguagem do VOCÊ no ranking).
+       Direita: 2 botoes redondos discretos pra Sair / Excluir. */
     .bolao-detail-right {
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
         width: 100%;
         gap: 0.65rem;
-        margin-top: 0.2rem;
+        margin-top: 0.4rem;
     }
     .bolao-detail-mypoints {
         display: inline-flex;
         flex-direction: row;
-        align-items: baseline;
-        gap: 0.5rem;
-        background: transparent;
-        color: var(--wc-ink);
-        padding: 0;
-        border-radius: 0;
+        align-items: center;
+        gap: 0.55rem;
+        background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+        border: 1px solid #d4a520;
+        color: #1a1000;
+        padding: 0.45rem 0.85rem;
+        border-radius: 999px;
         min-width: 0;
         width: auto;
         flex: 0 0 auto;
-        box-shadow: none;
+        box-shadow: 0 1px 3px rgba(212,165,32,0.15);
         text-align: left;
     }
     .bolao-mp-label {
-        color: var(--wc-ink-mute);
-        font-size: 0.58rem;
+        color: #a8791b;
+        font-size: 0.55rem;
         letter-spacing: 0.22em;
         text-align: left;
+        font-weight: 700;
     }
     .bolao-mp-value {
-        font-size: 1.5rem;
+        font-size: 1.05rem;
         color: #1a1000;
         margin-top: 0;
         line-height: 1;
+        font-weight: 700;
     }
-    /* Sair / Excluir viram botões redondos só com ícone — sem texto */
+    /* Sair / Excluir viram botões redondos com tamanho proporcional ao chip */
     .bolao-detail-actions {
         flex: 0 0 auto;
         flex-direction: row;
@@ -8230,34 +8268,49 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     }
     .bolao-leave-btn, .bolao-delete-btn {
         flex: 0 0 auto;
-        width: 36px;
-        height: 36px;
+        width: 34px;
+        height: 34px;
         padding: 0;
         font-size: 0;
         letter-spacing: 0;
         border-radius: 50%;
         justify-content: center;
         gap: 0;
+        border-width: 1px;
     }
     .bolao-leave-btn .material-icons,
-    .bolao-delete-btn .material-icons { font-size: 1.05rem; }
+    .bolao-delete-btn .material-icons { font-size: 1rem; }
 
-    /* RANKING TOGGLE — vira linha simples com divisores 1px (sem card branco) */
+    /* TOGGLES (RANKING + GRUPOS) — viram linhas simples sem card branco.
+       Container sem gap pra bordas adjacentes encostarem (sem 2 linhas
+       duplicadas). border-bottom em cada toggle, border-top so no primeiro. */
+    .bolao-mobile-toggles {
+        gap: 0;
+        margin: 0 0 1rem;
+    }
     .bolao-ranking-toggle {
         background: transparent;
         border: 0;
-        border-top: 1px solid var(--wc-line);
         border-bottom: 1px solid var(--wc-line);
         border-radius: 0;
         padding: 0.85rem 0;
-        margin: 0 0 1rem;
+        margin: 0;
         font-size: 0.78rem;
+    }
+    .bolao-mobile-toggles > .bolao-ranking-toggle:first-child {
+        border-top: 1px solid var(--wc-line);
+    }
+    .bolao-ranking-toggle:hover {
+        background: rgba(212,165,32,0.06);
+        border-color: var(--wc-line);
     }
     .bolao-ranking-toggle .bolao-rank-toggle-count {
         background: rgba(212,165,32,0.15);
         border-color: transparent;
         color: #a8791b;
     }
+    /* Header do bolao remove border-bottom — toggle ja tem border-top */
+    .bolao-detail-head { border-bottom: 0; padding-bottom: 0.5rem; }
 
     /* FILTROS — sem caixa branca elevada, conteúdo solto */
     .bolao-filtros {
@@ -10698,13 +10751,20 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                         </div>
                     </div>
 
-                    <!-- Toggle mobile: abre ranking -->
-                    <button class="bolao-ranking-toggle" id="bolaoRankingToggle" type="button">
-                        <span class="material-icons">leaderboard</span>
-                        <span data-i18n="app.bolao.detail_ranking_toggle">Ranking</span>
-                        <span class="bolao-rank-toggle-count" id="bolaoRankToggleCount">—</span>
-                        <span class="material-icons bolao-rank-chevron">expand_more</span>
-                    </button>
+                    <!-- Toggles mobile (escondidos no desktop): ranking + grupos -->
+                    <div class="bolao-mobile-toggles">
+                        <button class="bolao-ranking-toggle" id="bolaoRankingToggle" type="button">
+                            <span class="material-icons">leaderboard</span>
+                            <span data-i18n="app.bolao.detail_ranking_toggle">Ranking</span>
+                            <span class="bolao-rank-toggle-count" id="bolaoRankToggleCount">—</span>
+                            <span class="material-icons bolao-rank-chevron">expand_more</span>
+                        </button>
+                        <button class="bolao-ranking-toggle" id="bolaoGruposToggle" type="button">
+                            <span class="material-icons">table_chart</span>
+                            <span data-i18n="app.bolao.grupos_title">Grupos da Copa</span>
+                            <span class="material-icons bolao-rank-chevron">expand_more</span>
+                        </button>
+                    </div>
 
                     <div class="bolao-detail-layout">
                         <!-- Jogos -->
@@ -17589,6 +17649,16 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         rankToggle.addEventListener('click', () => {
             const open = rankPanel.classList.toggle('open');
             rankToggle.classList.toggle('open', open);
+        });
+    }
+
+    // Toggle grupos mobile — mesma logica do ranking
+    const gruposToggle = document.getElementById('bolaoGruposToggle');
+    const gruposPanel = document.getElementById('bolaoGruposCard');
+    if (gruposToggle && gruposPanel) {
+        gruposToggle.addEventListener('click', () => {
+            const open = gruposPanel.classList.toggle('open');
+            gruposToggle.classList.toggle('open', open);
         });
     }
 
