@@ -462,6 +462,7 @@
             'app.bolao.import_counts_importable': 'pra importar',
             'app.bolao.import_counts_total': 'no total',
             'app.bolao.import_success': 'Pronto! {n} palpites importados.',
+            'app.bolao.import_btn_short': 'Importar palpites',
             // Preferencias do perfil
             'app.perfil.prefs_title': 'Preferências',
             'app.perfil.pref_count_all_title': 'Contar todas as partidas que fui',
@@ -890,6 +891,7 @@
             'app.bolao.import_counts_importable': 'to import',
             'app.bolao.import_counts_total': 'total',
             'app.bolao.import_success': 'Done! {n} predictions imported.',
+            'app.bolao.import_btn_short': 'Import predictions',
             'app.perfil.prefs_title': 'Preferences',
             'app.perfil.pref_count_all_title': 'Count every match I attended',
             'app.perfil.pref_count_all_desc': 'Include matches where your club did not play (e.g. a Palmeiras supporter who attended a Flamengo × Corinthians) in your stats. By default, only your club counts.',
@@ -1317,6 +1319,7 @@
             'app.bolao.import_counts_importable': 'para importar',
             'app.bolao.import_counts_total': 'en total',
             'app.bolao.import_success': '¡Listo! {n} pronósticos importados.',
+            'app.bolao.import_btn_short': 'Importar pronósticos',
             'app.perfil.prefs_title': 'Preferencias',
             'app.perfil.pref_count_all_title': 'Contar todos los partidos a los que fui',
             'app.perfil.pref_count_all_desc': 'Incluye partidos donde tu club no jugó (ej: hincha de Palmeiras que fue a un Flamengo × Corinthians) en tus estadísticas. Por defecto, solo tu club cuenta.',

@@ -6441,8 +6441,12 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
     margin-bottom: 0.75rem;
 }
+/* Botao de importar fica no canto direito; stats fica entre title e btn */
+.bolao-jogos-head .bolao-jogos-stats { margin-right: auto; }
 .bolao-jogos-head h3 {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
@@ -6459,6 +6463,34 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     color: var(--wc-ink-mute);
     text-transform: uppercase;
 }
+
+/* ===== Botao persistente de importar palpites (no header dos jogos) ===== */
+.bolao-import-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.85rem;
+    background: var(--paper-soft);
+    border: 1.5px dashed var(--ink-line);
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    transition: all 150ms;
+}
+.bolao-import-btn:hover {
+    border-style: solid;
+    border-color: #d4a520;
+    background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+    color: #1a1000;
+    transform: translateY(-1px);
+}
+.bolao-import-btn .material-icons { font-size: 1rem; color: #d4a520; }
+.bolao-import-btn:hover .material-icons { color: #a8791b; }
 
 /* ===== Banner de importar palpites (aparece quando user tem 0 palpites
    no bolão atual mas tem palpites em outros bolões) ===== */
@@ -10466,6 +10498,13 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                             <div class="bolao-jogos-head">
                                 <h3 data-i18n="app.bolao.jogos_title">Jogos da Copa</h3>
                                 <div class="bolao-jogos-stats" id="bolaoJogosStats">— palpites</div>
+                                <!-- Botao persistente de importar (visivel sempre que houver bolao com palpites
+                                     pra usar como fonte). Diferente do banner: esse fica disponivel mesmo depois
+                                     que o user ja palpitou alguma coisa, pra reimportar quando quiser. -->
+                                <button type="button" class="bolao-import-btn" id="bolaoImportBtn" style="display:none;" title="Importar palpites de outro bolao">
+                                    <span class="material-icons">content_copy</span>
+                                    <span data-i18n="app.bolao.import_btn_short">Importar palpites</span>
+                                </button>
                             </div>
 
                             <!-- Filtros: fase, grupo, busca por seleção -->
@@ -12483,6 +12522,12 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             // Se a vista de Perfil estiver aberta, re-renderiza o header com os dados novos
             const perfilEl = document.getElementById('perfilView');
             if (perfilEl && perfilEl.style.display !== 'none') {
+                // BUGFIX: loadAll() re-mostra cartBar/kpis (renderCarteirinha/renderKpis
+                // setam display=''). Como perfilView ta aberto, isso causava 2 barras
+                // duplicadas (carteirinha em cima + carteirinha do perfil embaixo).
+                // Re-esconde aqui pra preservar o estado da vista perfil.
+                document.getElementById('cartBar').style.display = 'none';
+                document.getElementById('kpis').style.display = 'none';
                 renderPerfilHero();
                 loadPerfilAchievements();
             }
@@ -14867,20 +14912,35 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
     async function maybeShowImportBanner(targetBolaoId, games) {
         const banner = document.getElementById('bolaoImportBanner');
+        const btn = document.getElementById('bolaoImportBtn');
         if (!banner) return;
+        // Reset: ambos ocultos por default. Vamos mostrar conforme as condicoes.
         banner.style.display = 'none';
-        // 1) Já tem palpite aqui? Esconde
-        const hasPalpiteAqui = (games || []).some(g => g.palpite_casa != null);
-        if (hasPalpiteAqui) return;
-        // 2) User dismissou pra esse bolão nessa sessão? Esconde
-        if (_importDismissed.has(targetBolaoId)) return;
-        // 3) Tem fontes pra importar?
+        if (btn) btn.style.display = 'none';
+
+        // Tem fontes pra importar? (precisa pros 2: banner + botao persistente)
+        let hasImportable = false;
         try {
             const { sources } = await api(`/bolao/${targetBolaoId}/import-sources`);
-            const hasImportable = (sources || []).some(s => s.importable_count > 0);
-            if (!hasImportable) return;
-            banner.style.display = '';
-        } catch (_) { /* silencia — banner é opcional */ }
+            hasImportable = (sources || []).some(s => s.importable_count > 0);
+        } catch (_) { /* silencia */ }
+
+        // STALE-CLOSURE GUARD: se o user navegou pra outro bolao enquanto a
+        // request estava no ar, descarta o resultado pra nao mostrar banner
+        // pro bolao errado.
+        if (bolaoState.bolaoId !== targetBolaoId) return;
+
+        if (!hasImportable) return;
+
+        // Botao persistente: SEMPRE visivel quando ha fonte importavel
+        // (mesmo se user ja palpitou alguma coisa aqui).
+        if (btn) btn.style.display = '';
+
+        // Banner gigante: apenas quando 0 palpites aqui E nao foi dismissado
+        const hasPalpiteAqui = (games || []).some(g => g.palpite_casa != null);
+        if (hasPalpiteAqui) return;
+        if (_importDismissed.has(targetBolaoId)) return;
+        banner.style.display = '';
     }
 
     async function openBolaoImportModal() {
@@ -14960,6 +15020,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     }
 
     document.getElementById('bolaoImportBannerBtn')?.addEventListener('click', openBolaoImportModal);
+    document.getElementById('bolaoImportBtn')?.addEventListener('click', openBolaoImportModal);
     document.getElementById('bolaoImportBannerClose')?.addEventListener('click', () => {
         const id = bolaoState.bolaoId;
         if (id) _importDismissed.add(id);
