@@ -9432,7 +9432,15 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 }
 @media (max-width: 900px) {
     /* Mobile/tablet: toggle "Sua rede" no topo, feed como conteúdo principal */
-    .rede-layout { display: flex; flex-direction: column; gap: 0; }
+    .rede-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        /* align-items: stretch CRITICO — sem isso, herda flex-start do base
+           CSS e os filhos (toggle, sidebar, feed) pegam soh largura do
+           conteudo, deixando espaco vazio na direita. */
+        align-items: stretch;
+    }
     .rede-toggle { display: inline-flex; order: 1; }
     /* Quando aberta, o toggle "encosta" no painel: bordas inferiores planas,
        sombra desce. Vira um único componente acordeão. */
