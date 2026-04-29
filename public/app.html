@@ -2819,25 +2819,20 @@ body[data-club="corinthians"] .ingresso.d {
 .modal.modal-xl { max-width: 760px; }
 
 /* ================= Rede Social =================
-   Layout style "feed" (Twitter/FB): no desktop, sidebar e main sao 2 colunas
-   INDEPENDENTES com scroll proprio, ocupando toda a altura visivel. A pagina
-   inteira NAO scrolla nessa aba — soluciona o bug de "scrollei sidebar mas
-   nao vejo o resto dos amigos sem mexer no feed". No mobile colapsa pra 1
-   coluna empilhada (sidebar acima do feed, scroll de pagina normal). */
+   No desktop: feed flui com o scroll DA PAGINA (sem scroll interno proprio
+   — composer nao corta). Sidebar de amigos tem scroll INTERNO via sticky
+   pra dar conta de listas grandes. No mobile colapsa pra 1 coluna. */
 .rede-layout {
     display: grid;
     grid-template-columns: 320px 1fr;
     gap: 1.5rem;
-    align-items: stretch;
-    /* Altura = viewport - header (~80) - tabs (~55) - paddings (~80). dvh
-       acompanha a barra de URL no mobile (em telas grandes que entram aqui
-       eh quase identico a vh). */
-    height: calc(100dvh - 215px);
-    min-height: 480px;
+    align-items: flex-start;
 }
 .rede-sidebar {
-    /* Cada coluna scrolla isoladamente */
-    height: 100%;
+    /* Sidebar fica sticky no topo + scroll interno pra muitos amigos */
+    position: sticky;
+    top: 1rem;
+    max-height: calc(100dvh - 2rem);
     overflow-y: auto;
     padding-right: 0.4rem;
     scrollbar-width: thin;
@@ -2846,25 +2841,20 @@ body[data-club="corinthians"] .ingresso.d {
 .rede-sidebar::-webkit-scrollbar { width: 6px; }
 .rede-sidebar::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
 .rede-main {
+    /* Feed flui com a pagina — sem scroll interno, sem altura fixa */
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    height: 100%;
-    overflow-y: auto;
-    padding-right: 0.4rem;
-    overscroll-behavior: contain;
+    min-width: 0;
 }
-.rede-main::-webkit-scrollbar { width: 6px; }
-.rede-main::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
 @media (max-width: 900px) {
     /* Mobile: volta pra layout de coluna unica e scroll de pagina */
-    .rede-layout {
-        grid-template-columns: 1fr;
-        height: auto;
-        min-height: 0;
+    .rede-layout { grid-template-columns: 1fr; }
+    .rede-sidebar {
+        position: static;
+        max-height: none;
+        overflow-y: visible;
     }
-    .rede-sidebar { height: auto; max-height: none; overflow-y: visible; }
-    .rede-main { height: auto; overflow-y: visible; }
 }
 
 /* Composer — card de criar post no topo do feed */
