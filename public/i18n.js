@@ -449,6 +449,19 @@
             'app.bolao.pts_suffix': 'pts',
             // Feed: ação de palpitar (item type='palpite')
             'app.feed.action.palpitou_copa': 'palpitou um jogo da Copa',
+            // Importar palpites de outro bolao do user
+            'app.bolao.import_banner_title': 'Já palpitou em outro bolão?',
+            'app.bolao.import_banner_sub': 'Importe seus palpites de outro bolão pra cá em 1 clique.',
+            'app.bolao.import_banner_cta': 'Importar',
+            'app.bolao.import_modal_title': 'Importar palpites de outro bolão',
+            'app.bolao.import_modal_meta': 'Selecione o bolão de origem. Seus palpites serão copiados pra cá. Jogos que você já palpitou aqui não vão ser sobrescritos.',
+            'app.bolao.import_loading': 'Carregando seus bolões...',
+            'app.bolao.import_loading_confirm': 'Copiando...',
+            'app.bolao.import_empty': 'Nenhum bolão com palpites pra importar.',
+            'app.bolao.import_confirm_btn': 'Copiar palpites',
+            'app.bolao.import_counts_importable': 'pra importar',
+            'app.bolao.import_counts_total': 'no total',
+            'app.bolao.import_success': 'Pronto! {n} palpites importados.',
         },
 
         en: {
@@ -861,6 +874,18 @@
             'app.bolao.motivo_sem_palpite': 'You did not predict',
             'app.bolao.pts_suffix': 'pts',
             'app.feed.action.palpitou_copa': 'predicted a World Cup match',
+            'app.bolao.import_banner_title': 'Already predicted in another pool?',
+            'app.bolao.import_banner_sub': 'Import your predictions from another pool in one click.',
+            'app.bolao.import_banner_cta': 'Import',
+            'app.bolao.import_modal_title': 'Import predictions from another pool',
+            'app.bolao.import_modal_meta': 'Pick a source pool. Your predictions will be copied here. Games you already predicted here will not be overwritten.',
+            'app.bolao.import_loading': 'Loading your pools...',
+            'app.bolao.import_loading_confirm': 'Copying...',
+            'app.bolao.import_empty': 'No pool with predictions to import.',
+            'app.bolao.import_confirm_btn': 'Copy predictions',
+            'app.bolao.import_counts_importable': 'to import',
+            'app.bolao.import_counts_total': 'total',
+            'app.bolao.import_success': 'Done! {n} predictions imported.',
         },
 
         es: {
@@ -1273,6 +1298,18 @@
             'app.bolao.motivo_sem_palpite': 'No pronosticaste',
             'app.bolao.pts_suffix': 'pts',
             'app.feed.action.palpitou_copa': 'pronosticó un partido del Mundial',
+            'app.bolao.import_banner_title': '¿Ya pronosticaste en otra quiniela?',
+            'app.bolao.import_banner_sub': 'Importá tus pronósticos de otra quiniela acá en 1 clic.',
+            'app.bolao.import_banner_cta': 'Importar',
+            'app.bolao.import_modal_title': 'Importar pronósticos de otra quiniela',
+            'app.bolao.import_modal_meta': 'Elegí la quiniela de origen. Tus pronósticos se copian acá. Los partidos que ya pronosticaste no se sobrescriben.',
+            'app.bolao.import_loading': 'Cargando tus quinielas...',
+            'app.bolao.import_loading_confirm': 'Copiando...',
+            'app.bolao.import_empty': 'No hay quinielas con pronósticos para importar.',
+            'app.bolao.import_confirm_btn': 'Copiar pronósticos',
+            'app.bolao.import_counts_importable': 'para importar',
+            'app.bolao.import_counts_total': 'en total',
+            'app.bolao.import_success': '¡Listo! {n} pronósticos importados.',
         },
     };
 

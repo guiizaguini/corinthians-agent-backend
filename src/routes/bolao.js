@@ -436,6 +436,83 @@ router.put('/:id/palpite/:game_id', async (req, res, next) => {
 });
 
 // =============================================================
+// GET /bolao/:id/import-sources
+// Lista os OUTROS bolões que o user participa e tem palpites,
+// pra ele decidir se quer importar pra esse aqui sem retrabalho.
+//   - palpite_count       : total de palpites no source
+//   - importable_count    : quantos seriam de fato importados
+//                           (games que NAO estao palpitados no target)
+// Filtra automaticamente sources sem palpite ou sem nada importavel.
+// =============================================================
+router.get('/:id/import-sources', async (req, res, next) => {
+    try {
+        const targetId = parseInt(req.params.id);
+        if (!(await assertMember(targetId, req.user.id))) {
+            return res.status(403).json({ error: 'not_member' });
+        }
+        const { rows } = await query(`
+            SELECT
+                b.id, b.name,
+                COUNT(bp.id)::int AS palpite_count,
+                COUNT(bp.id) FILTER (
+                    WHERE NOT EXISTS (
+                        SELECT 1 FROM bolao_palpites bpx
+                        WHERE bpx.bolao_id = $1 AND bpx.user_id = $2 AND bpx.game_id = bp.game_id
+                    )
+                )::int AS importable_count
+            FROM bolao_members bm
+            JOIN boloes b ON b.id = bm.bolao_id
+            LEFT JOIN bolao_palpites bp ON bp.bolao_id = b.id AND bp.user_id = $2
+            WHERE bm.user_id = $2 AND b.id <> $1
+            GROUP BY b.id, b.name
+            HAVING COUNT(bp.id) > 0
+            ORDER BY importable_count DESC, palpite_count DESC, b.name
+        `, [targetId, req.user.id]);
+        res.json({ sources: rows });
+    } catch (err) { next(err); }
+});
+
+// =============================================================
+// POST /bolao/:id/import-palpites { from_bolao_id }
+// Copia os palpites do source pro target. ON CONFLICT DO NOTHING ->
+// jogos ja palpitados no target sao preservados (nao sobrescreve).
+// =============================================================
+const ImportSchema = z.object({ from_bolao_id: z.number().int().positive() });
+
+router.post('/:id/import-palpites', async (req, res, next) => {
+    try {
+        const targetId = parseInt(req.params.id);
+        const parsed = ImportSchema.safeParse(req.body);
+        if (!parsed.success) return res.status(400).json({ error: 'validation_failed' });
+        const sourceId = parsed.data.from_bolao_id;
+        if (sourceId === targetId) return res.status(400).json({ error: 'same_bolao' });
+
+        // User precisa ser membro dos DOIS
+        const memberOk = await Promise.all([
+            assertMember(targetId, req.user.id),
+            assertMember(sourceId, req.user.id),
+        ]);
+        if (!memberOk[0] || !memberOk[1]) {
+            return res.status(403).json({ error: 'not_member_of_both' });
+        }
+
+        // Copia palpites do source -> target. ON CONFLICT preserva o que ja
+        // existe no target (user nao perde palpite manualmente feito).
+        const { rows: inserted } = await query(`
+            INSERT INTO bolao_palpites (bolao_id, user_id, game_id, gols_casa, gols_visitante)
+            SELECT $1, $2, bp.game_id, bp.gols_casa, bp.gols_visitante
+            FROM bolao_palpites bp
+            WHERE bp.user_id = $2 AND bp.bolao_id = $3
+            ON CONFLICT (bolao_id, user_id, game_id) DO NOTHING
+            RETURNING game_id
+        `, [targetId, req.user.id, sourceId]);
+
+        invalidate.bolao(targetId);
+        res.json({ copied: inserted.length });
+    } catch (err) { next(err); }
+});
+
+// =============================================================
 // GET /bolao/:id/ranking — pontuação de cada membro
 // =============================================================
 router.get('/:id/ranking', async (req, res, next) => {

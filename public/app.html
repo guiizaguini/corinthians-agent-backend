@@ -6452,6 +6452,172 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     text-transform: uppercase;
 }
 
+/* ===== Banner de importar palpites (aparece quando user tem 0 palpites
+   no bolão atual mas tem palpites em outros bolões) ===== */
+.bolao-import-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.9rem 1rem;
+    margin: 0 0 1rem;
+    background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+    border: 1px solid #d4a520;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(212,165,32,0.15);
+    /* Hardcode color: fundo é sempre cream, evita texto branco em tema dark */
+    color: #1a1000;
+}
+.bolao-import-banner-icon {
+    flex-shrink: 0;
+    color: #a8791b;
+    font-size: 1.5rem !important;
+    background: #fff;
+    border-radius: 50%;
+    padding: 0.5rem;
+    border: 1.5px solid #d4a520;
+}
+.bolao-import-banner-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    font-family: 'Oswald', sans-serif;
+}
+.bolao-import-banner-text strong {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1a1000;
+    letter-spacing: 0.02em;
+}
+.bolao-import-banner-text span {
+    font-size: 0.78rem;
+    color: #5a4520;
+    line-height: 1.3;
+}
+.bolao-import-banner-btn {
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #d4a520, #a87f1e) !important;
+    border-color: #a87f1e !important;
+    color: #1a1000 !important;
+    font-family: 'Oswald', sans-serif !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    padding: 0.6rem 1rem !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.bolao-import-banner-btn .material-icons { font-size: 1rem; }
+.bolao-import-banner-close {
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    color: #a8791b;
+    cursor: pointer;
+    padding: 0.3rem;
+    border-radius: 50%;
+    line-height: 0;
+    transition: all 150ms;
+}
+.bolao-import-banner-close:hover {
+    background: rgba(212,165,32,0.2);
+    color: #1a1000;
+}
+.bolao-import-banner-close .material-icons { font-size: 1.2rem; }
+
+/* Mobile: empilha vertical */
+@media (max-width: 600px) {
+    .bolao-import-banner { flex-wrap: wrap; }
+    .bolao-import-banner-btn { width: 100%; justify-content: center; order: 3; }
+    .bolao-import-banner-close { order: 2; }
+}
+
+/* ===== Modal: picker de bolão de origem pra importar palpites ===== */
+.bolao-import-modal { max-width: 500px; }
+.bolao-import-sources {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 1rem 0 1.25rem;
+    max-height: 50vh;
+    overflow-y: auto;
+}
+.bolao-import-source {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.85rem 1rem;
+    background: var(--paper-soft);
+    border: 1.5px solid var(--ink-line);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 150ms;
+    font-family: 'Oswald', sans-serif;
+}
+.bolao-import-source:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+}
+.bolao-import-source.selected {
+    border-color: #d4a520;
+    background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+    color: #1a1000;
+}
+.bolao-import-source-radio {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--ink-line);
+    border-radius: 50%;
+    position: relative;
+    transition: all 150ms;
+}
+.bolao-import-source.selected .bolao-import-source-radio {
+    border-color: #a87f1e;
+}
+.bolao-import-source.selected .bolao-import-source-radio::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px; height: 12px;
+    background: #d4a520;
+    border-radius: 50%;
+}
+.bolao-import-source-info { flex: 1; min-width: 0; }
+.bolao-import-source-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+.bolao-import-source.selected .bolao-import-source-name { color: #1a1000; }
+.bolao-import-source-counts {
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    margin-top: 0.15rem;
+    letter-spacing: 0.04em;
+}
+.bolao-import-source.selected .bolao-import-source-counts { color: #5a4520; }
+.bolao-import-source-counts strong {
+    color: #d4a520;
+    font-weight: 700;
+}
+.bolao-import-empty {
+    text-align: center;
+    color: var(--ink-soft);
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+    padding: 1.5rem 0.5rem;
+}
+
 /* Card de jogo do bolão — estilo wc-ticket da Copa */
 /* Container externo: empilha headers e grids de seção */
 #bolaoJogosList { display: flex; flex-direction: column; gap: 0; }
@@ -9233,6 +9399,26 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         </div>
     </div>
 
+    <!-- Modal: Importar palpites de outro bolao do user -->
+    <div class="modal-overlay" id="bolaoImportModal">
+        <div class="modal bolao-import-modal">
+            <h2 data-i18n="app.bolao.import_modal_title">Importar palpites de outro bolão</h2>
+            <div class="meta" data-i18n="app.bolao.import_modal_meta">Selecione o bolão de origem. Seus palpites serão copiados pra cá. Jogos que você já palpitou aqui não vão ser sobrescritos.</div>
+
+            <div id="bolaoImportSources" class="bolao-import-sources">
+                <div class="loading" data-i18n="app.bolao.import_loading">Carregando seus bolões...</div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-secondary" id="bolaoImportClose" data-i18n="app.btn.cancel">Cancelar</button>
+                <button class="btn-primary" id="bolaoImportConfirm" disabled>
+                    <span class="material-icons">content_copy</span>
+                    <span data-i18n="app.bolao.import_confirm_btn">Copiar palpites</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal: Buscar jogo em outro clube (cross-club search) -->
     <div class="modal-overlay" id="crossClubModal">
         <div class="modal cross-club-modal">
@@ -10202,6 +10388,24 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                                     <button type="button" class="bolao-fase-chip" data-fase="terceiro" data-i18n="app.bolao.jogos_fase_terceiro">3º lugar</button>
                                     <button type="button" class="bolao-fase-chip" data-fase="final" data-i18n="app.bolao.jogos_fase_final">Final</button>
                                 </div>
+                            </div>
+
+                            <!-- Banner: oferece importar palpites de outro bolao do user.
+                                 Aparece quando user tem 0 palpites aqui MAS tem palpites em
+                                 outro bolao que ele participa (evita retrabalho de remarcar). -->
+                            <div id="bolaoImportBanner" class="bolao-import-banner" style="display:none;">
+                                <span class="material-icons bolao-import-banner-icon">content_copy</span>
+                                <div class="bolao-import-banner-text">
+                                    <strong data-i18n="app.bolao.import_banner_title">Já palpitou em outro bolão?</strong>
+                                    <span data-i18n="app.bolao.import_banner_sub">Importe seus palpites de outro bolão pra cá em 1 clique.</span>
+                                </div>
+                                <button class="btn-primary bolao-import-banner-btn" id="bolaoImportBannerBtn" type="button">
+                                    <span class="material-icons">north_east</span>
+                                    <span data-i18n="app.bolao.import_banner_cta">Importar</span>
+                                </button>
+                                <button class="bolao-import-banner-close" id="bolaoImportBannerClose" type="button" title="Fechar" data-i18n-attr="title:app.btn.close">
+                                    <span class="material-icons">close</span>
+                                </button>
                             </div>
 
                             <div id="bolaoJogosList"><div class="loading" data-i18n="app.bolao.loading_jogos">Carregando jogos...</div></div>
@@ -14517,10 +14721,125 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             bolaoSetupFiltros(games);
             // Render aplica filtros atuais
             bolaoRenderJogos();
+            // Decide se mostra banner de "importar palpites de outro bolão"
+            // (só pra user com 0 palpites aqui mas com palpites em outros)
+            maybeShowImportBanner(id, games);
         } catch (err) {
             list.innerHTML = `<div class="empty">Erro: ${err.message}</div>`;
         }
     }
+
+    // ============================================================
+    // IMPORT PALPITES — banner + modal picker
+    // ============================================================
+    let _importDismissed = new Set(); // bolaoIds que o user fechou nessa sessão
+    let _importSelectedSource = null;
+
+    async function maybeShowImportBanner(targetBolaoId, games) {
+        const banner = document.getElementById('bolaoImportBanner');
+        if (!banner) return;
+        banner.style.display = 'none';
+        // 1) Já tem palpite aqui? Esconde
+        const hasPalpiteAqui = (games || []).some(g => g.palpite_casa != null);
+        if (hasPalpiteAqui) return;
+        // 2) User dismissou pra esse bolão nessa sessão? Esconde
+        if (_importDismissed.has(targetBolaoId)) return;
+        // 3) Tem fontes pra importar?
+        try {
+            const { sources } = await api(`/bolao/${targetBolaoId}/import-sources`);
+            const hasImportable = (sources || []).some(s => s.importable_count > 0);
+            if (!hasImportable) return;
+            banner.style.display = '';
+        } catch (_) { /* silencia — banner é opcional */ }
+    }
+
+    async function openBolaoImportModal() {
+        const targetId = bolaoState.bolaoId;
+        if (!targetId) return;
+        const modal = document.getElementById('bolaoImportModal');
+        const list = document.getElementById('bolaoImportSources');
+        const confirmBtn = document.getElementById('bolaoImportConfirm');
+        _importSelectedSource = null;
+        confirmBtn.disabled = true;
+        list.innerHTML = `<div class="loading">${escapeHtml(t('app.bolao.import_loading') || 'Carregando seus bolões...')}</div>`;
+        modal.classList.add('show');
+
+        try {
+            const { sources } = await api(`/bolao/${targetId}/import-sources`);
+            const importable = (sources || []).filter(s => s.importable_count > 0);
+            if (!importable.length) {
+                list.innerHTML = `<div class="bolao-import-empty">${escapeHtml(t('app.bolao.import_empty') || 'Nenhum bolão com palpites pra importar.')}</div>`;
+                return;
+            }
+            list.innerHTML = importable.map(s => `
+                <div class="bolao-import-source" data-source-id="${s.id}">
+                    <div class="bolao-import-source-radio"></div>
+                    <div class="bolao-import-source-info">
+                        <div class="bolao-import-source-name">${escapeHtml(s.name)}</div>
+                        <div class="bolao-import-source-counts">
+                            <strong>${s.importable_count}</strong> ${escapeHtml(t('app.bolao.import_counts_importable') || 'pra importar')}
+                            · ${s.palpite_count} ${escapeHtml(t('app.bolao.import_counts_total') || 'no total')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            list.querySelectorAll('.bolao-import-source').forEach(el => {
+                el.addEventListener('click', () => {
+                    list.querySelectorAll('.bolao-import-source').forEach(x => x.classList.remove('selected'));
+                    el.classList.add('selected');
+                    _importSelectedSource = parseInt(el.dataset.sourceId);
+                    confirmBtn.disabled = false;
+                });
+            });
+        } catch (err) {
+            list.innerHTML = `<div class="bolao-import-empty">Erro: ${escapeHtml(err.message)}</div>`;
+        }
+    }
+
+    function closeBolaoImportModal() {
+        document.getElementById('bolaoImportModal').classList.remove('show');
+    }
+
+    async function confirmBolaoImport() {
+        const targetId = bolaoState.bolaoId;
+        if (!targetId || !_importSelectedSource) return;
+        const btn = document.getElementById('bolaoImportConfirm');
+        const oldHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = `<span class="material-icons">hourglass_top</span><span>${escapeHtml(t('app.bolao.import_loading_confirm') || 'Copiando...')}</span>`;
+        try {
+            const { copied } = await api(`/bolao/${targetId}/import-palpites`, {
+                method: 'POST',
+                body: JSON.stringify({ from_bolao_id: _importSelectedSource }),
+            });
+            closeBolaoImportModal();
+            // Esconde o banner imediatamente — não vai mais aparecer nessa sessão
+            _importDismissed.add(targetId);
+            document.getElementById('bolaoImportBanner').style.display = 'none';
+            // Recarrega jogos (palpites refletem as cópias)
+            await bolaoLoadJogos(targetId);
+            // Toasta o sucesso
+            const msgTpl = t('app.bolao.import_success') || 'Pronto! {n} palpites importados.';
+            alert(msgTpl.replace('{n}', copied));
+        } catch (err) {
+            alert('Erro: ' + err.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = oldHtml;
+        }
+    }
+
+    document.getElementById('bolaoImportBannerBtn')?.addEventListener('click', openBolaoImportModal);
+    document.getElementById('bolaoImportBannerClose')?.addEventListener('click', () => {
+        const id = bolaoState.bolaoId;
+        if (id) _importDismissed.add(id);
+        document.getElementById('bolaoImportBanner').style.display = 'none';
+    });
+    document.getElementById('bolaoImportClose')?.addEventListener('click', closeBolaoImportModal);
+    document.getElementById('bolaoImportModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'bolaoImportModal') closeBolaoImportModal();
+    });
+    document.getElementById('bolaoImportConfirm')?.addEventListener('click', confirmBolaoImport);
 
     function bolaoSetupFiltros(games) {
         // Extrai grupos únicos (ex: "A", "B", "C"...) das fases
