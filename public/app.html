@@ -956,16 +956,18 @@ main {
 }
 .cross-club-search-wrap .cross-club-search-icon {
     position: absolute;
-    left: 0.85rem;
+    left: 0.95rem;
     top: 50%;
     transform: translateY(-50%);
     color: var(--ink-soft);
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     pointer-events: none;
+    z-index: 1;
 }
 .cross-club-search-wrap input {
     width: 100%;
-    padding: 0.85rem 0.95rem 0.85rem 2.5rem;
+    /* Padding-left maior pra dar respiro entre lupa e o texto digitado */
+    padding: 0.85rem 0.95rem 0.85rem 2.95rem;
     border-radius: 12px;
     border: 1.5px solid var(--ink-line);
     background: var(--paper-soft);
@@ -974,6 +976,12 @@ main {
     font-size: 0.9rem;
     outline: none;
     box-sizing: border-box;
+}
+/* Remove o "X" nativo de input[type=search] no Chrome/Edge — fica feio
+   sobreposto e a UI já tem o close do modal pra abandonar a busca */
+.cross-club-search-wrap input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
 }
 .cross-club-search-wrap input:focus { border-color: var(--accent); }
 
