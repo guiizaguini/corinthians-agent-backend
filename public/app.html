@@ -7219,9 +7219,14 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     border-radius: 16px;
     padding: 0;
     box-shadow: 0 6px 18px rgba(20,15,10,0.08);
-    /* Sticky no topo da viewport — fica visivel enquanto user rola jogos */
+    /* Sticky no topo da viewport — fica visivel enquanto user rola jogos.
+       z-index alto + isolation pra garantir que ranking sempre fica ACIMA
+       dos grupos visualmente (sticky sem z-index podia deixar irmaos
+       posteriores no DOM 'subirem' por cima visualmente em alguns casos). */
     position: sticky;
     top: 1rem;
+    z-index: 5;
+    isolation: isolate;
     max-height: calc(100vh - 2rem);
     overflow: hidden;
     display: flex;
@@ -7600,31 +7605,17 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     border-bottom: 1px solid rgba(20,15,10,0.06);
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 0.7rem;
-    letter-spacing: 0.18em;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
     color: #1a1000;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 0.4rem;
 }
-.bolao-grupo-card-head .grupo-letra {
-    background: linear-gradient(135deg, #d4a520, #a87f1e);
-    color: #1a1000;
-    width: 22px; height: 22px;
-    border-radius: 6px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.85rem;
-    font-weight: 700;
-    box-shadow: 0 1px 3px rgba(212,165,32,0.35);
-}
 .bolao-grupo-card-head .grupo-label {
-    color: rgba(26, 16, 0, 0.5);
-    font-size: 0.62rem;
-    letter-spacing: 0.22em;
+    color: #1a1000;
+    font-weight: 700;
 }
 .bolao-grupo-table {
     width: 100%;
@@ -10851,9 +10842,6 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 
                             <!-- Tabela dos grupos — bloco independente abaixo do ranking, rola junto com a pagina -->
                             <section class="bolao-grupos" id="bolaoGruposCard">
-                                <header class="bolao-grupos-head">
-                                    <h3><span class="material-icons">table_chart</span> <span data-i18n="app.bolao.grupos_title">Grupos da Copa</span></h3>
-                                </header>
                                 <div id="bolaoGruposList"><div class="loading" data-i18n="app.bolao.grupos_loading">Carregando tabela...</div></div>
                             </section>
                         </div>
@@ -15277,7 +15265,6 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         return `
             <article class="bolao-grupo-card">
                 <header class="bolao-grupo-card-head">
-                    <span class="grupo-letra">${escapeHtml(letra)}</span>
                     <span class="grupo-label">${escapeHtml(t('app.bolao.grupos_card_label') || 'Grupo')} ${escapeHtml(letra)}</span>
                 </header>
                 <table class="bolao-grupo-table">
