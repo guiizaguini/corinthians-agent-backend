@@ -1,15 +1,19 @@
 /**
  * Seed do Álbum FIGURINHAS COPA 2026 (Panini).
  *
- * Estrutura REAL do álbum (conforme prints + correção pelo Gabriel):
+ * Estrutura REAL do álbum (conforme prints):
  *  - 12 grupos (A-L) com 4 seleções cada = 48 seleções
  *  - 20 cromos numerados (XXX-01 a XXX-20) por seleção = 960
- *  - Categoria FWC History (FIFA World Cup): cromos 09-14 (6 cromos)
- *  - Categoria Coca-Cola: 14 cromos (CC-01 a CC-14)
- *  Total: 48*20 + 6 + 14 = 980 cromos
+ *  - Categoria "Especiais" (sem grupo): "00" + FWC-01..FWC-08 = 9 cromos
+ *  - Categoria "Seleções Especiais" (sem grupo): FWC-09..FWC-19 = 11 cromos
+ *  - Categoria "Coca-Cola" (sem grupo): CC-01..CC-14 = 14 cromos
+ *  Total: 48*20 + 9 + 11 + 14 = 994 cromos
  *
  * Idempotente: ON CONFLICT (code) DO NOTHING. Pode rodar quantas vezes quiser
  * sem duplicar. Pra ATUALIZAR nomes/photos depois, faz UPDATE direto.
+ *
+ * Aditivo: NUNCA deleta selecoes/cromos existentes. Procura selecoes por
+ * nome (caso ja existam com codes nao-canonicos) antes de criar novas.
  *
  * Uso:
  *   railway run node scripts/seed_album_copa.mjs
@@ -150,67 +154,115 @@ const GRUPOS = {
             }
         }
 
-        // ============== FWC History (FIFA World Cup History) ==============
-        // Cromos comemorativos de copas anteriores: códigos 9-14 (6 cromos)
-        const FWC_VALID_CODES = ['FWC-09','FWC-10','FWC-11','FWC-12','FWC-13','FWC-14'];
-        {
+        // ============================================================
+        // SECOES ESPECIAIS (sem grupo) — abordagem ADITIVA, nao deleta nada.
+        // Procura selecoes existentes por nome (case-insensitive, ignora
+        // emojis/acentos) antes de criar novas. Se ja existe com code legacy
+        // (ex: 'ESP', 'SEX'), reutiliza o id e adiciona os cromos faltantes.
+        // ============================================================
+
+        /**
+         * Acha uma selecao existente cujo nome contem algum dos termos passados,
+         * ou cria uma nova com o code/name informados. NUNCA deleta nada.
+         */
+        async function findOrCreateSpecialSelecao({ matchTerms, fallbackCode, fallbackName, ordem }) {
+            // Procura por nome (qualquer dos terms aparece no nome existente)
+            for (const term of matchTerms) {
+                const { rows } = await pool.query(`
+                    SELECT id, code, name FROM album_selecoes
+                    WHERE LOWER(name) LIKE LOWER($1)
+                      AND (grupo IS NULL OR grupo = '')
+                    ORDER BY ordem ASC, id ASC
+                    LIMIT 1
+                `, [`%${term}%`]);
+                if (rows.length) {
+                    console.log(`[seed-album] Reutilizando selecao "${rows[0].name}" (id ${rows[0].id}, code ${rows[0].code}) — match: "${term}"`);
+                    return rows[0].id;
+                }
+            }
+            // Nao achou — cria com fallback
             const { rows } = await pool.query(`
                 INSERT INTO album_selecoes (code, name, flag_iso, grupo, ordem)
-                VALUES ('FWC', 'FIFA World Cup History', NULL, NULL, $1)
+                VALUES ($1, $2, NULL, NULL, $3)
                 ON CONFLICT (code) DO UPDATE SET
                     name = EXCLUDED.name,
                     ordem = EXCLUDED.ordem
                 RETURNING id
-            `, [ordemSel++]);
-            const fwcId = rows[0].id;
+            `, [fallbackCode, fallbackName, ordem]);
+            console.log(`[seed-album] Criou selecao "${fallbackName}" (id ${rows[0].id}, code ${fallbackCode})`);
+            return rows[0].id;
+        }
+
+        // ============== Especiais (00 + FWC-01..08 = 9 cromos) ==============
+        {
+            const espId = await findOrCreateSpecialSelecao({
+                matchTerms: ['especiais'], // pega "Especiais" ou variantes
+                fallbackCode: 'ESP',
+                fallbackName: 'Especiais',
+                ordem: ordemSel++,
+            });
             selsTouched++;
 
-            // SANEAMENTO: limpa cromos da FWC com codigos errados (legacy de
-            // versoes antigas do seed que criaram FWC-1..FWC-19 ou similar
-            // em vez dos FWC-09..FWC-14 corretos). Mantem os cromos validos
-            // (que ja foram salvos pelos users com user_album_cromos).
-            const { rowCount: fwcLimpos } = await pool.query(
-                `DELETE FROM album_cromos
-                 WHERE selecao_id = $1 AND code <> ALL($2::varchar[])`,
-                [fwcId, FWC_VALID_CODES]
-            );
-            if (fwcLimpos) console.log(`[seed-album] Limpou ${fwcLimpos} cromo(s) com codigo errado da FWC History`);
+            // Cromo "00" (capa/destaque do album)
+            {
+                const r = await pool.query(`
+                    INSERT INTO album_cromos (code, selecao_id, ordem, tipo, nome, raridade)
+                    VALUES ('00', $1, 0, 'especial', 'Capa do Álbum', 'especial')
+                    ON CONFLICT (code) DO NOTHING
+                    RETURNING id
+                `, [espId]);
+                if (r.rows.length) cromosInseridos++;
+            }
 
-            // Cromos FWC-09 a FWC-14 (rara/legend)
-            for (let n = 9; n <= 14; n++) {
+            // FWC-01 a FWC-08
+            for (let n = 1; n <= 8; n++) {
                 const code = `FWC-${String(n).padStart(2, '0')}`;
                 const r = await pool.query(`
                     INSERT INTO album_cromos (code, selecao_id, ordem, tipo, nome, raridade)
                     VALUES ($1, $2, $3, 'legenda', $4, 'legend')
                     ON CONFLICT (code) DO NOTHING
                     RETURNING id
-                `, [code, fwcId, n, `FIFA World Cup History #${n}`]);
+                `, [code, espId, n, `FIFA World Cup History #${n}`]);
                 if (r.rows.length) cromosInseridos++;
             }
         }
 
-        // ============== Coca-Cola (14 cromos especiais) ==============
-        const CC_VALID_CODES = Array.from({ length: 14 }, (_, i) => `CC-${String(i+1).padStart(2,'0')}`);
+        // ============== Selecoes Especiais (FWC-09..19 = 11 cromos) ==============
         {
-            const { rows } = await pool.query(`
-                INSERT INTO album_selecoes (code, name, flag_iso, grupo, ordem)
-                VALUES ('CCO', 'Figurinhas da Coca-Cola', NULL, NULL, $1)
-                ON CONFLICT (code) DO UPDATE SET
-                    name = EXCLUDED.name,
-                    ordem = EXCLUDED.ordem
-                RETURNING id
-            `, [ordemSel++]);
-            const ccoId = rows[0].id;
+            const sexId = await findOrCreateSpecialSelecao({
+                // Procura "selecoes especiais" antes de "especiais" puro pra
+                // nao colidir com a Especiais acima.
+                matchTerms: ['seleções especiais', 'selecoes especiais', 'seleções espec', 'selecoes espec'],
+                fallbackCode: 'SEX',
+                fallbackName: 'Seleções Especiais',
+                ordem: ordemSel++,
+            });
             selsTouched++;
 
-            // SANEAMENTO: limpa cromos da CCO com codigos errados
-            const { rowCount: ccoLimpos } = await pool.query(
-                `DELETE FROM album_cromos
-                 WHERE selecao_id = $1 AND code <> ALL($2::varchar[])`,
-                [ccoId, CC_VALID_CODES]
-            );
-            if (ccoLimpos) console.log(`[seed-album] Limpou ${ccoLimpos} cromo(s) com codigo errado da Coca-Cola`);
+            // FWC-09 a FWC-19
+            for (let n = 9; n <= 19; n++) {
+                const code = `FWC-${String(n).padStart(2, '0')}`;
+                const r = await pool.query(`
+                    INSERT INTO album_cromos (code, selecao_id, ordem, tipo, nome, raridade)
+                    VALUES ($1, $2, $3, 'legenda', $4, 'legend')
+                    ON CONFLICT (code) DO NOTHING
+                    RETURNING id
+                `, [code, sexId, n, `FIFA World Cup History #${n}`]);
+                if (r.rows.length) cromosInseridos++;
+            }
+        }
 
+        // ============== Coca-Cola (CC-01..14 = 14 cromos) ==============
+        {
+            const ccoId = await findOrCreateSpecialSelecao({
+                matchTerms: ['coca-cola', 'coca cola', 'coca'],
+                fallbackCode: 'CCO',
+                fallbackName: 'Figurinhas da Coca-Cola',
+                ordem: ordemSel++,
+            });
+            selsTouched++;
+
+            // CC-01 a CC-14
             for (let n = 1; n <= 14; n++) {
                 const code = `CC-${String(n).padStart(2, '0')}`;
                 const r = await pool.query(`
@@ -222,24 +274,6 @@ const GRUPOS = {
                 if (r.rows.length) cromosInseridos++;
             }
         }
-
-        // SANEAMENTO EXTRA: remove "selecoes orfas" que nao sao A-L, FWC ou CCO.
-        // Versoes antigas do app criaram selecoes com codes tipo 'ESP', 'EXT'
-        // que apareciam como secoes extras no app ('Especiais', 'Selecoes
-        // Especiais'). Hoje a estrutura tem soh 12 grupos + FWC + CCO.
-        const { rowCount: selsOrfas } = await pool.query(`
-            DELETE FROM album_selecoes
-            WHERE code NOT IN (
-                'MEX','RSA','KOR','CZE','CAN','BIH','QAT','SUI',
-                'BRA','MAR','HAI','SCO','USA','PAR','AUS','TUR',
-                'GER','CUW','CIV','ECU','NED','JPN','SWE','TUN',
-                'BEL','EGY','IRN','NZL','ESP','CPV','KSA','URU',
-                'FRA','SEN','IRQ','NOR','ARG','ALG','AUT','JOR',
-                'POR','COD','UZB','COL','ENG','CRO','GHA','PAN',
-                'FWC','CCO'
-            )
-        `);
-        if (selsOrfas) console.log(`[seed-album] Removidas ${selsOrfas} selecao(oes) orfa(s) com codes legacy`);
 
         console.log('\n[seed-album] ============= RESUMO =============');
         console.log(`  Seleções inseridas/atualizadas: ${selsTouched}`);
