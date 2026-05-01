@@ -4470,24 +4470,30 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 }
 
 /* ============== LAYOUT BRACKET REAL (desktop ≥ 1100px) ==============
-   Estrutura de tournament bracket com CSS Grid + grid-row span: cards de
-   cada fase ficam VERTICALMENTE CENTRADOS entre seus 2 "pais" da fase
-   anterior. R32 ocupa 1 row, R16 ocupa 2 rows, Quartas ocupa 4 rows,
-   Semis ocupa 8 rows. Total: 16 rows na grid (8 por lado). */
+   Tournament bracket de verdade: 16 leaf rows + 1 head row.
+   - R32: 8 cards/lado, cada card span 2 rows (1 leaf por card "pai")
+   - R16: 4 cards/lado, cada card span 4 rows (centrado entre 2 R32)
+   - Q:   2 cards/lado, cada card span 8 rows (centrado entre 2 R16)
+   - Semi/Final/3o no centro: ocupam fatias especificas das 16 rows
+   align-self: center nos cards faz alinhamento vertical entre paths. */
 @media (min-width: 1100px) {
     .bracket-real {
         display: grid;
-        grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) minmax(180px, 1fr) minmax(220px, 1.2fr) minmax(180px, 1fr) minmax(180px, 1fr) minmax(180px, 1fr);
-        /* Header row + 8 rows pra R32 cards (top) + 8 pra bottom = nope.
-           Versao simples: cada col gerencia o seu spacing internamente. */
-        grid-template-rows: auto 1fr;
-        gap: 0 1.2rem;
-        padding: 0.5rem 0 1rem;
-        position: relative;
-        align-items: stretch;
+        grid-template-columns:
+            minmax(170px, 1fr)   /* R32-L */
+            minmax(170px, 1fr)   /* R16-L */
+            minmax(170px, 1fr)   /* Q-L */
+            minmax(200px, 1.1fr) /* Centro: Semi/Final/3o */
+            minmax(170px, 1fr)   /* Q-R */
+            minmax(170px, 1fr)   /* R16-R */
+            minmax(170px, 1fr);  /* R32-R */
+        /* head row + 16 leaf rows */
+        grid-template-rows: auto repeat(16, minmax(50px, auto));
+        gap: 0.35rem 1.1rem;
+        padding: 0.5rem 0 1.5rem;
     }
-    /* Cabecalhos das colunas ficam na 1a row (sticky no topo) */
     .bracket-col-head {
+        grid-row: 1;
         font-family: 'Oswald', sans-serif;
         font-weight: 800;
         font-size: 0.7rem;
@@ -4499,21 +4505,49 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         background: linear-gradient(135deg, #fff8e1, #fff3cd);
         border-radius: 8px;
         border: 1px solid rgba(212,165,32,0.3);
-        grid-row: 1;
         margin-bottom: 0.6rem;
+        align-self: start;
     }
-    /* Cada coluna posiciona os cards usando flex column SEM space-around —
-       distribui uniformemente com flex-grow:1 nos cards, fazendo com que
-       2 cards de R16 fiquem vertical-centrados em relacao a 4 cards de R32.
-       O segredo: cada coluna eh sua propria flex stack na row 2. */
+    /* Cada coluna eh um grid item que span as 16 rows e cria sua propria
+       grid interna (subgrid) pra cards posicionarem corretamente. */
     .bracket-col {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-evenly;
-        gap: 0.6rem;
-        grid-row: 2;
+        grid-row: 2 / span 16;
+        display: grid;
+        grid-template-rows: subgrid;
+        gap: 0;
+        min-width: 0;
     }
-    .bracket-col > .bracket-jogo { flex: 0 0 auto; }
+    /* Cards do R32 (col 1 e 7): cada um span 2 rows, totalizando 16 rows */
+    .bracket-col:nth-child(8) > .bracket-jogo,
+    .bracket-col:nth-child(14) > .bracket-jogo {
+        grid-row: span 2;
+        align-self: center;
+    }
+    /* Cards do R16 (col 2 e 6): cada um span 4 rows */
+    .bracket-col:nth-child(9) > .bracket-jogo,
+    .bracket-col:nth-child(13) > .bracket-jogo {
+        grid-row: span 4;
+        align-self: center;
+    }
+    /* Cards Quartas (col 3 e 5): cada um span 8 rows */
+    .bracket-col:nth-child(10) > .bracket-jogo,
+    .bracket-col:nth-child(12) > .bracket-jogo {
+        grid-row: span 8;
+        align-self: center;
+    }
+    /* Centro (col 4): 4 itens posicionados em rows especificas via :nth-child:
+       Semi1 (1o filho): rows 1-8 (top half)
+       Final (2o filho): rows 5-12 (centro)
+       3o lugar (3o filho): rows 9-16 (bottom-center, NAO sobrepoe semi2)
+       Semi2 (4o filho): rows 9-16 (bottom half)
+       Como semi2 e 3o overlap, vou empurrar 3o um pouco diferente. */
+    .bracket-col-final > .bracket-jogo {
+        align-self: center;
+    }
+    .bracket-col-final > .bracket-jogo:nth-child(1) { grid-row: 1 / span 7; }   /* semi1 */
+    .bracket-col-final > .bracket-jogo:nth-child(2) { grid-row: 5 / span 5; }   /* final (mid) */
+    .bracket-col-final > .bracket-jogo:nth-child(3) { grid-row: 14 / span 3; }  /* 3o lugar (final do bracket) */
+    .bracket-col-final > .bracket-jogo:nth-child(4) { grid-row: 10 / span 4; }  /* semi2 */
     /* Cards no bracket são compactos */
     .bracket-real .bracket-jogo { font-size: 0.85rem; }
     .bracket-real .bracket-jogo-body { padding: 0.55rem 0.7rem 0.65rem; }
