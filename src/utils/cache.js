@@ -74,4 +74,20 @@ export const invalidate = {
         cache.invalidate(`ranking:${bolaoId}`);
         cache.invalidate(`bolao:${bolaoId}:members`);
     },
+    /**
+     * Game atualizado/excluido pelo admin — afeta TODOS os users que
+     * tem aquele jogo no catalogo, e TODOS os boloes que tem palpite
+     * pra esse jogo. Estoura prefixes inteiros pra simplicar.
+     */
+    gameUpdated() {
+        // Stats agregadas de qualquer user (V/E/D/aproveitamento) podem mudar
+        // se o jogo passou a ter resultado / mudou placar.
+        cache.invalidatePrefix('snapshot:');
+        cache.invalidatePrefix('achievements:');
+        // Catalogo de qualquer user pode ter o jogo (pra Copa todos veem,
+        // pra clube so torcedores daquele club).
+        cache.invalidatePrefix('games:');
+        // Ranking de qualquer bolao depende dos resultados dos jogos.
+        cache.invalidatePrefix('ranking:');
+    },
 };

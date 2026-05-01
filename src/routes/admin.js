@@ -1,6 +1,7 @@
 import express from 'express';
 import { z } from 'zod';
 import { query } from '../db/pool.js';
+import { invalidate } from '../utils/cache.js';
 
 /**
  * Rotas administrativas — assume requireUser + requireAdmin upstream.
@@ -178,6 +179,8 @@ router.post('/games', async (req, res, next) => {
             ]
         );
 
+        // Invalida caches: criar/upsert game tambem afeta snapshot/games/ranking
+        invalidate.gameUpdated();
         res.status(201).json({ game: rows[0] });
     } catch (err) { next(err); }
 });
@@ -250,6 +253,9 @@ router.patch('/games/:id', async (req, res, next) => {
             `UPDATE games SET ${fields.join(', ')} WHERE id = $${values.length} RETURNING *`,
             values
         );
+        // Invalida caches: snapshot, achievements, games, ranking de boloes.
+        // Sem isso, o user veria o resultado antigo por ate 5 min (TTL).
+        invalidate.gameUpdated();
         res.json({ game: rows[0] });
     } catch (err) { next(err); }
 });
@@ -261,6 +267,7 @@ router.delete('/games/:id', async (req, res, next) => {
     try {
         const { rowCount } = await query('DELETE FROM games WHERE id = $1', [req.params.id]);
         if (!rowCount) return res.status(404).json({ error: 'game_not_found' });
+        invalidate.gameUpdated();
         res.json({ removido: true });
     } catch (err) { next(err); }
 });
