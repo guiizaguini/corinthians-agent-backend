@@ -5064,6 +5064,19 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     margin-bottom: 0.75rem;
     overflow: hidden;
     box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+    user-select: none;
+}
+/* Chevron — escondido no desktop (selecoes sempre abertas).
+   Aparece soh no mobile e gira quando .is-open. */
+.album-secao-head .album-secao-chevron {
+    display: none;
+    color: rgba(255,255,255,0.6);
+    font-size: 1.3rem !important;
+    transition: transform 200ms ease;
+    flex-shrink: 0;
+}
+.album-secao.is-open .album-secao-head .album-secao-chevron {
+    transform: rotate(180deg);
 }
 /* Listras coloridas no rodapé do header (rainbow Copa) */
 .album-secao-head::after {
@@ -5147,6 +5160,23 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     .album-cromos-grid {
         grid-template-columns: repeat(4, 1fr);
         gap: 0.35rem;
+    }
+    /* Collapsible: esconde grid de cromos quando a selecao nao esta aberta.
+       1a selecao de cada grupo comeca com .is-open via JS — restantes
+       comecam fechadas pra reduzir scroll. */
+    .album-secao:not(.is-open) .album-cromos-grid {
+        display: none;
+    }
+    .album-secao:not(.is-open) .album-secao-head {
+        margin-bottom: 0;
+        cursor: pointer;
+    }
+    .album-secao.is-open .album-secao-head {
+        cursor: pointer;
+    }
+    /* Mostra chevron soh no mobile */
+    .album-secao-head .album-secao-chevron {
+        display: inline-flex;
     }
 }
 @media (max-width: 380px) {
@@ -16110,18 +16140,22 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                     ? (t('app.album.grupo_special') || 'Especiais')
                     : `${t('app.album.grupo') || 'Grupo'} ${g}`;
 
-                const selecoesHtml = selecoes.map(s => {
+                // Mobile: por padrao, soh a 1a selecao deste grupo fica aberta
+                // (tem `data-album-secao-default-open` na 1a). Desktop ignora.
+                const selecoesHtml = selecoes.map((s, idx) => {
                     const cromos = porSelecao.get(s.id);
                     const cromosTotais = albumState.cromos.filter(c => c.selecao_id === s.id);
                     const tenho = cromosTotais.filter(c => c.quantidade > 0).length;
                     const total = cromosTotais.length;
                     const flagUrl = s.flag_iso ? `https://flagcdn.com/w80/${s.flag_iso}.png` : '';
+                    const defaultOpen = idx === 0;
                     return `
-                        <section class="album-secao">
-                            <div class="album-secao-head">
+                        <section class="album-secao${defaultOpen ? ' is-open' : ''}" data-secao-id="${s.id}">
+                            <div class="album-secao-head" role="button" tabindex="0" aria-expanded="${defaultOpen ? 'true' : 'false'}">
                                 ${flagUrl ? `<img class="album-secao-flag" src="${flagUrl}" alt="" loading="lazy">` : `<span class="album-secao-flag-placeholder">${escapeHtml((s.code || '').slice(0,3))}</span>`}
                                 <span class="album-secao-name">${escapeHtml(s.name)}</span>
                                 <span class="album-secao-progress"><strong>${tenho}</strong> / ${total}</span>
+                                <span class="material-icons album-secao-chevron">expand_more</span>
                             </div>
                             <div class="album-cromos-grid">
                                 ${cromos.map(c => albumRenderCromo(c, s)).join('')}
@@ -16141,6 +16175,28 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             }).join('');
 
         list.innerHTML = html;
+
+        // Toggle de collapsible das selecoes (so afeta visualmente no mobile,
+        // no desktop o CSS forca tudo aberto).
+        list.querySelectorAll('.album-secao-head').forEach(head => {
+            const toggle = () => {
+                const secao = head.closest('.album-secao');
+                if (!secao) return;
+                const open = secao.classList.toggle('is-open');
+                head.setAttribute('aria-expanded', String(open));
+            };
+            head.addEventListener('click', (e) => {
+                // Se clicou em algum botao dentro da head (improvavel mas defensivo), ignora
+                if (e.target.closest('button')) return;
+                toggle();
+            });
+            head.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggle();
+                }
+            });
+        });
 
         // Wire up controles +/− e click no cromo
         list.querySelectorAll('.album-cromo').forEach(el => {
