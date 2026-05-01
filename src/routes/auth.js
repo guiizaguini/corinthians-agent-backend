@@ -6,6 +6,7 @@ import { query } from '../db/pool.js';
 import { signToken } from '../auth/jwt.js';
 import { requireUser } from '../middleware/authUser.js';
 import { createNotificationOnce } from '../utils/notifications.js';
+import { logEvent, logUser } from '../utils/logger.js';
 
 const router = express.Router();
 
@@ -127,6 +128,14 @@ router.post('/signup', async (req, res, next) => {
         // Boas-vindas no sino (1 por user, idempotente)
         createNotificationOnce(user.id, 'welcome').catch(() => {});
         const token = signToken({ sub: user.id, email: user.email });
+        logEvent('signup', {
+            user_id: user.id,
+            email: user.email,
+            username: usernameLc,
+            display_name,
+            club_id: clubId,
+            method: 'password',
+        });
         res.status(201).json({ token, user: publicUser(user) });
     } catch (err) { next(err); }
 });
@@ -249,6 +258,12 @@ router.post('/google', async (req, res, next) => {
         }
 
         const token = signToken({ sub: user.id, email: user.email });
+        logEvent(isNew ? 'signup' : 'login', {
+            user_id: user.id,
+            email: user.email,
+            method: 'google',
+            is_new: isNew,
+        });
         // is_new permite ao front decidir se mostra o tour/modal de boas-vindas
         // (escolha de clube). Diferente de checar club_id === null pq pode existir
         // user antigo sem clube que ja conhece o app.
@@ -276,12 +291,19 @@ router.post('/login', async (req, res, next) => {
             [emailLc]
         );
         const user = rows[0];
-        if (!user) return res.status(401).json({ error: 'invalid_credentials' });
+        if (!user) {
+            logEvent('login.failed', { email: emailLc, reason: 'user_not_found' });
+            return res.status(401).json({ error: 'invalid_credentials' });
+        }
 
         const ok = await bcrypt.compare(password, user.password_hash);
-        if (!ok) return res.status(401).json({ error: 'invalid_credentials' });
+        if (!ok) {
+            logEvent('login.failed', { user_id: user.id, email: user.email, reason: 'wrong_password' });
+            return res.status(401).json({ error: 'invalid_credentials' });
+        }
 
         const token = signToken({ sub: user.id, email: user.email });
+        logEvent('login', { user_id: user.id, email: user.email, method: 'password' });
         res.json({ token, user: publicUser(user) });
     } catch (err) { next(err); }
 });
@@ -370,6 +392,12 @@ router.patch('/me', requireUser, async (req, res, next) => {
         cache.invalidatePrefix(`snapshot:${req.user.id}`);
         cache.invalidatePrefix(`achievements:${req.user.id}`);
         cache.invalidatePrefix(`games:${req.user.id}`);
+        logUser('profile.update', req.user, {
+            display_name: display_name !== undefined ? display_name : undefined,
+            club_slug: club_slug !== undefined ? club_slug : undefined,
+            username: username !== undefined ? username : undefined,
+            count_all_games: count_all_games !== undefined ? count_all_games : undefined,
+        });
         res.json({ user: rows[0] });
     } catch (err) { next(err); }
 });
@@ -437,6 +465,11 @@ router.delete('/me', requireUser, async (req, res, next) => {
         }
 
         await query('DELETE FROM users WHERE id = $1', [req.user.id]);
+        logEvent('account.delete', {
+            user_id: u.id,
+            email: u.email,
+            method: password ? 'password' : 'google',
+        });
         res.json({ deleted: true });
     } catch (err) { next(err); }
 });

@@ -4469,23 +4469,24 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     font-style: italic;
 }
 
-/* ============== LAYOUT BRACKET REAL (desktop ≥ 1100px) ============== */
+/* ============== LAYOUT BRACKET REAL (desktop ≥ 1100px) ==============
+   Estrutura de tournament bracket com CSS Grid + grid-row span: cards de
+   cada fase ficam VERTICALMENTE CENTRADOS entre seus 2 "pais" da fase
+   anterior. R32 ocupa 1 row, R16 ocupa 2 rows, Quartas ocupa 4 rows,
+   Semis ocupa 8 rows. Total: 16 rows na grid (8 por lado). */
 @media (min-width: 1100px) {
-    /* Quando NÃO há filtro de fase ativo, mostra o layout bracket */
     .bracket-real {
         display: grid;
         grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) minmax(180px, 1fr) minmax(220px, 1.2fr) minmax(180px, 1fr) minmax(180px, 1fr) minmax(180px, 1fr);
-        gap: 1.2rem;
-        align-items: stretch;
+        /* Header row + 8 rows pra R32 cards (top) + 8 pra bottom = nope.
+           Versao simples: cada col gerencia o seu spacing internamente. */
+        grid-template-rows: auto 1fr;
+        gap: 0 1.2rem;
         padding: 0.5rem 0 1rem;
         position: relative;
+        align-items: stretch;
     }
-    .bracket-col {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-        gap: 0.85rem;
-    }
+    /* Cabecalhos das colunas ficam na 1a row (sticky no topo) */
     .bracket-col-head {
         font-family: 'Oswald', sans-serif;
         font-weight: 800;
@@ -4498,8 +4499,21 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         background: linear-gradient(135deg, #fff8e1, #fff3cd);
         border-radius: 8px;
         border: 1px solid rgba(212,165,32,0.3);
-        margin-bottom: 0.4rem;
+        grid-row: 1;
+        margin-bottom: 0.6rem;
     }
+    /* Cada coluna posiciona os cards usando flex column SEM space-around —
+       distribui uniformemente com flex-grow:1 nos cards, fazendo com que
+       2 cards de R16 fiquem vertical-centrados em relacao a 4 cards de R32.
+       O segredo: cada coluna eh sua propria flex stack na row 2. */
+    .bracket-col {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        gap: 0.6rem;
+        grid-row: 2;
+    }
+    .bracket-col > .bracket-jogo { flex: 0 0 auto; }
     /* Cards no bracket são compactos */
     .bracket-real .bracket-jogo { font-size: 0.85rem; }
     .bracket-real .bracket-jogo-body { padding: 0.55rem 0.7rem 0.65rem; }
@@ -17374,48 +17388,63 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             const map = new Map(arr.map(g => [numOf(g), g]));
             return nums.map(n => map.get(n)).filter(Boolean);
         };
+        // Quando os jogos NAO tem "Jogo N" na fase (ex: 'Quartas de Final'
+        // sem numero, 'Semifinal' puro), filterByNums retorna vazio. Fallback:
+        // se conseguir achar pelo numero usa, senao divide o array na metade
+        // (TOP recebe primeira metade, BOT recebe segunda — explicit via flag).
+        const splitByNumOrHalf = (arr, nums, isTop) => {
+            const filtered = filterByNums(arr, nums);
+            if (filtered.length) return filtered;
+            const half = Math.ceil(arr.length / 2);
+            return isTop ? arr.slice(0, half) : arr.slice(half);
+        };
 
-        // Identifica semis e final/3º
-        const semi1 = byBucket.semis.find(g => numOf(g) === 101);
-        const semi2 = byBucket.semis.find(g => numOf(g) === 102);
-        const final = byBucket.final.find(g => /^Final$/i.test(g.fase || ''));
+        // Identifica semis e final/3º com fallback por indice
+        const semi1 = byBucket.semis.find(g => numOf(g) === 101) || byBucket.semis[0];
+        const semi2 = byBucket.semis.find(g => numOf(g) === 102) || byBucket.semis[1];
+        const final = byBucket.final.find(g => /^Final$/i.test(g.fase || ''))
+            || byBucket.final.find(g => !/Disputa|Third Place|3º/i.test(g.fase || ''));
         const terceiro = byBucket.final.find(g => /Disputa|Third Place|3º/i.test(g.fase || ''));
 
-        const colHead = (label) => `<div class="bracket-col-head">${label}</div>`;
+        const colHead = (label, cls = '') => `<div class="bracket-col-head ${cls}">${label}</div>`;
         const renderList = (jogos) => jogos.map(g => bracketRenderJogo(g, true)).join('');
 
+        // ESTRUTURA: 7 col-heads em row 1, depois 7 col-containers em row 2.
+        // CSS grid posiciona: heads ficam alinhados em cima, containers
+        // pegam o resto da altura disponivel uniformemente.
         return `
             <div class="bracket-real">
+                ${colHead('Round of 32')}
+                ${colHead('Oitavas')}
+                ${colHead('Quartas')}
+                ${colHead('Semis · Final · 3º', 'bracket-col-head-final')}
+                ${colHead('Quartas')}
+                ${colHead('Oitavas')}
+                ${colHead('Round of 32')}
+
                 <div class="bracket-col">
-                    ${colHead('Round of 32')}
-                    ${renderList(filterByNums(byBucket.r32, TOP_R32))}
+                    ${renderList(splitByNumOrHalf(byBucket.r32, TOP_R32, true))}
                 </div>
                 <div class="bracket-col">
-                    ${colHead('Oitavas')}
-                    ${renderList(filterByNums(byBucket.r16, TOP_R16))}
+                    ${renderList(splitByNumOrHalf(byBucket.r16, TOP_R16, true))}
                 </div>
                 <div class="bracket-col">
-                    ${colHead('Quartas')}
-                    ${renderList(filterByNums(byBucket.quartas, TOP_Q))}
+                    ${renderList(splitByNumOrHalf(byBucket.quartas, TOP_Q, true))}
                 </div>
                 <div class="bracket-col bracket-col-final">
-                    ${colHead('Semis · Final · 3º')}
                     ${semi1 ? bracketRenderJogo(semi1, true) : ''}
                     ${final ? bracketRenderJogo(final, true) : ''}
                     ${terceiro ? bracketRenderJogo(terceiro, true) : ''}
                     ${semi2 ? bracketRenderJogo(semi2, true) : ''}
                 </div>
                 <div class="bracket-col">
-                    ${colHead('Quartas')}
-                    ${renderList(filterByNums(byBucket.quartas, BOT_Q))}
+                    ${renderList(splitByNumOrHalf(byBucket.quartas, BOT_Q, false))}
                 </div>
                 <div class="bracket-col">
-                    ${colHead('Oitavas')}
-                    ${renderList(filterByNums(byBucket.r16, BOT_R16))}
+                    ${renderList(splitByNumOrHalf(byBucket.r16, BOT_R16, false))}
                 </div>
                 <div class="bracket-col">
-                    ${colHead('Round of 32')}
-                    ${renderList(filterByNums(byBucket.r32, BOT_R32))}
+                    ${renderList(splitByNumOrHalf(byBucket.r32, BOT_R32, false))}
                 </div>
             </div>
         `;

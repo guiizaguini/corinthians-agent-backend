@@ -17,6 +17,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { query } from '../db/pool.js';
 import { requireUser } from '../middleware/authUser.js';
+import { logUser } from '../utils/logger.js';
 
 const router = Router();
 
@@ -89,6 +90,7 @@ router.put('/me/cromo/:id', requireUser, async (req, res, next) => {
                 updated_at = NOW()
         `, [req.user.id, cromoId, quantidade]);
 
+        logUser('album.cromo.set', req.user, { cromo_id: cromoId, quantidade });
         res.json({ cromo_id: cromoId, quantidade });
     } catch (err) { next(err); }
 });
@@ -106,6 +108,7 @@ router.post('/me/cromo/:id/inc', requireUser, async (req, res, next) => {
                 updated_at = NOW()
             RETURNING quantidade
         `, [req.user.id, cromoId]);
+        logUser('album.cromo.inc', req.user, { cromo_id: cromoId, quantidade: rows[0]?.quantidade ?? 1 });
         res.json({ cromo_id: cromoId, quantidade: rows[0]?.quantidade ?? 1 });
     } catch (err) { next(err); }
 });
@@ -120,6 +123,7 @@ router.post('/me/cromo/:id/dec', requireUser, async (req, res, next) => {
             WHERE user_id = $1 AND cromo_id = $2
             RETURNING quantidade
         `, [req.user.id, cromoId]);
+        logUser('album.cromo.dec', req.user, { cromo_id: cromoId, quantidade: rows[0]?.quantidade ?? 0 });
         res.json({ cromo_id: cromoId, quantidade: rows[0]?.quantidade ?? 0 });
     } catch (err) { next(err); }
 });

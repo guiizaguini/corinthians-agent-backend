@@ -4,6 +4,7 @@ import crypto from 'node:crypto';
 import { query } from '../db/pool.js';
 import { requireUser, requireAdmin } from '../middleware/authUser.js';
 import { cache, invalidate } from '../utils/cache.js';
+import { logUser } from '../utils/logger.js';
 
 const router = Router();
 router.use(requireUser);
@@ -178,6 +179,11 @@ router.post('/', requireAdmin, async (req, res, next) => {
             [rows[0].id, req.user.id]
         );
 
+        logUser('bolao.create', req.user, {
+            bolao_id: rows[0].id,
+            name: rows[0].name,
+            invite_code: rows[0].invite_code,
+        });
         res.status(201).json({ bolao: rows[0] });
     } catch (err) { next(err); }
 });
@@ -234,6 +240,7 @@ router.post('/:id/entrar-publico', async (req, res, next) => {
             [bolao.id, req.user.id]
         );
         invalidate.bolaoMembers(bolao.id);
+        logUser('bolao.join', req.user, { bolao_id: bolao.id, name: bolao.name, via: 'public' });
         res.json({ bolao_id: bolao.id, name: bolao.name });
     } catch (err) { next(err); }
 });
@@ -267,6 +274,7 @@ router.post('/join', async (req, res, next) => {
             [bolao.id, req.user.id]
         );
         invalidate.bolaoMembers(bolao.id);
+        logUser('bolao.join', req.user, { bolao_id: bolao.id, name: bolao.name, via: 'invite_code' });
         res.json({ bolao_id: bolao.id, name: bolao.name });
     } catch (err) { next(err); }
 });
@@ -282,6 +290,7 @@ router.delete('/:id/leave', async (req, res, next) => {
             [bolaoId, req.user.id]
         );
         invalidate.bolaoMembers(bolaoId);
+        logUser('bolao.leave', req.user, { bolao_id: bolaoId });
         res.json({ saiu: true });
     } catch (err) { next(err); }
 });
@@ -308,6 +317,7 @@ router.delete('/:id', async (req, res, next) => {
 
         await query('DELETE FROM boloes WHERE id = $1', [bolaoId]);
         invalidate.bolaoMembers(bolaoId);
+        logUser('bolao.delete', req.user, { bolao_id: bolaoId, name: b.name });
         res.json({ deleted: true, bolao_id: bolaoId, name: b.name });
     } catch (err) { next(err); }
 });
@@ -431,6 +441,11 @@ router.put('/:id/palpite/:game_id', async (req, res, next) => {
         `, [bolaoId, req.user.id, gameId, parsed.data.gols_casa, parsed.data.gols_visitante]);
 
         invalidate.bolao(bolaoId);
+        logUser('bolao.palpite', req.user, {
+            bolao_id: bolaoId,
+            game_id: gameId,
+            placar: `${parsed.data.gols_casa}x${parsed.data.gols_visitante}`,
+        });
         res.json({ palpite: rows[0] });
     } catch (err) { next(err); }
 });
@@ -508,6 +523,11 @@ router.post('/:id/import-palpites', async (req, res, next) => {
         `, [targetId, req.user.id, sourceId]);
 
         invalidate.bolao(targetId);
+        logUser('bolao.palpites.import', req.user, {
+            target_bolao_id: targetId,
+            source_bolao_id: sourceId,
+            copied: inserted.length,
+        });
         res.json({ copied: inserted.length });
     } catch (err) { next(err); }
 });

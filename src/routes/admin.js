@@ -2,6 +2,7 @@ import express from 'express';
 import { z } from 'zod';
 import { query } from '../db/pool.js';
 import { invalidate } from '../utils/cache.js';
+import { logUser } from '../utils/logger.js';
 
 /**
  * Rotas administrativas — assume requireUser + requireAdmin upstream.
@@ -181,6 +182,14 @@ router.post('/games', async (req, res, next) => {
 
         // Invalida caches: criar/upsert game tambem afeta snapshot/games/ranking
         invalidate.gameUpdated();
+        logUser('admin.game.upsert', req.user, {
+            game_id: rows[0].id,
+            data: b.data,
+            time_casa: b.time_casa,
+            time_visitante: b.time_visitante,
+            placar: (b.gols_casa != null && b.gols_visitante != null) ? `${b.gols_casa}x${b.gols_visitante}` : null,
+            club_id: b.club_id,
+        });
         res.status(201).json({ game: rows[0] });
     } catch (err) { next(err); }
 });
@@ -256,6 +265,14 @@ router.patch('/games/:id', async (req, res, next) => {
         // Invalida caches: snapshot, achievements, games, ranking de boloes.
         // Sem isso, o user veria o resultado antigo por ate 5 min (TTL).
         invalidate.gameUpdated();
+        logUser('admin.game.update', req.user, {
+            game_id: rows[0].id,
+            time_casa: rows[0].time_casa,
+            time_visitante: rows[0].time_visitante,
+            placar: (rows[0].gols_casa != null && rows[0].gols_visitante != null)
+                ? `${rows[0].gols_casa}x${rows[0].gols_visitante}` : null,
+            fields_updated: Object.keys(allowedMap).filter(k => allowedMap[k] !== undefined).join(','),
+        });
         res.json({ game: rows[0] });
     } catch (err) { next(err); }
 });
@@ -268,6 +285,7 @@ router.delete('/games/:id', async (req, res, next) => {
         const { rowCount } = await query('DELETE FROM games WHERE id = $1', [req.params.id]);
         if (!rowCount) return res.status(404).json({ error: 'game_not_found' });
         invalidate.gameUpdated();
+        logUser('admin.game.delete', req.user, { game_id: parseInt(req.params.id) });
         res.json({ removido: true });
     } catch (err) { next(err); }
 });

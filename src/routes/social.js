@@ -2,6 +2,7 @@ import express from 'express';
 import { z } from 'zod';
 import { query } from '../db/pool.js';
 import { computeAchievements, ACHIEVEMENTS } from '../utils/achievements.js';
+import { logUser } from '../utils/logger.js';
 
 // Map de id → metadata da conquista (nome, icon, raridade, descrição) pra
 // enriquecer rows do feed sem precisar de outro fetch no front.
@@ -155,6 +156,11 @@ router.post('/friends/request', async (req, res, next) => {
             // Se já tem pending invertido, aceita automaticamente (handshake)
             if (e.status === 'PENDING' && e.requester_id !== req.user.id) {
                 await query('UPDATE friendships SET status = $1 WHERE id = $2', ['ACCEPTED', e.id]);
+                logUser('friend.accept', req.user, {
+                    friendship_id: e.id,
+                    other_user_id: recipientId,
+                    via: 'auto_handshake',
+                });
                 return res.json({ friendship: { id: e.id, status: 'ACCEPTED' } });
             }
             return res.status(409).json({ error: 'request_already_pending' });
@@ -166,6 +172,10 @@ router.post('/friends/request', async (req, res, next) => {
              RETURNING id, status, created_at`,
             [req.user.id, recipientId]
         );
+        logUser('friend.request', req.user, {
+            friendship_id: rows[0].id,
+            recipient_id: recipientId,
+        });
         res.status(201).json({ friendship: rows[0] });
     } catch (err) { next(err); }
 });
@@ -183,6 +193,10 @@ router.post('/friends/:id/accept', async (req, res, next) => {
             [req.params.id, req.user.id]
         );
         if (!rows.length) return res.status(404).json({ error: 'request_not_found' });
+        logUser('friend.accept', req.user, {
+            friendship_id: rows[0].id,
+            other_user_id: rows[0].requester_id,
+        });
         res.json({ friendship: rows[0] });
     } catch (err) { next(err); }
 });
@@ -199,6 +213,7 @@ router.delete('/friends/:id', async (req, res, next) => {
             [req.params.id, req.user.id]
         );
         if (!rowCount) return res.status(404).json({ error: 'friendship_not_found' });
+        logUser('friend.remove', req.user, { friendship_id: parseInt(req.params.id) });
         res.json({ removido: true });
     } catch (err) { next(err); }
 });
@@ -682,6 +697,11 @@ router.post('/companion-requests/:attendance_id/accept', async (req, res, next) 
             invalidate.user(req.user.id);
         }
 
+        logUser('companion.accept', req.user, {
+            attendance_id: parseInt(req.params.attendance_id),
+            owner_id: ow[0]?.user_id,
+            game_id: ow[0]?.game_id,
+        });
         res.json({
             confirmed: true,
             // Quando preenchido, o frontend abre o modal pro user refinar setor/valor
@@ -708,6 +728,10 @@ router.delete('/companion-requests/:attendance_id', async (req, res, next) => {
             const { invalidate } = await import('../utils/cache.js');
             invalidate.user(ownerId);
         }
+        logUser('companion.reject', req.user, {
+            attendance_id: parseInt(req.params.attendance_id),
+            owner_id: ownerId,
+        });
         res.json({ rejected: true });
     } catch (err) { next(err); }
 });

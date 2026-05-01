@@ -2,6 +2,7 @@ import express from 'express';
 import { z } from 'zod';
 import { query } from '../db/pool.js';
 import { invalidate } from '../utils/cache.js';
+import { logUser } from '../utils/logger.js';
 
 /**
  * CRUD de registros de presença do usuário autenticado.
@@ -149,6 +150,14 @@ router.post('/', async (req, res, next) => {
             await syncCompanions(rows[0].id, req.user.id, body.companion_user_ids);
         }
         invalidate.user(req.user.id);
+        logUser('attendance.upsert', req.user, {
+            attendance_id: rows[0].id,
+            game_id: body.game_id,
+            status: body.status ?? 'PRESENTE',
+            setor: body.setor,
+            valor_pago: body.valor_pago,
+            companions: (body.companion_user_ids || []).length,
+        });
         res.status(201).json({ attendance: rows[0] });
     } catch (err) { next(err); }
 });
@@ -201,6 +210,11 @@ router.patch('/:id', async (req, res, next) => {
         }
 
         invalidate.user(req.user.id);
+        logUser('attendance.update', req.user, {
+            attendance_id: attendance.id,
+            game_id: attendance.game_id,
+            fields: Object.keys(parsed.data).join(','),
+        });
         res.json({ attendance });
     } catch (err) { next(err); }
 });
@@ -246,6 +260,10 @@ router.delete('/:id', async (req, res, next) => {
         invalidate.user(req.user.id);
         for (const o of ownersAffected) invalidate.user(o.user_id);
 
+        logUser('attendance.delete', req.user, {
+            attendance_id: parseInt(req.params.id),
+            game_id: gameId,
+        });
         res.json({ removido: true });
     } catch (err) { next(err); }
 });
