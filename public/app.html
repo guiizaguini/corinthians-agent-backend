@@ -5388,6 +5388,15 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     flex-direction: column;
     max-height: 92vh;
     box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+    /* Vars locais — modal eh light SEMPRE (independente do tema do clube
+       do user). Sem isso, fora do escopo de #tabCopa as wc-* ficam vazias
+       e o texto fica invisivel (branco no branco) em temas dark. */
+    --wc-card: #ffffff;
+    --wc-ink: #1a1a1a;
+    --wc-ink-mute: #6a625a;
+    --wc-line: #e0d6bf;
+    --wc-bg: #faf5e8;
+    color: var(--wc-ink);
 }
 /* Backdrop mais escuro pra dar mais foco no modal */
 #albumCompareModal.modal-overlay {
