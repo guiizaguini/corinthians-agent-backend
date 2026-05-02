@@ -16083,6 +16083,11 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         filterGrupo: '',     // '' (tudo) | 'A'..'L' | 'ESPECIAL' (FWC + Coca-Cola)
         filterSearch: '',
         loaded: false,
+        // Set de selecao_ids que estao abertas (no mobile). Persistido entre
+        // re-renders (clicar num cromo dispara albumRender e antes resetava
+        // tudo pra default = soh 1a aberta). Null = primeira-render, default
+        // logic kicks in. Set vazio = nada aberto (user fechou tudo).
+        openSecaoIds: null,
     };
 
     async function albumOpen() {
@@ -16197,18 +16202,26 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                     ? (t('app.album.grupo_special') || 'Especiais')
                     : `${t('app.album.grupo') || 'Grupo'} ${g}`;
 
-                // Mobile: por padrao, soh a 1a selecao deste grupo fica aberta
-                // (tem `data-album-secao-default-open` na 1a). Desktop ignora.
+                // Mobile: por padrao, soh a 1a selecao de cada grupo fica aberta.
+                // Desktop CSS forca tudo aberto (irrelevante).
+                // Primeira render do album: marca a 1a selecao de cada grupo
+                // como aberta. openSecaoIds eh inicializado uma unica vez na
+                // 1a renderizacao do album (assim estado persiste entre
+                // re-renders disparados por click em cromo).
+                const isFirstRender = albumState.openSecaoIds === null;
+                if (isFirstRender) albumState.openSecaoIds = new Set();
                 const selecoesHtml = selecoes.map((s, idx) => {
                     const cromos = porSelecao.get(s.id);
                     const cromosTotais = albumState.cromos.filter(c => c.selecao_id === s.id);
                     const tenho = cromosTotais.filter(c => c.quantidade > 0).length;
                     const total = cromosTotais.length;
                     const flagUrl = s.flag_iso ? `https://flagcdn.com/w80/${s.flag_iso}.png` : '';
-                    const defaultOpen = idx === 0;
+                    // Marca 1a selecao de cada grupo como aberta SOMENTE na 1a render
+                    if (isFirstRender && idx === 0) albumState.openSecaoIds.add(s.id);
+                    const isOpen = albumState.openSecaoIds.has(s.id);
                     return `
-                        <section class="album-secao${defaultOpen ? ' is-open' : ''}" data-secao-id="${s.id}">
-                            <div class="album-secao-head" role="button" tabindex="0" aria-expanded="${defaultOpen ? 'true' : 'false'}">
+                        <section class="album-secao${isOpen ? ' is-open' : ''}" data-secao-id="${s.id}">
+                            <div class="album-secao-head" role="button" tabindex="0" aria-expanded="${isOpen ? 'true' : 'false'}">
                                 ${flagUrl ? `<img class="album-secao-flag" src="${flagUrl}" alt="" loading="lazy">` : `<span class="album-secao-flag-placeholder">${escapeHtml((s.code || '').slice(0,3))}</span>`}
                                 <span class="album-secao-name">${escapeHtml(s.name)}</span>
                                 <span class="album-secao-progress"><strong>${tenho}</strong> / ${total}</span>
@@ -16234,13 +16247,18 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         list.innerHTML = html;
 
         // Toggle de collapsible das selecoes (so afeta visualmente no mobile,
-        // no desktop o CSS forca tudo aberto).
+        // no desktop o CSS forca tudo aberto). Estado persistido em
+        // albumState.openSecaoIds pra sobreviver re-renders disparados por
+        // click em cromo (sem isso, marcar uma figurinha colapsava o secao).
         list.querySelectorAll('.album-secao-head').forEach(head => {
             const toggle = () => {
                 const secao = head.closest('.album-secao');
                 if (!secao) return;
+                const id = parseInt(secao.dataset.secaoId);
                 const open = secao.classList.toggle('is-open');
                 head.setAttribute('aria-expanded', String(open));
+                if (open) albumState.openSecaoIds.add(id);
+                else albumState.openSecaoIds.delete(id);
             };
             head.addEventListener('click', (e) => {
                 // Se clicou em algum botao dentro da head (improvavel mas defensivo), ignora
