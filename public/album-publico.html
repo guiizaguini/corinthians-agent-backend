@@ -656,7 +656,7 @@ body {
                 : `<span class="sec-flag" style="background:linear-gradient(135deg,var(--gold),var(--gold-deep));display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.6rem;">${escapeHtml((c0.selecao_code || '').slice(0,3))}</span>`;
             const grupoLabel = c0.grupo ? `GRUPO ${c0.grupo}` : '★';
             const cromosHtml = items.map(c => {
-                const repBadge = isRep ? `<div class="cromo-mini-rep">×${c.repetidas + 1}</div>` : '';
+                const repBadge = isRep ? `<div class="cromo-mini-rep">×${c.repetidas}</div>` : '';
                 return `
                     <div class="cromo-mini ${isRep ? '' : 'falta'}">
                         <div class="cromo-mini-num">${c.ordem}</div>

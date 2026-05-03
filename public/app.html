@@ -16509,7 +16509,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                                     <div class="album-compare-mini-foto">
                                         ${flagBg ? `<img class="album-flag-bg" src="${flagBg}" alt="" loading="lazy">` : '<span class="material-icons" style="opacity:0.4;">stars</span>'}
                                     </div>
-                                    ${repNum ? `<div class="album-compare-mini-rep-badge">×${repNum + 1}</div>` : ''}
+                                    ${repNum ? `<div class="album-compare-mini-rep-badge">×${repNum}</div>` : ''}
                                     <div class="album-compare-mini-info">
                                         <div class="album-compare-mini-code">${escapeHtml(c.code)}</div>
                                     </div>
@@ -16621,7 +16621,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 .map(s => {
                     const items = porSel.get(s.id).sort((a, b) => a.ordem - b.ordem);
                     const codes = withRepCount
-                        ? items.map(c => `${c.code} (×${c.quantidade})`)
+                        ? items.map(c => `${c.code} (×${c.quantidade - 1})`)
                         : items.map(c => c.code);
                     const flag = flagEmoji(s.flag_iso);
                     const code = (s.code || '').toUpperCase();
