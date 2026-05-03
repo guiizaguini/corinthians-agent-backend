@@ -605,7 +605,7 @@ router.get('/:id/ranking', async (req, res, next) => {
                 WHERE pe.bolao_id = $6
             )
             SELECT
-                u.id, u.username, u.display_name,
+                u.id, u.username, u.display_name, u.nationality_iso,
                 COALESCE(ppj.palpites_feitos, 0) AS palpites_feitos,
                 COALESCE(ppj.jogos_finalizados_com_palpite, 0) AS jogos_finalizados,
                 COALESCE(ppj.pontos_jogos, 0) AS pontos_jogos,

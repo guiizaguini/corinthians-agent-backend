@@ -31,6 +31,7 @@ const UpdateMeSchema = z.object({
     club_slug: z.string().min(1).max(40).nullable().optional(),
     username: z.string().regex(/^[a-z0-9_.]{3,30}$/i, 'use letras/números/_/., 3 a 30').nullable().optional(),
     count_all_games: z.boolean().optional(),
+    nationality_iso: z.string().regex(/^[a-z]{2}$/i, 'iso alpha-2 (ex: br, ar, mx)').nullable().optional(),
 });
 
 const LoginSchema = z.object({
@@ -318,6 +319,7 @@ router.get('/me', requireUser, async (req, res, next) => {
                     (u.password_hash IS NOT NULL AND u.password_hash <> '') AS has_password,
                     (u.google_sub IS NOT NULL) AS has_google,
                     COALESCE(u.count_all_games, FALSE) AS count_all_games,
+                    u.nationality_iso,
                     c.slug AS club_slug, c.name AS club_name, c.short_name AS club_short,
                     c.primary_color, c.secondary_color
              FROM users u
@@ -338,7 +340,7 @@ router.patch('/me', requireUser, async (req, res, next) => {
         if (!parsed.success) {
             return res.status(400).json({ error: 'validation_failed' });
         }
-        const { display_name, club_slug, username, count_all_games } = parsed.data;
+        const { display_name, club_slug, username, count_all_games, nationality_iso } = parsed.data;
 
         const fields = [];
         const values = [];
@@ -373,6 +375,10 @@ router.patch('/me', requireUser, async (req, res, next) => {
             values.push(u);
             fields.push(`username = $${values.length}`);
         }
+        if (nationality_iso !== undefined) {
+            values.push(nationality_iso ? nationality_iso.toLowerCase().trim() : null);
+            fields.push(`nationality_iso = $${values.length}`);
+        }
         if (!fields.length) return res.status(400).json({ error: 'nenhum_campo_valido' });
 
         values.push(req.user.id);
@@ -380,7 +386,8 @@ router.patch('/me', requireUser, async (req, res, next) => {
             `UPDATE users SET ${fields.join(', ')}
              WHERE id = $${values.length}
              RETURNING id, email, username, display_name, club_id, is_admin,
-                       COALESCE(count_all_games, FALSE) AS count_all_games`,
+                       COALESCE(count_all_games, FALSE) AS count_all_games,
+                       nationality_iso`,
             values
         );
         // Invalida cache de snapshot pra refletir a mudança imediata

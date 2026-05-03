@@ -64,6 +64,15 @@ export async function bootstrapSchema() {
                 ADD COLUMN IF NOT EXISTS count_all_games BOOLEAN NOT NULL DEFAULT FALSE
         `);
 
+        // ====== users.nationality_iso (codigo ISO alpha-2 do pais) ======
+        // Usado pra mostrar a bandeirinha do user em rankings de bolao
+        // (especialmente em boloes white-label estilo Botmaker, com pessoas
+        // de varios paises). Exemplos: 'br', 'ar', 'mx', 'us'.
+        await query(`
+            ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS nationality_iso VARCHAR(4)
+        `);
+
         // ====== user_notifications (sino — boas-vindas, sistema, etc) ======
         await query(`
             CREATE TABLE IF NOT EXISTS user_notifications (

@@ -235,6 +235,20 @@
             'welcome.btn_skip': 'Pular por enquanto',
             'welcome.btn_save': 'Confirmar',
             'welcome.skip_hint': 'Você pode escolher depois no Perfil.',
+            // Welcome modal — variante Botmaker (escolha de pais)
+            'welcome.bm.eyebrow': 'Boas-vindas',
+            'welcome.bm.title': 'De onde você está participando?',
+            'welcome.bm.subtitle': 'A nacionalidade aparece no ranking pra galera saber de onde você é.',
+            'welcome.bm.info_title': 'Como sua nacionalidade vai aparecer?',
+            'welcome.bm.info_b1': 'Sua <b>bandeirinha</b> vai aparecer no ranking do bolão.',
+            'welcome.bm.info_b2': 'A galera de cada país vai poder se identificar facil.',
+            'welcome.bm.info_b3': 'Você pode mudar isso depois no <b>Perfil</b>.',
+            'welcome.bm.country_label': 'Qual sua nacionalidade?',
+            'welcome.bm.err_required': 'Selecione sua nacionalidade.',
+            // Profile edit — campo de nacionalidade
+            'app.perfil.nat_label': 'Nacionalidade',
+            'app.perfil.nat_placeholder': '— Selecione —',
+            'app.perfil.nat_required': 'Selecione sua nacionalidade.',
             // Bell — items de notificação
             'bell.welcome.eyebrow': 'Boas-vindas',
             'bell.welcome.title': 'Bem-vindo ao Cadeira Numerada!',
@@ -779,6 +793,20 @@
             'welcome.btn_skip': 'Skip for now',
             'welcome.btn_save': 'Confirm',
             'welcome.skip_hint': 'You can pick later in Profile.',
+            // Welcome modal — Botmaker variant (country pick)
+            'welcome.bm.eyebrow': 'Welcome',
+            'welcome.bm.title': 'Where are you joining from?',
+            'welcome.bm.subtitle': 'Your nationality shows up in the leaderboard so people know where you’re from.',
+            'welcome.bm.info_title': 'How does your nationality show up?',
+            'welcome.bm.info_b1': 'Your <b>flag</b> appears in the pool leaderboard.',
+            'welcome.bm.info_b2': 'People from each country can spot each other easily.',
+            'welcome.bm.info_b3': 'You can change this later in <b>Profile</b>.',
+            'welcome.bm.country_label': 'What’s your nationality?',
+            'welcome.bm.err_required': 'Pick your nationality.',
+            // Profile edit — nationality field
+            'app.perfil.nat_label': 'Nationality',
+            'app.perfil.nat_placeholder': '— Select —',
+            'app.perfil.nat_required': 'Pick your nationality.',
             // Bell — notification items
             'bell.welcome.eyebrow': 'Welcome',
             'bell.welcome.title': 'Welcome to Cadeira Numerada!',
@@ -1306,6 +1334,20 @@
             'welcome.btn_skip': 'Saltar por ahora',
             'welcome.btn_save': 'Confirmar',
             'welcome.skip_hint': 'Podés elegir después en Perfil.',
+            // Welcome modal — variante Botmaker (eleccion de pais)
+            'welcome.bm.eyebrow': 'Bienvenida',
+            'welcome.bm.title': '¿Desde dónde estás participando?',
+            'welcome.bm.subtitle': 'La nacionalidad aparece en el ranking para que sepan de dónde sos.',
+            'welcome.bm.info_title': '¿Cómo se va a mostrar tu nacionalidad?',
+            'welcome.bm.info_b1': 'Tu <b>banderita</b> aparece en el ranking de la quiniela.',
+            'welcome.bm.info_b2': 'La gente de cada país se va a poder identificar fácil.',
+            'welcome.bm.info_b3': 'Podés cambiarlo después en <b>Perfil</b>.',
+            'welcome.bm.country_label': '¿Cuál es tu nacionalidad?',
+            'welcome.bm.err_required': 'Elegí tu nacionalidad.',
+            // Profile edit — campo de nacionalidad
+            'app.perfil.nat_label': 'Nacionalidad',
+            'app.perfil.nat_placeholder': '— Seleccioná —',
+            'app.perfil.nat_required': 'Elegí tu nacionalidad.',
             // Bell — items de notificación
             'bell.welcome.eyebrow': 'Bienvenida',
             'bell.welcome.title': '¡Bienvenido a Cadeira Numerada!',

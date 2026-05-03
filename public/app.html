@@ -7417,6 +7417,31 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     border-radius: 50%;
 }
 
+/* Bandeirinha redondinha do user — exclusiva do bolao Botmaker
+   (8711A5E918). Renderizada via flagcdn.com/w80, formato circular
+   com border + sombra leve pra destacar do background. */
+.bolao-rank-flag {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0ebe0;
+    color: #94816a;
+    font-weight: 700;
+    font-size: 0.8rem;
+}
+.bolao-rank-flag-empty {
+    /* "?" placeholder pra users sem nacionalidade — visual mais soft */
+    border-color: #e6dfcc;
+    box-shadow: none;
+}
+
 /* Info (nome + @handle) */
 .bolao-rank-info { min-width: 0; overflow: hidden; display: flex; flex-direction: column; gap: 0.12rem; }
 .bolao-rank-name {
@@ -9998,50 +10023,84 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
     <!-- Modal: Boas-vindas (1ª vez via Google sem clube) -->
     <div class="modal-overlay" id="welcomeModal">
         <div class="modal welcome-modal">
-            <div class="welcome-eyebrow" data-i18n="welcome.eyebrow">Boas-vindas</div>
-            <h2 data-i18n="welcome.title">Escolha seu time do coração</h2>
-            <div class="meta" data-i18n="welcome.subtitle">Pra começar, conta pra gente pra qual time você torce.</div>
+            <!-- Variante DEFAULT (escolha de clube) — exibida pra users normais -->
+            <div id="welcomeVariantClub">
+                <div class="welcome-eyebrow" data-i18n="welcome.eyebrow">Boas-vindas</div>
+                <h2 data-i18n="welcome.title">Escolha seu time do coração</h2>
+                <div class="meta" data-i18n="welcome.subtitle">Pra começar, conta pra gente pra qual time você torce.</div>
 
-            <!-- Bloco info estilo Material UI (info icon + lista) -->
-            <div class="welcome-info">
-                <div class="welcome-info-head">
-                    <span class="material-icons">info</span>
-                    <span data-i18n="welcome.info_title">O que muda quando você escolhe um time?</span>
+                <!-- Bloco info estilo Material UI (info icon + lista) -->
+                <div class="welcome-info">
+                    <div class="welcome-info-head">
+                        <span class="material-icons">info</span>
+                        <span data-i18n="welcome.info_title">O que muda quando você escolhe um time?</span>
+                    </div>
+                    <ul class="welcome-info-list">
+                        <li>
+                            <span class="material-icons welcome-info-bullet">palette</span>
+                            <span data-i18n-html="welcome.info_b1">O app fica nas <b>cores do seu clube</b> automaticamente.</span>
+                        </li>
+                        <li>
+                            <span class="material-icons welcome-info-bullet">stadium</span>
+                            <span data-i18n-html="welcome.info_b2">Aparece o <b>catálogo completo</b> de jogos do seu time, históricos e atuais — você marca quais foi.</span>
+                        </li>
+                        <li>
+                            <span class="material-icons welcome-info-bullet">emoji_events</span>
+                            <span data-i18n-html="welcome.info_b3">Desbloqueia <b>conquistas</b> conforme acumula presenças, vitórias e clássicos.</span>
+                        </li>
+                        <li>
+                            <span class="material-icons welcome-info-bullet">insights</span>
+                            <span data-i18n-html="welcome.info_b4">Estatísticas pessoais: aproveitamento, retrospecto contra cada adversário, etc.</span>
+                        </li>
+                        <li>
+                            <span class="material-icons welcome-info-bullet">group_add</span>
+                            <span data-i18n-html="welcome.info_b5">Adicione <b>amigos</b>, veja a <b>coleção de jogos</b> deles, compare conquistas e o retrospecto de quem foi mais ao estádio.</span>
+                        </li>
+                    </ul>
                 </div>
-                <ul class="welcome-info-list">
-                    <li>
-                        <span class="material-icons welcome-info-bullet">palette</span>
-                        <span data-i18n-html="welcome.info_b1">O app fica nas <b>cores do seu clube</b> automaticamente.</span>
-                    </li>
-                    <li>
-                        <span class="material-icons welcome-info-bullet">stadium</span>
-                        <span data-i18n-html="welcome.info_b2">Aparece o <b>catálogo completo</b> de jogos do seu time, históricos e atuais — você marca quais foi.</span>
-                    </li>
-                    <li>
-                        <span class="material-icons welcome-info-bullet">emoji_events</span>
-                        <span data-i18n-html="welcome.info_b3">Desbloqueia <b>conquistas</b> conforme acumula presenças, vitórias e clássicos.</span>
-                    </li>
-                    <li>
-                        <span class="material-icons welcome-info-bullet">insights</span>
-                        <span data-i18n-html="welcome.info_b4">Estatísticas pessoais: aproveitamento, retrospecto contra cada adversário, etc.</span>
-                    </li>
-                    <li>
-                        <span class="material-icons welcome-info-bullet">group_add</span>
-                        <span data-i18n-html="welcome.info_b5">Adicione <b>amigos</b>, veja a <b>coleção de jogos</b> deles, compare conquistas e o retrospecto de quem foi mais ao estádio.</span>
-                    </li>
-                </ul>
+
+                <label for="welcomeClubSelect" data-i18n="welcome.club_label">Pra qual time você torce?</label>
+                <select id="welcomeClubSelect">
+                    <option value="" data-i18n="welcome.club_placeholder">— Selecione seu time —</option>
+                </select>
             </div>
 
-            <label for="welcomeClubSelect" data-i18n="welcome.club_label">Pra qual time você torce?</label>
-            <select id="welcomeClubSelect">
-                <option value="" data-i18n="welcome.club_placeholder">— Selecione seu time —</option>
-            </select>
+            <!-- Variante BOTMAKER (escolha de pais) — exibida pra users @botmaker -->
+            <div id="welcomeVariantBotmaker" style="display:none;">
+                <div class="welcome-eyebrow" data-i18n="welcome.bm.eyebrow">Boas-vindas</div>
+                <h2 data-i18n="welcome.bm.title">De onde você está participando?</h2>
+                <div class="meta" data-i18n="welcome.bm.subtitle">A nacionalidade aparece no ranking pra galera saber de onde você é.</div>
+
+                <div class="welcome-info">
+                    <div class="welcome-info-head">
+                        <span class="material-icons">public</span>
+                        <span data-i18n="welcome.bm.info_title">Como sua nacionalidade vai aparecer?</span>
+                    </div>
+                    <ul class="welcome-info-list">
+                        <li>
+                            <span class="material-icons welcome-info-bullet">flag</span>
+                            <span data-i18n-html="welcome.bm.info_b1">Sua <b>bandeirinha</b> vai aparecer no ranking do bolão.</span>
+                        </li>
+                        <li>
+                            <span class="material-icons welcome-info-bullet">groups</span>
+                            <span data-i18n-html="welcome.bm.info_b2">A galera de cada país vai poder se identificar facil.</span>
+                        </li>
+                        <li>
+                            <span class="material-icons welcome-info-bullet">edit</span>
+                            <span data-i18n-html="welcome.bm.info_b3">Você pode mudar isso depois no <b>Perfil</b>.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <label for="welcomeCountrySelect" data-i18n="welcome.bm.country_label">Qual sua nacionalidade?</label>
+                <select id="welcomeCountrySelect" required></select>
+            </div>
 
             <div class="modal-actions">
                 <button class="btn-secondary" id="welcomeSkipBtn" data-i18n="welcome.btn_skip">Pular por enquanto</button>
                 <button class="btn-primary" id="welcomeSaveBtn" data-i18n="welcome.btn_save">Confirmar</button>
             </div>
-            <div class="welcome-skip-hint" data-i18n="welcome.skip_hint">Você pode escolher depois no Perfil.</div>
+            <div class="welcome-skip-hint" id="welcomeSkipHint" data-i18n="welcome.skip_hint">Você pode escolher depois no Perfil.</div>
         </div>
     </div>
 
@@ -10109,6 +10168,9 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
             <select id="pClub" style="font-family:'Oswald',sans-serif;">
                 <option value="">— Prefiro não escolher —</option>
             </select>
+
+            <label for="pNationality" data-i18n="app.perfil.nat_label">Nacionalidade</label>
+            <select id="pNationality" required style="font-family:'Oswald',sans-serif;"></select>
 
             <div class="modal-actions">
                 <button class="btn-secondary" id="pCancel">Cancelar</button>
@@ -11257,6 +11319,64 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
         }
         // Fallback pra times TBD ou sem mapping: placeholder listrado
         return `<span class="wc-flag tbd-flag"></span>`;
+    }
+
+    // ===============================================
+    // Lista de paises pro dropdown de nacionalidade
+    // ISO alpha-2 minusculo (compativel com flagcdn.com)
+    // Ordem: paises da America Latina + UE + principais paises do mundo,
+    // alfabetico em portugues. Usado no welcome modal (botmaker) e no
+    // editar perfil. Nome em PT — i18n n/a aqui pq sao nomes proprios.
+    // ===============================================
+    const COUNTRIES = [
+        { iso: 'ar', name: 'Argentina' },         { iso: 'au', name: 'Austrália' },
+        { iso: 'at', name: 'Áustria' },           { iso: 'be', name: 'Bélgica' },
+        { iso: 'bo', name: 'Bolívia' },           { iso: 'br', name: 'Brasil' },
+        { iso: 'ca', name: 'Canadá' },            { iso: 'cl', name: 'Chile' },
+        { iso: 'cn', name: 'China' },             { iso: 'co', name: 'Colômbia' },
+        { iso: 'kr', name: 'Coreia do Sul' },     { iso: 'cr', name: 'Costa Rica' },
+        { iso: 'hr', name: 'Croácia' },           { iso: 'cu', name: 'Cuba' },
+        { iso: 'dk', name: 'Dinamarca' },         { iso: 'ec', name: 'Equador' },
+        { iso: 'eg', name: 'Egito' },             { iso: 'sv', name: 'El Salvador' },
+        { iso: 'es', name: 'Espanha' },           { iso: 'us', name: 'Estados Unidos' },
+        { iso: 'ph', name: 'Filipinas' },         { iso: 'fi', name: 'Finlândia' },
+        { iso: 'fr', name: 'França' },            { iso: 'de', name: 'Alemanha' },
+        { iso: 'gh', name: 'Gana' },              { iso: 'gr', name: 'Grécia' },
+        { iso: 'gt', name: 'Guatemala' },         { iso: 'hn', name: 'Honduras' },
+        { iso: 'hk', name: 'Hong Kong' },         { iso: 'hu', name: 'Hungria' },
+        { iso: 'in', name: 'Índia' },             { iso: 'id', name: 'Indonésia' },
+        { iso: 'ir', name: 'Irã' },               { iso: 'ie', name: 'Irlanda' },
+        { iso: 'is', name: 'Islândia' },          { iso: 'il', name: 'Israel' },
+        { iso: 'it', name: 'Itália' },            { iso: 'jp', name: 'Japão' },
+        { iso: 'ma', name: 'Marrocos' },          { iso: 'mx', name: 'México' },
+        { iso: 'ng', name: 'Nigéria' },           { iso: 'no', name: 'Noruega' },
+        { iso: 'nz', name: 'Nova Zelândia' },     { iso: 'nl', name: 'Países Baixos' },
+        { iso: 'pa', name: 'Panamá' },            { iso: 'py', name: 'Paraguai' },
+        { iso: 'pe', name: 'Peru' },              { iso: 'pl', name: 'Polônia' },
+        { iso: 'pt', name: 'Portugal' },          { iso: 'gb', name: 'Reino Unido' },
+        { iso: 'do', name: 'República Dominicana' }, { iso: 'cz', name: 'República Tcheca' },
+        { iso: 'ro', name: 'Romênia' },           { iso: 'ru', name: 'Rússia' },
+        { iso: 'sn', name: 'Senegal' },           { iso: 'rs', name: 'Sérvia' },
+        { iso: 'sg', name: 'Singapura' },         { iso: 'za', name: 'África do Sul' },
+        { iso: 'se', name: 'Suécia' },            { iso: 'ch', name: 'Suíça' },
+        { iso: 'th', name: 'Tailândia' },         { iso: 'tw', name: 'Taiwan' },
+        { iso: 'tr', name: 'Turquia' },           { iso: 'ua', name: 'Ucrânia' },
+        { iso: 'uy', name: 'Uruguai' },           { iso: 've', name: 'Venezuela' },
+        { iso: 'vn', name: 'Vietnã' },
+    ];
+    // Ordena alfabeticamente (locale-aware com acentos)
+    COUNTRIES.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+
+    // Renderiza option tags pra um <select> de pais. Se selectedIso passado,
+    // marca como selected. Inclui o placeholder vazio pra forcar escolha.
+    function renderCountryOptions(selectedIso, placeholder) {
+        const ph = placeholder || '— Selecione —';
+        const opts = [`<option value="">${escapeHtml(ph)}</option>`];
+        for (const c of COUNTRIES) {
+            const sel = (selectedIso && selectedIso.toLowerCase() === c.iso) ? ' selected' : '';
+            opts.push(`<option value="${c.iso}"${sel}>${escapeHtml(c.name)}</option>`);
+        }
+        return opts.join('');
     }
 
     function teamInitials(name) {
@@ -12554,9 +12674,17 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
     // ===============================================
     const welcomeModal = document.getElementById('welcomeModal');
     const welcomeSelect = document.getElementById('welcomeClubSelect');
+    const welcomeCountrySelect = document.getElementById('welcomeCountrySelect');
 
     async function maybeShowWelcomeModal() {
-        // Flag setada no login.html / signup.html quando is_new = true
+        // Botmaker user: SEMPRE abre se nao tem nacionalidade definida
+        // (ignora a flag cn_show_welcome — pra garantir que pegue tudo, inclusive
+        // accounts criadas antes do white-label rolar).
+        if (isBotmakerUser() && !user.nationality_iso) {
+            await openWelcomeModalManual();
+            return;
+        }
+        // User normal: respeita a flag cn_show_welcome (set no login/signup quando is_new)
         if (sessionStorage.getItem('cn_show_welcome') !== '1') return;
         sessionStorage.removeItem('cn_show_welcome');
         await openWelcomeModalManual();
@@ -12564,10 +12692,30 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
 
     // Abre o modal manualmente (chamado pelo click no item welcome do sino)
     async function openWelcomeModalManual() {
-        await ensureClubsLoaded();
+        const isBM = isBotmakerUser();
+        const variantClub = document.getElementById('welcomeVariantClub');
+        const variantBM = document.getElementById('welcomeVariantBotmaker');
+        const skipBtn = document.getElementById('welcomeSkipBtn');
+        const skipHint = document.getElementById('welcomeSkipHint');
+
+        if (isBM) {
+            // Variante botmaker: mostra dropdown de pais, esconde clube.
+            // Skip desabilitado pra forcar escolha (campo obrigatorio).
+            variantClub.style.display = 'none';
+            variantBM.style.display = '';
+            welcomeCountrySelect.innerHTML = renderCountryOptions(user?.nationality_iso, '— Selecione —');
+            skipBtn.style.display = 'none';
+            skipHint.style.display = 'none';
+        } else {
+            // Variante padrao (clube)
+            variantBM.style.display = 'none';
+            variantClub.style.display = '';
+            await ensureClubsLoaded();
+            if (user && user.club_slug) welcomeSelect.value = user.club_slug;
+            skipBtn.style.display = '';
+            skipHint.style.display = '';
+        }
         if (window.CN_I18N?.applyTranslations) window.CN_I18N.applyTranslations();
-        // Pre-popula com o time atual se já tiver
-        if (user && user.club_slug) welcomeSelect.value = user.club_slug;
         welcomeModal.classList.add('show');
     }
 
@@ -12576,28 +12724,42 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
     });
 
     document.getElementById('welcomeSaveBtn').addEventListener('click', async () => {
-        const slug = welcomeSelect.value || null;
+        const isBM = isBotmakerUser();
         const btn = document.getElementById('welcomeSaveBtn');
+
+        // Validacao especifica de cada variante
+        let payload;
+        if (isBM) {
+            const iso = welcomeCountrySelect.value;
+            if (!iso) {
+                welcomeCountrySelect.focus();
+                alert(t('welcome.bm.err_required') || 'Selecione sua nacionalidade.');
+                return;
+            }
+            payload = { nationality_iso: iso };
+        } else {
+            const slug = welcomeSelect.value || null;
+            payload = { club_slug: slug };
+        }
+
         btn.disabled = true;
         const originalLabel = btn.textContent;
         btn.textContent = '…';
         try {
-            // PATCH /auth/me com club_slug → backend resolve pra club_id
             const res = await fetch('/auth/me', {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify({ club_slug: slug }),
+                body: JSON.stringify(payload),
             });
             if (!res.ok) throw new Error('save_failed');
             const data = await res.json();
-            // Atualiza estado local pra não precisar refresh
             user = data.user;
             localStorage.setItem('fiel_user', JSON.stringify(user));
             welcomeModal.classList.remove('show');
-            // Recarrega o app pra aplicar tema do clube + catálogo novo
+            // Reload pra refletir tema/cores (clube) ou bandeirinha (botmaker no ranking)
             window.location.reload();
         } catch (err) {
             btn.disabled = false;
@@ -12606,9 +12768,11 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
         }
     });
 
-    // Fecha modal ao clicar fora (mesmo padrão dos outros)
+    // Fecha modal ao clicar fora — bloqueado pra botmaker (campo obrigatorio)
     welcomeModal.addEventListener('click', (e) => {
-        if (e.target.id === 'welcomeModal') welcomeModal.classList.remove('show');
+        if (e.target.id !== 'welcomeModal') return;
+        if (isBotmakerUser() && !user.nationality_iso) return;
+        welcomeModal.classList.remove('show');
     });
 
     // O botão "Perfil" do topbar agora abre a VISTA de perfil (não mais o modal direto).
@@ -12623,6 +12787,20 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
             document.getElementById('pUsername').value = user.username || '';
             document.getElementById('pEmail').value = user.email || '';
             pClub.value = user.club_slug || '';
+            // Popula dropdown de nacionalidade com a atual selecionada
+            const pNat = document.getElementById('pNationality');
+            if (pNat) {
+                pNat.innerHTML = renderCountryOptions(user?.nationality_iso, t('app.perfil.nat_placeholder') || '— Selecione —');
+            }
+            // Pra usuarios botmaker, esconde o select de clube — eles nao escolhem time
+            const pClubLabel = document.querySelector('label[for="pClub"]');
+            if (isBotmakerUser()) {
+                if (pClubLabel) pClubLabel.style.display = 'none';
+                pClub.style.display = 'none';
+            } else {
+                if (pClubLabel) pClubLabel.style.display = '';
+                pClub.style.display = '';
+            }
             profileModal.classList.add('show');
         });
     }
@@ -13016,6 +13194,14 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
 
     document.getElementById('pSave').addEventListener('click', async () => {
         const btn = document.getElementById('pSave');
+        // Validacao: nacionalidade obrigatoria pra TODOS os users
+        const pNat = document.getElementById('pNationality');
+        const natIso = pNat ? pNat.value : '';
+        if (!natIso) {
+            alert(t('app.perfil.nat_required') || 'Selecione sua nacionalidade.');
+            if (pNat) pNat.focus();
+            return;
+        }
         btn.disabled = true;
         btn.textContent = 'Salvando...';
         try {
@@ -13024,6 +13210,7 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
                 display_name: document.getElementById('pName').value.trim() || null,
                 club_slug: pClub.value || null,
                 username: usernameVal || null,
+                nationality_iso: natIso,
             };
             const res = await api('/auth/me', { method: 'PATCH', body: JSON.stringify(body) });
             profileModal.classList.remove('show');
@@ -15411,6 +15598,7 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
             const data = await api(`/bolao/${id}`);
             bolaoState.pontos = data.pontos || bolaoState.pontos;
             bolaoState.travarMin = data.minutos_travar_antes || 1;
+            bolaoState.inviteCode = data.bolao.invite_code; // pra ranking saber se e o bolao especial Botmaker
             document.getElementById('bolaoDetailTitle').textContent = data.bolao.name;
             document.getElementById('bolaoDetailDesc').textContent = data.bolao.description || '';
             document.getElementById('bolaoDetailDesc').style.display = data.bolao.description ? '' : 'none';
@@ -16104,11 +16292,27 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
                 ? `Você: ${myRow.pontos_total} pts`
                 : `${ranking.length} membros`;
 
+            // Bolao "Botmaker Copa 2026" (invite_code 8711A5E918): mostra
+            // bandeirinha circular da nacionalidade do user no ranking.
+            const isBotmakerBolao = (bolaoState.inviteCode || '').toUpperCase() === '8711A5E918';
+
             list.innerHTML = ranking.map((r, i) => {
                 const pos = i + 1;
                 const isMe = r.id === myId;
                 const name = (r.display_name || r.username || 'Amigo').toUpperCase();
                 const status = friendshipStatusWith(r.id);
+
+                // Bandeirinha redondinha (so no bolao Botmaker)
+                let flagHtml = '';
+                if (isBotmakerBolao) {
+                    if (r.nationality_iso) {
+                        const iso = String(r.nationality_iso).toLowerCase();
+                        flagHtml = `<img class="bolao-rank-flag" src="https://flagcdn.com/w80/${iso}.png" srcset="https://flagcdn.com/w80/${iso}.png 1x, https://flagcdn.com/w160/${iso}.png 2x" alt="" loading="lazy">`;
+                    } else {
+                        // User sem nacionalidade definida — placeholder cinza com '?'
+                        flagHtml = `<span class="bolao-rank-flag bolao-rank-flag-empty" title="Nacionalidade nao definida">?</span>`;
+                    }
+                }
 
                 // Posição: número simples (sem medalhas — pedido do user)
                 const posHtml = `<span class="bolao-rank-num">${pos}</span>`;
@@ -16143,6 +16347,7 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
                 return `
                     <div class="${rowCls}">
                         <div class="bolao-rank-pos">${posHtml}</div>
+                        ${flagHtml}
                         <div class="bolao-rank-info">
                             <div class="bolao-rank-name">
                                 <span class="bolao-rank-name-text">${escapeHtml(name)}</span>
