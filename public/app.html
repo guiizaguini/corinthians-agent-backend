@@ -10952,8 +10952,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     </main>
 
 <script src="/i18n.js"></script>
-<!-- jsPDF — gerador de PDF client-side pra folha de controle do album -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js" defer></script>
+<!-- jsPDF — gerador de PDF client-side. Servido localmente pra evitar
+     CSP/firewall blocks de CDN externo. -->
+<script src="/lib/jspdf.umd.min.js" defer></script>
 <script>
     const t = (k, vars) => window.CN_I18N ? window.CN_I18N.t(k, vars) : k;
 
