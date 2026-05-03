@@ -2,6 +2,7 @@ import express from 'express';
 import { z } from 'zod';
 import { query } from '../db/pool.js';
 import { computeAchievements, ACHIEVEMENTS } from '../utils/achievements.js';
+import { fetchBolaoStats } from '../utils/bolaoStats.js';
 import { logUser } from '../utils/logger.js';
 
 // Map de id → metadata da conquista (nome, icon, raridade, descrição) pra
@@ -578,6 +579,10 @@ router.get('/users/:user_id/attendances', async (req, res, next) => {
         const stats = statsAgg.rows[0];
         const e = statsExtras.rows[0] || {};
 
+        // Bolao stats — sempre roda, independente do user ter clube ou nao
+        // (white-label Botmaker tambem ganha conquistas de bolao).
+        const bolaoStats = await fetchBolaoStats(otherId);
+
         // Stats que o catálogo de conquistas espera
         const achStats = {
             jogos:                  stats?.jogos || 0,
@@ -590,6 +595,7 @@ router.get('/users/:user_id/attendances', async (req, res, next) => {
             notas:                  notas.rows[0]?.n || 0,
             amigos:                 amigos.rows[0]?.n || 0,
             jogos_com_companions:   companions.rows[0]?.n || 0,
+            ...bolaoStats,
         };
         const achievements = computeAchievements(achStats);
 

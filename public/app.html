@@ -9362,7 +9362,13 @@ body.botmaker-mode .tab[data-tab="mine"],
 body.botmaker-mode #cartBar,
 body.botmaker-mode #kpis,
 body.botmaker-mode #tabCatalog,
-body.botmaker-mode #tabMine {
+body.botmaker-mode #tabMine,
+body.botmaker-mode .perfil-kpis,
+body.botmaker-mode .perfil-prefs,
+body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="presenca"],
+body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="vitorias"],
+body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="especial"],
+body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
     display: none !important;
 }
 
@@ -10560,6 +10566,7 @@ body.botmaker-mode #tabMine {
                     <button class="conq-filter" data-filter="especial">Especiais</button>
                     <button class="conq-filter" data-filter="colecao">Coleção</button>
                     <button class="conq-filter" data-filter="social">Sociais</button>
+                    <button class="conq-filter" data-filter="bolao">Bolão</button>
                 </div>
 
                 <div class="perfil-conq-grid" id="perfilConqGrid">
@@ -15780,6 +15787,8 @@ body.botmaker-mode #tabMine {
                         requestAnimationFrame(() => window.scrollTo({ top: scrollY, behavior: 'instant' }));
                         // Atualiza ranking em paralelo (elemento separado, não mexe no scroll)
                         bolaoLoadRanking(id);
+                        // Pode ter desbloqueado conquistas de bolao (palpite_1, palpite_30, etc)
+                        checkPendingAchievements();
                     } catch (err) {
                         const msg = err.message === 'palpite_closed'
                             ? 'Palpites fechados (faltam menos de 1 min pro jogo)'
@@ -17529,6 +17538,8 @@ body.botmaker-mode #tabMine {
         try {
             const res = await api('/bolao/join', { method: 'POST', body: JSON.stringify({ invite_code: code }) });
             input.value = '';
+            // Pode ter desbloqueado conquista 'Faz Parte' (bolao_participar_1)
+            checkPendingAchievements();
             navigate('/bolao/' + res.bolao_id);
         } catch (e) {
             const msg = {

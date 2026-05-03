@@ -1,6 +1,7 @@
 import express from 'express';
 import { query } from '../db/pool.js';
 import { computeAchievements, ACHIEVEMENT_CATEGORIES, RARITY_INFO } from '../utils/achievements.js';
+import { fetchBolaoStats } from '../utils/bolaoStats.js';
 import { cache } from '../utils/cache.js';
 import { bootstrapSchema } from '../utils/schemaBootstrap.js';
 import { listPendingNotifications, markAllNotificationsSeen } from '../utils/notifications.js';
@@ -409,20 +410,22 @@ router.get('/achievements', async (req, res, next) => {
         const uid = req.user.id;
         const cid = req.user.club_id;
 
-        if (!cid) {
-            return res.json({
-                achievements: [],
-                categories: ACHIEVEMENT_CATEGORIES,
-                rarities: RARITY_INFO,
-                stats: { jogos: 0, vitorias: 0 },
-            });
-        }
-
-        const cacheKey = `achievements:${uid}:${cid}`;
+        const cacheKey = `achievements:${uid}:${cid || 'noclub'}`;
         const cached = cache.get(cacheKey);
         if (cached) return res.json(cached);
 
-        const stats = await fetchUserStats(uid, cid);
+        // Stats do clube — soh roda se user tem clube. Sem clube, retorna zeros
+        // (conquistas baseadas em presenca/vitorias ficam locked, mas as de bolao
+        // continuam desbloqueando normalmente — pra suportar white-label sem clube).
+        const [clubStats, bolaoStats] = await Promise.all([
+            cid ? fetchUserStats(uid, cid) : Promise.resolve({
+                jogos: 0, vitorias: 0, empates: 0, derrotas: 0,
+                classicos: 0, titulos: 0, aproveitamento_pct: 0,
+                notas: 0, amigos: 0, jogos_com_companions: 0,
+            }),
+            fetchBolaoStats(uid),
+        ]);
+        const stats = { ...clubStats, ...bolaoStats };
         const achievements = computeAchievements(stats);
 
         // Sincroniza unlocks no DB (silently — esse endpoint não é a porta de
@@ -446,16 +449,24 @@ router.get('/achievements/pending', async (req, res, next) => {
         await ensureUserAchievementsTable();
         const uid = req.user.id;
         const cid = req.user.club_id;
-        if (!cid) return res.json({ pending: [] });
 
-        // Recomputa do zero (não usa cache pra captar unlocks novos)
-        const stats = await fetchUserStats(uid, cid);
+        // Sem clube ainda roda — bolao stats funcionam pra qualquer user
+        // (botmaker/white-label sem clube ganha conquistas de bolao normalmente).
+        const [clubStats, bolaoStats] = await Promise.all([
+            cid ? fetchUserStats(uid, cid) : Promise.resolve({
+                jogos: 0, vitorias: 0, empates: 0, derrotas: 0,
+                classicos: 0, titulos: 0, aproveitamento_pct: 0,
+                notas: 0, amigos: 0, jogos_com_companions: 0,
+            }),
+            fetchBolaoStats(uid),
+        ]);
+        const stats = { ...clubStats, ...bolaoStats };
         const achievements = computeAchievements(stats);
         const newIds = await syncUnlockedAchievements(uid, achievements);
 
         // Se houve novos unlocks, invalida o cache de /achievements pra perfil
         // não mostrar estado antigo na próxima abertura
-        if (newIds.length) cache.invalidate(`achievements:${uid}:${cid}`);
+        if (newIds.length) cache.invalidate(`achievements:${uid}:${cid || 'noclub'}`);
 
         // Lista todas as desbloqueadas ainda não vistas (não só as recém criadas)
         // - seen_at IS NULL → ainda no sino (badge persiste)
