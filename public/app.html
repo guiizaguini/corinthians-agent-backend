@@ -7377,6 +7377,12 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     margin: 0.2rem 0;
     min-height: 52px;
 }
+/* Variante com bandeirinha (bolao Botmaker) — coluna extra pra bandeira
+   redondinha entre a posicao e o nome. Sem isso o flag estourava pra baixo
+   (so tinha 3 colunas no grid). */
+.bolao-ranking-row.with-flag {
+    grid-template-columns: 32px 36px 1fr auto;
+}
 .bolao-ranking-row + .bolao-ranking-row { border-top: 1px solid #efe8d6; }
 
 /* Top 1 — background dourado forte */
@@ -7766,7 +7772,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     border-bottom: 1px solid rgba(212,165,32,0.2);
     white-space: nowrap;
 }
-.bolao-grupo-table thead th.col-time { text-align: left; padding-left: 0.5rem; }
+.bolao-grupo-table thead th.col-pos { padding-left: 0.85rem; text-align: left; }
+.bolao-grupo-table thead th.col-time { text-align: left; padding-left: 0.85rem; }
 .bolao-grupo-table tbody td {
     font-size: 0.74rem;
     color: #1a1000;
@@ -7778,7 +7785,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 .bolao-grupo-table tbody tr:last-child td { border-bottom: none; }
 .bolao-grupo-table tbody td.col-time {
     text-align: left;
-    padding-left: 0.5rem;
+    padding-left: 0.85rem;
     text-transform: uppercase;
     font-weight: 700;
     font-size: 0.7rem;
@@ -7790,10 +7797,12 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 .bolao-grupo-table tbody tr.repescagem td { background: rgba(212, 165, 32, 0.08); }
 .bolao-grupo-table tbody tr.repescagem td:first-child { box-shadow: inset 3px 0 0 #d4a520; }
 .bolao-grupo-table .col-pos {
-    width: 18px;
+    width: 28px;
     color: #6a5530;
     font-size: 0.7rem;
     font-weight: 700;
+    text-align: left;
+    padding-left: 0.85rem !important;
 }
 .bolao-grupo-table .grupo-flag {
     width: 16px; height: 12px;
@@ -7811,8 +7820,12 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
 /* Mobile-friendly: tabela mais compacta em telas estreitas */
 @media (max-width: 480px) {
     .bolao-grupo-table thead th { font-size: 0.5rem; padding: 0.3rem 0.2rem; }
+    .bolao-grupo-table thead th.col-pos,
+    .bolao-grupo-table thead th.col-time,
+    .bolao-grupo-table tbody td.col-time { padding-left: 0.6rem; }
     .bolao-grupo-table tbody td { font-size: 0.66rem; padding: 0.3rem 0.18rem; }
     .bolao-grupo-table tbody td.col-time { font-size: 0.62rem; }
+    .bolao-grupo-table .col-pos { padding-left: 0.6rem !important; width: 22px; }
     .bolao-grupo-table .grupo-flag { width: 14px; height: 10px; margin-right: 0.25rem; }
 }
 
@@ -16402,6 +16415,7 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
                     pos === 1 ? 'first' : '',
                     pos === 2 ? 'second' : '',
                     pos === 3 ? 'third' : '',
+                    isBotmakerBolao ? 'with-flag' : '',
                 ].filter(Boolean).join(' ');
 
                 return `
