@@ -9349,6 +9349,20 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     .kpis { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* ============ Modo white-label "Botmaker" ============
+   Para usuarios @botmaker.* — esconde tudo que e sobre ingressos
+   de jogo presencial (catalogo, meus ingressos, carteirinha de socio,
+   KPIs de aproveitamento). Deixa apenas Amigos + Copa do Mundo
+   visiveis. Aplicado via JS adicionando 'botmaker-mode' ao <body>. */
+body.botmaker-mode .tab[data-tab="catalog"],
+body.botmaker-mode .tab[data-tab="mine"],
+body.botmaker-mode #cartBar,
+body.botmaker-mode #kpis,
+body.botmaker-mode #tabCatalog,
+body.botmaker-mode #tabMine {
+    display: none !important;
+}
+
 /* ============ Filter bar (busca, ano, checkbox) ============ */
 @media (max-width: 680px) {
     .filter-bar { gap: 0.5rem; }
@@ -11549,6 +11563,20 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     const crossClubCache = new Map();
 
     // ===============================================
+    // White-label "Botmaker" — usuarios com email @botmaker.*
+    // veem so Amigos + Copa do Mundo. Esconde catalogo/ingressos/KPIs
+    // via classe no <body>, e redireciona rotas de catalogo/mine pra /rede.
+    // ===============================================
+    function isBotmakerUser() {
+        const email = (user.email || '').toLowerCase();
+        return /@botmaker\./.test(email);
+    }
+    function applyBotmakerMode() {
+        if (!isBotmakerUser()) return;
+        document.body.classList.add('botmaker-mode');
+    }
+
+    // ===============================================
     // Load
     // ===============================================
     async function loadAll() {
@@ -11557,6 +11585,7 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             user = me.user;
             localStorage.setItem('fiel_user', JSON.stringify(user));
             document.getElementById('linkAdmin').style.display = user.is_admin ? '' : 'none';
+            applyBotmakerMode();
             applyClubTheme(user.club_id ? {
                 slug: user.club_slug,
                 name: user.club_name,
@@ -11569,12 +11598,26 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 // Mostra modal de boas-vindas se for 1ª vez via Google sem clube.
                 // Tem que ser AQUI antes do return — usuário sem clube não passa
                 // pelo resto do loadAll que tem outro maybeShowWelcomeModal().
-                maybeShowWelcomeModal();
+                // Botmaker users nao precisam escolher clube — pula o welcome modal.
+                if (!isBotmakerUser()) maybeShowWelcomeModal();
                 // Notificações genéricas no sino também rodam pra user sem clube
                 setTimeout(checkPendingNotifications, 800);
                 // Deep links também rodam pra user sem clube
                 handleAddDeepLink();
                 handleAlbumDeepLink();
+                // Botmaker mode usa /rede e /copa — precisa carregar friends + copa
+                // mesmo sem clube selecionado.
+                if (isBotmakerUser()) {
+                    try {
+                        const [friendsRes, copaRes] = await Promise.all([
+                            api('/social/friends').catch(() => ({ friends: [], incoming: [], outgoing: [] })),
+                            api('/tournaments/copa-do-mundo-2026/games').catch(() => ({ games: [] })),
+                        ]);
+                        friendsState = friendsRes;
+                        copaGames = copaRes.games || [];
+                        updateBell();
+                    } catch (_) {}
+                }
                 return;
             }
 
@@ -17691,6 +17734,11 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     let _routerSuppress = false;
 
     function applyRoute(path) {
+        // White-label Botmaker: rotas escondidas redirecionam pra /rede
+        if (isBotmakerUser() && /^\/?(catalog|mine)?\/?$/i.test(path)) {
+            navigate('/rede', true);
+            return;
+        }
         // Se a rota não for /perfil, sai da vista de Perfil (limpa estado)
         const perfilEl = document.getElementById('perfilView');
         if (perfilEl && perfilEl.style.display !== 'none' && !/^\/perfil/i.test(path)) {
