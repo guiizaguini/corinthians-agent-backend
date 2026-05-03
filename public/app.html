@@ -16799,31 +16799,16 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         doc.setLineWidth(0.4);
         doc.line(MARGIN, 19, W - MARGIN, 19);
 
-        // Linha de stats compacta
+        // Linha de info do user (sem stats globais)
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(8);
         doc.setTextColor(...COLOR_GRAY);
         const userName = (user.display_name || user.username || 'Torcedor');
         const dataGer = new Date().toLocaleDateString('pt-BR');
         const userTxt = user.username
-            ? `${userName}  ·  @${user.username}  ·  Gerado ${dataGer}`
-            : `${userName}  ·  Gerado ${dataGer}`;
+            ? `${userName}  ·  @${user.username}  ·  Gerado em ${dataGer}`
+            : `${userName}  ·  Gerado em ${dataGer}`;
         doc.text(userTxt, MARGIN, 24);
-
-        // Stats em destaque (lado direito)
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(10);
-        doc.setTextColor(...COLOR_TENHO);
-        doc.text(`${tenho}`, W - MARGIN - 28, 24);
-        doc.setTextColor(...COLOR_GRAY);
-        doc.setFont('helvetica', 'normal');
-        doc.text('/', W - MARGIN - 21, 24);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(...COLOR_INK);
-        doc.text(`${total}`, W - MARGIN - 17, 24);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(...COLOR_GOLD_DARK);
-        doc.text(`(${pct}%)`, W - MARGIN, 24, { align: 'right' });
 
         // === LAYOUT DA TABELA ===
         const TABLE_TOP = 28;
@@ -16831,16 +16816,15 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const TABLE_BOTTOM = H - 12;
         const TABLE_H = TABLE_BOTTOM - TABLE_TOP;
 
-        const COL_CODE_W = 12;        // badge code (ex: BRA)
-        const COL_NAME_W = 38;        // nome da selecao
-        const COL_CARDS_W = 130;      // 20 celulas
-        const COL_TOTAL_W = CONTENT_W - COL_CODE_W - COL_NAME_W - COL_CARDS_W; // ~14mm
+        // Sem coluna TOTAL — mais espaco pras 20 celulas dos cromos
+        const COL_CODE_W = 12;
+        const COL_NAME_W = 38;
+        const COL_CARDS_W = CONTENT_W - COL_CODE_W - COL_NAME_W;
         const CELL_W = COL_CARDS_W / 20;
 
         const X_CODE = MARGIN;
         const X_NAME = X_CODE + COL_CODE_W;
         const X_CARDS = X_NAME + COL_NAME_W;
-        const X_TOTAL = X_CARDS + COL_CARDS_W;
 
         // Header da tabela
         const HEADER_H = 5;
@@ -16851,14 +16835,11 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         doc.setTextColor(...COLOR_GOLD);
         doc.text('COD', X_CODE + COL_CODE_W / 2, TABLE_TOP + 3.4, { align: 'center' });
         doc.text('SELECAO', X_NAME + 1, TABLE_TOP + 3.4);
-        // Numeros 1..20 no header
         doc.setTextColor(220, 210, 180);
         for (let i = 1; i <= 20; i++) {
             const cx = X_CARDS + (i - 1) * CELL_W + CELL_W / 2;
             doc.text(String(i).padStart(2, '0'), cx, TABLE_TOP + 3.4, { align: 'center' });
         }
-        doc.setTextColor(...COLOR_GOLD);
-        doc.text('TOT', X_TOTAL + COL_TOTAL_W / 2, TABLE_TOP + 3.4, { align: 'center' });
 
         // Linhas: 51 selecoes em ~252mm de espaco util
         const ROW_H = (TABLE_H - HEADER_H - 4) / selecoesOrd.length; // ~4.6mm
@@ -16899,8 +16880,9 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             doc.text(nomeFitted, X_NAME + 1.5, y + ROW_H / 2 + 1.2);
 
             // Celulas dos 20 cromos
-            let selTenho = 0;
-            let selTotal = 0;
+            // Tem o cromo: bg verde + texto 'OK' branco
+            // Falta: bg cinza claro + NUMERO do cromo (01..20) em cinza escuro
+            // Selecao tem < 20 cromos: celula apagada (sem texto)
             for (let i = 1; i <= 20; i++) {
                 const cx = X_CARDS + (i - 1) * CELL_W;
                 const cy = y + 0.4;
@@ -16908,16 +16890,12 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                 const ch = ROW_H - 0.8;
                 const cromo = cromoMap.get(`${sel.id}:${i}`);
                 if (!cromo) {
-                    // Selecao tem menos de 20 cromos (Coca-Cola tem 14, Especiais 9, etc)
-                    // Celula apagada/vazia
+                    // Celula vazia (selecao tem menos de 20 cromos)
                     doc.setFillColor(235, 230, 215);
                     doc.rect(cx, cy, cw, ch, 'F');
                     continue;
                 }
-                selTotal++;
                 if (cromo.quantidade > 0) {
-                    selTenho++;
-                    // Verde preenchido com check
                     doc.setFillColor(...COLOR_TENHO);
                     doc.rect(cx, cy, cw, ch, 'F');
                     doc.setFont('helvetica', 'bold');
@@ -16925,21 +16903,16 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
                     doc.setTextColor(255, 255, 255);
                     doc.text('OK', cx + cw / 2, cy + ch / 2 + 1, { align: 'center' });
                 } else {
-                    // Vazio (cinza claro outline)
                     doc.setDrawColor(...COLOR_LINE);
                     doc.setLineWidth(0.15);
                     doc.setFillColor(...COLOR_FALTA_BG);
                     doc.rect(cx, cy, cw, ch, 'FD');
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(6.5);
+                    doc.setTextColor(...COLOR_INK);
+                    doc.text(String(i).padStart(2, '0'), cx + cw / 2, cy + ch / 2 + 1, { align: 'center' });
                 }
             }
-
-            // Total da linha (X/Y)
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(8);
-            const pctRow = selTotal ? selTenho / selTotal : 0;
-            const totColor = pctRow >= 0.8 ? COLOR_TENHO : (pctRow >= 0.4 ? COLOR_GOLD_DARK : [180, 60, 60]);
-            doc.setTextColor(...totColor);
-            doc.text(`${selTenho}/${selTotal}`, X_TOTAL + COL_TOTAL_W - 1, y + ROW_H / 2 + 1.2, { align: 'right' });
 
             y += ROW_H;
         }
