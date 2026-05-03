@@ -25,7 +25,7 @@ if (process.env.DATABASE_URL && process.env.DATABASE_PUBLIC_URL) {
 }
 const { pool } = await import('../src/db/pool.js');
 
-const TARGET_USERNAME = 'gabriel_mayer';
+const TARGET_USERNAME = 'gabriel.mayer285';
 
 // ============================================================
 // LISTA DE FALTANTES — copy/paste exato do que o user mandou
