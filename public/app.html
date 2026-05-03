@@ -10733,15 +10733,6 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
                     <span class="material-icons bolao-entry-chevron">chevron_right</span>
                 </button>
 
-                <button class="bolao-entry-btn bracket-entry-btn" id="btnBracketEnter" type="button">
-                    <div class="bolao-entry-icon bracket-entry-icon"><span class="material-icons">account_tree</span></div>
-                    <div class="bolao-entry-text">
-                        <div class="bolao-entry-title" data-i18n="app.bracket.entry_title">Chaveamento da Copa</div>
-                        <div class="bolao-entry-sub" data-i18n="app.bracket.entry_sub">Veja a tabela completa do mata-mata · 32 → 16 → quartas → semis → final</div>
-                    </div>
-                    <span class="material-icons bolao-entry-chevron">chevron_right</span>
-                </button>
-
                 <div id="copaList"><div class="loading" data-i18n="app.bolao.loading_jogos">Carregando jogos...</div></div>
             </div>
 
@@ -17820,10 +17811,13 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
     });
 
     // ========= Eventos do chaveamento =========
-    document.getElementById('btnBracketEnter').addEventListener('click', () => {
+    // O botao btnBracketEnter foi removido da home da Copa (pedido do user) —
+    // a rota /copa/chaveamento continua valida pra quem tiver bookmark ou
+    // chegar via deep link. Optional chaining caso o elemento nao exista.
+    document.getElementById('btnBracketEnter')?.addEventListener('click', () => {
         navigate('/copa/chaveamento');
     });
-    document.getElementById('btnBracketBack').addEventListener('click', () => {
+    document.getElementById('btnBracketBack')?.addEventListener('click', () => {
         if (history.length > 1) history.back();
         else navigate('/copa');
     });
