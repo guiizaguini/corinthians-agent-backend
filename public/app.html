@@ -16682,23 +16682,32 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             const blob = await generateAlbumPDF();
             const file = new File([blob], filename, { type: 'application/pdf' });
 
-            // 1) Web Share API com arquivo (mobile moderno)
-            const canShareFile = !!(navigator.canShare && navigator.canShare({ files: [file] }));
-            if (canShareFile) {
-                try {
-                    await navigator.share({
-                        files: [file],
-                        title: 'Meu album da Copa 2026',
-                        text: 'Folha de controle — figurinhas que tenho e que faltam',
-                    });
-                    return;
-                } catch (e) {
-                    if (e.name === 'AbortError') return;
-                    console.warn('[share/pdf] fallback:', e.message);
+            // Detecta MOBILE de verdade — userAgentData.mobile (Chrome moderno)
+            // ou fallback UA regex. Desktop SEMPRE baixa direto (a UI Share do
+            // Windows eh chata pra quem soh quer salvar o arquivo).
+            const isMobile =
+                (navigator.userAgentData && navigator.userAgentData.mobile === true)
+                || /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+
+            // Mobile: tenta Web Share API com arquivo (share sheet nativo)
+            if (isMobile) {
+                const canShareFile = !!(navigator.canShare && navigator.canShare({ files: [file] }));
+                if (canShareFile) {
+                    try {
+                        await navigator.share({
+                            files: [file],
+                            title: 'Meu album da Copa 2026',
+                            text: 'Folha de controle — figurinhas que tenho e que faltam',
+                        });
+                        return;
+                    } catch (e) {
+                        if (e.name === 'AbortError') return;
+                        console.warn('[share/pdf] fallback:', e.message);
+                    }
                 }
             }
 
-            // 2) Fallback: download tradicional
+            // Desktop OU mobile sem Web Share: download direto via <a download>
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
