@@ -477,7 +477,24 @@ header::after {
     letter-spacing: 0.05em;
 }
 @media (max-width: 600px) {
-    .bell-dropdown { width: calc(100vw - 1rem); right: -0.4rem; }
+    /* No mobile, ocupa quase a viewport inteira encostando nas bordas com
+       margem de seguranca de 8px de cada lado. JS positionBellDropdown
+       reaplica via inline style — esse rule e fallback caso JS demore. */
+    .bell-dropdown {
+        width: calc(100vw - 16px) !important;
+        max-width: calc(100vw - 16px) !important;
+        right: 8px !important;
+        left: auto !important;
+    }
+    /* Setinha apontando — em mobile, alinha pro lado direito tambem */
+    .bell-dropdown::before { right: 16px; }
+    /* Garantir que titles/desc nao quebrem layout */
+    .bell-item-title,
+    .bell-item-desc,
+    .bell-item-eyebrow {
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
 }
 
 main {
@@ -10149,32 +10166,32 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
 
     <div class="modal-overlay" id="profileModal">
         <div class="modal">
-            <h2>Editar perfil</h2>
-            <div class="meta">Atualize seu nome e o time que você torce.</div>
+            <h2 data-i18n="app.perfil.edit_title">Editar perfil</h2>
+            <div class="meta" data-i18n="app.perfil.edit_subtitle">Atualize seu nome e o time que você torce.</div>
 
-            <label for="pName">Nome</label>
+            <label for="pName" data-i18n="app.perfil.field_name">Nome</label>
             <input id="pName" type="text" maxlength="80">
 
-            <label for="pUsername">Username (pra os amigos te encontrarem)</label>
+            <label for="pUsername" data-i18n="app.perfil.field_username">Username (pra os amigos te encontrarem)</label>
             <input id="pUsername" type="text" maxlength="30" placeholder="ex: guizaguini" pattern="[a-zA-Z0-9_.]{3,30}">
-            <div style="font-size:0.7rem;color:var(--ink-mute);margin-top:0.25rem;font-family:'SN Pro','Oswald',sans-serif;">
+            <div style="font-size:0.7rem;color:var(--ink-mute);margin-top:0.25rem;font-family:'SN Pro','Oswald',sans-serif;" data-i18n="app.perfil.field_username_help">
                 3 a 30 caracteres · só letras, números, _ ou .
             </div>
 
-            <label for="pEmail">Email (não editável)</label>
+            <label for="pEmail" data-i18n="app.perfil.field_email">Email (não editável)</label>
             <input id="pEmail" type="email" disabled style="opacity:0.5;">
 
-            <label for="pClub">Time que você torce</label>
+            <label for="pClub" data-i18n="app.perfil.field_club">Time que você torce</label>
             <select id="pClub" style="font-family:'Oswald',sans-serif;">
-                <option value="">— Prefiro não escolher —</option>
+                <option value="" data-i18n="app.perfil.field_club_skip">— Prefiro não escolher —</option>
             </select>
 
             <label for="pNationality" data-i18n="app.perfil.nat_label">Nacionalidade</label>
             <select id="pNationality" required style="font-family:'Oswald',sans-serif;"></select>
 
             <div class="modal-actions">
-                <button class="btn-secondary" id="pCancel">Cancelar</button>
-                <button class="btn-primary" id="pSave">Salvar</button>
+                <button class="btn-secondary" id="pCancel" data-i18n="app.btn.cancel">Cancelar</button>
+                <button class="btn-primary" id="pSave" data-i18n="app.btn.save">Salvar</button>
             </div>
         </div>
     </div>
@@ -10577,7 +10594,7 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
         <!-- ============ Vista PERFIL (full-screen, esconde tabs) ============ -->
         <section id="perfilView" style="display:none;">
             <button class="bolao-back" id="perfilBack" type="button">
-                <span class="material-icons">arrow_back</span>Voltar
+                <span class="material-icons">arrow_back</span><span data-i18n="app.btn.go_back">Voltar</span>
             </button>
 
             <header class="perfil-hero">
@@ -10589,19 +10606,19 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
                 </div>
                 <div class="perfil-hero-actions">
                     <button class="btn-ghost" id="perfilEditBtn">
-                        <span class="material-icons">edit</span>Editar
+                        <span class="material-icons">edit</span><span data-i18n="app.btn.edit">Editar</span>
                     </button>
                 </div>
             </header>
 
             <!-- KPIs reaproveita layout do .kpis -->
             <section class="kpis perfil-kpis">
-                <div class="kpi"><div class="kpi-label">Jogos</div><div class="kpi-value" id="perfilKpiJogos">0</div></div>
-                <div class="kpi"><div class="kpi-label">Vitórias</div><div class="kpi-value v" id="perfilKpiV">0</div></div>
-                <div class="kpi"><div class="kpi-label">Empates</div><div class="kpi-value e" id="perfilKpiE">0</div></div>
-                <div class="kpi"><div class="kpi-label">Derrotas</div><div class="kpi-value d" id="perfilKpiD">0</div></div>
-                <div class="kpi"><div class="kpi-label">Aprov.</div><div class="kpi-value" id="perfilKpiApr">—</div></div>
-                <div class="kpi"><div class="kpi-label">Conquistas</div><div class="kpi-value" id="perfilKpiConq">0</div></div>
+                <div class="kpi"><div class="kpi-label" data-i18n="app.kpi.games">Jogos</div><div class="kpi-value" id="perfilKpiJogos">0</div></div>
+                <div class="kpi"><div class="kpi-label" data-i18n="app.kpi.wins">Vitórias</div><div class="kpi-value v" id="perfilKpiV">0</div></div>
+                <div class="kpi"><div class="kpi-label" data-i18n="app.kpi.draws">Empates</div><div class="kpi-value e" id="perfilKpiE">0</div></div>
+                <div class="kpi"><div class="kpi-label" data-i18n="app.kpi.losses">Derrotas</div><div class="kpi-value d" id="perfilKpiD">0</div></div>
+                <div class="kpi"><div class="kpi-label" data-i18n="app.perfil.kpi_aprov_short">Aprov.</div><div class="kpi-value" id="perfilKpiApr">—</div></div>
+                <div class="kpi"><div class="kpi-label" data-i18n="app.perfil.kpi_conquistas">Conquistas</div><div class="kpi-value" id="perfilKpiConq">0</div></div>
                 <div class="kpi" id="perfilKpiOutrosWrap" style="display:none;">
                     <div class="kpi-label" data-i18n="app.kpi.others">Outros times</div>
                     <div class="kpi-value" id="perfilKpiOutros">0</div>
@@ -10628,41 +10645,41 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
             <!-- Conquistas -->
             <section class="perfil-conquistas">
                 <header class="perfil-section-head">
-                    <h3><span class="material-icons">emoji_events</span>Conquistas</h3>
+                    <h3><span class="material-icons">emoji_events</span><span data-i18n="app.perfil.conq_title">Conquistas</span></h3>
                     <div class="perfil-conq-stats" id="perfilConqStats">— de —</div>
                 </header>
 
                 <div class="perfil-conq-filters" id="perfilConqFilters">
-                    <button class="conq-filter active" data-filter="all">Todas</button>
-                    <button class="conq-filter" data-filter="presenca">Presença</button>
-                    <button class="conq-filter" data-filter="vitorias">Vitórias</button>
-                    <button class="conq-filter" data-filter="especial">Especiais</button>
-                    <button class="conq-filter" data-filter="colecao">Coleção</button>
-                    <button class="conq-filter" data-filter="social">Sociais</button>
-                    <button class="conq-filter" data-filter="bolao">Bolão</button>
+                    <button class="conq-filter active" data-filter="all" data-i18n="app.perfil.conq_filter_all">Todas</button>
+                    <button class="conq-filter" data-filter="presenca" data-i18n="app.perfil.conq_filter_presenca">Presença</button>
+                    <button class="conq-filter" data-filter="vitorias" data-i18n="app.perfil.conq_filter_vitorias">Vitórias</button>
+                    <button class="conq-filter" data-filter="especial" data-i18n="app.perfil.conq_filter_especial">Especiais</button>
+                    <button class="conq-filter" data-filter="colecao" data-i18n="app.perfil.conq_filter_colecao">Coleção</button>
+                    <button class="conq-filter" data-filter="social" data-i18n="app.perfil.conq_filter_social">Sociais</button>
+                    <button class="conq-filter" data-filter="bolao" data-i18n="app.perfil.conq_filter_bolao">Bolão</button>
                 </div>
 
                 <div class="perfil-conq-grid" id="perfilConqGrid">
-                    <div class="loading">Carregando conquistas...</div>
+                    <div class="loading" data-i18n="app.perfil.conq_loading">Carregando conquistas...</div>
                 </div>
             </section>
 
             <!-- Zona perigosa: exclusão de conta -->
             <section class="perfil-danger-zone">
                 <header class="perfil-section-head">
-                    <h3 style="color:#a83232;"><span class="material-icons" style="color:#a83232;">warning</span>Zona perigosa</h3>
+                    <h3 style="color:#a83232;"><span class="material-icons" style="color:#a83232;">warning</span><span data-i18n="app.perfil.danger_title">Zona perigosa</span></h3>
                 </header>
                 <div class="perfil-danger-card">
                     <div class="perfil-danger-info">
-                        <div class="perfil-danger-title">Excluir minha conta</div>
-                        <div class="perfil-danger-desc">
+                        <div class="perfil-danger-title" data-i18n="app.perfil.danger_account_title">Excluir minha conta</div>
+                        <div class="perfil-danger-desc" data-i18n-html="app.perfil.danger_account_desc_html">
                             Apaga seu perfil, presenças, palpites, amizades e te tira de todos os bolões.
                             <strong>Essa ação é irreversível.</strong>
                         </div>
                     </div>
                     <button class="perfil-danger-btn" id="btnExcluirConta" type="button">
                         <span class="material-icons">delete_forever</span>
-                        Excluir conta
+                        <span data-i18n="app.perfil.danger_btn">Excluir conta</span>
                     </button>
                 </div>
             </section>
@@ -11565,6 +11582,21 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
         // Sino + grid de conquistas (perfil): re-renderiza com strings/i18n novos
         try { if (typeof renderBellDropdown === 'function') renderBellDropdown(); } catch (_) {}
         try { if (typeof renderPerfilConqGrid === 'function' && perfilAchievementsCache) renderPerfilConqGrid(); } catch (_) {}
+        // Perfil hero (textContent direto, nao tem data-i18n) — re-renderiza
+        // se a vista de perfil tiver aberta
+        try {
+            const perfilEl = document.getElementById('perfilView');
+            if (perfilEl && perfilEl.style.display !== 'none' && typeof renderPerfilHero === 'function') {
+                renderPerfilHero();
+                // Re-renderiza tambem o "X de Y" no header de conquistas
+                if (perfilAchievementsCache) {
+                    const unlocked = perfilAchievementsCache.filter(a => a.unlocked).length;
+                    document.getElementById('perfilConqStats').innerHTML = t('app.perfil.conq_stats', {
+                        n: unlocked, total: perfilAchievementsCache.length,
+                    });
+                }
+            }
+        } catch (_) {}
     });
 
     function applyClubTheme(club) {
@@ -13068,10 +13100,11 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
     });
 
     function renderPerfilHero() {
-        const name = (user.display_name || user.email?.split('@')[0] || 'Torcedor').toUpperCase();
+        const fallbackName = t('app.perfil.fallback_name') || 'Torcedor';
+        const name = (user.display_name || user.email?.split('@')[0] || fallbackName).toUpperCase();
         const initials = avatarInitials(user.display_name || user.email);
-        const handle = user.username ? `@${user.username}` : 'Sem @username';
-        const club = user.club_name ? user.club_name.toUpperCase() : 'Sem time';
+        const handle = user.username ? `@${user.username}` : (t('app.perfil.no_handle') || 'Sem @username');
+        const club = user.club_name ? user.club_name.toUpperCase() : (t('app.perfil.no_club') || 'Sem time').toUpperCase();
 
         document.getElementById('perfilAvatar').textContent = initials;
         document.getElementById('perfilHeroName').textContent = name;
@@ -13112,7 +13145,7 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
 
     async function loadPerfilAchievements() {
         const grid = document.getElementById('perfilConqGrid');
-        grid.innerHTML = '<div class="loading">Carregando conquistas...</div>';
+        grid.innerHTML = `<div class="loading">${escapeHtml(t('app.perfil.conq_loading'))}</div>`;
         try {
             const data = await api('/me/achievements');
             // Pra botmaker, filtra antes de cachear/contar — assim KPI 'Conquistas'
@@ -13120,10 +13153,12 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
             perfilAchievementsCache = data.achievements.filter(isAchievementVisible);
             const unlocked = perfilAchievementsCache.filter(a => a.unlocked).length;
             document.getElementById('perfilKpiConq').textContent = unlocked;
-            document.getElementById('perfilConqStats').innerHTML = `<b>${unlocked}</b> de ${perfilAchievementsCache.length}`;
+            document.getElementById('perfilConqStats').innerHTML = t('app.perfil.conq_stats', {
+                n: unlocked, total: perfilAchievementsCache.length,
+            });
             renderPerfilConqGrid();
         } catch (err) {
-            grid.innerHTML = `<div class="empty">Erro ao carregar conquistas: ${err.message}</div>`;
+            grid.innerHTML = `<div class="empty">${escapeHtml(t('app.perfil.conq_loading_err'))}: ${escapeHtml(err.message)}</div>`;
         }
     }
 
@@ -13143,7 +13178,7 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
         });
 
         if (!sorted.length) {
-            grid.innerHTML = '<div class="empty" style="grid-column:1/-1;">Nenhuma conquista nessa categoria.</div>';
+            grid.innerHTML = `<div class="empty" style="grid-column:1/-1;">${escapeHtml(t('app.perfil.conq_empty'))}</div>`;
             return;
         }
 
@@ -13203,7 +13238,7 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
             return;
         }
         btn.disabled = true;
-        btn.textContent = 'Salvando...';
+        btn.textContent = t('app.perfil.btn_save_loading') || 'Salvando...';
         try {
             const usernameVal = document.getElementById('pUsername').value.trim().toLowerCase();
             const body = {
@@ -13229,10 +13264,10 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
                 loadPerfilAchievements();
             }
         } catch (err) {
-            alert('Erro: ' + err.message);
+            alert((t('app.rede.error') || 'Erro') + ': ' + err.message);
         } finally {
             btn.disabled = false;
-            btn.textContent = 'Salvar';
+            btn.textContent = t('app.btn.save') || 'Salvar';
         }
     });
 
@@ -14918,13 +14953,24 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
         const btn = document.getElementById('bellBtn');
         if (!dd || !btn) return;
         const rect = btn.getBoundingClientRect();
-        const ddWidth = Math.min(380, window.innerWidth - 16);
-        // Alinha a borda direita do dropdown com a borda direita do sino
-        const right = Math.max(8, window.innerWidth - rect.right);
+        const SAFE = 8; // margem de seguranca pras bordas
+        const vw = window.innerWidth;
+
+        // Em mobile (vw <= 600), ocupa toda a largura util. Em desktop, ate 380px
+        // alinhado a direita do sino — mas sempre dentro do viewport.
+        const isMobile = vw <= 600;
+        const ddWidth = isMobile ? (vw - SAFE * 2) : Math.min(380, vw - SAFE * 2);
+
+        // Borda direita: se cabe alinhado ao sino sem cortar, usa isso;
+        // senao, encosta na borda direita da viewport com SAFE de margem.
+        const desiredRight = vw - rect.right;
+        const right = Math.max(SAFE, Math.min(desiredRight, vw - ddWidth - SAFE));
+
         dd.style.right = right + 'px';
         dd.style.left = 'auto';
         dd.style.top = (rect.bottom + 8) + 'px';
         dd.style.width = ddWidth + 'px';
+        dd.style.maxWidth = (vw - SAFE * 2) + 'px';
     }
 
     function openBellDropdown() {
