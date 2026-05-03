@@ -73,6 +73,12 @@ app.get('/app', (req, res) => {
 app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public', 'admin.html'));
 });
+// Painel analytics admin — DEFINIDO ANTES DO app.use('/admin', ...) abaixo
+// pra ganhar precedencia sobre a rota da API. Auth gating eh via JS no
+// proprio HTML (que checa user.is_admin antes de renderizar dados).
+app.get('/admin/analytics', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'admin-analytics.html'));
+});
 
 // Página pública de lista de troca de cromos do álbum (visitante sem login)
 // /troca/:username → renderiza HTML público com lista + CTA pra criar conta

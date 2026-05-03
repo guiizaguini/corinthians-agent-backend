@@ -73,6 +73,31 @@ export async function bootstrapSchema() {
                 ADD COLUMN IF NOT EXISTS nationality_iso VARCHAR(4)
         `);
 
+        // ====== user_actions (audit log das acoes pra analytics admin) ======
+        // logger.js insere aqui em fire-and-forget. Usado pelo painel
+        // /admin/analytics pra contar eventos por periodo.
+        await query(`
+            CREATE TABLE IF NOT EXISTS user_actions (
+                id          BIGSERIAL PRIMARY KEY,
+                user_id     INTEGER REFERENCES users(id) ON DELETE SET NULL,
+                event       VARCHAR(60) NOT NULL,
+                payload     JSONB,
+                created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            );
+        `);
+        await query(`
+            CREATE INDEX IF NOT EXISTS idx_user_actions_event_time
+                ON user_actions(event, created_at DESC)
+        `);
+        await query(`
+            CREATE INDEX IF NOT EXISTS idx_user_actions_time
+                ON user_actions(created_at DESC)
+        `);
+        await query(`
+            CREATE INDEX IF NOT EXISTS idx_user_actions_user
+                ON user_actions(user_id, created_at DESC)
+        `);
+
         // ====== user_notifications (sino — boas-vindas, sistema, etc) ======
         await query(`
             CREATE TABLE IF NOT EXISTS user_notifications (

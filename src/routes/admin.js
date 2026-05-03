@@ -290,4 +290,167 @@ router.delete('/games/:id', async (req, res, next) => {
     } catch (err) { next(err); }
 });
 
+// =============================================================
+// GET /admin/analytics-data?period=2h|24h|7d|30d|all
+// Retorna metricas pro painel analytics:
+//  - cards: contadores cumulativos (users/boloes/games/etc) + delta no periodo
+//  - actions: agregacao por evento na tabela user_actions
+//  - timeline: contagem de acoes por dia/hora (pra grafico)
+//  - top_clubs: ranking de clubes por user count
+//  - top_users: usuarios mais ativos no periodo (acoes na user_actions)
+//  - top_boloes: boloes com mais membros
+// =============================================================
+const PERIOD_MAP = {
+    '2h':  { label: '2 horas',     interval: '2 hours',  bucket: 'minute', bucketEvery: 5 },
+    '24h': { label: '24 horas',    interval: '24 hours', bucket: 'hour',   bucketEvery: 1 },
+    '7d':  { label: '7 dias',      interval: '7 days',   bucket: 'hour',   bucketEvery: 6 },
+    '30d': { label: '30 dias',     interval: '30 days',  bucket: 'day',    bucketEvery: 1 },
+    'all': { label: 'Todo periodo', interval: '10 years', bucket: 'day',    bucketEvery: 7 },
+};
+
+router.get('/analytics-data', async (req, res, next) => {
+    try {
+        const periodKey = (req.query.period || '7d').toString();
+        const meta = PERIOD_MAP[periodKey] || PERIOD_MAP['7d'];
+        const interval = meta.interval;
+
+        // Roda tudo em paralelo (queries independentes — cada uma e barata)
+        const [
+            cardsRes,
+            actionsAggRes,
+            timelineRes,
+            topClubsRes,
+            topUsersRes,
+            topBoloesRes,
+            recentSignupsRes,
+            countriesRes,
+        ] = await Promise.all([
+            // ========== CARDS — totais cumulativos + delta no periodo ==========
+            query(`
+                SELECT
+                    (SELECT COUNT(*)::int FROM users) AS total_users,
+                    (SELECT COUNT(*)::int FROM users
+                     WHERE created_at >= NOW() - $1::interval) AS new_users_period,
+                    (SELECT COUNT(*)::int FROM boloes) AS total_boloes,
+                    (SELECT COUNT(*)::int FROM boloes
+                     WHERE created_at >= NOW() - $1::interval) AS new_boloes_period,
+                    (SELECT COUNT(*)::int FROM games) AS total_games,
+                    (SELECT COUNT(*)::int FROM attendances WHERE status='PRESENTE') AS total_attendances,
+                    (SELECT COUNT(*)::int FROM attendances
+                     WHERE status='PRESENTE'
+                       AND updated_at >= NOW() - $1::interval) AS new_attendances_period,
+                    (SELECT COUNT(*)::int FROM bolao_palpites) AS total_palpites,
+                    (SELECT COUNT(*)::int FROM bolao_palpites
+                     WHERE created_at >= NOW() - $1::interval) AS new_palpites_period,
+                    (SELECT COUNT(*)::int FROM notes) AS total_notes,
+                    (SELECT COUNT(*)::int FROM notes
+                     WHERE created_at >= NOW() - $1::interval) AS new_notes_period,
+                    (SELECT COUNT(*)::int FROM friendships WHERE status='ACCEPTED') AS total_friendships,
+                    (SELECT COUNT(DISTINCT user_id)::int FROM user_actions
+                     WHERE created_at >= NOW() - $1::interval AND user_id IS NOT NULL) AS active_users_period,
+                    (SELECT COUNT(*)::int FROM user_actions
+                     WHERE created_at >= NOW() - $1::interval) AS total_actions_period,
+                    (SELECT COALESCE(SUM(quantidade), 0)::int FROM user_album_cromos) AS total_cromos
+            `, [interval]),
+
+            // ========== ACTIONS — top eventos no periodo ==========
+            query(`
+                SELECT event, COUNT(*)::int AS n
+                FROM user_actions
+                WHERE created_at >= NOW() - $1::interval
+                GROUP BY event
+                ORDER BY n DESC
+                LIMIT 20
+            `, [interval]),
+
+            // ========== TIMELINE — contagem de acoes por bucket ==========
+            // Trunca o created_at no bucket apropriado e conta. Bucket dinamico
+            // baseado no periodo (5min, hora, 6h, dia, semana).
+            query(`
+                SELECT
+                    date_trunc($2, created_at) AS ts,
+                    COUNT(*)::int AS n
+                FROM user_actions
+                WHERE created_at >= NOW() - $1::interval
+                GROUP BY ts
+                ORDER BY ts ASC
+            `, [interval, meta.bucket]),
+
+            // ========== TOP 10 CLUBES por contagem de users ==========
+            query(`
+                SELECT c.id, c.name, c.short_name, c.slug, c.primary_color,
+                       COUNT(u.id)::int AS users
+                FROM clubs c
+                LEFT JOIN users u ON u.club_id = c.id
+                WHERE COALESCE(c.is_tournament, FALSE) = FALSE
+                GROUP BY c.id, c.name, c.short_name, c.slug, c.primary_color
+                HAVING COUNT(u.id) > 0
+                ORDER BY users DESC
+                LIMIT 10
+            `),
+
+            // ========== TOP 10 USUARIOS MAIS ATIVOS no periodo ==========
+            query(`
+                SELECT u.id, u.username, u.display_name, u.email,
+                       u.nationality_iso,
+                       c.name AS club_name,
+                       COUNT(ua.id)::int AS actions
+                FROM user_actions ua
+                JOIN users u ON u.id = ua.user_id
+                LEFT JOIN clubs c ON c.id = u.club_id
+                WHERE ua.created_at >= NOW() - $1::interval
+                  AND ua.user_id IS NOT NULL
+                GROUP BY u.id, u.username, u.display_name, u.email, u.nationality_iso, c.name
+                ORDER BY actions DESC
+                LIMIT 10
+            `, [interval]),
+
+            // ========== TOP 5 BOLOES por membros ==========
+            query(`
+                SELECT b.id, b.name, b.invite_code, b.created_at,
+                       (SELECT COUNT(*)::int FROM bolao_members bm WHERE bm.bolao_id = b.id) AS members,
+                       (SELECT COUNT(*)::int FROM bolao_palpites bp WHERE bp.bolao_id = b.id) AS palpites
+                FROM boloes b
+                ORDER BY members DESC
+                LIMIT 5
+            `),
+
+            // ========== ULTIMOS 10 SIGNUPS ==========
+            query(`
+                SELECT u.id, u.username, u.display_name, u.email, u.created_at,
+                       u.nationality_iso,
+                       c.name AS club_name
+                FROM users u
+                LEFT JOIN clubs c ON c.id = u.club_id
+                ORDER BY u.created_at DESC
+                LIMIT 10
+            `),
+
+            // ========== DISTRIBUICAO POR PAIS (nationality_iso) ==========
+            query(`
+                SELECT nationality_iso AS iso, COUNT(*)::int AS n
+                FROM users
+                WHERE nationality_iso IS NOT NULL
+                GROUP BY nationality_iso
+                ORDER BY n DESC
+                LIMIT 15
+            `),
+        ]);
+
+        res.json({
+            period: periodKey,
+            period_label: meta.label,
+            generated_at: new Date().toISOString(),
+            cards: cardsRes.rows[0] || {},
+            actions: actionsAggRes.rows,
+            timeline: timelineRes.rows,
+            top_clubs: topClubsRes.rows,
+            top_users: topUsersRes.rows,
+            top_boloes: topBoloesRes.rows,
+            recent_signups: recentSignupsRes.rows,
+            countries: countriesRes.rows,
+        });
+    } catch (err) { next(err); }
+});
+
 export default router;
