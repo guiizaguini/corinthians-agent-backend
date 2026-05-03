@@ -12907,15 +12907,28 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
         }
     }
 
+    // White-label Botmaker: conquistas que envolvem ir em jogo presencial
+    // (presenca, vitorias, especial, colecao, e a social.companions_5) nao
+    // fazem sentido. Filtramos elas tanto da listagem quanto do contador.
+    function isAchievementVisible(a) {
+        if (!isBotmakerUser()) return true;
+        if (a.category === 'bolao') return true;
+        // Social: amigos_1/5/10 sim; companions_5 nao (requer ir a jogos)
+        if (a.category === 'social' && a.id !== 'companions_5') return true;
+        return false;
+    }
+
     async function loadPerfilAchievements() {
         const grid = document.getElementById('perfilConqGrid');
         grid.innerHTML = '<div class="loading">Carregando conquistas...</div>';
         try {
             const data = await api('/me/achievements');
-            perfilAchievementsCache = data.achievements;
-            const unlocked = data.achievements.filter(a => a.unlocked).length;
+            // Pra botmaker, filtra antes de cachear/contar — assim KPI 'Conquistas'
+            // e o "X de Y" no header batem com o que o user efetivamente ve.
+            perfilAchievementsCache = data.achievements.filter(isAchievementVisible);
+            const unlocked = perfilAchievementsCache.filter(a => a.unlocked).length;
             document.getElementById('perfilKpiConq').textContent = unlocked;
-            document.getElementById('perfilConqStats').innerHTML = `<b>${unlocked}</b> de ${data.achievements.length}`;
+            document.getElementById('perfilConqStats').innerHTML = `<b>${unlocked}</b> de ${perfilAchievementsCache.length}`;
             renderPerfilConqGrid();
         } catch (err) {
             grid.innerHTML = `<div class="empty">Erro ao carregar conquistas: ${err.message}</div>`;
