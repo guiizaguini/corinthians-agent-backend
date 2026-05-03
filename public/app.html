@@ -16569,72 +16569,88 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         const textEl = document.getElementById('albumShareText');
         linkEl.value = url;
 
-        // ===== Texto COMPLETO pra colar — agrupado por seleção =====
+        // ===== Texto COMPLETO pra colar — formato Panini-inspired =====
+        // Cabecalho com stats, seções por seleção com flag emoji + page number,
+        // codes em linhas de 5. Inspirado no app oficial pra ficar familiar.
+        const total = albumState.cromos.length;
+        const tenho = albumState.cromos.filter(c => c.quantidade > 0).length;
         const faltam = albumState.cromos.filter(c => c.quantidade === 0);
         const repetidos = albumState.cromos.filter(c => c.quantidade > 1);
+        const pct = total ? ((tenho / total) * 100).toFixed(1) : '0.0';
         const selById = Object.fromEntries(albumState.selecoes.map(s => [s.id, s]));
 
-        // Helper: agrupa cromos por seleção, na ordem do álbum
-        const agrupaPorSelecao = (cromos) => {
+        // ISO alpha-2 -> flag emoji (regional indicators). Fallback vazio
+        // pra codes especiais (gb-eng, gb-sct) ou null.
+        const isoToFlag = (iso) => {
+            if (!iso || iso.length !== 2) return '';
+            try {
+                return String.fromCodePoint(
+                    ...iso.toUpperCase().split('').map(c => 0x1F1E6 + c.charCodeAt(0) - 65)
+                );
+            } catch (_) { return ''; }
+        };
+        // Casos especiais: gb-eng = England flag, gb-sct = Scotland
+        const flagEmoji = (iso) => {
+            if (!iso) return '';
+            if (iso === 'gb-eng') return '🏴󠁧󠁢󠁥󠁮󠁧󠁿';
+            if (iso === 'gb-sct') return '🏴󠁧󠁢󠁳󠁣󠁴󠁿';
+            return isoToFlag(iso);
+        };
+
+        // Quebra array de codes em linhas de N items (default 5)
+        const wrapCodes = (codes, perLine = 5) => {
+            const lines = [];
+            for (let i = 0; i < codes.length; i += perLine) {
+                lines.push(codes.slice(i, i + perLine).join(', '));
+            }
+            return lines.join('\n');
+        };
+
+        // Renderiza uma seção no formato:
+        //   🇧🇷 BRA · {nome}
+        //   BRA-02, BRA-06, BRA-12, BRA-13, BRA-16
+        //   BRA-18, BRA-20
+        const fmtSecao = (cromos, withRepCount = false) => {
+            // Agrupa por selecao, ordenado pelo catalogo
             const porSel = new Map();
             for (const c of cromos) {
-                const sel = selById[c.selecao_id];
-                if (!sel) continue;
-                if (!porSel.has(sel.id)) porSel.set(sel.id, { sel, items: [] });
-                porSel.get(sel.id).items.push(c);
+                if (!porSel.has(c.selecao_id)) porSel.set(c.selecao_id, []);
+                porSel.get(c.selecao_id).push(c);
             }
-            // Ordena seleções pela ordem do catálogo (já vêm ordenadas em albumState.selecoes)
             return albumState.selecoes
                 .filter(s => porSel.has(s.id))
-                .map(s => porSel.get(s.id));
-        };
-
-        // Monta linhas: "  Brasil: BRA-01, BRA-02, BRA-05" (ordenado pelo número do cromo)
-        const fmtSelecao = ({ sel, items }, withRepCount = false) => {
-            const sorted = [...items].sort((a, b) => a.ordem - b.ordem);
-            const codes = withRepCount
-                ? sorted.map(c => `${c.code} (×${c.quantidade})`).join(', ')
-                : sorted.map(c => c.code).join(', ');
-            return `  ${sel.name}: ${codes}`;
-        };
-
-        // Agrupa por GRUPO também pra ficar bem hierarquizado
-        const fmtSecao = (cromos, withRep = false) => {
-            const sels = agrupaPorSelecao(cromos);
-            // Sub-agrupa por grupo (A-L + ESPECIAL)
-            const porGrupo = new Map();
-            for (const item of sels) {
-                const g = item.sel.grupo || 'ESPECIAL';
-                if (!porGrupo.has(g)) porGrupo.set(g, []);
-                porGrupo.get(g).push(item);
-            }
-            const ordemGrupos = ['A','B','C','D','E','F','G','H','I','J','K','L','ESPECIAL'];
-            return ordemGrupos
-                .filter(g => porGrupo.has(g))
-                .map(g => {
-                    const head = g === 'ESPECIAL' ? '★ ESPECIAIS' : `GRUPO ${g}`;
-                    const linhas = porGrupo.get(g).map(item => fmtSelecao(item, withRep)).join('\n');
-                    return `${head}\n${linhas}`;
+                .map(s => {
+                    const items = porSel.get(s.id).sort((a, b) => a.ordem - b.ordem);
+                    const codes = withRepCount
+                        ? items.map(c => `${c.code} (×${c.quantidade})`)
+                        : items.map(c => c.code);
+                    const flag = flagEmoji(s.flag_iso);
+                    const code = (s.code || '').toUpperCase();
+                    const head = flag
+                        ? `${flag} ${code} · ${s.name}`
+                        : `${code} · ${s.name}`;
+                    return `${head}\n${wrapCodes(codes)}`;
                 })
                 .join('\n\n');
         };
 
-        const linhasFaltam = faltam.length ? fmtSecao(faltam) : '  —';
-        const linhasRep = repetidos.length ? fmtSecao(repetidos, true) : '  —';
+        const divider = '─────────────';
+        const linhasFaltam = faltam.length ? fmtSecao(faltam) : '— Nada faltando!';
+        const linhasRep = repetidos.length ? fmtSecao(repetidos, true) : '— Nenhuma repetida';
 
-        const texto = [
-            t('app.album.share_text_header') || '🎴 Meu álbum da Copa 2026',
-            `@${user.username}`,
+        const partes = [
+            `📊 ${tenho}/${total} (${pct}%)`,
+            divider,
             '',
-            `${t('app.album.share_text_falta') || '📋 FALTAM'} (${faltam.length}):`,
+            `❌ FIGURINHAS FALTANDO (${faltam.length})`,
+            '',
             linhasFaltam,
-            '',
-            `${t('app.album.share_text_rep') || '🔄 REPETIDAS'} (${repetidos.length}):`,
-            linhasRep,
-            '',
-            (t('app.album.share_text_cta') || '🤝 Bora trocar?') + ' ' + url,
-        ].join('\n');
-        textEl.value = texto;
+        ];
+        if (repetidos.length) {
+            partes.push('', divider, '', `🔄 REPETIDAS (${repetidos.length})`, '', linhasRep);
+        }
+        partes.push('', divider, '', '💬 Vamos trocar? 🤝', '', url);
+        textEl.value = partes.join('\n');
 
         document.getElementById('albumShareModal').classList.add('show');
         // Renderiza a imagem no canvas (após modal ficar visível pra fontes carregarem direito)
