@@ -16728,46 +16728,44 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     });
 
     /**
-     * Gera o PDF da folha de controle do album.
-     * Estetica Cadeira Numerada: fundo cream, header preto+dourado,
-     * cards de cromo com checkbox marcado pros que o user ja tem.
-     * Layout: capa + paginas por grupo (A-L + Especiais).
+     * Gera o PDF da folha de controle do album em UMA UNICA PAGINA A4
+     * em formato de TABELA. Cada linha = uma selecao (Brasil, Mexico, etc),
+     * 20 colunas = cards 1..20, cada celula colorida verde se 'tenho' ou
+     * cinza se 'falta'. Header compacto + footer.
+     * Estetica Cadeira Numerada (cream + dourado + preto).
      */
     async function generateAlbumPDF() {
         const { jsPDF } = window.jspdf;
-        // A4 retrato — 210x297mm
         const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
 
-        // Cores Cadeira Numerada
-        const COLOR_INK = [26, 16, 0];          // preto profundo
-        const COLOR_GOLD = [212, 165, 32];      // dourado
-        const COLOR_GOLD_DARK = [168, 121, 27]; // dourado escuro
-        const COLOR_CREAM = [253, 250, 240];    // cream bg
-        const COLOR_GRAY = [120, 110, 95];      // cinza texto
-        const COLOR_LINE = [220, 210, 185];     // linha sutil
-        const COLOR_TENHO = [37, 180, 84];      // verde 'tem'
-        const COLOR_FALTA = [200, 195, 180];    // cinza 'falta'
+        // === Cores Cadeira Numerada ===
+        const COLOR_INK = [26, 16, 0];
+        const COLOR_GOLD = [212, 165, 32];
+        const COLOR_GOLD_DARK = [168, 121, 27];
+        const COLOR_CREAM = [253, 250, 240];
+        const COLOR_GRAY = [120, 110, 95];
+        const COLOR_LINE = [220, 210, 185];
+        const COLOR_TENHO = [37, 180, 84];
+        const COLOR_TENHO_LIGHT = [200, 235, 210];
+        const COLOR_FALTA_BG = [248, 244, 232];
 
         const W = 210, H = 297;
-        const MARGIN = 14;
+        const MARGIN = 8;
         const CONTENT_W = W - 2 * MARGIN;
 
-        // Stats
+        // === Stats globais ===
         const total = albumState.cromos.length;
         const tenho = albumState.cromos.filter(c => c.quantidade > 0).length;
         const faltam = total - tenho;
         const pct = total ? ((tenho / total) * 100).toFixed(1) : '0.0';
 
-        // Cromos por selecao
-        const cromosPorSel = new Map();
+        // === Cromos indexados por (selecao_id, ordem) ===
+        const cromoMap = new Map();
         for (const c of albumState.cromos) {
-            if (!cromosPorSel.has(c.selecao_id)) cromosPorSel.set(c.selecao_id, []);
-            cromosPorSel.get(c.selecao_id).push(c);
+            cromoMap.set(`${c.selecao_id}:${c.ordem}`, c);
         }
-        // Ordena por ordem dentro de cada selecao
-        for (const arr of cromosPorSel.values()) arr.sort((a, b) => a.ordem - b.ordem);
 
-        // Selecoes ordenadas por grupo + ordem
+        // === Selecoes ordenadas por grupo + ordem ===
         const selecoesOrd = [...albumState.selecoes].sort((a, b) => {
             const gA = a.grupo || 'Z';
             const gB = b.grupo || 'Z';
@@ -16775,319 +16773,202 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             return (a.ordem || 0) - (b.ordem || 0);
         });
 
-        // Helper: bg de pagina + watermark
-        const drawPageBg = (pageNum, totalPages) => {
-            doc.setFillColor(...COLOR_CREAM);
-            doc.rect(0, 0, W, H, 'F');
-            // Footer fino com pagina
-            doc.setDrawColor(...COLOR_LINE);
-            doc.setLineWidth(0.2);
-            doc.line(MARGIN, H - 12, W - MARGIN, H - 12);
-            doc.setFontSize(7);
-            doc.setTextColor(...COLOR_GRAY);
-            doc.setFont('helvetica', 'normal');
-            doc.text('cadeiranumerada.com.br', MARGIN, H - 7);
-            doc.text(`Pagina ${pageNum}`, W - MARGIN, H - 7, { align: 'right' });
-        };
+        // === Background cream ===
+        doc.setFillColor(...COLOR_CREAM);
+        doc.rect(0, 0, W, H, 'F');
 
-        // ====================== CAPA ======================
-        drawPageBg(1, 1); // sera atualizado
-        // Topo: barra dourada
+        // === HEADER COMPACTO (topo, ~22mm) ===
+        // Barra dourada superior
         doc.setFillColor(...COLOR_GOLD);
-        doc.rect(0, 0, W, 4, 'F');
+        doc.rect(0, 0, W, 3, 'F');
+
         // Brand
         doc.setFont('helvetica', 'bold');
-        doc.setFontSize(10);
-        doc.setTextColor(...COLOR_GOLD_DARK);
-        doc.text('CADEIRA NUMERADA', MARGIN, 18);
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(7);
-        doc.setTextColor(...COLOR_GRAY);
-        doc.text('Diario do Torcedor · Album de Figurinhas', MARGIN, 23);
-
-        // Titulo grande
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(28);
-        doc.setTextColor(...COLOR_INK);
-        doc.text('FOLHA DE CONTROLE', MARGIN, 50);
-        doc.setFontSize(20);
-        doc.setTextColor(...COLOR_GOLD_DARK);
-        doc.text('FIFA WORLD CUP 2026', MARGIN, 60);
-
-        // Box do user
-        doc.setDrawColor(...COLOR_GOLD);
-        doc.setLineWidth(0.6);
-        doc.setFillColor(255, 248, 225);
-        doc.roundedRect(MARGIN, 75, CONTENT_W, 35, 3, 3, 'FD');
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(9);
-        doc.setTextColor(...COLOR_GOLD_DARK);
-        doc.text('TORCEDOR', MARGIN + 6, 84);
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(16);
-        doc.setTextColor(...COLOR_INK);
-        const userName = (user.display_name || user.username || 'Torcedor').toUpperCase();
-        doc.text(userName, MARGIN + 6, 92);
-        if (user.username) {
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(9);
-            doc.setTextColor(...COLOR_GRAY);
-            doc.text(`@${user.username}`, MARGIN + 6, 99);
-        }
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(7);
-        doc.setTextColor(...COLOR_GRAY);
-        const dataGer = new Date().toLocaleDateString('pt-BR');
-        doc.text(`Gerado em ${dataGer}`, MARGIN + 6, 105);
-
-        // KPIs grandes
-        const kpiY = 125;
-        const kpiW = (CONTENT_W - 8) / 3;
-        const kpiH = 32;
-        const drawKpi = (x, label, value, color) => {
-            doc.setDrawColor(...COLOR_LINE);
-            doc.setFillColor(255, 255, 255);
-            doc.setLineWidth(0.4);
-            doc.roundedRect(x, kpiY, kpiW, kpiH, 2, 2, 'FD');
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(7);
-            doc.setTextColor(...COLOR_GRAY);
-            doc.text(label, x + 4, kpiY + 7);
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(20);
-            doc.setTextColor(...color);
-            doc.text(String(value), x + 4, kpiY + 22);
-        };
-        drawKpi(MARGIN, 'TENHO', tenho, COLOR_TENHO);
-        drawKpi(MARGIN + kpiW + 4, 'FALTAM', faltam, [200, 60, 60]);
-        drawKpi(MARGIN + (kpiW + 4) * 2, 'CONCLUSAO', pct + '%', COLOR_GOLD_DARK);
-
-        // Barra de progresso
-        const barY = 170;
-        const barH = 10;
-        doc.setFillColor(235, 230, 215);
-        doc.roundedRect(MARGIN, barY, CONTENT_W, barH, barH / 2, barH / 2, 'F');
-        const fillW = total ? (CONTENT_W * tenho) / total : 0;
-        if (fillW > 0) {
-            doc.setFillColor(...COLOR_GOLD);
-            doc.roundedRect(MARGIN, barY, fillW, barH, barH / 2, barH / 2, 'F');
-        }
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(8);
-        doc.setTextColor(...COLOR_INK);
-        doc.text(`${tenho} / ${total}`, MARGIN + CONTENT_W / 2, barY + 7, { align: 'center' });
-
-        // Como ler
-        doc.setFont('helvetica', 'bold');
         doc.setFontSize(11);
+        doc.setTextColor(...COLOR_GOLD_DARK);
+        doc.text('CADEIRA NUMERADA', MARGIN, 9);
+
+        // Titulo curto
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(13);
         doc.setTextColor(...COLOR_INK);
-        doc.text('COMO LER ESTA FOLHA', MARGIN, 195);
+        doc.text('FOLHA DE CONTROLE · FIFA WORLD CUP 2026', MARGIN, 16);
+
+        // Linha divisora dourada
         doc.setDrawColor(...COLOR_GOLD);
         doc.setLineWidth(0.4);
-        doc.line(MARGIN, 197, MARGIN + 35, 197);
+        doc.line(MARGIN, 19, W - MARGIN, 19);
 
-        // Legenda mini-cards
-        const legendY = 205;
-        // Card "tenho" (verde marcado)
-        doc.setFillColor(...COLOR_TENHO);
-        doc.setDrawColor(...COLOR_TENHO);
-        doc.roundedRect(MARGIN, legendY, 12, 10, 1, 1, 'FD');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(7);
+        // Linha de stats compacta
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(...COLOR_GRAY);
+        const userName = (user.display_name || user.username || 'Torcedor');
+        const dataGer = new Date().toLocaleDateString('pt-BR');
+        const userTxt = user.username
+            ? `${userName}  ·  @${user.username}  ·  Gerado ${dataGer}`
+            : `${userName}  ·  Gerado ${dataGer}`;
+        doc.text(userTxt, MARGIN, 24);
+
+        // Stats em destaque (lado direito)
         doc.setFont('helvetica', 'bold');
-        doc.text('OK', MARGIN + 6, legendY + 6.5, { align: 'center' });
+        doc.setFontSize(10);
+        doc.setTextColor(...COLOR_TENHO);
+        doc.text(`${tenho}`, W - MARGIN - 28, 24);
+        doc.setTextColor(...COLOR_GRAY);
+        doc.setFont('helvetica', 'normal');
+        doc.text('/', W - MARGIN - 21, 24);
+        doc.setFont('helvetica', 'bold');
         doc.setTextColor(...COLOR_INK);
+        doc.text(`${total}`, W - MARGIN - 17, 24);
         doc.setFont('helvetica', 'normal');
-        doc.setFontSize(9);
-        doc.text('Voce ja tem', MARGIN + 16, legendY + 6.5);
-        // Card "falta" (cinza vazio)
-        doc.setDrawColor(...COLOR_FALTA);
-        doc.setFillColor(245, 240, 230);
-        doc.setLineWidth(0.4);
-        doc.roundedRect(MARGIN + 60, legendY, 12, 10, 1, 1, 'FD');
-        doc.setTextColor(...COLOR_GRAY);
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(9);
-        doc.text('Falta marcar', MARGIN + 76, legendY + 6.5);
+        doc.setTextColor(...COLOR_GOLD_DARK);
+        doc.text(`(${pct}%)`, W - MARGIN, 24, { align: 'right' });
 
-        // Texto motivacional
-        doc.setFont('helvetica', 'italic');
-        doc.setFontSize(9);
-        doc.setTextColor(...COLOR_GRAY);
-        const motivLines = doc.splitTextToSize(
-            'Imprima esta folha e leve pra trocar com a galera. Os cromos que voce ja marcou no app aparecem como OK — basta marcar os novos com caneta enquanto coleciona.',
-            CONTENT_W
-        );
-        doc.text(motivLines, MARGIN, 230);
+        // === LAYOUT DA TABELA ===
+        const TABLE_TOP = 28;
+        const FOOTER_Y = H - 7;
+        const TABLE_BOTTOM = H - 12;
+        const TABLE_H = TABLE_BOTTOM - TABLE_TOP;
 
-        // ====================== PAGINAS POR GRUPO ======================
-        // Layout: cada grupo eh uma secao. Cada selecao do grupo tem um bloco
-        // com nome + grid 5x4 (20 cromos numerados). Caixas tem checkbox
-        // marcado se o user tem o cromo.
+        const COL_CODE_W = 12;        // badge code (ex: BRA)
+        const COL_NAME_W = 38;        // nome da selecao
+        const COL_CARDS_W = 130;      // 20 celulas
+        const COL_TOTAL_W = CONTENT_W - COL_CODE_W - COL_NAME_W - COL_CARDS_W; // ~14mm
+        const CELL_W = COL_CARDS_W / 20;
 
-        const COLS_PER_ROW = 5;
-        const CARD_W = 32;
-        const CARD_H = 22;
-        const CARD_GAP = 3;
-        const SEL_BLOCK_H = 42; // header (12mm) + grid (4 linhas * 25 ~ 100) ... ajusta
-        const SEL_HEADER_H = 12;
-        const SEL_GRID_H = 4 * (CARD_H + CARD_GAP);
-        const SEL_TOTAL_H = SEL_HEADER_H + SEL_GRID_H + 3;
+        const X_CODE = MARGIN;
+        const X_NAME = X_CODE + COL_CODE_W;
+        const X_CARDS = X_NAME + COL_NAME_W;
+        const X_TOTAL = X_CARDS + COL_CARDS_W;
 
-        let pageY = MARGIN + 18;
-        let currentPage = 1;
+        // Header da tabela
+        const HEADER_H = 5;
+        doc.setFillColor(...COLOR_INK);
+        doc.rect(MARGIN, TABLE_TOP, CONTENT_W, HEADER_H, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(6);
+        doc.setTextColor(...COLOR_GOLD);
+        doc.text('COD', X_CODE + COL_CODE_W / 2, TABLE_TOP + 3.4, { align: 'center' });
+        doc.text('SELECAO', X_NAME + 1, TABLE_TOP + 3.4);
+        // Numeros 1..20 no header
+        doc.setTextColor(220, 210, 180);
+        for (let i = 1; i <= 20; i++) {
+            const cx = X_CARDS + (i - 1) * CELL_W + CELL_W / 2;
+            doc.text(String(i).padStart(2, '0'), cx, TABLE_TOP + 3.4, { align: 'center' });
+        }
+        doc.setTextColor(...COLOR_GOLD);
+        doc.text('TOT', X_TOTAL + COL_TOTAL_W / 2, TABLE_TOP + 3.4, { align: 'center' });
+
+        // Linhas: 51 selecoes em ~252mm de espaco util
+        const ROW_H = (TABLE_H - HEADER_H - 4) / selecoesOrd.length; // ~4.6mm
+
         let lastGrupo = null;
+        let y = TABLE_TOP + HEADER_H;
 
-        const startNewPage = () => {
-            doc.addPage();
-            currentPage++;
-            doc.setFillColor(...COLOR_CREAM);
-            doc.rect(0, 0, W, H, 'F');
-            // Header da pagina
-            doc.setFillColor(...COLOR_INK);
-            doc.rect(0, 0, W, 12, 'F');
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(10);
-            doc.setTextColor(...COLOR_GOLD);
-            doc.text('CADEIRA NUMERADA', MARGIN, 7.5);
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(8);
-            doc.setTextColor(220, 210, 180);
-            doc.text(`Folha de controle · @${user.username || 'torcedor'}`, W - MARGIN, 7.5, { align: 'right' });
-            // Footer
-            doc.setDrawColor(...COLOR_LINE);
-            doc.setLineWidth(0.2);
-            doc.line(MARGIN, H - 12, W - MARGIN, H - 12);
-            doc.setFontSize(7);
-            doc.setTextColor(...COLOR_GRAY);
-            doc.setFont('helvetica', 'normal');
-            doc.text('cadeiranumerada.com.br', MARGIN, H - 7);
-            doc.text(`Pagina ${currentPage}`, W - MARGIN, H - 7, { align: 'right' });
-            pageY = MARGIN + 12;
-        };
-
-        const drawGrupoHeader = (grupo) => {
-            // Reserva espaco minimo pra grupo header + 1 selecao
-            if (pageY + 12 + SEL_TOTAL_H > H - 18) startNewPage();
-            doc.setFillColor(...COLOR_INK);
-            doc.roundedRect(MARGIN, pageY, CONTENT_W, 9, 1.5, 1.5, 'F');
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(11);
-            doc.setTextColor(...COLOR_GOLD);
-            const label = grupo === 'Z' || !grupo ? 'ESPECIAIS' : `GRUPO ${grupo}`;
-            doc.text(label, MARGIN + 4, pageY + 6);
-            pageY += 13;
-        };
-
-        const drawSelecao = (sel) => {
-            const cromos = cromosPorSel.get(sel.id) || [];
-            // Quebra de pagina se nao cabe
-            if (pageY + SEL_TOTAL_H > H - 18) startNewPage();
-
-            // Header da selecao
-            doc.setDrawColor(...COLOR_GOLD);
-            doc.setFillColor(255, 248, 225);
-            doc.setLineWidth(0.5);
-            doc.roundedRect(MARGIN, pageY, CONTENT_W, SEL_HEADER_H, 1.5, 1.5, 'FD');
-
-            // Code (badge dourado)
-            const code = (sel.code || '').toUpperCase().slice(0, 4);
-            doc.setFillColor(...COLOR_GOLD);
-            doc.roundedRect(MARGIN + 2, pageY + 2, 16, SEL_HEADER_H - 4, 1, 1, 'F');
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(8);
-            doc.setTextColor(...COLOR_INK);
-            doc.text(code, MARGIN + 10, pageY + SEL_HEADER_H / 2 + 1.2, { align: 'center' });
-
-            // Nome da selecao
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(11);
-            doc.setTextColor(...COLOR_INK);
-            doc.text((sel.name || '').toUpperCase(), MARGIN + 22, pageY + SEL_HEADER_H / 2 + 1.5);
-
-            // Stats da selecao (X/Y)
-            const selTenho = cromos.filter(c => c.quantidade > 0).length;
-            const selTotal = cromos.length;
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(10);
-            doc.setTextColor(...COLOR_GOLD_DARK);
-            doc.text(`${selTenho}/${selTotal}`, W - MARGIN - 3, pageY + SEL_HEADER_H / 2 + 1.5, { align: 'right' });
-
-            pageY += SEL_HEADER_H + 2;
-
-            // Grid de cromos: 5 colunas, ate 4 linhas (max 20 cromos por sel)
-            const totalGapsX = (COLS_PER_ROW - 1) * CARD_GAP;
-            const cardWAuto = (CONTENT_W - totalGapsX) / COLS_PER_ROW;
-            for (let i = 0; i < cromos.length; i++) {
-                const c = cromos[i];
-                const col = i % COLS_PER_ROW;
-                const row = Math.floor(i / COLS_PER_ROW);
-                const cx = MARGIN + col * (cardWAuto + CARD_GAP);
-                const cy = pageY + row * (CARD_H + CARD_GAP);
-                drawCromoCard(doc, cx, cy, cardWAuto, CARD_H, c, COLOR_TENHO, COLOR_FALTA, COLOR_INK, COLOR_GRAY);
-            }
-            const linhas = Math.ceil(cromos.length / COLS_PER_ROW);
-            pageY += linhas * (CARD_H + CARD_GAP) + 4;
-        };
-
-        // Itera selecoes e desenha
         for (const sel of selecoesOrd) {
             const grupo = sel.grupo || 'Z';
-            if (grupo !== lastGrupo) {
-                drawGrupoHeader(grupo);
-                lastGrupo = grupo;
+            // Divisor de grupo (linha fina dourada)
+            if (grupo !== lastGrupo && lastGrupo !== null) {
+                doc.setDrawColor(...COLOR_GOLD);
+                doc.setLineWidth(0.4);
+                doc.line(MARGIN, y, W - MARGIN, y);
             }
-            drawSelecao(sel);
+            lastGrupo = grupo;
+
+            // BG da linha (alterna sutilmente cream / branco)
+            const isAlt = (selecoesOrd.indexOf(sel) % 2) === 0;
+            doc.setFillColor(...(isAlt ? [255, 252, 245] : [248, 244, 230]));
+            doc.rect(MARGIN, y, CONTENT_W, ROW_H, 'F');
+
+            // Code badge dourado
+            doc.setFillColor(...COLOR_GOLD);
+            doc.rect(X_CODE, y + 0.4, COL_CODE_W - 0.4, ROW_H - 0.8, 'F');
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(7);
+            doc.setTextColor(...COLOR_INK);
+            const code = (sel.code || '').toUpperCase().slice(0, 4);
+            doc.text(code, X_CODE + COL_CODE_W / 2, y + ROW_H / 2 + 1, { align: 'center' });
+
+            // Nome
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.setTextColor(...COLOR_INK);
+            const nome = (sel.name || '');
+            const nomeFitted = nome.length > 22 ? nome.slice(0, 22) : nome;
+            doc.text(nomeFitted, X_NAME + 1.5, y + ROW_H / 2 + 1.2);
+
+            // Celulas dos 20 cromos
+            let selTenho = 0;
+            let selTotal = 0;
+            for (let i = 1; i <= 20; i++) {
+                const cx = X_CARDS + (i - 1) * CELL_W;
+                const cy = y + 0.4;
+                const cw = CELL_W - 0.2;
+                const ch = ROW_H - 0.8;
+                const cromo = cromoMap.get(`${sel.id}:${i}`);
+                if (!cromo) {
+                    // Selecao tem menos de 20 cromos (Coca-Cola tem 14, Especiais 9, etc)
+                    // Celula apagada/vazia
+                    doc.setFillColor(235, 230, 215);
+                    doc.rect(cx, cy, cw, ch, 'F');
+                    continue;
+                }
+                selTotal++;
+                if (cromo.quantidade > 0) {
+                    selTenho++;
+                    // Verde preenchido com check
+                    doc.setFillColor(...COLOR_TENHO);
+                    doc.rect(cx, cy, cw, ch, 'F');
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(6.5);
+                    doc.setTextColor(255, 255, 255);
+                    doc.text('OK', cx + cw / 2, cy + ch / 2 + 1, { align: 'center' });
+                } else {
+                    // Vazio (cinza claro outline)
+                    doc.setDrawColor(...COLOR_LINE);
+                    doc.setLineWidth(0.15);
+                    doc.setFillColor(...COLOR_FALTA_BG);
+                    doc.rect(cx, cy, cw, ch, 'FD');
+                }
+            }
+
+            // Total da linha (X/Y)
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8);
+            const pctRow = selTotal ? selTenho / selTotal : 0;
+            const totColor = pctRow >= 0.8 ? COLOR_TENHO : (pctRow >= 0.4 ? COLOR_GOLD_DARK : [180, 60, 60]);
+            doc.setTextColor(...totColor);
+            doc.text(`${selTenho}/${selTotal}`, X_TOTAL + COL_TOTAL_W - 1, y + ROW_H / 2 + 1.2, { align: 'right' });
+
+            y += ROW_H;
         }
 
-        // Atualiza footer da capa com total de paginas (repete o footer)
-        doc.setPage(1);
-        doc.setFillColor(...COLOR_CREAM);
-        doc.rect(0, H - 14, W, 14, 'F');
+        // Borda externa da tabela
+        doc.setDrawColor(...COLOR_INK);
+        doc.setLineWidth(0.3);
+        doc.rect(MARGIN, TABLE_TOP, CONTENT_W, y - TABLE_TOP);
+
+        // === FOOTER ===
         doc.setDrawColor(...COLOR_LINE);
         doc.setLineWidth(0.2);
-        doc.line(MARGIN, H - 12, W - MARGIN, H - 12);
+        doc.line(MARGIN, FOOTER_Y - 2, W - MARGIN, FOOTER_Y - 2);
+        doc.setFont('helvetica', 'normal');
         doc.setFontSize(7);
         doc.setTextColor(...COLOR_GRAY);
-        doc.setFont('helvetica', 'normal');
-        doc.text('cadeiranumerada.com.br · Diario do Torcedor', MARGIN, H - 7);
-        doc.text(`Pagina 1 de ${currentPage}`, W - MARGIN, H - 7, { align: 'right' });
+        doc.text('cadeiranumerada.com.br  ·  Diario do Torcedor  ·  Album da Copa 2026', MARGIN, FOOTER_Y);
+        // Legenda mini
+        doc.setFillColor(...COLOR_TENHO);
+        doc.rect(W - MARGIN - 50, FOOTER_Y - 2.5, 3, 3, 'F');
+        doc.setTextColor(...COLOR_INK);
+        doc.text('= TENHO', W - MARGIN - 46, FOOTER_Y);
+        doc.setFillColor(...COLOR_FALTA_BG);
+        doc.setDrawColor(...COLOR_LINE);
+        doc.setLineWidth(0.15);
+        doc.rect(W - MARGIN - 27, FOOTER_Y - 2.5, 3, 3, 'FD');
+        doc.text('= FALTA', W - MARGIN - 23, FOOTER_Y);
 
         return doc.output('blob');
-    }
-
-    /**
-     * Desenha um card de cromo no PDF — checkbox marcado se ja tem.
-     */
-    function drawCromoCard(doc, x, y, w, h, cromo, COLOR_TENHO, COLOR_FALTA, COLOR_INK, COLOR_GRAY) {
-        const tem = (cromo.quantidade || 0) > 0;
-        const qty = cromo.quantidade || 0;
-        // Card bg
-        if (tem) {
-            doc.setFillColor(...COLOR_TENHO);
-            doc.setDrawColor(...COLOR_TENHO);
-        } else {
-            doc.setFillColor(245, 240, 230);
-            doc.setDrawColor(...COLOR_FALTA);
-        }
-        doc.setLineWidth(0.3);
-        doc.roundedRect(x, y, w, h, 1.5, 1.5, 'FD');
-
-        // Code do cromo (centralizado)
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(9);
-        doc.setTextColor(tem ? 255 : COLOR_INK[0], tem ? 255 : COLOR_INK[1], tem ? 255 : COLOR_INK[2]);
-        const codeLabel = (cromo.code || '').toString();
-        doc.text(codeLabel, x + w / 2, y + h / 2, { align: 'center', baseline: 'middle' });
-
-        // Badge de qty se > 1 (canto sup direito)
-        if (qty > 1) {
-            doc.setFillColor(...COLOR_INK);
-            doc.circle(x + w - 3, y + 3, 2.5, 'F');
-            doc.setFontSize(6);
-            doc.setTextColor(...COLOR_TENHO);
-            doc.text(`${qty}`, x + w - 3, y + 4, { align: 'center' });
-        }
     }
     document.getElementById('albumShareClose').addEventListener('click', () => {
         document.getElementById('albumShareModal').classList.remove('show');
