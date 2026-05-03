@@ -2870,6 +2870,7 @@ body[data-club="corinthians"] .ingresso.d {
     position: relative;
 }
 .composer-card::before {
+    /* Label "NOVO POST" — sobrescrito via html[lang] pra EN/ES (ver abaixo) */
     content: 'NOVO POST';
     position: absolute;
     top: -0.55rem;
@@ -2884,6 +2885,8 @@ body[data-club="corinthians"] .ingresso.d {
     border-radius: 4px;
     line-height: 1.4;
 }
+html[lang="en"] .composer-card::before { content: 'NEW POST'; }
+html[lang="es"] .composer-card::before { content: 'NUEVO POST'; }
 
 /* Toggle dropdown "Sua rede" (visível só em mobile) */
 .rede-toggle {
@@ -10414,7 +10417,7 @@ body.botmaker-mode #tabMine {
                 <!-- Toggle mobile: abre/fecha a sidebar -->
                 <button class="rede-toggle" id="redeToggle" type="button">
                     <span class="material-icons">people</span>
-                    <span>Sua rede</span>
+                    <span data-i18n="app.rede.toggle.title">Sua rede</span>
                     <span class="rede-toggle-count" id="redeToggleCount">0 amigos</span>
                     <span class="material-icons rede-chevron">expand_more</span>
                 </button>
@@ -10422,33 +10425,33 @@ body.botmaker-mode #tabMine {
                 <!-- LEFT sidebar: amigos + solicitações + busca -->
                 <aside class="rede-sidebar" id="redeSidebar">
                     <div class="rede-search-bar">
-                        <input type="search" id="redeSearch" placeholder="Buscar @username ou nome...">
-                        <button class="btn-ghost" id="redeRefresh" title="Atualizar"><span class="material-icons">refresh</span></button>
+                        <input type="search" id="redeSearch" placeholder="Buscar @username ou nome..." data-i18n-attr="placeholder:app.rede.search_ph">
+                        <button class="btn-ghost" id="redeRefresh" title="Atualizar" data-i18n-attr="title:app.rede.refresh"><span class="material-icons">refresh</span></button>
                     </div>
 
                     <div class="rede-section" id="searchResultsSection" style="display:none;">
-                        <h3>Resultados</h3>
+                        <h3 data-i18n="app.rede.section.results">Resultados</h3>
                         <div class="user-list compact" id="searchResults"></div>
                     </div>
 
                     <div class="rede-section" id="incomingSection" style="display:none;">
-                        <h3>Recebidas <span class="badge" id="incomingBadge">0</span></h3>
+                        <h3><span data-i18n="app.rede.section.incoming">Recebidas</span> <span class="badge" id="incomingBadge">0</span></h3>
                         <div class="user-list compact" id="incomingList"></div>
                     </div>
 
                     <div class="rede-section" id="companionRequestsSection" style="display:none;">
-                        <h3>Pediram pra confirmar <span class="badge" id="companionRequestsBadge">0</span></h3>
+                        <h3><span data-i18n="app.rede.section.companion_requests">Pediram pra confirmar</span> <span class="badge" id="companionRequestsBadge">0</span></h3>
                         <div class="user-list compact" id="companionRequestsList"></div>
                     </div>
 
                     <div class="rede-section" id="outgoingSection" style="display:none;">
-                        <h3>Enviadas</h3>
+                        <h3 data-i18n="app.rede.section.outgoing">Enviadas</h3>
                         <div class="user-list compact" id="outgoingList"></div>
                     </div>
 
                     <div class="rede-section">
-                        <h3>Amigos <span id="friendsCount" style="color:var(--ink-mute);font-weight:400;font-size:0.85em;">(0)</span></h3>
-                        <div class="user-list compact" id="friendsList"><div class="loading">Carregando...</div></div>
+                        <h3><span data-i18n="app.rede.section.friends">Amigos</span> <span id="friendsCount" style="color:var(--ink-mute);font-weight:400;font-size:0.85em;">(0)</span></h3>
+                        <div class="user-list compact" id="friendsList"><div class="loading" data-i18n="app.rede.loading">Carregando...</div></div>
                     </div>
                 </aside>
 
@@ -10458,36 +10461,36 @@ body.botmaker-mode #tabMine {
                     <div class="composer-card">
                         <div class="composer-row">
                             <div class="user-avatar-sm" id="composerAvatar">—</div>
-                            <textarea id="composerBody" rows="2" placeholder="Conta a história do jogo. Um detalhe, um gol, um cheiro do estádio..."></textarea>
+                            <textarea id="composerBody" rows="2" placeholder="Conta a história do jogo. Um detalhe, um gol, um cheiro do estádio..." data-i18n-attr="placeholder:app.rede.composer.placeholder"></textarea>
                         </div>
                         <div class="composer-extras" id="composerExtras" style="display:none;">
-                            <input type="text" id="composerTitle" maxlength="140" placeholder="Título (opcional)">
+                            <input type="text" id="composerTitle" maxlength="140" placeholder="Título (opcional)" data-i18n-attr="placeholder:app.rede.composer.title_ph">
                             <select id="composerAttendance">
-                                <option value="">— Sem ingresso —</option>
+                                <option value="" data-i18n="app.rede.composer.no_attendance">— Sem ingresso —</option>
                             </select>
                         </div>
                         <div class="composer-footer">
                             <div class="composer-vis">
                                 <button type="button" class="composer-vis-btn active" data-vis="false">
                                     <span class="material-icons">lock</span>
-                                    Privada
+                                    <span data-i18n="app.rede.composer.private">Privada</span>
                                 </button>
                                 <button type="button" class="composer-vis-btn" data-vis="true">
                                     <span class="material-icons">public</span>
-                                    Pública
+                                    <span data-i18n="app.rede.composer.public">Pública</span>
                                 </button>
                             </div>
                             <div class="composer-actions">
-                                <button class="btn-ghost composer-toggle" id="composerToggleExtras" title="Mais opções">
+                                <button class="btn-ghost composer-toggle" id="composerToggleExtras" title="Mais opções" data-i18n-attr="title:app.rede.composer.more_options">
                                     <span class="material-icons">tune</span>
                                 </button>
-                                <button class="btn-primary composer-post" id="composerPost" disabled>Postar</button>
+                                <button class="btn-primary composer-post" id="composerPost" disabled data-i18n="app.rede.composer.post_btn">Postar</button>
                             </div>
                         </div>
                         <div class="error" id="composerErr" style="display:none;margin-top:0.6rem;padding:0.55rem 0.75rem;background:rgba(107,31,42,0.1);border-left:3px solid var(--vinho);color:var(--vinho);font-size:0.82rem;"></div>
                     </div>
 
-                    <div class="feed-list" id="feedList"><div class="loading">Carregando feed...</div></div>
+                    <div class="feed-list" id="feedList"><div class="loading" data-i18n="app.feed.loading">Carregando feed...</div></div>
                 </section>
             </div>
         </div>
@@ -11418,6 +11421,9 @@ body.botmaker-mode #tabMine {
         // Bolão: re-renderiza se a view tá aberta (lista de bolões, jogos da Copa, ranking)
         try { if (typeof bolaoLoadMeus === 'function' && document.getElementById('bolaoViewMeus')?.style.display !== 'none') bolaoLoadMeus(); } catch (_) {}
         try { if (typeof bolaoRenderJogos === 'function' && document.getElementById('bolaoViewDetail')?.style.display !== 'none') bolaoRenderJogos(); } catch (_) {}
+        // Rede social: re-renderiza feed + amigos (so se a aba ja foi aberta uma vez)
+        try { if (typeof loadFeed === 'function' && friendsState) loadFeed(); } catch (_) {}
+        try { if (typeof loadFriends === 'function' && friendsState) loadFriends(); } catch (_) {}
     });
 
     function applyClubTheme(club) {
@@ -13443,13 +13449,14 @@ body.botmaker-mode #tabMine {
     function populateComposerAttendance() {
         const sel = document.getElementById('composerAttendance');
         if (!sel) return;
-        sel.innerHTML = '<option value="">— Sem ingresso —</option>';
+        sel.innerHTML = `<option value="">${escapeHtml(t('app.rede.composer.no_attendance'))}</option>`;
         const porId = new Map();
         for (const g of (allGames || [])) if (g.attendance_id) porId.set(g.id, g);
         for (const g of (copaGames || [])) if (g.attendance_id) porId.set(g.id, g);
         const mine = [...porId.values()].sort((a, b) => new Date(b.data) - new Date(a.data));
+        const _locale = (window.CN_I18N && window.CN_I18N.getLocale) ? window.CN_I18N.getLocale() : 'pt-BR';
         for (const g of mine) {
-            const d = new Date(g.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', timeZone: 'UTC' });
+            const d = new Date(g.data).toLocaleDateString(_locale, { day: '2-digit', month: '2-digit', year: '2-digit', timeZone: 'UTC' });
             const opt = document.createElement('option');
             opt.value = g.attendance_id;
             opt.textContent = `${d} — ${g.time_casa} × ${g.time_visitante}`;
@@ -13477,7 +13484,7 @@ body.botmaker-mode #tabMine {
     function initComposer() {
         const avatarEl = document.getElementById('composerAvatar');
         if (avatarEl) {
-            avatarEl.textContent = avatarInitials(user?.display_name || user?.email || 'Eu');
+            avatarEl.textContent = avatarInitials(user?.display_name || user?.email || t('app.rede.composer.me_fallback'));
         }
         populateComposerAttendance();
         setComposerVisibility(false);
@@ -13504,7 +13511,7 @@ body.botmaker-mode #tabMine {
         const body = document.getElementById('composerBody').value.trim();
         if (!body) return;
         btn.disabled = true;
-        btn.textContent = 'Postando...';
+        btn.textContent = t('app.rede.composer.posting');
         try {
             const payload = {
                 title: document.getElementById('composerTitle').value.trim() || null,
@@ -13524,7 +13531,7 @@ body.botmaker-mode #tabMine {
             errBox.style.display = '';
         } finally {
             btn.disabled = false;
-            btn.textContent = 'Postar';
+            btn.textContent = t('app.rede.composer.post_btn');
         }
     }
 
@@ -13696,23 +13703,23 @@ body.botmaker-mode #tabMine {
 
     // Formata "última vez visto" em texto relativo curto. Retorna null se online agora.
     function formatLastSeen(lastSeenAt) {
-        if (!lastSeenAt) return 'há muito tempo';
+        if (!lastSeenAt) return t('app.rede.last_seen.long_time');
         const dt = new Date(lastSeenAt).getTime();
         const diffMin = (Date.now() - dt) / 60000;
         if (diffMin < 5) return null; // online
-        if (diffMin < 60) return `há ${Math.floor(diffMin)}min`;
+        if (diffMin < 60) return t('app.rede.last_seen.min', { n: Math.floor(diffMin) });
         const diffH = diffMin / 60;
-        if (diffH < 24) return `há ${Math.floor(diffH)}h`;
+        if (diffH < 24) return t('app.rede.last_seen.h', { n: Math.floor(diffH) });
         const diffD = diffH / 24;
-        if (diffD < 30) return `há ${Math.floor(diffD)}d`;
-        return 'há meses';
+        if (diffD < 30) return t('app.rede.last_seen.d', { n: Math.floor(diffD) });
+        return t('app.rede.last_seen.months');
     }
 
     function renderUserCard(u, mode) {
         // mode: 'friend' | 'incoming' | 'outgoing' | 'search'
         const handle = u.username ? `<span class="at">@${escapeHtml(u.username)}</span>` : '';
         const club = u.club_name ? ` · ${escapeHtml(u.club_name)}` : '';
-        const name = (u.display_name || u.username || 'Sem nome').toUpperCase();
+        const name = (u.display_name || u.username || t('app.rede.user.no_name')).toUpperCase();
         const initials = avatarInitials(u.display_name || u.username);
 
         // Indicador online/offline (só pra amigos). isOnline = dot verde; senão texto "há Xh".
@@ -13726,30 +13733,30 @@ body.botmaker-mode #tabMine {
         let actions = '';
         if (mode === 'friend') {
             actions = `
-                <button class="user-action" title="Ver coleção" data-collection="${u.user_id}"><span class="material-icons">collections_bookmark</span></button>
-                <button class="user-action" title="Comparar" data-compare="${u.user_id}"><span class="material-icons">compare_arrows</span></button>
-                <button class="user-action del" title="Remover" data-unfriend="${u.friendship_id}"><span class="material-icons">person_remove</span></button>
+                <button class="user-action" title="${escapeHtml(t('app.rede.user.action.collection'))}" data-collection="${u.user_id}"><span class="material-icons">collections_bookmark</span></button>
+                <button class="user-action" title="${escapeHtml(t('app.rede.user.action.compare'))}" data-compare="${u.user_id}"><span class="material-icons">compare_arrows</span></button>
+                <button class="user-action del" title="${escapeHtml(t('app.rede.user.action.remove'))}" data-unfriend="${u.friendship_id}"><span class="material-icons">person_remove</span></button>
             `;
         } else if (mode === 'incoming') {
             actions = `
-                <button class="user-action accept" title="Aceitar" data-accept="${u.friendship_id}"><span class="material-icons">check</span></button>
-                <button class="user-action reject" title="Rejeitar" data-reject="${u.friendship_id}"><span class="material-icons">close</span></button>
+                <button class="user-action accept" title="${escapeHtml(t('app.rede.user.action.accept'))}" data-accept="${u.friendship_id}"><span class="material-icons">check</span></button>
+                <button class="user-action reject" title="${escapeHtml(t('app.rede.user.action.reject'))}" data-reject="${u.friendship_id}"><span class="material-icons">close</span></button>
             `;
         } else if (mode === 'outgoing') {
             actions = `
-                <span class="relation-tag pending">Aguardando</span>
-                <button class="user-action del" title="Cancelar" data-reject="${u.friendship_id}"><span class="material-icons">close</span></button>
+                <span class="relation-tag pending">${escapeHtml(t('app.rede.user.tag.waiting'))}</span>
+                <button class="user-action del" title="${escapeHtml(t('app.rede.user.action.cancel'))}" data-reject="${u.friendship_id}"><span class="material-icons">close</span></button>
             `;
         } else if (mode === 'search') {
             const f = u.friendship;
             if (f && f.status === 'ACCEPTED') {
-                actions = `<span class="relation-tag friend">Já é amigo</span>`;
+                actions = `<span class="relation-tag friend">${escapeHtml(t('app.rede.user.tag.is_friend'))}</span>`;
             } else if (f && f.status === 'PENDING' && f.i_requested) {
-                actions = `<span class="relation-tag pending">Solicitado</span>`;
+                actions = `<span class="relation-tag pending">${escapeHtml(t('app.rede.user.tag.requested'))}</span>`;
             } else if (f && f.status === 'PENDING' && !f.i_requested) {
-                actions = `<button class="user-action accept add-text" data-accept="${f.id}">Aceitar</button>`;
+                actions = `<button class="user-action accept add-text" data-accept="${f.id}">${escapeHtml(t('app.rede.user.action.accept'))}</button>`;
             } else {
-                actions = `<button class="user-action add-text" data-add-username="${escapeHtml(u.username || '')}" data-add-id="${u.id}">Adicionar</button>`;
+                actions = `<button class="user-action add-text" data-add-username="${escapeHtml(u.username || '')}" data-add-id="${u.id}">${escapeHtml(t('app.rede.user.action.add'))}</button>`;
             }
         }
 
@@ -13762,7 +13769,7 @@ body.botmaker-mode #tabMine {
             <div class="${cardCls}" ${cardOpen}>
                 <div class="user-avatar-wrap">
                     <div class="user-avatar-sm">${initials}</div>
-                    ${isOnline ? '<span class="avatar-presence-dot" title="Online agora"></span>' : ''}
+                    ${isOnline ? `<span class="avatar-presence-dot" title="${escapeHtml(t('app.rede.last_seen.online'))}"></span>` : ''}
                 </div>
                 <div class="user-info-sm">
                     <div class="user-name-sm">${escapeHtml(name)}</div>
@@ -13797,7 +13804,7 @@ body.botmaker-mode #tabMine {
         });
         container.querySelectorAll('[data-unfriend]').forEach(b => {
             b.addEventListener('click', async () => {
-                if (!confirm('Remover amizade?')) return;
+                if (!confirm(t('app.rede.user.confirm_unfriend'))) return;
                 try { await api(`/social/friends/${b.dataset.unfriend}`, { method: 'DELETE' }); await loadFriends(); }
                 catch (e) { alert('Erro: ' + e.message); }
             });
@@ -13914,23 +13921,24 @@ body.botmaker-mode #tabMine {
 
     async function loadFeed() {
         const list = document.getElementById('feedList');
+        const _locale = (window.CN_I18N && window.CN_I18N.getLocale) ? window.CN_I18N.getLocale() : 'pt-BR';
         try {
             let { feed } = await api('/social/feed?limit=30');
             feed = dedupFeedItems(feed);
             if (!feed.length) {
-                list.innerHTML = '<div class="empty">Nenhuma atividade ainda. Quando seus amigos marcarem jogos, aparece aqui.</div>';
+                list.innerHTML = `<div class="empty">${escapeHtml(t('app.feed.empty'))}</div>`;
                 return;
             }
             list.innerHTML = feed.map(item => {
                 const initials = avatarInitials(item.display_name || item.username);
-                const handle = item.display_name || item.username || 'Amigo';
+                const handle = item.display_name || item.username || t('app.feed.fallback.friend');
                 const dt = new Date(item.created_at);
                 const now = Date.now();
                 const diffH = (now - dt.getTime()) / 36e5;
-                const when = diffH < 1 ? 'agora há pouco'
-                           : diffH < 24 ? `${Math.floor(diffH)}h atrás`
-                           : diffH < 168 ? `${Math.floor(diffH/24)}d atrás`
-                           : dt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+                const when = diffH < 1 ? t('app.feed.time.now')
+                           : diffH < 24 ? t('app.feed.time.h', { n: Math.floor(diffH) })
+                           : diffH < 168 ? t('app.feed.time.d', { n: Math.floor(diffH/24) })
+                           : dt.toLocaleDateString(_locale, { day: '2-digit', month: 'short' });
 
                 const resCls = item.resultado === 'V' ? 'v' : item.resultado === 'D' ? 'd' : item.resultado === 'E' ? 'e' : '';
                 const resTag = item.resultado ? `<span class="feed-result ${resCls}">${item.resultado}</span>` : '';
@@ -13960,12 +13968,12 @@ body.botmaker-mode #tabMine {
 
                 let actionLine, contentBlock;
                 const contentClass = isCopa ? 'feed-content is-copa' : 'feed-content';
-                const faseLabel = isCopa && item.campeonato ? `<div class="feed-content-fase">FIFA WORLD CUP 2026</div>` : '';
+                const faseLabel = isCopa && item.campeonato ? `<div class="feed-content-fase">${escapeHtml(t('app.feed.copa_label'))}</div>` : '';
 
                 if (item.type === 'achievement' && item.achievement) {
                     const ach = item.achievement;
                     const rarity = ach.rarity || 'bronze';
-                    actionLine = `<span class="material-icons">emoji_events</span> desbloqueou uma conquista`;
+                    actionLine = `<span class="material-icons">emoji_events</span> ${escapeHtml(t('app.feed.action.unlocked'))}`;
                     contentBlock = `
                         <div class="feed-content feed-achievement rarity-${escapeHtml(rarity)}">
                             <div class="feed-achievement-icon">
@@ -13992,8 +14000,10 @@ body.botmaker-mode #tabMine {
                     const _tTeam = (n) => (window.CN_I18N && window.CN_I18N.tTeam) ? window.CN_I18N.tTeam(n) : (n || '');
 
                     // Action line: singular vs plural
-                    const verbo = count === 1 ? 'palpitou um jogo da Copa' : `palpitou ${count} jogos da Copa`;
-                    actionLine = `<span class="material-icons">stadium</span> ${verbo}`;
+                    const verbo = count === 1
+                        ? t('app.feed.palpite.singular')
+                        : t('app.feed.palpite.plural', { n: count });
+                    actionLine = `<span class="material-icons">stadium</span> ${escapeHtml(verbo)}`;
 
                     // Constrói linha de cada palpite no dropdown
                     const palpiteRowsHtml = palpitesList.map(p => {
@@ -14037,7 +14047,7 @@ body.botmaker-mode #tabMine {
                         ? `
                             <button type="button" class="feed-palpite-toggle" data-palpite-toggle="${item.ref_id}" aria-expanded="false">
                                 <span class="material-icons feed-palpite-chev">expand_more</span>
-                                <span class="feed-palpite-toggle-label">Ver palpites (${count})</span>
+                                <span class="feed-palpite-toggle-label">${escapeHtml(t('app.feed.palpite.see', { n: count }))}</span>
                             </button>
                             <div class="feed-palpite-list" id="feedPalpiteList-${item.ref_id}" hidden>
                                 ${palpiteRowsHtml}
@@ -14051,13 +14061,13 @@ body.botmaker-mode #tabMine {
 
                     contentBlock = `
                         <div class="feed-content is-copa is-palpite" ${bolaoId ? `data-bolao-id="${bolaoId}"` : ''}>
-                            <div class="feed-content-fase">FIFA WORLD CUP 2026 · BOLÃO</div>
+                            <div class="feed-content-fase">${escapeHtml(t('app.feed.copa_bolao_label'))}</div>
                             ${bolaoLabel}
                             ${dropdownHtml}
                         </div>
                     `;
                 } else if (item.type === 'note') {
-                    actionLine = `<span class="material-icons">edit_note</span> publicou uma nota`;
+                    actionLine = `<span class="material-icons">edit_note</span> ${escapeHtml(t('app.feed.action.posted_note'))}`;
                     const titleHtml = item.title ? `<div class="feed-content-title">${escapeHtml(item.title)}</div>` : '';
                     const gameHtml = gameTeams ? `<div class="feed-content-game">${gameTeams}</div>` : '';
                     contentBlock = `
@@ -14075,7 +14085,7 @@ body.botmaker-mode #tabMine {
                         : '';
                     const venueParts = [];
                     if (item.estadio) venueParts.push(escapeHtml(item.estadio));
-                    if (item.setor)   venueParts.push(`Setor ${escapeHtml(item.setor)}`);
+                    if (item.setor)   venueParts.push(escapeHtml(t('app.feed.sector', { nome: item.setor })));
                     const venueHtml = venueParts.length
                         ? `<div class="feed-content-venue"><span class="material-icons">stadium</span>${venueParts.join(' · ')}</div>`
                         : '';
@@ -14083,8 +14093,8 @@ body.botmaker-mode #tabMine {
                         ? ''
                         : `<div class="feed-content-meta">${placarHtml}${resTag}</div>`;
                     actionLine = isCopa
-                        ? `<span class="material-icons">sports_soccer</span> vai na Copa`
-                        : `<span class="material-icons">stadium</span> marcou presença`;
+                        ? `<span class="material-icons">sports_soccer</span> ${escapeHtml(t('app.feed.action.going_copa'))}`
+                        : `<span class="material-icons">stadium</span> ${escapeHtml(t('app.feed.action.attended'))}`;
                     contentBlock = `
                         <div class="${contentClass}">
                             ${faseLabel}
@@ -14099,29 +14109,37 @@ body.botmaker-mode #tabMine {
                 const companions = (item.type === 'attendance' && Array.isArray(item.companions))
                     ? item.companions : [];
                 const isShared = companions.length > 0;
-                const ownerName = item.display_name || item.username || 'Amigo';
+                const _someoneFallback = t('app.feed.fallback.friend');
+                const _someoneLowerFallback = t('app.feed.fallback.someone');
+                const ownerName = item.display_name || item.username || _someoneFallback;
 
                 // Se for post compartilhado, override action + nome + avatares
                 let headAvatarsHtml, displayName;
                 if (isShared) {
                     const c1 = companions[0];
-                    const c1Name = c1.display_name || c1.username || 'amigo';
+                    const c1Name = c1.display_name || c1.username || _someoneLowerFallback;
+                    // Conector "e" / "and" / "y" — usa o do idioma corrente
+                    const _lang = (window.CN_I18N && window.CN_I18N.getLang) ? window.CN_I18N.getLang() : 'pt';
+                    const _and = (_lang === 'en') ? ' and ' : (_lang === 'es' ? ' y ' : ' e ');
                     if (companions.length === 1) {
-                        displayName = `${ownerName} e ${c1Name}`;
+                        displayName = `${ownerName}${_and}${c1Name}`;
                     } else if (companions.length === 2) {
                         const c2 = companions[1];
-                        displayName = `${ownerName}, ${c1Name} e ${c2.display_name || c2.username || 'amigo'}`;
+                        displayName = `${ownerName}, ${c1Name}${_and}${c2.display_name || c2.username || _someoneLowerFallback}`;
                     } else {
-                        displayName = `${ownerName}, ${c1Name} e mais ${companions.length - 1}`;
+                        const moreLabel = (_lang === 'en') ? `and ${companions.length - 1} more`
+                                       : (_lang === 'es') ? `y ${companions.length - 1} más`
+                                       : `e mais ${companions.length - 1}`;
+                        displayName = `${ownerName}, ${c1Name} ${moreLabel}`;
                     }
                     // Verbo conforme tempo: jogo futuro → "vão juntos"; passado → "foram juntos"
                     const hojeRef = new Date(); hojeRef.setHours(0,0,0,0);
                     const dtJogo = item.data ? new Date(item.data) : null;
                     const isFuturoJogo = dtJogo ? dtJogo >= hojeRef : false;
-                    const verboJuntos = isFuturoJogo ? 'vão juntos' : 'foram juntos';
-                    actionLine = isCopa
-                        ? `<span class="material-icons">handshake</span> ${verboJuntos} na Copa`
-                        : `<span class="material-icons">handshake</span> ${verboJuntos} no jogo`;
+                    const verboKey = isCopa
+                        ? (isFuturoJogo ? 'app.feed.action.together_going_copa' : 'app.feed.action.together_went_copa')
+                        : (isFuturoJogo ? 'app.feed.action.together_going_game' : 'app.feed.action.together_went_game');
+                    actionLine = `<span class="material-icons">handshake</span> ${escapeHtml(t(verboKey))}`;
 
                     // Avatares stacked: owner + companion(s)
                     const ownerInitials = avatarInitials(item.display_name || item.username);
@@ -14151,7 +14169,7 @@ body.botmaker-mode #tabMine {
                 const isMine = iAmOwner || iAmCompanion;
                 const canDelete = iAmOwner && item.type === 'note';
                 const deleteBtn = canDelete
-                    ? `<button class="feed-delete" data-delete-note="${item.ref_id}" title="Remover essa nota"><span class="material-icons">delete_outline</span></button>`
+                    ? `<button class="feed-delete" data-delete-note="${item.ref_id}" title="${escapeHtml(t('app.feed.delete_title'))}"><span class="material-icons">delete_outline</span></button>`
                     : '';
 
                 return `
@@ -14159,7 +14177,7 @@ body.botmaker-mode #tabMine {
                         <div class="feed-head">
                             ${headAvatarsHtml}
                             <div class="feed-author">
-                                <div class="feed-author-name">${escapeHtml(displayName)}${isMine ? ' <span class="feed-mine-tag">você</span>' : ''}</div>
+                                <div class="feed-author-name">${escapeHtml(displayName)}${isMine ? ` <span class="feed-mine-tag">${escapeHtml(t('app.feed.tag.you'))}</span>` : ''}</div>
                                 <div class="feed-action">${actionLine}</div>
                             </div>
                             <div class="feed-time">${when}</div>
@@ -14174,11 +14192,11 @@ body.botmaker-mode #tabMine {
             list.querySelectorAll('[data-delete-note]').forEach(b => {
                 b.addEventListener('click', async (e) => {
                     e.stopPropagation();
-                    if (!confirm('Remover essa nota? Essa ação não pode ser desfeita.')) return;
+                    if (!confirm(t('app.feed.delete_confirm'))) return;
                     try {
                         await api(`/notes/${b.dataset.deleteNote}`, { method: 'DELETE' });
                         await loadFeed();
-                    } catch (err) { alert('Erro: ' + err.message); }
+                    } catch (err) { alert(t('app.rede.error') + ': ' + err.message); }
                 });
             });
 
@@ -14774,16 +14792,18 @@ body.botmaker-mode #tabMine {
             if (toggleCountEl) {
                 const pending = data.incoming.length + (data.companion_requests_count || 0);
                 if (pending > 0) {
-                    toggleCountEl.textContent = `${pending} pendente${pending > 1 ? 's' : ''}`;
+                    const k = pending > 1 ? 'app.rede.toggle.pending_plural' : 'app.rede.toggle.pending';
+                    toggleCountEl.textContent = t(k, { n: pending });
                     toggleCountEl.classList.add('rede-toggle-pending');
                 } else {
-                    toggleCountEl.textContent = `${data.friends.length} amigo${data.friends.length !== 1 ? 's' : ''}`;
+                    const k = data.friends.length === 1 ? 'app.rede.toggle.friends_one' : 'app.rede.toggle.friends';
+                    toggleCountEl.textContent = t(k, { n: data.friends.length });
                     toggleCountEl.classList.remove('rede-toggle-pending');
                 }
             }
             const fl = document.getElementById('friendsList');
             if (!data.friends.length) {
-                fl.innerHTML = '<div class="empty" style="grid-column:1/-1;">Você ainda não tem amigos. Use a busca acima pra encontrar pelo @username.</div>';
+                fl.innerHTML = `<div class="empty" style="grid-column:1/-1;">${escapeHtml(t('app.rede.empty.no_friends'))}</div>`;
             } else {
                 fl.innerHTML = data.friends.map(u => renderUserCard(u, 'friend')).join('');
                 bindUserCardActions(fl);
@@ -14815,7 +14835,7 @@ body.botmaker-mode #tabMine {
             // Companion requests (alguém marcou que foi/vai com você)
             loadCompanionRequests();
         } catch (err) {
-            document.getElementById('friendsList').innerHTML = `<div class="empty">Erro: ${err.message}</div>`;
+            document.getElementById('friendsList').innerHTML = `<div class="empty">${escapeHtml(t('app.rede.error'))}: ${escapeHtml(err.message)}</div>`;
         }
     }
 
@@ -14831,29 +14851,30 @@ body.botmaker-mode #tabMine {
             sec.style.display = '';
             document.getElementById('companionRequestsBadge').textContent = requests.length;
             const hoje = new Date(); hoje.setHours(0,0,0,0);
+            const _locale = (window.CN_I18N && window.CN_I18N.getLocale) ? window.CN_I18N.getLocale() : 'pt-BR';
             list.innerHTML = requests.map(r => {
                 const gameDate = new Date(r.game_data);
                 const isFuturo = gameDate >= hoje;
-                const dt = gameDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit', timeZone: 'UTC' });
-                const owner = (r.owner_display_name || r.owner_username || 'Alguém').toUpperCase();
+                const dt = gameDate.toLocaleDateString(_locale, { day: '2-digit', month: 'short', year: '2-digit', timeZone: 'UTC' });
+                const owner = (r.owner_display_name || r.owner_username || t('app.rede.companion.someone')).toUpperCase();
                 const initials = avatarInitials(r.owner_display_name || r.owner_username);
                 const matchTxt = `${r.time_casa} × ${r.time_visitante}`;
-                const verboFrase = isFuturo ? 'marcou que vai com você em' : 'marcou que foi com você em';
-                const tituloRecusa = isFuturo ? 'Não vou' : 'Não fui';
+                const verboFrase = isFuturo ? t('app.rede.companion.verb_future') : t('app.rede.companion.verb_past');
+                const tituloRecusa = isFuturo ? t('app.rede.companion.not_going') : t('app.rede.companion.didnt_go');
                 return `
                     <div class="user-card companion-req-card">
                         <div class="user-avatar-sm">${initials}</div>
                         <div class="user-info-sm">
                             <div class="user-name-sm">${escapeHtml(owner)}</div>
                             <div class="user-meta-sm" style="font-size:0.7rem;line-height:1.3;">
-                                ${verboFrase}<br>
+                                ${escapeHtml(verboFrase)}<br>
                                 <b style="color:var(--ink);">${escapeHtml(matchTxt)}</b><br>
                                 <span style="color:var(--ink-mute);">${dt}</span>
                             </div>
                         </div>
                         <div class="user-actions-sm">
-                            <button class="user-action accept" title="Confirmar" data-cr-accept="${r.attendance_id}"><span class="material-icons">check</span></button>
-                            <button class="user-action reject" title="${tituloRecusa}" data-cr-reject="${r.attendance_id}"><span class="material-icons">close</span></button>
+                            <button class="user-action accept" title="${escapeHtml(t('app.rede.companion.confirm'))}" data-cr-accept="${r.attendance_id}"><span class="material-icons">check</span></button>
+                            <button class="user-action reject" title="${escapeHtml(tituloRecusa)}" data-cr-reject="${r.attendance_id}"><span class="material-icons">close</span></button>
                         </div>
                     </div>
                 `;
@@ -14882,14 +14903,18 @@ body.botmaker-mode #tabMine {
             });
             list.querySelectorAll('[data-cr-reject]').forEach(b => {
                 b.addEventListener('click', async () => {
-                    const tituloVerbo = b.title === 'Não vou' ? 'Você não vai nesse jogo?' : 'Você não foi nesse jogo?';
-                    if (!confirm(`${tituloVerbo} Vamos remover você como companhia.`)) return;
+                    // Compara com 'Não vou' (PT) OU 'Not going' (EN) OU 'No voy' (ES)
+                    const isFuture = b.title === t('app.rede.companion.not_going');
+                    const msg = isFuture
+                        ? t('app.rede.companion.confirm_reject_future')
+                        : t('app.rede.companion.confirm_reject_past');
+                    if (!confirm(msg)) return;
                     b.disabled = true;
                     try {
                         await api(`/social/companion-requests/${b.dataset.crReject}`, { method: 'DELETE' });
                         await loadFriends();
                     } catch (e) {
-                        alert('Erro: ' + e.message);
+                        alert(t('app.rede.error') + ': ' + e.message);
                         b.disabled = false;
                     }
                 });
@@ -14943,17 +14968,17 @@ body.botmaker-mode #tabMine {
             return;
         }
         sec.style.display = '';
-        list.innerHTML = '<div class="loading">Buscando...</div>';
+        list.innerHTML = `<div class="loading">${escapeHtml(t('app.rede.search.searching'))}</div>`;
         try {
             const { users } = await api('/social/users/search?q=' + encodeURIComponent(q));
             if (!users.length) {
-                list.innerHTML = '<div class="empty" style="grid-column:1/-1;">Ninguém encontrado.</div>';
+                list.innerHTML = `<div class="empty" style="grid-column:1/-1;">${escapeHtml(t('app.rede.empty.search_none'))}</div>`;
                 return;
             }
             list.innerHTML = users.map(u => renderUserCard(u, 'search')).join('');
             bindUserCardActions(list);
         } catch (e) {
-            list.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
+            list.innerHTML = `<div class="empty">${escapeHtml(t('app.rede.error'))}: ${escapeHtml(e.message)}</div>`;
         }
     }
 
