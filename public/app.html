@@ -4790,63 +4790,62 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
 }
-.album-share-preview-wrap {
-    background: #0a0700;
-    border-radius: 12px;
-    padding: 0.5rem;
+/* Card explicativo do PDF — substitui o preview do canvas antigo */
+.album-share-pdf-card {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.95rem 1rem;
     margin: 0.85rem 0 1rem;
-    box-shadow: 0 8px 24px rgba(20,10,0,0.3);
-    overflow: hidden;
-    /* Limita altura do preview pra não ocupar tela inteira (canvas é 1080x1620) */
-    max-height: 380px;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
+    background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+    border: 1px solid #d4a520;
+    border-left: 3px solid #d4a520;
+    border-radius: 12px;
+    font-family: 'SN Pro', 'Oswald', sans-serif;
+    color: #1a1000;
+    box-shadow: 0 2px 8px rgba(212,165,32,0.12);
 }
-/* No mobile, kill o scroll interno do preview — ele "rouba" o gesto de touch
-   do scroll do modal e quebra UX. Deixa o canvas inteiro inline e que o
-   modal scrolle como um todo. */
+.album-share-pdf-icon {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, #d4a520, #a87f1e);
+    color: #1a1000;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(212,165,32,0.3);
+}
+.album-share-pdf-icon .material-icons { font-size: 1.5rem; }
+.album-share-pdf-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+    flex: 1;
+}
+.album-share-pdf-text strong {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.92rem;
+    letter-spacing: 0.04em;
+    color: #1a1000;
+    text-transform: uppercase;
+}
+.album-share-pdf-text span {
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: #5a4520;
+}
 @media (max-width: 768px) {
-    .album-share-preview-wrap {
-        max-height: none;
-        overflow-y: visible;
-    }
     .album-share-modal {
-        /* dvh é o "dynamic viewport height" — cresce/encolhe com o address bar
-           do mobile, evitando o modal cortar embaixo quando barra do navegador
-           recolhe. Fallback pra 90vh em browsers antigos via cascata. */
+        /* dvh = dynamic viewport height — segue a barra do mobile */
         max-height: 92dvh;
     }
+    .album-share-pdf-card { padding: 0.8rem 0.85rem; }
+    .album-share-pdf-icon { width: 40px; height: 40px; }
 }
-.album-share-preview-wrap canvas {
-    width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 8px;
-}
-/* Dica do WhatsApp — verde tipo notification toast */
-.album-share-whats-tip {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.65rem;
-    padding: 0.75rem 0.9rem;
-    margin: 0 0 0.85rem;
-    background: linear-gradient(135deg, #e7f5e9 0%, #d8f0dd 100%);
-    border: 1px solid rgba(37,180,84,0.35);
-    border-left: 3px solid #25b454;
-    border-radius: 10px;
-    font-family: 'SN Pro', sans-serif;
-    font-size: 0.82rem;
-    line-height: 1.45;
-    color: #1d4426;
-}
-.album-share-whats-tip .material-icons {
-    color: #25b454;
-    font-size: 1.2rem;
-    flex-shrink: 0;
-    margin-top: 0.05rem;
-}
-.album-share-whats-tip strong { color: #0c2f15; font-weight: 700; }
 
 .album-share-download-btn {
     width: 100%;
@@ -9918,23 +9917,20 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
             <h2 data-i18n="app.album.share_title">Lista pra trocar</h2>
             <div class="meta" data-i18n="app.album.share_meta">Cole esse link onde quiser. Quem abrir vê seus faltantes e repetidos pra fechar a troca.</div>
 
-            <!-- Preview do que vai virar imagem -->
-            <div class="album-share-preview-wrap">
-                <canvas id="albumShareCanvas" width="1080" height="1620"></canvas>
-            </div>
-
-            <!-- Dica visual: WhatsApp comprime fotos brutalmente. Mandar como Documento preserva. -->
-            <div class="album-share-whats-tip">
-                <span class="material-icons">tips_and_updates</span>
-                <div>
-                    <strong data-i18n="app.album.share_tip_title">Pra qualidade máxima no WhatsApp:</strong>
-                    <span data-i18n-html="app.album.share_tip_desc"> envie como <strong>Documento</strong> (não como Foto). O WhatsApp comprime fotos automaticamente — em modo Documento ela chega na mesma resolução do download.</span>
+            <!-- Card explicativo do PDF (estetica do app) -->
+            <div class="album-share-pdf-card">
+                <div class="album-share-pdf-icon">
+                    <span class="material-icons">picture_as_pdf</span>
+                </div>
+                <div class="album-share-pdf-text">
+                    <strong data-i18n="app.album.share_pdf_title">Folha de Controle (PDF)</strong>
+                    <span data-i18n="app.album.share_pdf_desc">Imprima ou compartilhe um PDF com a tabela de todas as figurinhas — as que voce ja tem ja vem marcadas.</span>
                 </div>
             </div>
 
             <button class="btn-primary album-share-download-btn" id="albumShareDownload" type="button">
-                <span class="material-icons">image</span>
-                <span data-i18n="app.album.share_download">Baixar imagem (.jpg)</span>
+                <span class="material-icons">picture_as_pdf</span>
+                <span data-i18n="app.album.share_download">Baixar PDF</span>
             </button>
 
             <div class="album-share-link-block">
@@ -10956,6 +10952,8 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
     </main>
 
 <script src="/i18n.js"></script>
+<!-- jsPDF — gerador de PDF client-side pra folha de controle do album -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js" defer></script>
 <script>
     const t = (k, vars) => window.CN_I18N ? window.CN_I18N.t(k, vars) : k;
 
@@ -16653,452 +16651,434 @@ body.light-theme .feed-result.d { background: rgba(107,31,42,0.15); color: var(-
         textEl.value = partes.join('\n');
 
         document.getElementById('albumShareModal').classList.add('show');
-        // Renderiza a imagem no canvas (após modal ficar visível pra fontes carregarem direito)
-        setTimeout(() => albumRenderShareImage(), 100);
+        // PDF eh gerado on-demand quando user clica em 'Baixar PDF' — nao
+        // pre-renderiza nada aqui (jsPDF eh pesado e roda so quando precisa).
     });
 
-    /**
-     * Desenha um PNG com a lista de troca em formato VISUAL — mini-cards
-     * de cromos faltantes agrupados por seleção dentro de cada grupo.
-     * Altura é dinâmica baseada no conteúdo (até max 6000px).
-     */
-    async function albumRenderShareImage() {
-        const canvas = document.getElementById('albumShareCanvas');
-        const ctx = canvas.getContext('2d');
-
-        // ================ DADOS ================
-        const total = albumState.cromos.length;
-        const tenho = albumState.cromos.filter(c => c.quantidade > 0).length;
-        const faltam = albumState.cromos.filter(c => c.quantidade === 0);
-        const repetidos = albumState.cromos.filter(c => c.quantidade > 1);
-        const pct = total ? Math.round(tenho / total * 100) : 0;
-
-        const selById = Object.fromEntries(albumState.selecoes.map(s => [s.id, s]));
-
-        // Agrupa faltantes: GRUPO → SELEÇÃO → cromos
-        const porGrupo = new Map();
-        for (const c of faltam) {
-            const sel = selById[c.selecao_id];
-            const g = sel?.grupo || 'ESPECIAL';
-            if (!porGrupo.has(g)) porGrupo.set(g, new Map());
-            const selMap = porGrupo.get(g);
-            if (!selMap.has(sel.id)) selMap.set(sel.id, { sel, cromos: [] });
-            selMap.get(sel.id).cromos.push(c);
-        }
-        const ordemGrupos = ['A','B','C','D','E','F','G','H','I','J','K','L','ESPECIAL'];
-        const grupoEntries = ordemGrupos
-            .filter(g => porGrupo.has(g))
-            .map(g => [g, [...porGrupo.get(g).values()]]);
-
-        // ================ LAYOUT CONFIG ================
-        const W = 1080;
-        const PAD = 50;
-        const CONTENT_W = W - PAD * 2;
-        // Mini-cromo: 64×80 (proporção 4:5, número grande visível)
-        const CW = 64, CH = 80, CGAP = 8;
-        const CPL = Math.floor((CONTENT_W + CGAP) / (CW + CGAP)); // cromos por linha (=13)
-        const HEADER_H = 245;     // y após username (cabeçalho topo)
-        const STATS_H = 240;      // card stats + progress + texto X/Y
-        const TITLE_H = 30;       // "FALTAM (n)"
-        const GROUP_HEAD_H = 56;
-        const SEL_HEAD_H = 28;    // header da seleção (bandeira + nome)
-        const GROUP_GAP = 12;     // espaço entre grupos
-        const SEL_MARGIN_BOT = 18;
-        const FOOTER_H = 130;
-        const MAX_H = 14000;
-
-        // Helper: altura visual real do grid de cromos de uma seleção.
-        // Linhas vivas ocupam CH cada, separadas por CGAP entre elas.
-        // N linhas → N*CH + (N-1)*CGAP
-        const gridHeight = (n) => {
-            const lines = Math.ceil(n / CPL);
-            return lines * CH + (lines - 1) * CGAP;
-        };
-
-        // ================ CALCULA ALTURA NECESSÁRIA (precisa bater EXATO com render) ================
-        let calcH = HEADER_H + STATS_H;
-        if (faltam.length === 0) {
-            calcH += 100; // empty state
-        } else {
-            calcH += TITLE_H;
-            for (const [g, sels] of grupoEntries) {
-                calcH += GROUP_HEAD_H;
-                for (const { cromos } of sels) {
-                    calcH += SEL_HEAD_H + gridHeight(cromos.length) + SEL_MARGIN_BOT;
-                }
-                calcH += GROUP_GAP;
-            }
-        }
-        calcH += FOOTER_H;
-        const H = Math.min(calcH, MAX_H);
-
-        canvas.width = W;
-        canvas.height = H;
-
-        // ================ BACKGROUND ================
-        const bg = ctx.createLinearGradient(0, 0, 0, H);
-        bg.addColorStop(0, '#1a1000');
-        bg.addColorStop(0.5, '#241808');
-        bg.addColorStop(1, '#0a0700');
-        ctx.fillStyle = bg;
-        ctx.fillRect(0, 0, W, H);
-
-        // Pattern radial dourado top
-        const glow = ctx.createRadialGradient(W * 0.85, 150, 0, W * 0.5, 250, 900);
-        glow.addColorStop(0, 'rgba(212,165,32,0.20)');
-        glow.addColorStop(1, 'transparent');
-        ctx.fillStyle = glow;
-        ctx.fillRect(0, 0, W, Math.min(H, 800));
-
-        // Listras coloridas no topo (rainbow Copa)
-        const stripeColors = ['#e63946','#ff7a00','#ffc93a','#06a957','#4361ee','#7b2cbf'];
-        for (let i = 0; i < 6; i++) {
-            ctx.fillStyle = stripeColors[i];
-            ctx.fillRect((W / 6) * i, 0, W / 6, 8);
-        }
-
-        // ================ HEADER ================
-        let y = 80;
-        ctx.fillStyle = '#d4a520';
-        ctx.font = '700 24px Oswald, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('FIFA WORLD CUP 2026 · ÁLBUM', W / 2, y);
-        y += 55;
-        ctx.fillStyle = '#fff';
-        ctx.font = '800 58px Oswald, sans-serif';
-        ctx.fillText('LISTA PRA TROCAR', W / 2, y);
-        y += 60;
-        ctx.fillStyle = 'rgba(245,230,168,0.85)';
-        ctx.font = '500 30px Oswald, sans-serif';
-        ctx.fillText(`@${user.username || 'torcedor'}`, W / 2, y);
-        y += 50;
-
-        // ================ CARD STATS ================
-        const sx = PAD, sw = CONTENT_W;
-        const sy = y, sh = 130;
-        ctx.fillStyle = 'rgba(255,255,255,0.04)';
-        ctx.strokeStyle = 'rgba(212,165,32,0.3)';
-        ctx.lineWidth = 1.5;
-        roundRect(ctx, sx, sy, sw, sh, 14);
-        ctx.fill(); ctx.stroke();
-
-        const colW = sw / 3;
-        const drawStat = (col, num, label, color) => {
-            const cx = sx + colW * col + colW / 2;
-            ctx.fillStyle = color;
-            ctx.font = '700 46px Oswald, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'alphabetic';
-            ctx.fillText(String(num), cx, sy + 60);
-            ctx.fillStyle = 'rgba(245,230,168,0.6)';
-            ctx.font = '500 18px Oswald, sans-serif';
-            ctx.fillText(label, cx, sy + 100);
-        };
-        drawStat(0, tenho, 'TENHO', '#fff');
-        drawStat(1, faltam.length, 'FALTAM', '#ff8a8a');
-        drawStat(2, repetidos.length, 'REPETIDAS', '#ffc93a');
-        y = sy + sh + 25;
-
-        // Progress bar
-        ctx.fillStyle = 'rgba(255,255,255,0.08)';
-        roundRect(ctx, sx, y, sw, 14, 7);
-        ctx.fill();
-        const pgrad = ctx.createLinearGradient(sx, y, sx + sw, y);
-        pgrad.addColorStop(0, '#d4a520');
-        pgrad.addColorStop(1, '#ffc93a');
-        ctx.fillStyle = pgrad;
-        roundRect(ctx, sx, y, sw * (pct / 100), 14, 7);
-        ctx.fill();
-        y += 35;
-        ctx.fillStyle = '#ffc93a';
-        ctx.font = '700 28px Oswald, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(`${tenho} / ${total} · ${pct}%`, W / 2, y);
-        y += 50;
-
-        // ================ FALTANTES (mini-cards visuais) ================
-        if (!faltam.length) {
-            ctx.fillStyle = '#ffc93a';
-            ctx.font = '700 36px Oswald, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('🏆 ÁLBUM COMPLETO!', W / 2, y + 40);
-            y += 80;
-        } else {
-            // Título da seção
-            ctx.fillStyle = '#fff';
-            ctx.font = '700 32px Oswald, sans-serif';
-            ctx.textAlign = 'left';
-            ctx.fillText('FALTAM', sx, y);
-            ctx.fillStyle = '#ff8a8a';
-            ctx.font = '700 26px Oswald, sans-serif';
-            ctx.fillText(`(${faltam.length})`, sx + ctx.measureText('FALTAM').width + 14, y);
-            y += 30;
-
-            // Renderiza grupos
-            let truncatedAt = null;
-            for (const [g, sels] of grupoEntries) {
-                // Pré-calcula altura usando MESMA fórmula do calcH
-                let neededH = GROUP_HEAD_H;
-                for (const { cromos } of sels) {
-                    neededH += SEL_HEAD_H + gridHeight(cromos.length) + SEL_MARGIN_BOT;
-                }
-                neededH += GROUP_GAP;
-                if (y + neededH > H - FOOTER_H) {
-                    truncatedAt = g;
-                    break;
-                }
-
-                // Header de grupo (letra grande dourada)
-                const grupoLabel = g === 'ESPECIAL' ? '★ ESPECIAIS' : `GRUPO ${g}`;
-                const isSpecial = g === 'ESPECIAL';
-
-                // Quadrado dourado com letra
-                const boxSize = 38;
-                const grad = isSpecial
-                    ? ctx.createLinearGradient(sx, y, sx + boxSize, y + boxSize)
-                    : ctx.createLinearGradient(sx, y, sx + boxSize, y + boxSize);
-                if (isSpecial) {
-                    grad.addColorStop(0, '#c084fc');
-                    grad.addColorStop(1, '#7c3aed');
-                } else {
-                    grad.addColorStop(0, '#ffc93a');
-                    grad.addColorStop(1, '#d4a520');
-                }
-                ctx.fillStyle = grad;
-                roundRect(ctx, sx, y, boxSize, boxSize, 8);
-                ctx.fill();
-                ctx.fillStyle = isSpecial ? '#fff' : '#1a1000';
-                ctx.font = '800 22px Oswald, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(isSpecial ? '★' : g, sx + boxSize/2, y + boxSize/2 + 2);
-
-                // Label do grupo
-                ctx.textBaseline = 'alphabetic';
-                ctx.fillStyle = '#fff';
-                ctx.font = '700 22px Oswald, sans-serif';
-                ctx.textAlign = 'left';
-                ctx.fillText(grupoLabel.replace('★ ', ''), sx + boxSize + 14, y + boxSize/2 + 7);
-
-                y += GROUP_HEAD_H;
-
-                // Pra cada seleção do grupo, renderiza header + grid de mini-cromos
-                for (const { sel, cromos } of sels) {
-                    if (y > H - FOOTER_H - 50) break;
-
-                    // Header da seleção: bandeira pequena + nome + count
-                    let hx = sx;
-                    if (sel.flag_iso) {
-                        try {
-                            const flagImg = await loadImage(`https://flagcdn.com/w80/${sel.flag_iso}.png`);
-                            ctx.drawImage(flagImg, hx, y - 12, 28, 19);
-                            hx += 36;
-                        } catch (_) {}
-                    }
-                    ctx.fillStyle = 'rgba(245,230,168,0.9)';
-                    ctx.font = '700 18px Oswald, sans-serif';
-                    ctx.textAlign = 'left';
-                    ctx.textBaseline = 'alphabetic';
-                    ctx.fillText(sel.name.toUpperCase(), hx, y);
-                    const nameW = ctx.measureText(sel.name.toUpperCase()).width;
-                    ctx.fillStyle = '#ff8a8a';
-                    ctx.font = '500 14px Oswald, sans-serif';
-                    ctx.fillText(`${cromos.length} faltam`, hx + nameW + 12, y);
-                    y += SEL_HEAD_H;
-
-                    // Grid de mini-cromos — render direto baseado em índice/linha
-                    // (mais previsível que mutar lineY no loop). Bate exato com gridHeight().
-                    const startY = y;
-                    for (let i = 0; i < cromos.length; i++) {
-                        const lineIdx = Math.floor(i / CPL);
-                        const colIdx = i % CPL;
-                        const cx = sx + colIdx * (CW + CGAP);
-                        const cy = startY + lineIdx * (CH + CGAP);
-                        drawMiniCromoFalta(ctx, cx, cy, CW, CH, cromos[i].code, cromos[i].ordem);
-                    }
-                    y = startY + gridHeight(cromos.length) + SEL_MARGIN_BOT;
-                }
-                y += GROUP_GAP;
-            }
-
-            // Se truncou no meio dos grupos, mostra aviso ABAIXO do último
-            // grupo desenhado (não em cima)
-            if (truncatedAt) {
-                const grupoIdx = ordemGrupos.indexOf(truncatedAt);
-                const grupoLabel = truncatedAt === 'ESPECIAL' ? '★ Especiais'
-                    : `Grupo ${truncatedAt}` + (grupoIdx < ordemGrupos.length - 1 ? ' em diante' : '');
-                ctx.fillStyle = 'rgba(245,230,168,0.65)';
-                ctx.font = '600 18px Oswald, sans-serif';
-                ctx.textAlign = 'center';
-                // garante que cabe acima do footer
-                const msgY = Math.min(y + 24, H - FOOTER_H - 16);
-                ctx.fillText(`+ ${grupoLabel} — abra o link pra ver`, W / 2, msgY);
-            }
-        }
-
-        // ================ FOOTER ================
-        const footerY = H - FOOTER_H;
-        ctx.strokeStyle = 'rgba(212,165,32,0.3)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(sx, footerY);
-        ctx.lineTo(sx + sw, footerY);
-        ctx.stroke();
-
-        ctx.fillStyle = '#d4a520';
-        ctx.font = '700 24px Oswald, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'alphabetic';
-        ctx.fillText('CADEIRA NUMERADA', W / 2, footerY + 40);
-        ctx.fillStyle = '#fff';
-        ctx.font = '500 28px Oswald, sans-serif';
-        ctx.fillText('🤝 Bora trocar?', W / 2, footerY + 75);
-        ctx.fillStyle = 'rgba(245,230,168,0.7)';
-        ctx.font = '500 18px Oswald, monospace';
-        ctx.fillText(`cadeiranumerada.com.br/troca/${user.username || ''}`, W / 2, footerY + 105);
-    }
-
-    /**
-     * Desenha um mini-cromo "falta" no canvas (igual visual dos cards do
-     * front, só que pequeno e com NÚMERO grande no centro pra ler de longe).
-     */
-    function drawMiniCromoFalta(ctx, x, y, w, h, code, numero) {
-        // Fundo gradiente escuro
-        const grd = ctx.createLinearGradient(x, y, x, y + h);
-        grd.addColorStop(0, '#241808');
-        grd.addColorStop(1, '#0a0700');
-        ctx.fillStyle = grd;
-        roundRect(ctx, x, y, w, h, 6);
-        ctx.fill();
-
-        // Borda dourada tracejada (estado "falta")
-        ctx.setLineDash([4, 3]);
-        ctx.strokeStyle = '#d4a520';
-        ctx.lineWidth = 1.5;
-        roundRect(ctx, x + 0.5, y + 0.5, w - 1, h - 1, 6);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        // Bar escura embaixo (info)
-        const infoH = 18;
-        ctx.fillStyle = '#0a0700';
-        roundRect(ctx, x, y + h - infoH, w, infoH, 0);
-        ctx.fill();
-
-        // Número GRANDE no centro (parte de cima do card)
-        ctx.fillStyle = '#ffc93a';
-        ctx.font = `800 ${Math.floor((h - infoH) * 0.6)}px Oswald, sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(String(numero), x + w/2, y + (h - infoH)/2 + 2);
-
-        // Código pequeno na bar de baixo
-        ctx.fillStyle = '#d4a520';
-        ctx.font = '700 8px Oswald, monospace';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(code, x + w/2, y + h - infoH/2);
-    }
-
-    // (loadImage helper já está definido em outro lugar do arquivo — reusa)
-
-    // (Helper roundRect já definido em outro lugar do arquivo — reusa o global)
-
-    /**
-     * Download da imagem gerada — mobile-friendly + JPEG.
-     *
-     * Por que JPEG (não PNG)?
-     *  - WhatsApp recomprime fotos brutalmente em JPEG ~30-40%
-     *  - Se a imagem JÁ chega em JPEG 95%, a recompressão preserva mais detalhe
-     *  - Arquivo final é menor (~70% menos que PNG) → mais rápido de upload
-     *  - Pra qualidade ainda melhor, user envia como Documento (dica no UI)
-     *
-     * Por que não usar toDataURL() + link.click()?
-     *  - iOS Safari NÃO honra o atributo `download` em links com data: URI
-     *  - dataURL de canvas grande (>5MB) trava o navegador no encode
-     *  - Em iOS o link só abre a imagem na MESMA aba (perde o álbum)
-     *
-     * Estratégia mobile-first:
-     *  1) Web Share API com arquivo (iOS 15+, Android Chrome) — abre share
-     *     sheet nativo, user salva nas Fotos ou manda direto pra alguém.
-     *  2) Fallback iOS: abre Blob URL em nova aba, user pressiona e segura
-     *     na imagem → "Salvar nas Fotos" do menu nativo
-     *  3) Fallback desktop/Android: <a download> com Blob URL
-     */
     document.getElementById('albumShareDownload').addEventListener('click', async () => {
         const btn = document.getElementById('albumShareDownload');
-        const canvas = document.getElementById('albumShareCanvas');
-        const username = (user.username || 'torcedor').replace(/[^a-z0-9]/gi, '');
-        const filename = `album-copa-${username}.jpg`;
+        const username = (user.username || 'torcedor').replace(/[^a-z0-9_.]/gi, '');
+        const filename = `cadeira-numerada-album-copa-${username}.pdf`;
         const originalLabel = btn.innerHTML;
         const setBtnLabel = (label, icon = 'hourglass_top') =>
             btn.innerHTML = `<span class="material-icons">${icon}</span><span>${label}</span>`;
         btn.disabled = true;
-        setBtnLabel('Gerando...');
+        setBtnLabel('Gerando PDF...');
 
         try {
-            // Encode pra blob — JPEG 95% (vs PNG): aguenta melhor a recompressão
-            // do WhatsApp/Telegram/etc; arquivo ~70% menor; cores ainda nítidas.
-            const blob = await new Promise((resolve, reject) => {
-                canvas.toBlob(
-                    (b) => b ? resolve(b) : reject(new Error('toBlob falhou')),
-                    'image/jpeg',
-                    0.95
-                );
-            });
-            const file = new File([blob], filename, { type: 'image/jpeg' });
+            // Garante que jsPDF carregou (defer no script tag)
+            if (!window.jspdf) {
+                await new Promise((resolve, reject) => {
+                    const tries = [];
+                    let n = 0;
+                    const iv = setInterval(() => {
+                        if (window.jspdf) { clearInterval(iv); resolve(); }
+                        else if (++n > 50) { clearInterval(iv); reject(new Error('jsPDF nao carregou')); }
+                    }, 100);
+                    tries.push(iv);
+                });
+            }
+            const blob = await generateAlbumPDF();
+            const file = new File([blob], filename, { type: 'application/pdf' });
 
-            // 1) Web Share API com arquivo (best path mobile moderno)
+            // 1) Web Share API com arquivo (mobile moderno)
             const canShareFile = !!(navigator.canShare && navigator.canShare({ files: [file] }));
             if (canShareFile) {
                 try {
                     await navigator.share({
                         files: [file],
-                        title: 'Meu álbum da Copa 2026',
-                        text: 'Lista pra trocar — abra pra ver os faltantes',
+                        title: 'Meu album da Copa 2026',
+                        text: 'Folha de controle — figurinhas que tenho e que faltam',
                     });
-                    return; // user concluiu o share
+                    return;
                 } catch (e) {
-                    if (e.name === 'AbortError') return; // user cancelou
-                    // outro erro → cai pro fallback abaixo
-                    console.warn('[share] falhou, usando fallback:', e.message);
+                    if (e.name === 'AbortError') return;
+                    console.warn('[share/pdf] fallback:', e.message);
                 }
             }
 
-            // 2) Detecta iOS (Safari + WebKit) — fluxo diferente
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            // 2) Fallback: download tradicional
             const url = URL.createObjectURL(blob);
-
-            if (isIOS) {
-                // Abre em nova aba — user faz "Salvar nas Fotos" pelo menu nativo
-                window.open(url, '_blank');
-                setBtnLabel('Pressione e segure pra salvar', 'info');
-                setTimeout(() => URL.revokeObjectURL(url), 60000);
-                setTimeout(() => btn.innerHTML = originalLabel, 4000);
-                return;
-            }
-
-            // 3) Desktop / Android — link download tradicional com Blob URL
             const link = document.createElement('a');
             link.href = url;
             link.download = filename;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            setTimeout(() => URL.revokeObjectURL(url), 1500);
+            setTimeout(() => URL.revokeObjectURL(url), 2000);
         } catch (e) {
-            console.error('[album/share/download]', e);
-            alert('Erro ao gerar imagem: ' + e.message);
+            console.error('[album/share/pdf]', e);
+            alert('Erro ao gerar PDF: ' + e.message);
         } finally {
-            // Restaura label após um delay (ou na hora se não for iOS)
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            if (!isIOS) {
+            setTimeout(() => {
                 btn.disabled = false;
                 btn.innerHTML = originalLabel;
-            } else {
-                setTimeout(() => { btn.disabled = false; }, 1000);
-            }
+            }, 800);
         }
     });
+
+    /**
+     * Gera o PDF da folha de controle do album.
+     * Estetica Cadeira Numerada: fundo cream, header preto+dourado,
+     * cards de cromo com checkbox marcado pros que o user ja tem.
+     * Layout: capa + paginas por grupo (A-L + Especiais).
+     */
+    async function generateAlbumPDF() {
+        const { jsPDF } = window.jspdf;
+        // A4 retrato — 210x297mm
+        const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+
+        // Cores Cadeira Numerada
+        const COLOR_INK = [26, 16, 0];          // preto profundo
+        const COLOR_GOLD = [212, 165, 32];      // dourado
+        const COLOR_GOLD_DARK = [168, 121, 27]; // dourado escuro
+        const COLOR_CREAM = [253, 250, 240];    // cream bg
+        const COLOR_GRAY = [120, 110, 95];      // cinza texto
+        const COLOR_LINE = [220, 210, 185];     // linha sutil
+        const COLOR_TENHO = [37, 180, 84];      // verde 'tem'
+        const COLOR_FALTA = [200, 195, 180];    // cinza 'falta'
+
+        const W = 210, H = 297;
+        const MARGIN = 14;
+        const CONTENT_W = W - 2 * MARGIN;
+
+        // Stats
+        const total = albumState.cromos.length;
+        const tenho = albumState.cromos.filter(c => c.quantidade > 0).length;
+        const faltam = total - tenho;
+        const pct = total ? ((tenho / total) * 100).toFixed(1) : '0.0';
+
+        // Cromos por selecao
+        const cromosPorSel = new Map();
+        for (const c of albumState.cromos) {
+            if (!cromosPorSel.has(c.selecao_id)) cromosPorSel.set(c.selecao_id, []);
+            cromosPorSel.get(c.selecao_id).push(c);
+        }
+        // Ordena por ordem dentro de cada selecao
+        for (const arr of cromosPorSel.values()) arr.sort((a, b) => a.ordem - b.ordem);
+
+        // Selecoes ordenadas por grupo + ordem
+        const selecoesOrd = [...albumState.selecoes].sort((a, b) => {
+            const gA = a.grupo || 'Z';
+            const gB = b.grupo || 'Z';
+            if (gA !== gB) return gA.localeCompare(gB);
+            return (a.ordem || 0) - (b.ordem || 0);
+        });
+
+        // Helper: bg de pagina + watermark
+        const drawPageBg = (pageNum, totalPages) => {
+            doc.setFillColor(...COLOR_CREAM);
+            doc.rect(0, 0, W, H, 'F');
+            // Footer fino com pagina
+            doc.setDrawColor(...COLOR_LINE);
+            doc.setLineWidth(0.2);
+            doc.line(MARGIN, H - 12, W - MARGIN, H - 12);
+            doc.setFontSize(7);
+            doc.setTextColor(...COLOR_GRAY);
+            doc.setFont('helvetica', 'normal');
+            doc.text('cadeiranumerada.com.br', MARGIN, H - 7);
+            doc.text(`Pagina ${pageNum}`, W - MARGIN, H - 7, { align: 'right' });
+        };
+
+        // ====================== CAPA ======================
+        drawPageBg(1, 1); // sera atualizado
+        // Topo: barra dourada
+        doc.setFillColor(...COLOR_GOLD);
+        doc.rect(0, 0, W, 4, 'F');
+        // Brand
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        doc.setTextColor(...COLOR_GOLD_DARK);
+        doc.text('CADEIRA NUMERADA', MARGIN, 18);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(...COLOR_GRAY);
+        doc.text('Diario do Torcedor · Album de Figurinhas', MARGIN, 23);
+
+        // Titulo grande
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(28);
+        doc.setTextColor(...COLOR_INK);
+        doc.text('FOLHA DE CONTROLE', MARGIN, 50);
+        doc.setFontSize(20);
+        doc.setTextColor(...COLOR_GOLD_DARK);
+        doc.text('FIFA WORLD CUP 2026', MARGIN, 60);
+
+        // Box do user
+        doc.setDrawColor(...COLOR_GOLD);
+        doc.setLineWidth(0.6);
+        doc.setFillColor(255, 248, 225);
+        doc.roundedRect(MARGIN, 75, CONTENT_W, 35, 3, 3, 'FD');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(...COLOR_GOLD_DARK);
+        doc.text('TORCEDOR', MARGIN + 6, 84);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(16);
+        doc.setTextColor(...COLOR_INK);
+        const userName = (user.display_name || user.username || 'Torcedor').toUpperCase();
+        doc.text(userName, MARGIN + 6, 92);
+        if (user.username) {
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            doc.setTextColor(...COLOR_GRAY);
+            doc.text(`@${user.username}`, MARGIN + 6, 99);
+        }
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(...COLOR_GRAY);
+        const dataGer = new Date().toLocaleDateString('pt-BR');
+        doc.text(`Gerado em ${dataGer}`, MARGIN + 6, 105);
+
+        // KPIs grandes
+        const kpiY = 125;
+        const kpiW = (CONTENT_W - 8) / 3;
+        const kpiH = 32;
+        const drawKpi = (x, label, value, color) => {
+            doc.setDrawColor(...COLOR_LINE);
+            doc.setFillColor(255, 255, 255);
+            doc.setLineWidth(0.4);
+            doc.roundedRect(x, kpiY, kpiW, kpiH, 2, 2, 'FD');
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(7);
+            doc.setTextColor(...COLOR_GRAY);
+            doc.text(label, x + 4, kpiY + 7);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(20);
+            doc.setTextColor(...color);
+            doc.text(String(value), x + 4, kpiY + 22);
+        };
+        drawKpi(MARGIN, 'TENHO', tenho, COLOR_TENHO);
+        drawKpi(MARGIN + kpiW + 4, 'FALTAM', faltam, [200, 60, 60]);
+        drawKpi(MARGIN + (kpiW + 4) * 2, 'CONCLUSAO', pct + '%', COLOR_GOLD_DARK);
+
+        // Barra de progresso
+        const barY = 170;
+        const barH = 10;
+        doc.setFillColor(235, 230, 215);
+        doc.roundedRect(MARGIN, barY, CONTENT_W, barH, barH / 2, barH / 2, 'F');
+        const fillW = total ? (CONTENT_W * tenho) / total : 0;
+        if (fillW > 0) {
+            doc.setFillColor(...COLOR_GOLD);
+            doc.roundedRect(MARGIN, barY, fillW, barH, barH / 2, barH / 2, 'F');
+        }
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8);
+        doc.setTextColor(...COLOR_INK);
+        doc.text(`${tenho} / ${total}`, MARGIN + CONTENT_W / 2, barY + 7, { align: 'center' });
+
+        // Como ler
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(...COLOR_INK);
+        doc.text('COMO LER ESTA FOLHA', MARGIN, 195);
+        doc.setDrawColor(...COLOR_GOLD);
+        doc.setLineWidth(0.4);
+        doc.line(MARGIN, 197, MARGIN + 35, 197);
+
+        // Legenda mini-cards
+        const legendY = 205;
+        // Card "tenho" (verde marcado)
+        doc.setFillColor(...COLOR_TENHO);
+        doc.setDrawColor(...COLOR_TENHO);
+        doc.roundedRect(MARGIN, legendY, 12, 10, 1, 1, 'FD');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(7);
+        doc.setFont('helvetica', 'bold');
+        doc.text('OK', MARGIN + 6, legendY + 6.5, { align: 'center' });
+        doc.setTextColor(...COLOR_INK);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.text('Voce ja tem', MARGIN + 16, legendY + 6.5);
+        // Card "falta" (cinza vazio)
+        doc.setDrawColor(...COLOR_FALTA);
+        doc.setFillColor(245, 240, 230);
+        doc.setLineWidth(0.4);
+        doc.roundedRect(MARGIN + 60, legendY, 12, 10, 1, 1, 'FD');
+        doc.setTextColor(...COLOR_GRAY);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.text('Falta marcar', MARGIN + 76, legendY + 6.5);
+
+        // Texto motivacional
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(9);
+        doc.setTextColor(...COLOR_GRAY);
+        const motivLines = doc.splitTextToSize(
+            'Imprima esta folha e leve pra trocar com a galera. Os cromos que voce ja marcou no app aparecem como OK — basta marcar os novos com caneta enquanto coleciona.',
+            CONTENT_W
+        );
+        doc.text(motivLines, MARGIN, 230);
+
+        // ====================== PAGINAS POR GRUPO ======================
+        // Layout: cada grupo eh uma secao. Cada selecao do grupo tem um bloco
+        // com nome + grid 5x4 (20 cromos numerados). Caixas tem checkbox
+        // marcado se o user tem o cromo.
+
+        const COLS_PER_ROW = 5;
+        const CARD_W = 32;
+        const CARD_H = 22;
+        const CARD_GAP = 3;
+        const SEL_BLOCK_H = 42; // header (12mm) + grid (4 linhas * 25 ~ 100) ... ajusta
+        const SEL_HEADER_H = 12;
+        const SEL_GRID_H = 4 * (CARD_H + CARD_GAP);
+        const SEL_TOTAL_H = SEL_HEADER_H + SEL_GRID_H + 3;
+
+        let pageY = MARGIN + 18;
+        let currentPage = 1;
+        let lastGrupo = null;
+
+        const startNewPage = () => {
+            doc.addPage();
+            currentPage++;
+            doc.setFillColor(...COLOR_CREAM);
+            doc.rect(0, 0, W, H, 'F');
+            // Header da pagina
+            doc.setFillColor(...COLOR_INK);
+            doc.rect(0, 0, W, 12, 'F');
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(10);
+            doc.setTextColor(...COLOR_GOLD);
+            doc.text('CADEIRA NUMERADA', MARGIN, 7.5);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.setTextColor(220, 210, 180);
+            doc.text(`Folha de controle · @${user.username || 'torcedor'}`, W - MARGIN, 7.5, { align: 'right' });
+            // Footer
+            doc.setDrawColor(...COLOR_LINE);
+            doc.setLineWidth(0.2);
+            doc.line(MARGIN, H - 12, W - MARGIN, H - 12);
+            doc.setFontSize(7);
+            doc.setTextColor(...COLOR_GRAY);
+            doc.setFont('helvetica', 'normal');
+            doc.text('cadeiranumerada.com.br', MARGIN, H - 7);
+            doc.text(`Pagina ${currentPage}`, W - MARGIN, H - 7, { align: 'right' });
+            pageY = MARGIN + 12;
+        };
+
+        const drawGrupoHeader = (grupo) => {
+            // Reserva espaco minimo pra grupo header + 1 selecao
+            if (pageY + 12 + SEL_TOTAL_H > H - 18) startNewPage();
+            doc.setFillColor(...COLOR_INK);
+            doc.roundedRect(MARGIN, pageY, CONTENT_W, 9, 1.5, 1.5, 'F');
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(11);
+            doc.setTextColor(...COLOR_GOLD);
+            const label = grupo === 'Z' || !grupo ? 'ESPECIAIS' : `GRUPO ${grupo}`;
+            doc.text(label, MARGIN + 4, pageY + 6);
+            pageY += 13;
+        };
+
+        const drawSelecao = (sel) => {
+            const cromos = cromosPorSel.get(sel.id) || [];
+            // Quebra de pagina se nao cabe
+            if (pageY + SEL_TOTAL_H > H - 18) startNewPage();
+
+            // Header da selecao
+            doc.setDrawColor(...COLOR_GOLD);
+            doc.setFillColor(255, 248, 225);
+            doc.setLineWidth(0.5);
+            doc.roundedRect(MARGIN, pageY, CONTENT_W, SEL_HEADER_H, 1.5, 1.5, 'FD');
+
+            // Code (badge dourado)
+            const code = (sel.code || '').toUpperCase().slice(0, 4);
+            doc.setFillColor(...COLOR_GOLD);
+            doc.roundedRect(MARGIN + 2, pageY + 2, 16, SEL_HEADER_H - 4, 1, 1, 'F');
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8);
+            doc.setTextColor(...COLOR_INK);
+            doc.text(code, MARGIN + 10, pageY + SEL_HEADER_H / 2 + 1.2, { align: 'center' });
+
+            // Nome da selecao
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(11);
+            doc.setTextColor(...COLOR_INK);
+            doc.text((sel.name || '').toUpperCase(), MARGIN + 22, pageY + SEL_HEADER_H / 2 + 1.5);
+
+            // Stats da selecao (X/Y)
+            const selTenho = cromos.filter(c => c.quantidade > 0).length;
+            const selTotal = cromos.length;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(10);
+            doc.setTextColor(...COLOR_GOLD_DARK);
+            doc.text(`${selTenho}/${selTotal}`, W - MARGIN - 3, pageY + SEL_HEADER_H / 2 + 1.5, { align: 'right' });
+
+            pageY += SEL_HEADER_H + 2;
+
+            // Grid de cromos: 5 colunas, ate 4 linhas (max 20 cromos por sel)
+            const totalGapsX = (COLS_PER_ROW - 1) * CARD_GAP;
+            const cardWAuto = (CONTENT_W - totalGapsX) / COLS_PER_ROW;
+            for (let i = 0; i < cromos.length; i++) {
+                const c = cromos[i];
+                const col = i % COLS_PER_ROW;
+                const row = Math.floor(i / COLS_PER_ROW);
+                const cx = MARGIN + col * (cardWAuto + CARD_GAP);
+                const cy = pageY + row * (CARD_H + CARD_GAP);
+                drawCromoCard(doc, cx, cy, cardWAuto, CARD_H, c, COLOR_TENHO, COLOR_FALTA, COLOR_INK, COLOR_GRAY);
+            }
+            const linhas = Math.ceil(cromos.length / COLS_PER_ROW);
+            pageY += linhas * (CARD_H + CARD_GAP) + 4;
+        };
+
+        // Itera selecoes e desenha
+        for (const sel of selecoesOrd) {
+            const grupo = sel.grupo || 'Z';
+            if (grupo !== lastGrupo) {
+                drawGrupoHeader(grupo);
+                lastGrupo = grupo;
+            }
+            drawSelecao(sel);
+        }
+
+        // Atualiza footer da capa com total de paginas (repete o footer)
+        doc.setPage(1);
+        doc.setFillColor(...COLOR_CREAM);
+        doc.rect(0, H - 14, W, 14, 'F');
+        doc.setDrawColor(...COLOR_LINE);
+        doc.setLineWidth(0.2);
+        doc.line(MARGIN, H - 12, W - MARGIN, H - 12);
+        doc.setFontSize(7);
+        doc.setTextColor(...COLOR_GRAY);
+        doc.setFont('helvetica', 'normal');
+        doc.text('cadeiranumerada.com.br · Diario do Torcedor', MARGIN, H - 7);
+        doc.text(`Pagina 1 de ${currentPage}`, W - MARGIN, H - 7, { align: 'right' });
+
+        return doc.output('blob');
+    }
+
+    /**
+     * Desenha um card de cromo no PDF — checkbox marcado se ja tem.
+     */
+    function drawCromoCard(doc, x, y, w, h, cromo, COLOR_TENHO, COLOR_FALTA, COLOR_INK, COLOR_GRAY) {
+        const tem = (cromo.quantidade || 0) > 0;
+        const qty = cromo.quantidade || 0;
+        // Card bg
+        if (tem) {
+            doc.setFillColor(...COLOR_TENHO);
+            doc.setDrawColor(...COLOR_TENHO);
+        } else {
+            doc.setFillColor(245, 240, 230);
+            doc.setDrawColor(...COLOR_FALTA);
+        }
+        doc.setLineWidth(0.3);
+        doc.roundedRect(x, y, w, h, 1.5, 1.5, 'FD');
+
+        // Code do cromo (centralizado)
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(tem ? 255 : COLOR_INK[0], tem ? 255 : COLOR_INK[1], tem ? 255 : COLOR_INK[2]);
+        const codeLabel = (cromo.code || '').toString();
+        doc.text(codeLabel, x + w / 2, y + h / 2, { align: 'center', baseline: 'middle' });
+
+        // Badge de qty se > 1 (canto sup direito)
+        if (qty > 1) {
+            doc.setFillColor(...COLOR_INK);
+            doc.circle(x + w - 3, y + 3, 2.5, 'F');
+            doc.setFontSize(6);
+            doc.setTextColor(...COLOR_TENHO);
+            doc.text(`${qty}`, x + w - 3, y + 4, { align: 'center' });
+        }
+    }
     document.getElementById('albumShareClose').addEventListener('click', () => {
         document.getElementById('albumShareModal').classList.remove('show');
     });
