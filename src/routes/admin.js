@@ -324,6 +324,7 @@ router.get('/analytics-data', async (req, res, next) => {
             topBoloesRes,
             recentSignupsRes,
             countriesRes,
+            topCromosRes,
         ] = await Promise.all([
             // ========== CARDS — totais cumulativos + delta no periodo ==========
             query(`
@@ -435,6 +436,26 @@ router.get('/analytics-data', async (req, res, next) => {
                 ORDER BY n DESC
                 LIMIT 15
             `),
+
+            // ========== TOP 10 USUARIOS COM MAIS CROMOS COLADOS no album ==========
+            // 'Colado' = cromo distinto que o user tem (quantidade >= 1).
+            // Repetidas (quantidade > 1) NAO contam — pq o cromo so eh
+            // colado UMA vez. Album tem ~994 cromos no total.
+            query(`
+                SELECT u.id, u.username, u.display_name, u.email,
+                       u.nationality_iso,
+                       c.name AS club_name,
+                       COUNT(uac.cromo_id)::int AS cromos_colados,
+                       COALESCE(SUM(uac.quantidade), 0)::int AS total_cromos,
+                       COALESCE(SUM(GREATEST(uac.quantidade - 1, 0)), 0)::int AS repetidos
+                FROM user_album_cromos uac
+                JOIN users u ON u.id = uac.user_id
+                LEFT JOIN clubs c ON c.id = u.club_id
+                WHERE uac.quantidade >= 1
+                GROUP BY u.id, u.username, u.display_name, u.email, u.nationality_iso, c.name
+                ORDER BY cromos_colados DESC, repetidos DESC
+                LIMIT 10
+            `),
         ]);
 
         res.json({
@@ -449,6 +470,7 @@ router.get('/analytics-data', async (req, res, next) => {
             top_boloes: topBoloesRes.rows,
             recent_signups: recentSignupsRes.rows,
             countries: countriesRes.rows,
+            top_album_collectors: topCromosRes.rows,
         });
     } catch (err) { next(err); }
 });

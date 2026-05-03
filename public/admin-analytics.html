@@ -549,6 +549,16 @@ h1 {
             </div>
         </div>
 
+        <!-- Top colecionadores do album -->
+        <div class="section">
+            <div class="section-head">
+                <span class="material-icons">collections_bookmark</span>
+                <h2>Top colecionadores do álbum</h2>
+                <span class="section-meta">cromos colados · ÷994 do álbum total</span>
+            </div>
+            <div class="list" id="topAlbumCollectors"><div class="empty">—</div></div>
+        </div>
+
         <!-- Eventos por tipo -->
         <div class="section">
             <div class="section-head">
@@ -662,6 +672,7 @@ h1 {
             renderTopBoloes(data.top_boloes);
             renderTopClubs(data.top_clubs);
             renderRecentSignups(data.recent_signups);
+            renderTopAlbumCollectors(data.top_album_collectors || []);
             renderActions(data.actions);
             renderCountries(data.countries);
             document.getElementById('periodMeta').textContent =
@@ -809,6 +820,44 @@ h1 {
                     </div>
                     <div>
                         <div class="list-item-value" style="font-size:0.78rem;">${esc(fmtAgo(u.created_at))}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function renderTopAlbumCollectors(users) {
+        const list = document.getElementById('topAlbumCollectors');
+        if (!users.length) {
+            list.innerHTML = '<div class="empty">Ninguém colou cromos ainda.</div>';
+            return;
+        }
+        const ALBUM_TOTAL = 994;
+        list.innerHTML = users.map((u, i) => {
+            const pos = i + 1;
+            const rankCls = pos === 1 ? 'top1' : pos === 2 ? 'top2' : pos === 3 ? 'top3' : '';
+            const flag = u.nationality_iso
+                ? `<img class="list-item-flag" src="https://flagcdn.com/w80/${esc(u.nationality_iso)}.png" alt="" loading="lazy">`
+                : '';
+            const name = u.display_name || u.username || u.email || `User #${u.id}`;
+            const pct = Math.round((u.cromos_colados / ALBUM_TOTAL) * 100);
+            const meta = [
+                u.club_name,
+                u.username && '@' + u.username,
+                `${pct}% completo`,
+                u.repetidos > 0 ? `${fmtN(u.repetidos)} repetida${u.repetidos === 1 ? '' : 's'}` : null,
+            ].filter(Boolean).join(' · ');
+            return `
+                <div class="list-item">
+                    <span class="list-item-rank ${rankCls}">${pos}</span>
+                    ${flag}
+                    <div class="list-item-info">
+                        <div class="list-item-name">${esc(name)}</div>
+                        <div class="list-item-meta">${esc(meta)}</div>
+                    </div>
+                    <div>
+                        <div class="list-item-value">${fmtN(u.cromos_colados)}</div>
+                        <span class="list-item-value-label">colados</span>
                     </div>
                 </div>
             `;
