@@ -9810,7 +9810,7 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
         <div class="user-info">
             <span class="club-badge" id="clubBadge"></span>
             <span><span data-i18n="app.greeting">Olá</span>, <strong id="userName">—</strong></span>
-            <button class="bell-btn" id="bellBtn" title="Notificações" aria-haspopup="true" aria-expanded="false">
+            <button class="bell-btn" id="bellBtn" title="Notificações" aria-haspopup="true" aria-expanded="false" data-i18n-attr="title:app.bell.notifications, aria-label:app.bell.notifications">
                 <span class="material-icons">notifications</span>
                 <span class="bell-badge" id="bellBadge">0</span>
             </button>
@@ -9828,11 +9828,11 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
          stacking context de elementos pais) -->
     <div class="bell-dropdown" id="bellDropdown" role="menu" aria-hidden="true">
         <header class="bell-dropdown-head">
-            <h3>Notificações</h3>
-            <button type="button" class="bell-dropdown-close" id="bellDropdownClose" aria-label="Fechar">×</button>
+            <h3 data-i18n="app.bell.title">Notificações</h3>
+            <button type="button" class="bell-dropdown-close" id="bellDropdownClose" aria-label="Fechar" data-i18n-attr="aria-label:app.bell.close">×</button>
         </header>
         <div class="bell-dropdown-body" id="bellDropdownBody">
-            <div class="bell-empty">Sem novidades por aqui.</div>
+            <div class="bell-empty" data-i18n="app.bell.empty">Sem novidades por aqui.</div>
         </div>
     </div>
 
@@ -11431,6 +11431,9 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
         // Rede social: re-renderiza feed + amigos (so se a aba ja foi aberta uma vez)
         try { if (typeof loadFeed === 'function' && friendsState) loadFeed(); } catch (_) {}
         try { if (typeof loadFriends === 'function' && friendsState) loadFriends(); } catch (_) {}
+        // Sino + grid de conquistas (perfil): re-renderiza com strings/i18n novos
+        try { if (typeof renderBellDropdown === 'function') renderBellDropdown(); } catch (_) {}
+        try { if (typeof renderPerfilConqGrid === 'function' && perfilAchievementsCache) renderPerfilConqGrid(); } catch (_) {}
     });
 
     function applyClubTheme(club) {
@@ -12964,16 +12967,18 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
                        <div class="conq-progress-bar"><div class="conq-progress-fill" style="width: ${a.pct}%;"></div></div>
                        <div class="conq-progress-text"><b>${a.progress}</b> / ${a.target}</div>
                    </div>`;
+            const nameLoc = tAchName(a);
+            const descLoc = tAchDesc(a);
             return `
-                <article class="${cls}" title="${escapeHtml(a.description)}">
+                <article class="${cls}" title="${escapeHtml(descLoc)}">
                     ${lockIcon}
                     <div class="conq-icon"><span class="material-icons">${a.icon}</span></div>
                     <div class="conq-body">
                         <div class="conq-name">
-                            ${escapeHtml(a.name)}
+                            ${escapeHtml(nameLoc)}
                             <span class="conq-rarity-badge ${a.rarity}">${a.rarity}</span>
                         </div>
-                        <div class="conq-desc">${escapeHtml(a.description)}</div>
+                        <div class="conq-desc">${escapeHtml(descLoc)}</div>
                         ${progressBlock}
                     </div>
                 </article>
@@ -14001,8 +14006,8 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
                             </div>
                             <div class="feed-achievement-info">
                                 <div class="feed-achievement-rarity">${escapeHtml(rarity)}</div>
-                                <div class="feed-achievement-name">${escapeHtml(ach.name)}</div>
-                                <div class="feed-achievement-desc">${escapeHtml(ach.description || '')}</div>
+                                <div class="feed-achievement-name">${escapeHtml(tAchName(ach))}</div>
+                                <div class="feed-achievement-desc">${escapeHtml(tAchDesc(ach))}</div>
                             </div>
                         </div>
                     `;
@@ -14472,6 +14477,21 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
     let notificationsPending = [];
     let notificationsCheckInFlight = false;
 
+    // Helpers i18n pra nome/descricao de conquista. Conquista vem do backend
+    // com { name, description, i18n: { en: {name,desc}, es: {name,desc} } } —
+    // pra PT usa o name/description direto (sao os defaults), pra EN/ES
+    // pega do bloco i18n com fallback pro PT default.
+    function tAchName(a) {
+        if (!a) return '';
+        const lang = (window.CN_I18N && window.CN_I18N.getLang) ? window.CN_I18N.getLang() : 'pt';
+        return (a.i18n && a.i18n[lang] && a.i18n[lang].name) || a.name || '';
+    }
+    function tAchDesc(a) {
+        if (!a) return '';
+        const lang = (window.CN_I18N && window.CN_I18N.getLang) ? window.CN_I18N.getLang() : 'pt';
+        return (a.i18n && a.i18n[lang] && a.i18n[lang].desc) || a.description || '';
+    }
+
     function showAchievementToast(ach) {
         let stack = document.getElementById('achievementToastStack');
         if (!stack) {
@@ -14488,11 +14508,11 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
                 <span class="material-icons">${escapeHtml(ach.icon || 'emoji_events')}</span>
             </div>
             <div class="achievement-toast-body">
-                <div class="achievement-toast-eyebrow">Conquista desbloqueada</div>
-                <div class="achievement-toast-name">${escapeHtml(ach.name || 'Conquista')}</div>
-                <div class="achievement-toast-desc">${escapeHtml(ach.description || '')}</div>
+                <div class="achievement-toast-eyebrow">${escapeHtml(t('app.bell.ach.eyebrow'))}</div>
+                <div class="achievement-toast-name">${escapeHtml(tAchName(ach))}</div>
+                <div class="achievement-toast-desc">${escapeHtml(tAchDesc(ach))}</div>
             </div>
-            <button class="achievement-toast-close" type="button" aria-label="Fechar">×</button>
+            <button class="achievement-toast-close" type="button" aria-label="${escapeHtml(t('app.bell.close'))}">×</button>
         `;
         stack.appendChild(toast);
 
@@ -14615,9 +14635,9 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
                         <span class="material-icons">${escapeHtml(a.icon || 'emoji_events')}</span>
                     </div>
                     <div class="bell-item-body">
-                        <div class="bell-item-eyebrow">Conquista desbloqueada</div>
-                        <div class="bell-item-title">${escapeHtml(a.name)}</div>
-                        <div class="bell-item-desc">${escapeHtml(a.description)}</div>
+                        <div class="bell-item-eyebrow">${escapeHtml(t('app.bell.ach.eyebrow'))}</div>
+                        <div class="bell-item-title">${escapeHtml(tAchName(a))}</div>
+                        <div class="bell-item-desc">${escapeHtml(tAchDesc(a))}</div>
                     </div>
                 </button>
             `);
@@ -14626,14 +14646,14 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
         // 2) Pedidos de amizade
         const friendReqs = friendsState.incoming || [];
         for (const f of friendReqs) {
-            const nome = f.display_name || f.username || 'Alguém';
+            const nome = f.display_name || f.username || t('app.bell.friend_req.fallback_name');
             items.push(`
                 <button type="button" class="bell-item" data-action="friend-request">
                     <div class="bell-item-icon"><span class="material-icons">person_add</span></div>
                     <div class="bell-item-body">
-                        <div class="bell-item-eyebrow">Pedido de amizade</div>
+                        <div class="bell-item-eyebrow">${escapeHtml(t('app.bell.friend_req.eyebrow'))}</div>
                         <div class="bell-item-title">${escapeHtml(nome)}</div>
-                        <div class="bell-item-desc">Quer te adicionar como amigo</div>
+                        <div class="bell-item-desc">${escapeHtml(t('app.bell.friend_req.desc'))}</div>
                     </div>
                 </button>
             `);
@@ -14642,20 +14662,21 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
         // 3) Confirmações de companhia
         const companionReqs = friendsState.companion_requests_count || 0;
         if (companionReqs) {
+            const titleKey = companionReqs === 1 ? 'app.bell.companion.title_one' : 'app.bell.companion.title_plural';
             items.push(`
                 <button type="button" class="bell-item" data-action="companion-requests">
                     <div class="bell-item-icon"><span class="material-icons">groups_2</span></div>
                     <div class="bell-item-body">
-                        <div class="bell-item-eyebrow">Companheiros de jogo</div>
-                        <div class="bell-item-title">${companionReqs} ${companionReqs === 1 ? 'confirmação pendente' : 'confirmações pendentes'}</div>
-                        <div class="bell-item-desc">Alguém te marcou como companhia em um jogo</div>
+                        <div class="bell-item-eyebrow">${escapeHtml(t('app.bell.companion.eyebrow'))}</div>
+                        <div class="bell-item-title">${escapeHtml(t(titleKey, { n: companionReqs }))}</div>
+                        <div class="bell-item-desc">${escapeHtml(t('app.bell.companion.desc'))}</div>
                     </div>
                 </button>
             `);
         }
 
         if (!items.length) {
-            body.innerHTML = `<div class="bell-empty">Sem novidades por aqui.</div>`;
+            body.innerHTML = `<div class="bell-empty">${escapeHtml(t('app.bell.empty'))}</div>`;
             return;
         }
         body.innerHTML = items.join('');

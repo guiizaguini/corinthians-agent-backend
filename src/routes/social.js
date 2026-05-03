@@ -464,6 +464,7 @@ router.get('/feed', async (req, res, next) => {
                     id: meta.id,
                     name: meta.name,
                     description: meta.description,
+                    i18n: meta.i18n,    // pra frontend traduzir nome/desc por idioma
                     icon: meta.icon,
                     rarity: meta.rarity,
                     category: meta.category,
