@@ -11,7 +11,7 @@
     const LANGS = {
         pt: { code: 'pt', label: 'Português', short: 'PT', country: 'Brasil',  iso: 'br' },
         en: { code: 'en', label: 'English',   short: 'EN', country: 'USA',     iso: 'us' },
-        es: { code: 'es', label: 'Español',   short: 'ES', country: 'España',  iso: 'es' },
+        es: { code: 'es', label: 'Español',   short: 'ES', country: 'Argentina', iso: 'ar' },
     };
 
     function langFlag(lang) {
