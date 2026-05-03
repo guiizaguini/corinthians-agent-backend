@@ -10082,7 +10082,7 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
                 </select>
             </div>
 
-            <!-- Variante BOTMAKER (escolha de pais) — exibida pra users @botmaker -->
+            <!-- Variante BOTMAKER (pais + clube) — exibida pra users @botmaker -->
             <div id="welcomeVariantBotmaker" style="display:none;">
                 <div class="welcome-eyebrow" data-i18n="welcome.bm.eyebrow">Boas-vindas</div>
                 <h2 data-i18n="welcome.bm.title">De onde você está participando?</h2>
@@ -10111,6 +10111,11 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
 
                 <label for="welcomeCountrySelect" data-i18n="welcome.bm.country_label">Qual sua nacionalidade?</label>
                 <select id="welcomeCountrySelect" required></select>
+
+                <label for="welcomeBmClubSelect" style="margin-top:1rem;" data-i18n="welcome.bm.club_label">Time que você torce (opcional)</label>
+                <select id="welcomeBmClubSelect">
+                    <option value="" data-i18n="welcome.bm.club_skip">— Prefiro não escolher —</option>
+                </select>
             </div>
 
             <div class="modal-actions">
@@ -11777,8 +11782,9 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
                 // Mostra modal de boas-vindas se for 1ª vez via Google sem clube.
                 // Tem que ser AQUI antes do return — usuário sem clube não passa
                 // pelo resto do loadAll que tem outro maybeShowWelcomeModal().
-                // Botmaker users nao precisam escolher clube — pula o welcome modal.
-                if (!isBotmakerUser()) maybeShowWelcomeModal();
+                // Botmaker users tambem entram aqui (a propria maybeShowWelcomeModal
+                // detecta e mostra a variante com pais).
+                maybeShowWelcomeModal();
                 // Notificações genéricas no sino também rodam pra user sem clube
                 setTimeout(checkPendingNotifications, 800);
                 // Deep links também rodam pra user sem clube
@@ -12688,16 +12694,19 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
                 opt.textContent = c.name;
                 pClub.appendChild(opt);
             }
-            // Popula tambem o select do welcome modal (idempotente — só append novos)
-            const wSelect = document.getElementById('welcomeClubSelect');
-            if (wSelect && wSelect.options.length <= 1) {
-                for (const c of clubsList) {
-                    const opt = document.createElement('option');
-                    opt.value = c.slug;
-                    opt.textContent = c.name;
-                    wSelect.appendChild(opt);
+            // Popula tambem os 2 selects do welcome modal (idempotente — só append novos)
+            const popClubSelect = (sel) => {
+                if (sel && sel.options.length <= 1) {
+                    for (const c of clubsList) {
+                        const opt = document.createElement('option');
+                        opt.value = c.slug;
+                        opt.textContent = c.name;
+                        sel.appendChild(opt);
+                    }
                 }
-            }
+            };
+            popClubSelect(document.getElementById('welcomeClubSelect'));
+            popClubSelect(document.getElementById('welcomeBmClubSelect'));
         } catch (_) {}
     }
 
@@ -12707,12 +12716,25 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
     const welcomeModal = document.getElementById('welcomeModal');
     const welcomeSelect = document.getElementById('welcomeClubSelect');
     const welcomeCountrySelect = document.getElementById('welcomeCountrySelect');
+    const welcomeBmClubSelect = document.getElementById('welcomeBmClubSelect');
+
+    // Persistencia "ja viu o popup" — uma vez por user, persiste entre
+    // sessoes (localStorage). Evita re-mostrar em refresh ou re-login.
+    function welcomeSeenKey() {
+        return user?.id ? `cn_welcome_seen_${user.id}` : 'cn_welcome_seen_anon';
+    }
+    function hasSeenWelcome() {
+        return localStorage.getItem(welcomeSeenKey()) === '1';
+    }
+    function markWelcomeSeen() {
+        localStorage.setItem(welcomeSeenKey(), '1');
+    }
 
     async function maybeShowWelcomeModal() {
-        // Botmaker user: SEMPRE abre se nao tem nacionalidade definida
-        // (ignora a flag cn_show_welcome — pra garantir que pegue tudo, inclusive
-        // accounts criadas antes do white-label rolar).
-        if (isBotmakerUser() && !user.nationality_iso) {
+        // Ja viu antes? Nao mostra mais (a menos que abra manualmente pelo sino)
+        if (hasSeenWelcome()) return;
+        // Botmaker user: SEMPRE abre na primeira vez (independente do flag de signup)
+        if (isBotmakerUser()) {
             await openWelcomeModalManual();
             return;
         }
@@ -12727,31 +12749,27 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
         const isBM = isBotmakerUser();
         const variantClub = document.getElementById('welcomeVariantClub');
         const variantBM = document.getElementById('welcomeVariantBotmaker');
-        const skipBtn = document.getElementById('welcomeSkipBtn');
-        const skipHint = document.getElementById('welcomeSkipHint');
+
+        // Garante que clubs estao carregados pros 2 selects (welcomeSelect E welcomeBmClubSelect)
+        await ensureClubsLoaded();
 
         if (isBM) {
-            // Variante botmaker: mostra dropdown de pais, esconde clube.
-            // Skip desabilitado pra forcar escolha (campo obrigatorio).
             variantClub.style.display = 'none';
             variantBM.style.display = '';
             welcomeCountrySelect.innerHTML = renderCountryOptions(user?.nationality_iso, '— Selecione —');
-            skipBtn.style.display = 'none';
-            skipHint.style.display = 'none';
+            // Pre-seleciona clube atual se ja tiver
+            if (user && user.club_slug) welcomeBmClubSelect.value = user.club_slug;
         } else {
-            // Variante padrao (clube)
             variantBM.style.display = 'none';
             variantClub.style.display = '';
-            await ensureClubsLoaded();
             if (user && user.club_slug) welcomeSelect.value = user.club_slug;
-            skipBtn.style.display = '';
-            skipHint.style.display = '';
         }
         if (window.CN_I18N?.applyTranslations) window.CN_I18N.applyTranslations();
         welcomeModal.classList.add('show');
     }
 
     document.getElementById('welcomeSkipBtn').addEventListener('click', () => {
+        markWelcomeSeen();
         welcomeModal.classList.remove('show');
     });
 
@@ -12759,7 +12777,7 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
         const isBM = isBotmakerUser();
         const btn = document.getElementById('welcomeSaveBtn');
 
-        // Validacao especifica de cada variante
+        // Validacao + payload especifico de cada variante
         let payload;
         if (isBM) {
             const iso = welcomeCountrySelect.value;
@@ -12768,7 +12786,11 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
                 alert(t('welcome.bm.err_required') || 'Selecione sua nacionalidade.');
                 return;
             }
-            payload = { nationality_iso: iso };
+            // Botmaker variant inclui nationality + club (opcional)
+            payload = {
+                nationality_iso: iso,
+                club_slug: welcomeBmClubSelect.value || null,
+            };
         } else {
             const slug = welcomeSelect.value || null;
             payload = { club_slug: slug };
@@ -12790,6 +12812,7 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
             const data = await res.json();
             user = data.user;
             localStorage.setItem('fiel_user', JSON.stringify(user));
+            markWelcomeSeen();
             welcomeModal.classList.remove('show');
             // Reload pra refletir tema/cores (clube) ou bandeirinha (botmaker no ranking)
             window.location.reload();
@@ -12800,10 +12823,10 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
         }
     });
 
-    // Fecha modal ao clicar fora — bloqueado pra botmaker (campo obrigatorio)
+    // Fecha modal ao clicar fora — marca como visto tambem
     welcomeModal.addEventListener('click', (e) => {
         if (e.target.id !== 'welcomeModal') return;
-        if (isBotmakerUser() && !user.nationality_iso) return;
+        markWelcomeSeen();
         welcomeModal.classList.remove('show');
     });
 
@@ -12823,15 +12846,6 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
             const pNat = document.getElementById('pNationality');
             if (pNat) {
                 pNat.innerHTML = renderCountryOptions(user?.nationality_iso, t('app.perfil.nat_placeholder') || '— Selecione —');
-            }
-            // Pra usuarios botmaker, esconde o select de clube — eles nao escolhem time
-            const pClubLabel = document.querySelector('label[for="pClub"]');
-            if (isBotmakerUser()) {
-                if (pClubLabel) pClubLabel.style.display = 'none';
-                pClub.style.display = 'none';
-            } else {
-                if (pClubLabel) pClubLabel.style.display = '';
-                pClub.style.display = '';
             }
             profileModal.classList.add('show');
         });
@@ -15521,8 +15535,8 @@ body.botmaker-mode .perfil-conq-filters .conq-filter[data-filter="colecao"] {
                 list.innerHTML = `
                     <div class="bolao-empty-state">
                         <div class="bolao-empty-icon"><span class="material-icons" style="font-size:inherit;">sports_soccer</span></div>
-                        <div class="bolao-empty-title">Você ainda não está em nenhum bolão</div>
-                        <div class="bolao-empty-desc">Cole o código de convite acima ou peça pro organizador do bolão da galera.</div>
+                        <div class="bolao-empty-title">${escapeHtml(t('app.bolao.empty_title'))}</div>
+                        <div class="bolao-empty-desc">${escapeHtml(t('app.bolao.empty_desc'))}</div>
                     </div>
                 `;
                 return;

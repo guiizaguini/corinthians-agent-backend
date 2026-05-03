@@ -244,6 +244,8 @@
             'welcome.bm.info_b2': 'A galera de cada país vai poder se identificar facil.',
             'welcome.bm.info_b3': 'Você pode mudar isso depois no <b>Perfil</b>.',
             'welcome.bm.country_label': 'Qual sua nacionalidade?',
+            'welcome.bm.club_label': 'Time que você torce (opcional)',
+            'welcome.bm.club_skip': '— Prefiro não escolher —',
             'welcome.bm.err_required': 'Selecione sua nacionalidade.',
             // Profile edit — campo de nacionalidade
             'app.perfil.nat_label': 'Nacionalidade',
@@ -490,6 +492,8 @@
             'app.bolao.loading_boloes': 'Carregando bolões...',
             'app.bolao.loading_jogos': 'Carregando jogos...',
             'app.bolao.loading': 'Carregando...',
+            'app.bolao.empty_title': 'Você ainda não está em nenhum bolão',
+            'app.bolao.empty_desc': 'Cole o código de convite acima ou peça pro organizador do bolão da galera.',
             'app.bolao.detail_members_suffix': 'membros',
             'app.bolao.detail_code_label': 'Código',
             'app.bolao.detail_copy_title': 'Copiar',
@@ -834,6 +838,8 @@
             'welcome.bm.info_b2': 'People from each country can spot each other easily.',
             'welcome.bm.info_b3': 'You can change this later in <b>Profile</b>.',
             'welcome.bm.country_label': 'What’s your nationality?',
+            'welcome.bm.club_label': 'Club you support (optional)',
+            'welcome.bm.club_skip': '— I’d rather not say —',
             'welcome.bm.err_required': 'Pick your nationality.',
             // Profile edit — nationality field
             'app.perfil.nat_label': 'Nationality',
@@ -1069,6 +1075,8 @@
             'app.bolao.loading_boloes': 'Loading pools...',
             'app.bolao.loading_jogos': 'Loading matches...',
             'app.bolao.loading': 'Loading...',
+            'app.bolao.empty_title': 'You haven’t joined any pool yet',
+            'app.bolao.empty_desc': 'Paste the invite code above or ask the organizer for the link.',
             'app.bolao.detail_members_suffix': 'members',
             'app.bolao.detail_code_label': 'Code',
             'app.bolao.detail_copy_title': 'Copy',
@@ -1405,6 +1413,8 @@
             'welcome.bm.info_b2': 'La gente de cada país se va a poder identificar fácil.',
             'welcome.bm.info_b3': 'Podés cambiarlo después en <b>Perfil</b>.',
             'welcome.bm.country_label': '¿Cuál es tu nacionalidad?',
+            'welcome.bm.club_label': 'Club al que le hinchás (opcional)',
+            'welcome.bm.club_skip': '— Prefiero no elegir —',
             'welcome.bm.err_required': 'Elegí tu nacionalidad.',
             // Profile edit — campo de nacionalidad
             'app.perfil.nat_label': 'Nacionalidad',
@@ -1640,6 +1650,8 @@
             'app.bolao.loading_boloes': 'Cargando quinielas...',
             'app.bolao.loading_jogos': 'Cargando partidos...',
             'app.bolao.loading': 'Cargando...',
+            'app.bolao.empty_title': 'Todavía no estás en ninguna quiniela',
+            'app.bolao.empty_desc': 'Pegá el código de invitación de arriba o pedíselo al organizador de la quiniela.',
             'app.bolao.detail_members_suffix': 'miembros',
             'app.bolao.detail_code_label': 'Código',
             'app.bolao.detail_copy_title': 'Copiar',
@@ -1765,10 +1777,9 @@
     function getLang() {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (stored && T[stored]) return stored;
-        // Auto-detecta navegador na primeira visita
-        const nav = (navigator.language || navigator.userLanguage || '').toLowerCase();
-        if (nav.startsWith('en')) return 'en';
-        if (nav.startsWith('es')) return 'es';
+        // Plataforma BR-first — default sempre PT na 1a visita.
+        // (Auto-detect via navigator.language foi removido pq estava jogando
+        // visitante BR com Chrome em ingles direto pra EN — confuso.)
         return DEFAULT_LANG;
     }
 
