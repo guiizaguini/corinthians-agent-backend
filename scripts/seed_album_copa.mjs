@@ -4,16 +4,15 @@
  * Estrutura REAL do álbum (conforme prints):
  *  - 12 grupos (A-L) com 4 seleções cada = 48 seleções
  *  - 20 cromos numerados (XXX-01 a XXX-20) por seleção = 960
- *  - Categoria "Especiais" (sem grupo): "00" + FWC-01..FWC-08 = 9 cromos
- *  - Categoria "Seleções Especiais" (sem grupo): FWC-09..FWC-19 = 11 cromos
+ *  - Categoria "Especiais" (sem grupo): "00" capa + FWC-01..FWC-19 = 20 cromos
  *  - Categoria "Coca-Cola" (sem grupo): CC-01..CC-14 = 14 cromos
- *  Total: 48*20 + 9 + 11 + 14 = 994 cromos
+ *  Total: 48*20 + 20 + 14 = 994 cromos
  *
- * Idempotente: ON CONFLICT (code) DO NOTHING. Pode rodar quantas vezes quiser
- * sem duplicar. Pra ATUALIZAR nomes/photos depois, faz UPDATE direto.
+ * Idempotente: ON CONFLICT (code) DO UPDATE — re-rodar move cromos legacy
+ * pras selecoes canonicas (consolidacao automatica).
  *
- * Aditivo: NUNCA deleta selecoes/cromos existentes. Procura selecoes por
- * nome (caso ja existam com codes nao-canonicos) antes de criar novas.
+ * Aditivo: NUNCA deleta selecoes/cromos existentes (se quiser limpar
+ * orfas use scripts/fix_album_especiais.mjs).
  *
  * Uso:
  *   railway run node scripts/seed_album_copa.mjs
@@ -193,62 +192,51 @@ const GRUPOS = {
             return rows[0].id;
         }
 
-        // ============== Especiais (00 + FWC-01..08 = 9 cromos) ==============
+        // ============== Especiais (00 + FWC-01..FWC-19 = 20 cromos) ==============
+        // UMA selecao soh contendo TODOS os cromos especiais. Antes a gente
+        // tinha 'Especiais' (00 + FWC-01..08) + 'Selecoes Especiais'
+        // (FWC-09..19) separadas. Consolidado pra simplificar — o user
+        // queria FWC-1 a FWC-19 todos juntos em Especiais.
         {
             const espId = await findOrCreateSpecialSelecao({
-                matchTerms: ['especiais'], // pega "Especiais" ou variantes
-                fallbackCode: 'ESP',
-                fallbackName: 'Especiais',
+                matchTerms: [
+                    'fifa world cup history',  // primeiro tenta o nome canonico (legacy DB)
+                    'fifa world cup',
+                    'world cup history',
+                    'especiais',
+                ],
+                fallbackCode: 'FWC',
+                fallbackName: 'FIFA World Cup History',
                 ordem: ordemSel++,
             });
             selsTouched++;
 
             // Cromo "00" (capa/destaque do album)
+            // ON CONFLICT DO UPDATE — move pra Especiais se estiver em outra selecao
             {
                 const r = await pool.query(`
                     INSERT INTO album_cromos (code, selecao_id, ordem, tipo, nome, raridade)
                     VALUES ('00', $1, 0, 'especial', 'Capa do Álbum', 'especial')
-                    ON CONFLICT (code) DO NOTHING
-                    RETURNING id
+                    ON CONFLICT (code) DO UPDATE SET
+                        selecao_id = EXCLUDED.selecao_id,
+                        ordem = EXCLUDED.ordem
+                    RETURNING (xmax = 0) AS inserted
                 `, [espId]);
-                if (r.rows.length) cromosInseridos++;
+                if (r.rows[0]?.inserted) cromosInseridos++;
             }
 
-            // FWC-01 a FWC-08
-            for (let n = 1; n <= 8; n++) {
+            // FWC-01 a FWC-19 (TODOS os 19 cromos da Historia da Copa)
+            for (let n = 1; n <= 19; n++) {
                 const code = `FWC-${String(n).padStart(2, '0')}`;
                 const r = await pool.query(`
                     INSERT INTO album_cromos (code, selecao_id, ordem, tipo, nome, raridade)
                     VALUES ($1, $2, $3, 'legenda', $4, 'legend')
-                    ON CONFLICT (code) DO NOTHING
-                    RETURNING id
+                    ON CONFLICT (code) DO UPDATE SET
+                        selecao_id = EXCLUDED.selecao_id,
+                        ordem = EXCLUDED.ordem
+                    RETURNING (xmax = 0) AS inserted
                 `, [code, espId, n, `FIFA World Cup History #${n}`]);
-                if (r.rows.length) cromosInseridos++;
-            }
-        }
-
-        // ============== Selecoes Especiais (FWC-09..19 = 11 cromos) ==============
-        {
-            const sexId = await findOrCreateSpecialSelecao({
-                // Procura "selecoes especiais" antes de "especiais" puro pra
-                // nao colidir com a Especiais acima.
-                matchTerms: ['seleções especiais', 'selecoes especiais', 'seleções espec', 'selecoes espec'],
-                fallbackCode: 'SEX',
-                fallbackName: 'Seleções Especiais',
-                ordem: ordemSel++,
-            });
-            selsTouched++;
-
-            // FWC-09 a FWC-19
-            for (let n = 9; n <= 19; n++) {
-                const code = `FWC-${String(n).padStart(2, '0')}`;
-                const r = await pool.query(`
-                    INSERT INTO album_cromos (code, selecao_id, ordem, tipo, nome, raridade)
-                    VALUES ($1, $2, $3, 'legenda', $4, 'legend')
-                    ON CONFLICT (code) DO NOTHING
-                    RETURNING id
-                `, [code, sexId, n, `FIFA World Cup History #${n}`]);
-                if (r.rows.length) cromosInseridos++;
+                if (r.rows[0]?.inserted) cromosInseridos++;
             }
         }
 
